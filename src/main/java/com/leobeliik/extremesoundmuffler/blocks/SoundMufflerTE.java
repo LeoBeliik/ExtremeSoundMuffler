@@ -37,7 +37,7 @@ public class SoundMufflerTE extends TileEntity implements INamedContainerProvide
         return new SoundMufflerContainer(pos, id, world, entity);
     }
 
-    //TODO may i clean this??
+    //certainly there's a better way to do this.. but i duuno how :D
     @Nonnull
     @Override
     public CompoundNBT write(CompoundNBT compound) { //Save

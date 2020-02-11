@@ -29,7 +29,7 @@ public class SoundMufflerContainer extends Container {
         return isWithinUsableDistance(IWorldPosCallable.of(Objects.requireNonNull(tileEntity.getWorld()), tileEntity.getPos()), playerEntity, BlockReg.SOUNDMUFFLERBLOCK);
     }
 
-    public BlockPos getTileEntityPos() {
+    BlockPos getTileEntityPos() {
         return tileEntity.getPos();
     }
 }

@@ -11,16 +11,12 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class SoundMufflerScreen extends ContainerScreen<SoundMufflerContainer> {
 
     private final ResourceLocation GUI = new ResourceLocation("extremesoundmuffler", "textures/gui/sound_muffler.png");
 
-    private static final Set<ResourceLocation> soundsToMuffle = new HashSet<>();
     private static BlockPos tileEntityPos;
     private static final IProxy proxy = new ClientProxy();
 
@@ -42,7 +38,6 @@ public class SoundMufflerScreen extends ContainerScreen<SoundMufflerContainer> {
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
     }
 
-
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
         if (this.minecraft != null) {
@@ -55,41 +50,48 @@ public class SoundMufflerScreen extends ContainerScreen<SoundMufflerContainer> {
     @Override
     protected void init() {
         super.init();
-        Map<BlockPos, Set<ResourceLocation>> sounds = EventHandler.getSounds();
+        Set<ResourceLocation> soundsToMuffle = new HashSet<>();
         int buttonW = getGuiW() + 10;
         int buttonH = getGuiH() + 15;
-        if (sounds != null) {
-            for (BlockPos pos : sounds.keySet()) {
-                for (ResourceLocation s : sounds.get(pos)) {
+        if (!getSounds().isEmpty()) {
+            for (BlockPos pos : getSounds().keySet()) {
+                if (!pos.equals(tileEntityPos)) continue;
+                for (ResourceLocation s : getSounds().get(pos)) {
                     String text = font.trimStringToWidth(s.getPath(), xSize - 22);
                     int fontH = font.FONT_HEIGHT;
-                    Button btnSound = new Button(buttonW, buttonH, xSize - 20, fontH + 2, text, b -> soundsToMuffle.add(s));
+                    Button btnSound = new Button(buttonW, buttonH, xSize - 20, fontH + 2, text, b -> {
+                        soundsToMuffle.add(s);
+                        this.insertText("aaa", true);
+                    });
                     addButton(new Button(buttonW + 144, getGuiH() + 114, 14, 14, "", b -> {
-                        if (getSoundsToMuffle().size() > 0) {
-                            SoundMufflerBlock.setToMuffle(tileEntityPos, getSoundsToMuffle());
+                        if (!soundsToMuffle.isEmpty()) {
+                            SoundMufflerBlock.setToMuffle(tileEntityPos, soundsToMuffle);
                             Objects.requireNonNull(proxy.getClientWorld().getTileEntity(tileEntityPos)).markDirty();
                         }
                         soundsToMuffle.clear();
                     })).setAlpha(0);
-                        btnSound.setAlpha(0);
-                    if (pos.equals(tileEntityPos)) {
-                        addButton(btnSound);
-                        buttonH += fontH + 4;
-                    }
+                    btnSound.setAlpha(0);
+                    addButton(btnSound);
+                    buttonH += fontH + 4;
                 }
             }
         }
     }
 
-    public int getGuiW() {
+    private int getGuiW() {
         return (width - xSize) / 2;
     }
 
-    public int getGuiH() {
+    private int getGuiH() {
         return (this.height - ySize) / 2;
     }
 
-    public static Set<ResourceLocation> getSoundsToMuffle() {
-        return soundsToMuffle;
+    private Map<BlockPos, Set<ResourceLocation>> getSounds() {
+        Map<BlockPos, Set<ResourceLocation>> sounds = new HashMap<>();
+        if (!SoundMufflerBlock.getPositions().isEmpty() || !EventHandler.getSounds().isEmpty()) {
+            sounds.putAll(new HashMap<>(SoundMufflerBlock.getToMuffle()));
+            sounds.putAll(EventHandler.getSounds());
+        }
+        return sounds;
     }
 }
