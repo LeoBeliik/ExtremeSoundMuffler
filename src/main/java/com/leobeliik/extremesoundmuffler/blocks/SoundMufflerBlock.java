@@ -99,5 +99,7 @@ public class SoundMufflerBlock extends Block {
         return tileEntityMuffler.get(pos);
     }
 
-    static void setMufflerOnPosition(BlockPos pos) { tileEntities.add(pos); }
+    static void setMufflerOnPosition(BlockPos pos) {
+        tileEntities.add(pos);
+    }
 }

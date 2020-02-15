@@ -3,7 +3,6 @@ package com.leobeliik.extremesoundmuffler.utils;
 import com.leobeliik.extremesoundmuffler.blocks.SoundMufflerBlock;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.ITickableSound;
-import net.minecraft.client.audio.Sound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.api.distmarker.Dist;
@@ -12,16 +11,14 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = "extremesoundmuffler")
 public final class EventHandler {
 
     private static final Map<BlockPos, Set<ResourceLocation>> sounds = new HashMap<>();
     private static final byte muteIt = 0;
+    private static final String[] forbidenSounds = {"music", "ui.", "ambient"};
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onSoundPlaying(PlaySoundEvent event) {
@@ -32,9 +29,11 @@ public final class EventHandler {
             if (sound instanceof ITickableSound) {
                 event.setResultSound(new Muffler.TickableMuffler((ITickableSound) sound, muteIt));
             } else {
-                double distance = DistanceCalculator.distance(sound, pos);
                 ResourceLocation soundLocat = sound.getSoundLocation();
-                if (distance <= 32 && !soundLocat.toString().contains("music") && !soundLocat.toString().contains("ui.")) {
+                for (String fs : forbidenSounds) {
+                    if (soundLocat.toString().contains(fs)) return;
+                }
+                if (distance(sound, pos) <= 32) {
                     if (!sounds.containsKey(pos)) {
                         sounds.put(pos, new HashSet<>());
                     }
@@ -51,5 +50,13 @@ public final class EventHandler {
 
     public static Map<BlockPos, Set<ResourceLocation>> getSounds() {
         return sounds;
+    }
+
+    private static double distance(ISound sound, BlockPos pos) {
+        return Math.sqrt( // d(P1, P2) = √(x2 - x1)² + (y2 - y1)² + (z2 - z1)²'
+                Math.pow((sound.getX() - pos.getX()), 2)
+              + Math.pow((sound.getY() - pos.getY()), 2)
+              + Math.pow((sound.getZ() - pos.getZ()), 2)
+        );
     }
 }

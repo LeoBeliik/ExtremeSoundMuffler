@@ -5,6 +5,7 @@ import com.leobeliik.extremesoundmuffler.setup.IProxy;
 import com.leobeliik.extremesoundmuffler.utils.EventHandler;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
@@ -19,6 +20,7 @@ public class SoundMufflerScreen extends ContainerScreen<SoundMufflerContainer> {
 
     private static BlockPos tileEntityPos;
     private static final IProxy proxy = new ClientProxy();
+    private Map<BlockPos, Set<ResourceLocation>> sounds = new HashMap<>();
 
     public SoundMufflerScreen(SoundMufflerContainer screenContainer, PlayerInventory inv, ITextComponent titleIn) {
         super(screenContainer, inv, titleIn);
@@ -34,7 +36,7 @@ public class SoundMufflerScreen extends ContainerScreen<SoundMufflerContainer> {
         this.renderHoveredToolTip(mouseX, mouseY);
     }
 
-    @Override
+    @Override //unnesessary?
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
     }
 
@@ -47,35 +49,57 @@ public class SoundMufflerScreen extends ContainerScreen<SoundMufflerContainer> {
         }
     }
 
-    @Override
+    @Override //TODO clean up this mess
     protected void init() {
         super.init();
+        getSounds();
+
         Set<ResourceLocation> soundsToMuffle = new HashSet<>();
         int buttonW = getGuiW() + 10;
-        int buttonH = getGuiH() + 15;
-        if (!getSounds().isEmpty()) {
-            for (BlockPos pos : getSounds().keySet()) {
+        int buttonH = getGuiH() + 13;
+        if (!sounds.isEmpty()) {
+            for (BlockPos pos : sounds.keySet()) {
                 if (!pos.equals(tileEntityPos)) continue;
-                for (ResourceLocation s : getSounds().get(pos)) {
+                for (ResourceLocation s : sounds.get(pos)) {
                     String text = font.trimStringToWidth(s.getPath(), xSize - 22);
-                    int fontH = font.FONT_HEIGHT;
-                    Button btnSound = new Button(buttonW, buttonH, xSize - 20, fontH + 2, text, b -> {
-                        soundsToMuffle.add(s);
-                        this.insertText("aaa", true);
-                    });
-                    addButton(new Button(buttonW + 144, getGuiH() + 114, 14, 14, "", b -> {
+                    Button btnSound = new Button(buttonW, buttonH, xSize - 20, font.FONT_HEIGHT + 2, text, b -> {
+                        if (b.getFGColor() == 24523966) {
+                            SoundMufflerBlock.getToMuffle().get(tileEntityPos).remove(s);
+                            soundsToMuffle.remove(s);
+                            b.setFGColor(16777215);
+                        } else {
+                            soundsToMuffle.add(s);
+                            b.setFGColor(24523966); //nice color
+                        }
                         if (!soundsToMuffle.isEmpty()) {
                             SoundMufflerBlock.setToMuffle(tileEntityPos, soundsToMuffle);
                             Objects.requireNonNull(proxy.getClientWorld().getTileEntity(tileEntityPos)).markDirty();
                         }
                         soundsToMuffle.clear();
-                    })).setAlpha(0);
-                    btnSound.setAlpha(0);
-                    addButton(btnSound);
-                    buttonH += fontH + 4;
+                    });
+                    if (!SoundMufflerBlock.getToMuffle().isEmpty() && SoundMufflerBlock.getToMuffle().get(pos).contains(s)) {
+                        btnSound.setFGColor(24523966);
+                    }
+                    addButton(btnSound).setAlpha(0);
+                    buttonH += btnSound.getHeight() + 1;
+                    btnSound.visible = btnSound.y <= getGuiH() + 100;
                 }
             }
         }
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double direction) {
+
+        if (buttons.size() <= 8) return false; //enought empty screen, no need for scroll
+        if (buttons.get(0).y >= getGuiH() + 12 && direction >= 0.0) return false; //first button is on the top
+        if (buttons.get(buttons.size() - 1).y <= getGuiH() + 99 && direction <= 0.0) return false; //last button is on the bottom
+
+        for (Widget b : buttons) {
+            b.y = (int) (b.y + (direction * (b.getHeight() + 1)));
+            b.visible = b.y >= getGuiH() + 10 && b.y <= getGuiH() + 100;
+        }
+        return true;
     }
 
     private int getGuiW() {
@@ -86,12 +110,17 @@ public class SoundMufflerScreen extends ContainerScreen<SoundMufflerContainer> {
         return (this.height - ySize) / 2;
     }
 
-    private Map<BlockPos, Set<ResourceLocation>> getSounds() {
-        Map<BlockPos, Set<ResourceLocation>> sounds = new HashMap<>();
-        if (!SoundMufflerBlock.getPositions().isEmpty() || !EventHandler.getSounds().isEmpty()) {
-            sounds.putAll(new HashMap<>(SoundMufflerBlock.getToMuffle()));
-            sounds.putAll(EventHandler.getSounds());
+    private void getSounds() {
+        for (BlockPos pos : SoundMufflerBlock.getPositions()) {
+            Set<ResourceLocation> getToMuffle = SoundMufflerBlock.getToMuffle().get(pos);
+            Set<ResourceLocation> getEventSounds = EventHandler.getSounds().get(pos);
+            if (sounds.containsKey(pos)) {
+                if (getToMuffle != null && !getToMuffle.isEmpty()) sounds.get(pos).addAll(getToMuffle);
+                if (getEventSounds != null && !getEventSounds.isEmpty()) sounds.get(pos).addAll(getEventSounds);
+            } else {
+                sounds.put(pos, new HashSet<>());
+                getSounds();
+            }
         }
-        return sounds;
     }
 }
