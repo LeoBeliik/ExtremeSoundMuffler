@@ -36,10 +36,6 @@ public class SoundMufflerScreen extends ContainerScreen<SoundMufflerContainer> {
         this.renderHoveredToolTip(mouseX, mouseY);
     }
 
-    @Override //unnesessary?
-    protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-    }
-
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
         if (this.minecraft != null) {
@@ -49,7 +45,7 @@ public class SoundMufflerScreen extends ContainerScreen<SoundMufflerContainer> {
         }
     }
 
-    @Override //TODO clean up this mess
+    @Override
     protected void init() {
         super.init();
         getSounds();
@@ -57,6 +53,7 @@ public class SoundMufflerScreen extends ContainerScreen<SoundMufflerContainer> {
         Set<ResourceLocation> soundsToMuffle = new HashSet<>();
         int buttonW = getGuiW() + 10;
         int buttonH = getGuiH() + 13;
+        Map<BlockPos, Set<ResourceLocation>> getToMuffle = SoundMufflerBlock.getToMuffle();
         if (!sounds.isEmpty()) {
             for (BlockPos pos : sounds.keySet()) {
                 if (!pos.equals(tileEntityPos)) continue;
@@ -64,8 +61,9 @@ public class SoundMufflerScreen extends ContainerScreen<SoundMufflerContainer> {
                     String text = font.trimStringToWidth(s.getPath(), xSize - 22);
                     Button btnSound = new Button(buttonW, buttonH, xSize - 20, font.FONT_HEIGHT + 2, text, b -> {
                         if (b.getFGColor() == 24523966) {
-                            SoundMufflerBlock.getToMuffle().get(tileEntityPos).remove(s);
+                            getToMuffle.get(tileEntityPos).remove(s);
                             soundsToMuffle.remove(s);
+                            EventHandler.setSounds(tileEntityPos, s);
                             b.setFGColor(16777215);
                         } else {
                             soundsToMuffle.add(s);
@@ -77,7 +75,7 @@ public class SoundMufflerScreen extends ContainerScreen<SoundMufflerContainer> {
                         }
                         soundsToMuffle.clear();
                     });
-                    if (!SoundMufflerBlock.getToMuffle().isEmpty() && SoundMufflerBlock.getToMuffle().get(pos).contains(s)) {
+                    if (!getToMuffle.isEmpty() && getToMuffle.get(pos) != null && getToMuffle.get(pos).contains(s)) {
                         btnSound.setFGColor(24523966);
                     }
                     addButton(btnSound).setAlpha(0);

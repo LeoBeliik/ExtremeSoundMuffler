@@ -62,6 +62,11 @@ public class SoundMufflerTE extends TileEntity implements INamedContainerProvide
     }
 
     @Override
+    public void onLoad() { //TODO this could be useful, pay more attention;
+        SoundMufflerBlock.setMufflerOnPosition(this.pos);
+    }
+
+    @Override
     public void read(CompoundNBT compound) { //Load
         Set<ResourceLocation> sounds = new HashSet<>();
         ListNBT mufflers = compound.getList("mufflers", 10);

@@ -6,9 +6,7 @@ import net.minecraft.world.World;
 public class ServerProxy implements IProxy {
 
     @Override
-    public void init() {
-
-    }
+    public void init() {}
 
     @Override
     public World getClientWorld() {

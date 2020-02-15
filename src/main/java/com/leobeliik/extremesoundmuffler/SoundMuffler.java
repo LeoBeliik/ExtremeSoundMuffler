@@ -33,8 +33,8 @@ public class SoundMuffler {
     public static SoundMuffler instance;
     private static final Logger LOGGER = LogManager.getLogger("extremesoundmuffler");
 
-    public static final IProxy proxy = DistExecutor.runForDist(() -> () -> new ClientProxy(), () -> () -> new ServerProxy());
-    public static final ModSetup setup = new ModSetup();
+    private static final IProxy proxy = DistExecutor.runForDist(() -> () -> new ClientProxy(), () -> () -> new ServerProxy());
+    private static final ModSetup setup = new ModSetup();
 
     public SoundMuffler() {
         instance = this;

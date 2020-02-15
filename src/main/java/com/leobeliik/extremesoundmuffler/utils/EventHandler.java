@@ -18,13 +18,13 @@ public final class EventHandler {
 
     private static final Map<BlockPos, Set<ResourceLocation>> sounds = new HashMap<>();
     private static final byte muteIt = 0;
-    private static final String[] forbidenSounds = {"music", "ui.", "ambient"};
+    private static final String[] forbidenSounds = {"music", "ui.button", "ambient.cave"};
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onSoundPlaying(PlaySoundEvent event) {
         ISound sound = event.getSound();
         Set<BlockPos> soundMufflers = SoundMufflerBlock.getPositions();
-        if (soundMufflers == null) return;
+        if (soundMufflers.isEmpty()) return;
         soundMufflers.forEach(pos -> {
             if (sound instanceof ITickableSound) {
                 event.setResultSound(new Muffler.TickableMuffler((ITickableSound) sound, muteIt));
@@ -50,6 +50,16 @@ public final class EventHandler {
 
     public static Map<BlockPos, Set<ResourceLocation>> getSounds() {
         return sounds;
+    }
+
+    public static void setSounds(BlockPos pos, ResourceLocation sound) {
+        if (sounds.containsKey(pos)) {
+            sounds.get(pos).add(sound);
+        } else {
+            sounds.put(pos, new HashSet<>());
+            setSounds(pos, sound);
+        }
+
     }
 
     private static double distance(ISound sound, BlockPos pos) {

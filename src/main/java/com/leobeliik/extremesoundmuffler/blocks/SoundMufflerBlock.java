@@ -82,6 +82,10 @@ public class SoundMufflerBlock extends Block {
         return tileEntities;
     }
 
+    static void setMufflerOnPosition(BlockPos pos) {
+        tileEntities.add(pos);
+    }
+
     static void setToMuffle(BlockPos pos, Set<ResourceLocation> toMuffle) {
         if (toMuffle.isEmpty()) return;
         if (!tileEntityMuffler.containsKey(pos)) {
@@ -97,9 +101,5 @@ public class SoundMufflerBlock extends Block {
 
     public static Set<ResourceLocation> getMufflerOnPosition(BlockPos pos) {
         return tileEntityMuffler.get(pos);
-    }
-
-    static void setMufflerOnPosition(BlockPos pos) {
-        tileEntities.add(pos);
     }
 }
