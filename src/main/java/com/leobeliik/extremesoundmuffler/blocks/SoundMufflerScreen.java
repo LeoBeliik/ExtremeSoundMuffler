@@ -64,7 +64,7 @@ public class SoundMufflerScreen extends ContainerScreen<SoundMufflerContainer> {
                             getToMuffle.get(tileEntityPos).remove(s);
                             soundsToMuffle.remove(s);
                             EventHandler.setSounds(tileEntityPos, s);
-                            b.setFGColor(16777215);
+                            b.setFGColor(16777215); //white
                         } else {
                             soundsToMuffle.add(s);
                             b.setFGColor(24523966); //nice color

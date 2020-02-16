@@ -13,16 +13,14 @@ import javax.annotation.Nullable;
 public class Muffler implements ISound {
 
     private final ISound sound;
-    private final byte mute;
 
-    Muffler(ISound muttedSound, byte mute) {
+    Muffler(ISound muttedSound) {
         sound = muttedSound;
-        this.mute = mute;
     }
 
     @Override
     public float getVolume() {
-        return sound.getVolume() * mute;
+        return sound.getVolume() * 0;
     }
 
     @Nonnull
@@ -96,8 +94,8 @@ public class Muffler implements ISound {
 
         private final ITickableSound sound;
 
-        TickableMuffler(ITickableSound muttedSound, byte mute) {
-            super(muttedSound, mute);
+        TickableMuffler(ITickableSound muttedSound) {
+            super(muttedSound);
             sound = muttedSound;
         }
 

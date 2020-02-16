@@ -11,14 +11,16 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = "extremesoundmuffler")
 public final class EventHandler {
 
     private static final Map<BlockPos, Set<ResourceLocation>> sounds = new HashMap<>();
-    private static final byte muteIt = 0;
-    private static final String[] forbidenSounds = {"music", "ui.button", "ambient.cave"};
+    private static final String[] forbidenSounds = {"music", "ui.button", "ambient.cave", "ui.toast"};
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onSoundPlaying(PlaySoundEvent event) {
@@ -27,7 +29,7 @@ public final class EventHandler {
         if (soundMufflers.isEmpty()) return;
         soundMufflers.forEach(pos -> {
             if (sound instanceof ITickableSound) {
-                event.setResultSound(new Muffler.TickableMuffler((ITickableSound) sound, muteIt));
+                event.setResultSound(new Muffler.TickableMuffler((ITickableSound) sound));
             } else {
                 ResourceLocation soundLocat = sound.getSoundLocation();
                 for (String fs : forbidenSounds) {
@@ -41,7 +43,7 @@ public final class EventHandler {
                     Set<ResourceLocation> mufflerList = SoundMufflerBlock.getMufflerOnPosition(pos);
                     if (mufflerList == null) return;
                     if (mufflerList.contains(soundLocat)) {
-                        event.setResultSound(new Muffler(sound, muteIt));
+                        event.setResultSound(new Muffler(sound));
                     }
                 }
             }
@@ -65,8 +67,8 @@ public final class EventHandler {
     private static double distance(ISound sound, BlockPos pos) {
         return Math.sqrt( // d(P1, P2) = √(x2 - x1)² + (y2 - y1)² + (z2 - z1)²'
                 Math.pow((sound.getX() - pos.getX()), 2)
-              + Math.pow((sound.getY() - pos.getY()), 2)
-              + Math.pow((sound.getZ() - pos.getZ()), 2)
+               + Math.pow((sound.getY() - pos.getY()), 2)
+               + Math.pow((sound.getZ() - pos.getZ()), 2)
         );
     }
 }
