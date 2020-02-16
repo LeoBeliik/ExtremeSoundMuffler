@@ -1,5 +1,6 @@
 package com.leobeliik.extremesoundmuffler.blocks;
 
+import com.leobeliik.extremesoundmuffler.SoundMuffler;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -41,28 +42,23 @@ public class SoundMufflerTE extends TileEntity implements INamedContainerProvide
     @Nonnull
     @Override
     public CompoundNBT write(CompoundNBT compound) { //Save
-        ListNBT posList = new ListNBT();
-        ListNBT mapList = new ListNBT();
+        ListNBT mufflersList = new ListNBT();
         Map<BlockPos, Set<ResourceLocation>> mufflerPos = SoundMufflerBlock.getToMuffle();
         if (mufflerPos != null) {
             mufflerPos.forEach((pos, sounds) -> {
                 if (sounds.size() > 0) {
                     CompoundNBT map = new CompoundNBT();
                     map.putString(pos.toString(), sounds.toString());
-                    mapList.add(map);
-                    CompoundNBT positions = new CompoundNBT();
-                    positions.putIntArray("mufflerPos", setPosition(pos));
-                    posList.add(positions);
+                    mufflersList.add(map);
                 }
             });
         }
-        compound.put("mufflers", mapList);
-        compound.put("mufflerPos", posList);
+        compound.put("mufflers", mufflersList);
         return super.write(compound);
     }
 
     @Override
-    public void onLoad() { //TODO this could be useful, pay more attention;
+    public void onLoad() {
         SoundMufflerBlock.setMufflerOnPosition(this.pos);
     }
 
@@ -70,37 +66,29 @@ public class SoundMufflerTE extends TileEntity implements INamedContainerProvide
     public void read(CompoundNBT compound) { //Load
         Set<ResourceLocation> sounds = new HashSet<>();
         ListNBT mufflers = compound.getList("mufflers", 10);
-        ListNBT positions = compound.getList("mufflerPos", 10);
-        for (int i = 0; i < positions.size(); i++) {
+        for (int i = 0; i < mufflers.size(); i++) {
             CompoundNBT mufflersCompound = mufflers.getCompound(i);
-            CompoundNBT positionsCompound = positions.getCompound(i);
-            BlockPos mufflersPositions = getPosition(positionsCompound.getIntArray("mufflerPos"));
-            if (SoundMufflerBlock.getPositions().contains(mufflersPositions)) return; //prevents unnecessary loads (hopefully)
-            SoundMufflerBlock.setMufflerOnPosition(mufflersPositions);
-            SoundMufflerBlock.getPositions().forEach(pos -> {
-                String soundsArray = mufflersCompound.getString(pos.toString());
-                if (!soundsArray.equals("")) {
-                    for (String s : soundsArray.split(", ")) {
-                        sounds.add(new ResourceLocation(s.replaceAll("]|\\[|minecraft:", "")));
-                    }
+            BlockPos position = getPosition(mufflersCompound.keySet().toString());
+            String soundsArray = mufflersCompound.getString(position.toString());
+            if (SoundMufflerBlock.getPositions().contains(position)) return; //Prevents unnecessary reloads
+            SoundMufflerBlock.setMufflerOnPosition(position);
+            if (!soundsArray.equals("")) {
+                for (String s : soundsArray.split(", ")) {
+                    sounds.add(new ResourceLocation(s.replaceAll("]|\\[|minecraft:", "")));
                 }
-                SoundMufflerBlock.setToMuffle(pos, sounds);
-                sounds.clear();
-            });
+            }
+            SoundMufflerBlock.setToMuffle(position, sounds);
+            sounds.clear();
         }
         super.read(compound);
     }
 
-    private int[] setPosition(BlockPos pos) {
-        int[] coord = new int[3];
-        coord[0] = pos.getX();
-        coord[1] = pos.getY();
-        coord[2] = pos.getZ();
-        return coord;
-    }
-
-    private BlockPos getPosition(int[] pos) {
-        return new BlockPos(pos[0], pos[1], pos[2]);
+    private BlockPos getPosition(String pos) {
+        String[] posArray = pos.replaceAll("[^-?,0-9]", "").split(",");
+        int x = Integer.parseInt(posArray[0]);
+        int y = Integer.parseInt(posArray[1]);
+        int z = Integer.parseInt(posArray[2]);
+        return new BlockPos(x, y, z);
     }
 }
 

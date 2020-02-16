@@ -18,7 +18,7 @@ public final class EventHandler {
 
     private static final Map<BlockPos, Set<ResourceLocation>> sounds = new HashMap<>();
     private static final byte muteIt = 0;
-    private static final String[] forbidenSounds = {"music", "ui.button", "ambient.cave"};
+    private static final String[] forbidenSounds = {"music", "ui.button", "ambient.cave", "ui.toast"};
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onSoundPlaying(PlaySoundEvent event) {
