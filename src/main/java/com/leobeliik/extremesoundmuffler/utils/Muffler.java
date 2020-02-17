@@ -20,8 +20,8 @@ public class Muffler implements ISound {
 
     @Override
     public float getVolume() {
-        return sound.getVolume() * 0;
-    }
+        return 0f;
+    } //Yeah mute that!
 
     @Nonnull
     @Override
