@@ -5,7 +5,7 @@ issueTrackerURL="https://github.com/LeoBeliik/ExtremeSoundMuffler/issues"
 modId="extremesoundmuffler"
 version="${file.jarVersion}"
 displayName="Extreme Sound Muffler"
-displayURL="https://github.com/LeoBeliik/ExtremeSoundMuffler" #change this to curse
+displayURL="https://www.curseforge.com/minecraft/mc-mods/extreme-sound-muffler"
 authors="LeoBeliik"
 description='''
 Selective sound muffler; inspired by Super Sound Muffler.

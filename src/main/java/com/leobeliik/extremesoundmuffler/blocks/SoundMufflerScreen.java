@@ -90,11 +90,11 @@ public class SoundMufflerScreen extends ContainerScreen<SoundMufflerContainer> {
     public boolean mouseScrolled(double mouseX, double mouseY, double direction) {
 
         if (buttons.size() <= 8) return false; //enought empty screen, no need for scroll
-        if (buttons.get(0).y >= getGuiH() + 12 && direction >= 0.0) return false; //first button is on the top
-        if (buttons.get(buttons.size() - 1).y <= getGuiH() + 99 && direction <= 0.0) return false; //last button is on the bottom
+        if (buttons.get(0).y >= getGuiH() + 12 && direction > 0f) return false; //first button is on the top
+        if (buttons.get(buttons.size() - 1).y <= getGuiH() + 99 && direction < 0f) return false; //last button is on the bottom
 
         for (Widget b : buttons) {
-            b.y = (int) (b.y + (direction * (b.getHeight() + 1)));
+            b.y = direction > 0 ? b.y + (b.getHeight() + 1) : b.y - (b.getHeight() + 1);
             b.visible = b.y >= getGuiH() + 10 && b.y <= getGuiH() + 100;
         }
         return true;
