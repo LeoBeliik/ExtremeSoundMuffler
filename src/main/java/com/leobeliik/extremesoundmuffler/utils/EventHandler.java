@@ -11,13 +11,15 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = "extremesoundmuffler")
 public final class EventHandler {
 
     private static final Map<BlockPos, Set<ResourceLocation>> sounds = new HashMap<>();
-    private static final byte muteIt = 0;
     private static final String[] forbidenSounds = {"music", "ui.button", "ambient.cave", "ui.toast"};
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -27,8 +29,8 @@ public final class EventHandler {
         if (soundMufflers.isEmpty()) return;
         soundMufflers.forEach(pos -> {
             if (distance(sound, pos) >= 32) return;
-            if (sound instanceof ITickableSound) {
-                event.setResultSound(new Muffler.TickableMuffler((ITickableSound) sound, muteIt));
+            if (sound instanceof ITickableSound) { //This will block all constant sounds (like minecarts), dunno if i want this.
+                event.setResultSound(new Muffler.TickableMuffler((ITickableSound) sound));
             } else {
                 ResourceLocation soundLocat = sound.getSoundLocation();
                 for (String fs : forbidenSounds) {
@@ -41,7 +43,7 @@ public final class EventHandler {
                 Set<ResourceLocation> mufflerList = SoundMufflerBlock.getMufflerOnPosition(pos);
                 if (mufflerList == null) return;
                 if (mufflerList.contains(soundLocat)) {
-                    event.setResultSound(new Muffler(sound, muteIt));
+                    event.setResultSound(new Muffler(sound));
                 }
             }
         });

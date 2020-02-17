@@ -63,15 +63,16 @@ public class SoundMuffler {
 
         @SubscribeEvent
         public static void onItemsRegistry(final RegistryEvent.Register<Item> event) {
-            event.getRegistry().register(new BlockItem(BlockReg.SOUNDMUFFLERBLOCK, new Item.Properties().group(ItemGroup.DECORATIONS))
-                    .setRegistryName("sound_muffler")
+            event.getRegistry().register(new BlockItem(BlockReg.SOUNDMUFFLERBLOCK,
+                    new Item.Properties().group(ItemGroup.DECORATIONS)).setRegistryName("sound_muffler")
             );
         }
 
         @SubscribeEvent
         public static void onTileEntityRegistry(final RegistryEvent.Register<TileEntityType<?>> event) {
             event.getRegistry().register(TileEntityType.Builder.create(SoundMufflerTE::new,
-                    BlockReg.SOUNDMUFFLERBLOCK).build(null).setRegistryName("sound_muffler"));
+                    BlockReg.SOUNDMUFFLERBLOCK).build(null).setRegistryName("sound_muffler")
+            );
         }
 
         @SubscribeEvent

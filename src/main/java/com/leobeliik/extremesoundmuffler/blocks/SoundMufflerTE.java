@@ -1,6 +1,5 @@
 package com.leobeliik.extremesoundmuffler.blocks;
 
-import com.leobeliik.extremesoundmuffler.SoundMuffler;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -15,7 +14,10 @@ import net.minecraft.util.text.StringTextComponent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 import static com.leobeliik.extremesoundmuffler.blocks.BlockReg.SOUNDMUFFLERBLOCK_TE;
 
@@ -38,7 +40,6 @@ public class SoundMufflerTE extends TileEntity implements INamedContainerProvide
         return new SoundMufflerContainer(pos, id, world, entity);
     }
 
-    //certainly there's a better way to do this.. but i duuno how :D
     @Nonnull
     @Override
     public CompoundNBT write(CompoundNBT compound) { //Save
@@ -69,7 +70,7 @@ public class SoundMufflerTE extends TileEntity implements INamedContainerProvide
         for (int i = 0; i < mufflers.size(); i++) {
             CompoundNBT mufflersCompound = mufflers.getCompound(i);
             BlockPos position = getPosition(mufflersCompound.keySet().toString());
-            String soundsArray = mufflersCompound.getString(position.toString());
+            String soundsArray = mufflersCompound.getString(position.toString()); //this is dumb
             if (SoundMufflerBlock.getPositions().contains(position)) return; //Prevents unnecessary reloads
             SoundMufflerBlock.setMufflerOnPosition(position);
             if (!soundsArray.equals("")) {
