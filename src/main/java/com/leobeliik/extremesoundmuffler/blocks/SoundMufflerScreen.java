@@ -3,7 +3,7 @@ package com.leobeliik.extremesoundmuffler.blocks;
 import com.leobeliik.extremesoundmuffler.setup.ClientProxy;
 import com.leobeliik.extremesoundmuffler.setup.IProxy;
 import com.leobeliik.extremesoundmuffler.utils.EventHandler;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
@@ -39,7 +39,7 @@ public class SoundMufflerScreen extends ContainerScreen<SoundMufflerContainer> {
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
         if (this.minecraft != null) {
-            RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+            GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
             this.minecraft.getTextureManager().bindTexture(GUI);
             this.blit(getGuiW(), getGuiH(), 0, 0, xSize, ySize);
         }

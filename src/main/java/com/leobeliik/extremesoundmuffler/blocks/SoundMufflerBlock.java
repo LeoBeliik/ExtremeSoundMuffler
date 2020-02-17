@@ -54,16 +54,15 @@ public class SoundMufflerBlock extends Block {
         return new SoundMufflerTE();
     }
 
-    @Nonnull
     @Override
-    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
+    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
         if (!world.isRemote) {
             TileEntity tileEntity = world.getTileEntity(pos);
             if (tileEntity instanceof INamedContainerProvider) {
                 NetworkHooks.openGui(((ServerPlayerEntity) player), ((INamedContainerProvider) tileEntity), tileEntity.getPos());
             }
         }
-        return ActionResultType.SUCCESS;
+        return true;
     }
 
     @Override
