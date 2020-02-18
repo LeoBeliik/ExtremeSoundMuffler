@@ -5,7 +5,7 @@ Extreme sound muffler is the spiritual successor of Super sound muffler by Edgar
 
 This mod allows you to mute specific sounds in a 32 block radius.
 
-This mod also mute contant sounds (like moving minecarts) by default.
+This mod also mute constant sounds (like moving minecarts) by default.
 
  
 
