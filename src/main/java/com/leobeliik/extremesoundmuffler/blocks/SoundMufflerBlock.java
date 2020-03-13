@@ -11,11 +11,11 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
@@ -74,9 +74,13 @@ public class SoundMufflerBlock extends Block {
     @Override
     public void onBlockHarvested(World worldIn, @Nonnull BlockPos pos, BlockState state, @Nonnull PlayerEntity player) {
         super.onBlockHarvested(worldIn, pos, state, player);
-        EventHandler.getSounds().remove(pos);
-        tileEntityMuffler.remove(pos);
-        tileEntities.remove(pos);
+        blockRemoved(pos);
+    }
+
+    @Override
+    public void onExplosionDestroy(World worldIn, BlockPos pos, Explosion explosionIn) {
+        super.onExplosionDestroy(worldIn, pos, explosionIn);
+        blockRemoved(pos);
     }
 
     public static Set<BlockPos> getPositions() {
@@ -102,5 +106,11 @@ public class SoundMufflerBlock extends Block {
 
     public static Set<ResourceLocation> getMufflerOnPosition(BlockPos pos) {
         return tileEntityMuffler.get(pos);
+    }
+
+    private void blockRemoved(BlockPos pos) {
+        EventHandler.getSounds().remove(pos);
+        tileEntityMuffler.remove(pos);
+        tileEntities.remove(pos);
     }
 }

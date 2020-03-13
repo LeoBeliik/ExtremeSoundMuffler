@@ -6,6 +6,7 @@ import net.minecraft.client.audio.ITickableSound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -23,6 +24,7 @@ public final class EventHandler {
     private static final String[] forbidenSounds = {"music", "ui.button", "ambient.cave", "ui.toast"};
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
+    @OnlyIn(Dist.CLIENT)
     public static void onSoundPlaying(PlaySoundEvent event) {
         ISound sound = event.getSound();
         Set<BlockPos> soundMufflers = SoundMufflerBlock.getPositions();
