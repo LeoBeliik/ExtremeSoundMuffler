@@ -6,6 +6,8 @@ import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -36,13 +38,39 @@ public class SoundMufflerTE extends TileEntity implements INamedContainerProvide
     @Nullable
     @Override
     public Container createMenu(int id, @Nonnull PlayerInventory inventory, @Nonnull PlayerEntity entity) {
-        assert world != null;
         return new SoundMufflerContainer(pos, id, world, entity);
+    }
+
+    @Nullable
+    @Override
+    public SUpdateTileEntityPacket getUpdatePacket() {
+        CompoundNBT compound = new CompoundNBT();
+        write(compound);
+        return new SUpdateTileEntityPacket(pos, -1, compound);
+    }
+
+    @Override
+    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
+        read(pkt.getNbtCompound());
+    }
+
+    @Nonnull
+    @Override
+    public CompoundNBT getUpdateTag() {
+        CompoundNBT compound = new CompoundNBT();
+        write(compound);
+        return compound;
+    }
+
+    @Override
+    public void handleUpdateTag(CompoundNBT tag) {
+        read(tag);
     }
 
     @Nonnull
     @Override
     public CompoundNBT write(CompoundNBT compound) { //Save
+        super.write(compound);
         ListNBT mufflersList = new ListNBT();
         Map<BlockPos, Set<ResourceLocation>> mufflerPos = SoundMufflerBlock.getToMuffle();
         if (mufflerPos != null) {
@@ -55,41 +83,26 @@ public class SoundMufflerTE extends TileEntity implements INamedContainerProvide
             });
         }
         compound.put("mufflers", mufflersList);
-        return super.write(compound);
-    }
-
-    @Override
-    public void onLoad() {
-        SoundMufflerBlock.setMufflerOnPosition(this.pos);
+        return compound;
     }
 
     @Override
     public void read(CompoundNBT compound) { //Load
+        super.read(compound);
         Set<ResourceLocation> sounds = new HashSet<>();
         ListNBT mufflers = compound.getList("mufflers", 10);
         for (int i = 0; i < mufflers.size(); i++) {
             CompoundNBT mufflersCompound = mufflers.getCompound(i);
-            BlockPos position = getPosition(mufflersCompound.keySet().toString());
-            String soundsArray = mufflersCompound.getString(position.toString()); //this is dumb
-            if (SoundMufflerBlock.getPositions().contains(position)) return; //Prevents unnecessary reloads
-            SoundMufflerBlock.setMufflerOnPosition(position);
+            String soundsArray = mufflersCompound.getString(pos.toString()); //this is dumb
+            SoundMufflerBlock.setMufflerOnPosition(pos);
             if (!soundsArray.equals("")) {
                 for (String s : soundsArray.split(", ")) {
                     sounds.add(new ResourceLocation(s.replaceAll("]|\\[|minecraft:", "")));
                 }
             }
-            SoundMufflerBlock.setToMuffle(position, sounds);
+            SoundMufflerBlock.setToMuffle(pos, sounds);
             sounds.clear();
         }
-        super.read(compound);
-    }
-
-    private BlockPos getPosition(String pos) {
-        String[] posArray = pos.replaceAll("[^-?,0-9]", "").split(",");
-        int x = Integer.parseInt(posArray[0]);
-        int y = Integer.parseInt(posArray[1]);
-        int z = Integer.parseInt(posArray[2]);
-        return new BlockPos(x, y, z);
     }
 }
 
