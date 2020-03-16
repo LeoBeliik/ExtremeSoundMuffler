@@ -1,5 +1,6 @@
 package com.leobeliik.extremesoundmuffler.blocks;
 
+import com.leobeliik.extremesoundmuffler.SoundMuffler;
 import com.leobeliik.extremesoundmuffler.setup.ClientProxy;
 import com.leobeliik.extremesoundmuffler.setup.IProxy;
 import com.leobeliik.extremesoundmuffler.utils.EventHandler;
@@ -16,7 +17,7 @@ import java.util.*;
 
 public class SoundMufflerScreen extends ContainerScreen<SoundMufflerContainer> {
 
-    private final ResourceLocation GUI = new ResourceLocation("extremesoundmuffler", "textures/gui/sound_muffler.png");
+    private final ResourceLocation GUI = new ResourceLocation(SoundMuffler.MODID, "textures/gui/sound_muffler.png");
 
     private static BlockPos tileEntityPos;
     private static final IProxy proxy = new ClientProxy();

@@ -1,5 +1,6 @@
 package com.leobeliik.extremesoundmuffler.blocks;
 
+import com.leobeliik.extremesoundmuffler.SoundMuffler;
 import com.leobeliik.extremesoundmuffler.utils.EventHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -40,7 +41,7 @@ public class SoundMufflerBlock extends Block {
                 .harvestLevel(1)
                 .hardnessAndResistance(1.0f)
         );
-        setRegistryName("sound_muffler");
+        setRegistryName(SoundMuffler.NAME);
     }
 
     @Override

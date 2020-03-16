@@ -31,8 +31,9 @@ import org.apache.logging.log4j.Logger;
 public class SoundMuffler {
 
     public static SoundMuffler instance;
-    private static final Logger LOGGER = LogManager.getLogger("extremesoundmuffler");
-
+    public static final String MODID = "extremesoundmuffler";
+    public static final String NAME = "sound_muffler";
+    private static final Logger LOGGER = LogManager.getLogger(MODID);
     private static final IProxy proxy = DistExecutor.runForDist(() -> () -> new ClientProxy(), () -> () -> new ServerProxy());
     private static final ModSetup setup = new ModSetup();
 
@@ -64,14 +65,14 @@ public class SoundMuffler {
         @SubscribeEvent
         public static void onItemsRegistry(final RegistryEvent.Register<Item> event) {
             event.getRegistry().register(new BlockItem(BlockReg.SOUNDMUFFLERBLOCK,
-                    new Item.Properties().group(ItemGroup.DECORATIONS)).setRegistryName("sound_muffler")
+                    new Item.Properties().group(ItemGroup.DECORATIONS)).setRegistryName(NAME)
             );
         }
 
         @SubscribeEvent
         public static void onTileEntityRegistry(final RegistryEvent.Register<TileEntityType<?>> event) {
             event.getRegistry().register(TileEntityType.Builder.create(SoundMufflerTE::new,
-                    BlockReg.SOUNDMUFFLERBLOCK).build(null).setRegistryName("sound_muffler")
+                    BlockReg.SOUNDMUFFLERBLOCK).build(null).setRegistryName(NAME)
             );
         }
 
@@ -80,7 +81,7 @@ public class SoundMuffler {
             event.getRegistry().register(IForgeContainerType.create((windowId, inv, data) -> {
                 BlockPos pos = data.readBlockPos();
                 return new SoundMufflerContainer(pos, windowId, proxy.getClientWorld(), proxy.getClientPlayer());
-            }).setRegistryName("sound_muffler"));
+            }).setRegistryName(NAME));
         }
     }
 }
