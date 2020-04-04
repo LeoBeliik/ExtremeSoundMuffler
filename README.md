@@ -1,18 +1,18 @@
 # ExtremeSoundMuffler
-## Selective sound muffler
+## Client side sound Muffler
 
-Extreme sound muffler is the spiritual successor of Super sound muffler by EdgarAllen.
+Extreme sound muffler is a client side mod that allows you to muffle sounds selectively.
 
-This mod allows you to mute specific sounds in a 32 block radius.
-
-This mod also mute constant sounds (like moving minecarts) by default.
-
- 
+**This Mod needs FORGE to work.**
 
 ### HOW IT WORKS:
+Click on the button in your inventory or asign a key to open the gui.
+Click on the sound you want to muffle.
+Enjoy peace.
 
-The Extreme Sound Muffler block "listen" for sounds in a 32 block radius and add them on a list.
+**Some objects (like minecarts) make a constant sound, they need to be replaced after you muffle the sound.**
 
-Simply click on the sound you want to mute.
+You can toggle the muffled sound on/off with the **toggle muffle button**
+You can search sounds; click on the **search button** to open the **search bar** and type the name of the sound you want.
 
-Use the mouse scroll to navigate through the list.
+The list of muffled sounds are store in the profile folder, so you don't need to re-muffle the sounds on every world.
