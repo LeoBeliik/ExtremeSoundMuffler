@@ -7,7 +7,9 @@ Extreme sound muffler is a client side mod that allows you to muffle sounds sele
 
 ### HOW IT WORKS:
 Click on the button in your inventory or asign a key to open the gui.
+
 Click on the sound you want to muffle.
+
 Enjoy peace.
 
 **Some objects (like minecarts) make a constant sound, they need to be replaced after you muffle the sound.**
