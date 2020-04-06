@@ -18,12 +18,16 @@ class Config {
     static ForgeConfigSpec CLIENT_CONFIG;
 
     private static ForgeConfigSpec.ConfigValue<List<? extends String>> forbiddenSounds;
+    private static ForgeConfigSpec.BooleanValue disableInventoryButton;
 
     static {
         CLIENT_BUILDER.comment("general settings").push(CATEGORY_GENERAL);
 
         forbiddenSounds = CLIENT_BUILDER.comment("Blacklisted Sounds - add the name of the sounds to blacklist, separated with comma")
                 .defineList("forbiddenSounds", Arrays.asList("ui.", "music."), o -> o instanceof String);
+
+        disableInventoryButton = CLIENT_BUILDER.comment("Disable the Muffle button in the player inventory?")
+                .define("disableInventoryButton", false);
 
         CLIENT_BUILDER.pop();
         CLIENT_CONFIG = CLIENT_BUILDER.build();
@@ -39,5 +43,9 @@ class Config {
         configData.load();
         spec.setConfig(configData);
         EventsHandler.ForbiddenSounds().addAll(forbiddenSounds.get());
+    }
+
+    public static ForgeConfigSpec.BooleanValue getDisableInventoryButton() {
+        return disableInventoryButton;
     }
 }
