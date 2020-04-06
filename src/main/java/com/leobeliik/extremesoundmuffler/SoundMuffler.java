@@ -17,27 +17,38 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Mod("extremesoundmuffler")
 public class SoundMuffler {
 
     public static final String MODID = "extremesoundmuffler";
     private static KeyBinding openMuffleScreen;
+    private static final Logger LOGGER = LogManager.getLogger(MODID);
 
     public SoundMuffler() {
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.CLIENT_CONFIG);
         MinecraftForge.EVENT_BUS.register(this);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::serverInit);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientInit);
         Config.loadConfig(Config.CLIENT_CONFIG, FMLPaths.CONFIGDIR.get().resolve(MODID + "-client.toml"));
-        initKeyBind();
     }
 
-    private void initKeyBind() {
+    private void serverInit(final FMLCommonSetupEvent event){
+        LOGGER.info("Extreme sound muffler is loaded in the server but it wont do anything.");
+    }
+
+    private void clientInit(final FMLClientSetupEvent event){
         openMuffleScreen = new KeyBinding(
-                "Open sound muffle screen",
-                KeyConflictContext.IN_GAME,
-                InputMappings.INPUT_INVALID,
-                "key.categories.misc");
+            "Open sound muffle screen",
+            KeyConflictContext.IN_GAME,
+            InputMappings.INPUT_INVALID,
+            "key.categories.misc");
         ClientRegistry.registerKeyBinding(openMuffleScreen);
     }
 
