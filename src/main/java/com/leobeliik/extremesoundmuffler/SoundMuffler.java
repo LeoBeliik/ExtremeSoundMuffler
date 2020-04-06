@@ -56,7 +56,7 @@ public class SoundMuffler {
     @OnlyIn(Dist.CLIENT)
     public void onGuiInit(GuiScreenEvent.InitGuiEvent.Post event) {
         Screen screen = event.getGui();
-        if (screen instanceof DisplayEffectsScreen && event.getWidgetList() != null) {
+        if (!Config.getDisableInventoryButton().get() && screen instanceof DisplayEffectsScreen && event.getWidgetList() != null) {
             event.addWidget(new InvButton((DisplayEffectsScreen) screen, 64, 9, 10, 10));
         }
     }
