@@ -2,8 +2,9 @@ package com.leobeliik.extremesoundmuffler;
 
 import com.leobeliik.extremesoundmuffler.gui.InvButton;
 import com.leobeliik.extremesoundmuffler.gui.SoundMufflerScreen;
-import net.minecraft.client.gui.DisplayEffectsScreen;
+import net.minecraft.client.gui.recipebook.IRecipeShownListener;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.InputMappings;
 import net.minecraftforge.api.distmarker.Dist;
@@ -56,8 +57,8 @@ public class SoundMuffler {
     @OnlyIn(Dist.CLIENT)
     public void onGuiInit(GuiScreenEvent.InitGuiEvent.Post event) {
         Screen screen = event.getGui();
-        if (!Config.getDisableInventoryButton().get() && screen instanceof DisplayEffectsScreen && event.getWidgetList() != null) {
-            event.addWidget(new InvButton((DisplayEffectsScreen) screen, 64, 9, 10, 10));
+        if (!Config.getDisableInventoryButton().get() && screen instanceof IRecipeShownListener && event.getWidgetList() != null) {
+            event.addWidget(new InvButton((ContainerScreen) screen, 64, 9, 10, 10));
         }
     }
 
