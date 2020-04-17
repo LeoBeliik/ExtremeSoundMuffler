@@ -40,11 +40,11 @@ public class SoundMuffler {
         Config.loadConfig(Config.CLIENT_CONFIG, FMLPaths.CONFIGDIR.get().resolve(MODID + "-client.toml"));
     }
 
-    private void serverInit(final FMLCommonSetupEvent event){
+    private void serverInit(final FMLCommonSetupEvent event) {
         LOGGER.info("Extreme sound muffler is loaded in the server but it wont do anything.");
     }
 
-    private void clientInit(final FMLClientSetupEvent event){
+    private void clientInit(final FMLClientSetupEvent event) {
         openMuffleScreen = new KeyBinding(
                 "Open sound muffle screen",
                 KeyConflictContext.IN_GAME,
@@ -57,7 +57,8 @@ public class SoundMuffler {
     @OnlyIn(Dist.CLIENT)
     public void onGuiInit(GuiScreenEvent.InitGuiEvent.Post event) {
         Screen screen = event.getGui();
-        if (!Config.getDisableInventoryButton().get() && screen instanceof IRecipeShownListener && event.getWidgetList() != null) {
+        boolean isCurios = screen.getTitle().getFormattedText().equals("Curios");
+        if (!Config.getDisableInventoryButton().get() && screen instanceof IRecipeShownListener || isCurios && event.getWidgetList() != null) {
             event.addWidget(new InvButton((ContainerScreen) screen, 64, 9, 10, 10));
         }
     }
