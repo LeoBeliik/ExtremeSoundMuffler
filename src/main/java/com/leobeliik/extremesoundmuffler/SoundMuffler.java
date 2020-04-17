@@ -57,7 +57,8 @@ public class SoundMuffler {
     @OnlyIn(Dist.CLIENT)
     public void onGuiInit(GuiScreenEvent.InitGuiEvent.Post event) {
         Screen screen = event.getGui();
-        if (!Config.getDisableInventoryButton().get() && screen instanceof IRecipeShownListener && event.getWidgetList() != null) {
+        boolean isCurios = screen.getTitle().getFormattedText().equals("Curios");
+        if (!Config.getDisableInventoryButton().get() && screen instanceof IRecipeShownListener || isCurios && event.getWidgetList() != null) {
             event.addWidget(new InvButton((ContainerScreen) screen, 64, 9, 10, 10));
         }
     }
