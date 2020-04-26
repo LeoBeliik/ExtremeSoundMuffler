@@ -58,12 +58,14 @@ public class SoundMuffler {
     @OnlyIn(Dist.CLIENT)
     public void onGuiInit(GuiScreenEvent.InitGuiEvent.Post event) {
         Screen screen = event.getGui();
-        boolean isCurios = screen.getTitle().getFormattedText().equals("Curios");
-        if (!Config.getDisableInventoryButton().get() && event.getWidgetList() != null && !(screen instanceof CreativeScreen)) {
-            if (screen instanceof DisplayEffectsScreen || isCurios) {
+        if (Config.getDisableInventoryButton().get() || screen instanceof CreativeScreen || event.getWidgetList() == null) {
+            return;
+        }
+        try {
+            if (screen instanceof DisplayEffectsScreen || screen.getTitle().getFormattedText().equals("Curios")) {
                 event.addWidget(new InvButton((ContainerScreen) screen, 64, 9, 10, 10));
             }
-        }
+        } catch (NullPointerException ignored) {}
     }
 
     @SubscribeEvent
