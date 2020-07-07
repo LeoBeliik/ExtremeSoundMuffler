@@ -62,7 +62,7 @@ public class SoundMuffler {
             return;
         }
         try {
-            if (screen instanceof DisplayEffectsScreen || screen.getTitle().getFormattedText().equals("Curios")) {
+            if (screen instanceof DisplayEffectsScreen || screen.getTitle().getString().equals("Curios")) {
                 event.addWidget(new InvButton((ContainerScreen) screen, 64, 9, 10, 10));
             }
         } catch (NullPointerException ignored) {}

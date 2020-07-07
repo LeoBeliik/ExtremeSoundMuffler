@@ -1,6 +1,7 @@
 package com.leobeliik.extremesoundmuffler.gui;
 
 import com.leobeliik.extremesoundmuffler.SoundMuffler;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -8,9 +9,12 @@ import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
@@ -33,24 +37,26 @@ public class SoundMufflerScreen extends Screen {
     private TextFieldWidget searchBar;
     private static boolean isMuffled = true;
     private boolean isSearching;
+    private static TextComponent emptyText = new TranslationTextComponent("");
 
     private SoundMufflerScreen() {
         super(new StringTextComponent(""));
     }
 
+    @ParametersAreNonnullByDefault
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         this.isMouseOver(mouseX, mouseY);
-        this.renderBackground();
+        this.renderBackground(matrixStack);
         minecraft.getTextureManager().bindTexture(GUI);
-        this.blit(getX(), getY(), 0, 32, xSize, ySize);
-        blit(getX() + 143, getY() + 115, 0, 12f, 0f, 12, 12, 95, 95);
-        toggleSearch();
-        toggleMuffle();
+        this.blit(matrixStack, getX(), getY(), 0, 32, xSize, ySize);
+        blit(matrixStack, getX() + 143, getY() + 115, 0, 12f, 0f, 12, 12, 95, 95);
+        toggleSearch(matrixStack);
+        toggleMuffle(matrixStack);
         if (toggleSearch.isHovered()) {
-            toggleSearch.drawCenteredString(minecraft.fontRenderer, "Search", toggleSearch.x + 5, toggleSearch.y + 15, colorWhite);
+            toggleSearch.drawCenteredString(matrixStack, minecraft.fontRenderer, "Search", toggleSearch.x + 5, toggleSearch.y + 15, colorWhite);
         }
-        super.render(mouseX, mouseY, partialTicks);
+        super.render(matrixStack, mouseX, mouseY, partialTicks);
     }
 
     @Override
@@ -67,18 +73,18 @@ public class SoundMufflerScreen extends Screen {
         super.init();
 
         addButton(
-                toggleMuffled = new Button(getX() + 157, getY() + 115, 12, 12, "", b -> isMuffled = !isMuffled)
+                toggleMuffled = new Button(getX() + 157, getY() + 115, 12, 12, emptyText, b -> isMuffled = !isMuffled)
         ).setAlpha(0);
 
         addButton(
-                toggleSearch = new Button(getX() + 143, getY() + 115, 12, 12, "", b -> {
+                toggleSearch = new Button(getX() + 143, getY() + 115, 12, 12, emptyText, b -> {
                     isSearching = !isSearching;
                     updateText();
                 })
         ).setAlpha(0);
 
         addButton(
-                searchBar = new TextFieldWidget(minecraft.fontRenderer, getX() + 62, getY() + 114, 79, 14, "")
+                searchBar = new TextFieldWidget(minecraft.fontRenderer, getX() + 62, getY() + 114, 79, 14, emptyText)
         );
 
         addSoundButtons();
@@ -93,7 +99,7 @@ public class SoundMufflerScreen extends Screen {
 
         if (!soundList.isEmpty()) {
             for (ResourceLocation sound : soundList) {
-                String text = font.trimStringToWidth(sound.getPath(), xSize - 22);
+                TextComponent text = new TranslationTextComponent(font.func_238412_a_(sound.getPath(), xSize - 22)); //trimToWidth
                 Button btnSound = new Button(buttonW, buttonH, xSize - 20, font.FONT_HEIGHT + 2, text, b -> {
                     if (b.getFGColor() == colorViolet) {
                         muffledList.remove(sound);
@@ -113,10 +119,10 @@ public class SoundMufflerScreen extends Screen {
         }
     }
 
-    private void toggleSearch() {
+    private void toggleSearch(MatrixStack matrixStack) {
 
         if (isSearching) {
-            blit(getX() + 60, getY() + 111, 0, 96f, 0f, 79, 20, 256, 256);
+            blit(matrixStack, getX() + 60, getY() + 111, 0, 96f, 0f, 79, 20, 256, 256);
         }
 
         searchBar.setEnabled(isSearching);
@@ -124,19 +130,19 @@ public class SoundMufflerScreen extends Screen {
         searchBar.setFocused2(isSearching);
     }
 
-    private void toggleMuffle() {
+    private void toggleMuffle(MatrixStack matrixStack) {
         if (isMuffled) {
-            blit(getX() + 157, getY() + 115, 0, 0f, 0f, 12, 12, 95, 95);
+            blit(matrixStack, getX() + 157, getY() + 115, 0, 0f, 0f, 12, 12, 95, 95);
             if (toggleMuffled.isHovered()) {
                 toggleMuffled.drawCenteredString(
-                        minecraft.fontRenderer, "Stop Muffling", toggleMuffled.x + 5, toggleMuffled.y + 15, colorWhite
+                        matrixStack, minecraft.fontRenderer, "Stop Muffling", toggleMuffled.x + 5, toggleMuffled.y + 15, colorWhite
                 );
             }
         } else {
-            blit(getX() + 157, getY() + 115, 0, 23.75f, 0f, 12, 12, 95, 95);
+            blit(matrixStack, getX() + 157, getY() + 115, 0, 23.75f, 0f, 12, 12, 95, 95);
             if (toggleMuffled.isHovered()) {
                 toggleMuffled.drawCenteredString(
-                        minecraft.fontRenderer, "Start Muffling", toggleMuffled.x + 5, toggleMuffled.y + 15, colorWhite
+                        matrixStack, minecraft.fontRenderer, "Start Muffling", toggleMuffled.x + 5, toggleMuffled.y + 15, colorWhite
                 );
             }
         }
@@ -175,7 +181,7 @@ public class SoundMufflerScreen extends Screen {
             if (b.equals(toggleSearch) || b.equals(toggleMuffled) || b.equals(searchBar)) {
                 continue;
             }
-            if (b.getMessage().contains(searchBar.getText())) {
+            if (b.getMessage().getString().contains(searchBar.getText())) {
                 b.active = true;
                 b.y = buttonH;
                 b.visible = b.y >= getY() + 10 && b.y <= getY() + 100;
