@@ -1,6 +1,6 @@
 package com.leobeliik.extremesoundmuffler;
 
-import com.leobeliik.extremesoundmuffler.gui.InvButton;
+import com.leobeliik.extremesoundmuffler.gui.buttons.InvButton;
 import com.leobeliik.extremesoundmuffler.gui.SoundMufflerScreen;
 import net.minecraft.client.gui.DisplayEffectsScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -63,7 +63,7 @@ public class SoundMuffler {
         }
         try {
             if (screen instanceof DisplayEffectsScreen || screen.getTitle().getString().equals("Curios")) {
-                event.addWidget(new InvButton((ContainerScreen) screen, 64, 9, 10, 10));
+                event.addWidget(new InvButton((ContainerScreen) screen, 64, 9));
             }
         } catch (NullPointerException ignored) {}
     }
@@ -74,5 +74,9 @@ public class SoundMuffler {
         if (openMuffleScreen.isPressed()) {
             SoundMufflerScreen.open();
         }
+    }
+
+    public static int getHotkey() {
+        return openMuffleScreen.getKey().getKeyCode();
     }
 }
