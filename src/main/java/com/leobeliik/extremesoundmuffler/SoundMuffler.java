@@ -72,7 +72,7 @@ public class SoundMuffler {
     @OnlyIn(Dist.CLIENT)
     public void onKeyInput(InputEvent.KeyInputEvent event) {
         if (openMuffleScreen.isPressed()) {
-            SoundMufflerScreen.open();
+            SoundMufflerScreen.open("ESM - Main Screen");
         }
     }
 

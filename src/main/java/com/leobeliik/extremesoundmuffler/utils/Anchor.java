@@ -1,6 +1,7 @@
 package com.leobeliik.extremesoundmuffler.utils;
 
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -8,18 +9,21 @@ import java.util.TreeSet;
 public class Anchor {
 
     private int id;
+    private BlockPos anchorPos;
     private String name;
     private SortedSet<ResourceLocation> muffledSounds = new TreeSet<>();
-    private double x;
-    private double y;
-    private double z;
 
-    public Anchor(int id, double x, double y, double z) {
+    Anchor(int id, String name) {
         this.id = id;
-        this.name = "Anchor " + id;
-        this.x = x;
-        this.y = y;
-        this.z = z;
+        this.name = name;
+    }
+
+    public BlockPos getAnchorPos() {
+        return anchorPos;
+    }
+
+    public void setAnchorPos(BlockPos anchorPos) {
+        this.anchorPos = anchorPos;
     }
 
     public int getId() {
@@ -42,18 +46,6 @@ public class Anchor {
         this.muffledSounds = muffledSounds;
     }
 
-    public double getX() {
-        return x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
-    public double getZ() {
-        return z;
-    }
-
     public void addSound(ResourceLocation sound) {
         muffledSounds.add(sound);
     }
@@ -61,4 +53,5 @@ public class Anchor {
     public void removeSound(ResourceLocation sound) {
         muffledSounds.remove(sound);
     }
+
 }

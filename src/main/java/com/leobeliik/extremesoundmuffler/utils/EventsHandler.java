@@ -2,6 +2,7 @@ package com.leobeliik.extremesoundmuffler.utils;
 
 import com.leobeliik.extremesoundmuffler.SoundMuffler;
 import com.leobeliik.extremesoundmuffler.gui.SoundMufflerScreen;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -11,7 +12,6 @@ import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-
 import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
@@ -40,19 +40,29 @@ public class EventsHandler {
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public static void loadMufledList(WorldEvent.Load event) {
-        Set<ResourceLocation> list = JsonIO.load(new File(fileName));
+        Set<ResourceLocation> list = JsonIO.loadMuffledList(new File(fileName));
+        SoundMufflerScreen.getAnchors().clear();
         if (list != null) {
             SoundMufflerScreen.setMuffledList(list);
+        }
+        for (int i = 0; i <= 9; i++) {
+            SoundMufflerScreen.getAnchors().add(JsonIO.loadAnchor(new File("ESM/Anchor" + i + ".dat"), i));
         }
     }
 
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public static void saveMufledList(WorldEvent.Unload event) {
-        JsonIO.save(new File(fileName), SoundMufflerScreen.getMuffledList());
+        JsonIO.saveMuffledList(new File(fileName), SoundMufflerScreen.getMuffledList());
+        //TODO find world name/save folder and create intermediate folders or something
+        for (int i = 0; i <= 9; i++) {
+            if (Minecraft.getInstance().world == null || SoundMufflerScreen.getAnchors().get(i) == null) continue;
+            JsonIO.saveAnchor(new File("ESM/Anchor" + i + ".dat"), SoundMufflerScreen.getAnchors().get(i));
+        }
     }
 
     public static Set<String> ForbiddenSounds() {
         return forbiddenSounds;
     }
+
 }

@@ -5,12 +5,14 @@ import com.leobeliik.extremesoundmuffler.gui.buttons.PlaySoundButton;
 import com.leobeliik.extremesoundmuffler.utils.Anchor;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -24,10 +26,12 @@ import java.util.*;
 public class SoundMufflerScreen extends Screen {
 
     private static final ResourceLocation GUI = new ResourceLocation(SoundMuffler.MODID, "textures/gui/sm_gui.png");
-    private static boolean isMuffling = true;
     private static final Minecraft minecraft = Minecraft.getInstance();
+    private static boolean isMuffling = true;
     private static SortedSet<ResourceLocation> recentSoundsList = new TreeSet<>();
     private static Set<ResourceLocation> muffledList = new HashSet<>();
+    private static List<Anchor> anchors = new ArrayList<>();
+    private static String screenTitle = "";
     private final int xSize = 256;
     private final int ySize = 224;
     private final int colorWhite = 16777215;
@@ -40,16 +44,57 @@ public class SoundMufflerScreen extends Screen {
     private Button btnDelete;
     private TextFieldWidget searchBar;
     private Anchor anchor;
-    private String screenTitle;
 
     private SoundMufflerScreen() {
         super(StringTextComponent.EMPTY);
     }
 
+    public static void open(String title) {
+        minecraft.displayGuiScreen(new SoundMufflerScreen());
+        screenTitle = title;
+    }
+
+    public static ResourceLocation getGUI() {
+        return GUI;
+    }
+
+    public static boolean isMuffled() {
+        return isMuffling;
+    }
+
+    public static void addSound(ResourceLocation sound) {
+        recentSoundsList.add(sound);
+    }
+
+    public static Set<ResourceLocation> getMuffledList() {
+        return muffledList;
+    }
+
+    public static void setMuffledList(Set<ResourceLocation> list) {
+        muffledList.addAll(list);
+    }
+
+    public static List<Anchor> getAnchors() {
+        return anchors;
+    }
+
+    public static void setAnchors(List<Anchor> list) {
+        anchors.addAll(list);
+    }
+
+    private static Anchor getAnchorByName(String name) {
+        for (Anchor anchor : anchors) {
+            if (anchor.getName().equals(name)) {
+                return anchor;
+            }
+        }
+        return null;
+    }
+
+
     @ParametersAreNonnullByDefault
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        //this.isMouseOver(mouseX, mouseY);
         this.renderBackground(matrixStack);
         minecraft.getTextureManager().bindTexture(GUI);
         this.blit(matrixStack, getX(), getY(), 0, 32, xSize, ySize); //Main screen bounds
@@ -63,24 +108,24 @@ public class SoundMufflerScreen extends Screen {
         return false;
     }
 
-    public static void open() {
-        minecraft.displayGuiScreen(new SoundMufflerScreen());
-    }
-
     @Override
     protected void init() {
         super.init();
-        screenTitle = mainTitle;
         minYButton = getY() + 37;
         maxYButton = getY() + 148;
 
         addListener(btnToggleMuffled = new Button(getX() + 229, getY() + 165, 12, 12, emptyText, b -> isMuffling = !isMuffling));
 
         addListener(btnDelete = new Button(getX() + 11, getY() + 165, 16, 16, emptyText, b -> {
+                    anchor = getAnchorByName(screenTitle);
+                    if (anchor == null) {
+                        return;
+                    }
                     if (screenTitle.equals(mainTitle)) {
                         muffledList.clear();
                     } else {
                         anchor.getMuffledSounds().clear();
+                        anchor.setAnchorPos(null);
                     }
                     buttons.forEach(btn -> btn.setFGColor(colorWhite));
                     //TODO Add and detect anchor; update screen
@@ -94,7 +139,7 @@ public class SoundMufflerScreen extends Screen {
 
     private void addSoundButtons() {
         int buttonH = getY() + 46;
-
+        anchor = getAnchorByName(screenTitle);
         if (screenTitle.equals(mainTitle) && !muffledList.isEmpty()) {
             recentSoundsList.addAll(muffledList);
         } else if (anchor != null && !anchor.getMuffledSounds().isEmpty()) {
@@ -106,13 +151,12 @@ public class SoundMufflerScreen extends Screen {
         }
 
         for (ResourceLocation sound : recentSoundsList) {
-
             PlaySoundButton btnPlaySound = new PlaySoundButton(getX() + 233, buttonH, new SoundEvent(sound));
-            Button btnToggleSound = new Button(getX() + 221, buttonH, 10, 10, emptyText, b -> {
+            Button btnToggleSound = new Button(getX() + 221, buttonH, 10, 10, ITextComponent.func_241827_a_(sound.getNamespace()), b -> {
                 if (b.getFGColor() == colorViolet) {
                     if (screenTitle.equals(mainTitle)) {
                         muffledList.remove(sound);
-                    } else {
+                    } else if (anchor != null) {
                         anchor.removeSound(sound);
                     }
                     b.setFGColor(colorWhite);
@@ -120,10 +164,8 @@ public class SoundMufflerScreen extends Screen {
                 } else {
                     if (screenTitle.equals(mainTitle)) {
                         muffledList.add(sound);
-                    } else {
+                    } else if (anchor != null) {
                         anchor.addSound(sound);
-                        System.out.println(anchor.getId());
-                        System.out.println(Arrays.toString(anchor.getMuffledSounds().toArray()));
                     }
                     b.setFGColor(colorViolet);
                     btnPlaySound.active = false;
@@ -135,9 +177,7 @@ public class SoundMufflerScreen extends Screen {
 
             if (anchor != null && screenTitle.equals(anchor.getName()) && !anchor.getMuffledSounds().isEmpty() && anchor.getMuffledSounds().contains(sound)) {
                 btnToggleSound.setFGColor(colorViolet);
-                System.out.println("this is violet");
             }
-
             addListener(btnPlaySound);
             addButton(btnToggleSound).setAlpha(0);
             buttonH += btnToggleSound.getHeight() + 1;
@@ -145,20 +185,24 @@ public class SoundMufflerScreen extends Screen {
         }
     }
 
-    private void addAnchors() { //TODO redo this, im creating a new anchor every time i press the button, what was i thinking?
+    private void addAnchors() {
+        ClientPlayerEntity player = minecraft.player;
         int buttonW = getX() + 30;
         for (int i = 0; i <= 9; i++) {
             int finalI = i;
             Button btnAnchor = new Button(buttonW, getY() + 24, 16, 16, new TranslationTextComponent(String.valueOf(i)), b -> {
-                if (minecraft.player == null) return;
-                anchor = new Anchor(finalI, minecraft.player.getPosX(), minecraft.player.getPosY(), minecraft.player.getPosZ());
+                anchor = anchors.get(finalI);
+                if (player == null || anchor == null) return;
                 if (screenTitle.equals(anchor.getName())) {
                     screenTitle = mainTitle;
                 } else {
+                    if (anchor.getAnchorPos() == null) {
+                        anchor.setAnchorPos(new BlockPos(player.getPosX(), player.getPosY(), player.getPosZ()));
+                    }
                     screenTitle = anchor.getName();
-                    buttons.forEach(btn -> btn.setFGColor(colorWhite));
                 }
-                addSoundButtons();
+                buttons.clear();
+                open(screenTitle);
             });
             addButton(btnAnchor).setAlpha(0);
             buttonW += 20;
@@ -181,14 +225,10 @@ public class SoundMufflerScreen extends Screen {
             drawString(matrixStack, font, soundName, getX() + 14, btn.y + 2, btn.getFGColor());
             minecraft.getTextureManager().bindTexture(GUI);
 
-            if (btn.getFGColor() == colorViolet) { //if muffled
-                v = 10F;
-            } else {
-                v = 0F;
-            }
+            //if muffled
+            v = btn.getFGColor() == colorViolet ? 10F : 0F;
             blit(matrixStack, getX() + 221, btn.y + 1, v, 0F, 10, 10, 80, 80); //muffle button
             blit(matrixStack, getX() + 233, btn.y + 1, v + 20F, 0F, 10, 10, 80, 80); //play button
-
         }
 
         //Delete button
@@ -218,7 +258,7 @@ public class SoundMufflerScreen extends Screen {
             return false;
         }
         if (totalMuffButtons <= 10) {
-            return false; //enought empty screen, no need for scroll
+            return false; //enough empty screen, no need for scroll
         }
         if (buttons.get(0).y >= minYButton && direction > 0f) {
             return false; //first button is on the top
@@ -298,25 +338,5 @@ public class SoundMufflerScreen extends Screen {
 
     private int getY() {
         return (this.height - ySize) / 2;
-    }
-
-    public static ResourceLocation getGUI() {
-        return GUI;
-    }
-
-    public static boolean isMuffled() {
-        return isMuffling;
-    }
-
-    public static void addSound(ResourceLocation sound) {
-        recentSoundsList.add(sound);
-    }
-
-    public static Set<ResourceLocation> getMuffledList() {
-        return muffledList;
-    }
-
-    public static void setMuffledList(Set<ResourceLocation> list) {
-        muffledList.addAll(list);
     }
 }

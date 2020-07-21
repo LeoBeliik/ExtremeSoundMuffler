@@ -22,7 +22,7 @@ public class InvButton extends AbstractButton {
 
     @Override
     public void onPress() {
-        SoundMufflerScreen.open();
+        SoundMufflerScreen.open("ESM - Main Screen");
     }
 
     @ParametersAreNonnullByDefault

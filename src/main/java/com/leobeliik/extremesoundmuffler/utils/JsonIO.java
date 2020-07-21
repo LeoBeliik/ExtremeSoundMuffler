@@ -12,7 +12,7 @@ import java.util.Set;
 
 class JsonIO {
 
-    static void save(File file, Set<ResourceLocation> list) {
+    static void saveMuffledList(File file, Set<ResourceLocation> list) {
         try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
             writer.write(new Gson().toJson(list));
         } catch (Exception e) {
@@ -20,11 +20,26 @@ class JsonIO {
         }
     }
 
-    static Set<ResourceLocation> load(File file) {
+    static void saveAnchor(File file, Anchor anchor) {
+        try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
+            writer.write(new Gson().toJson(anchor));
+        } catch (Exception ignored) {
+        }
+    }
+
+    static Set<ResourceLocation> loadMuffledList(File file) {
         try (InputStreamReader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)) {
             return new Gson().fromJson(new JsonReader(reader), new TypeToken<Set<ResourceLocation>>() {}.getType());
         } catch (IOException e) {
             return new HashSet<>();
+        }
+    }
+
+    static Anchor loadAnchor(File file, int i) {
+        try (InputStreamReader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)) {
+            return new Gson().fromJson(new JsonReader(reader), new TypeToken<Anchor>(){}.getType());
+        } catch (IOException e) {
+            return new Anchor(i, "Anchor " + i);
         }
     }
 }
