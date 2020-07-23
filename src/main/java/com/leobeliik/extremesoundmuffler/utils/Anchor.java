@@ -50,8 +50,19 @@ public class Anchor {
         muffledSounds.add(sound);
     }
 
+    public String getX() {
+        return anchorPos != null ? String.valueOf(anchorPos.getX()) : "";
+    }
+
+    public String getY() {
+        return anchorPos != null ? String.valueOf(anchorPos.getY()) : "";
+    }
+
+    public String getZ() {
+        return anchorPos != null ? String.valueOf(anchorPos.getZ()) : "";
+    }
+
     public void removeSound(ResourceLocation sound) {
         muffledSounds.remove(sound);
     }
-
 }
