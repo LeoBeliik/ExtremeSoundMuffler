@@ -25,10 +25,16 @@ public class EventsHandler {
     private static final String fileName = "soundsMuffled.dat";
     private static Set<String> forbiddenSounds = new HashSet<>();
     private static Set<ResourceLocation> allSoundsList = new HashSet<>(ForgeRegistries.SOUND_EVENTS.getKeys());
+    private static boolean fromPSB = false;
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     @OnlyIn(Dist.CLIENT)
     public static void onSoundPlaying(PlaySoundEvent event) {
+        if (fromPSB) {
+            fromPSB = false;
+            return;
+        }
+
         ISound sound = event.getSound();
         BlockPos soundPos = new BlockPos(sound.getX(), sound.getY(), sound.getZ());
         for (String fs : forbiddenSounds) {
@@ -44,7 +50,7 @@ public class EventsHandler {
             for (int i = 0; i < 9; i++) {
                 Anchor anchor = SoundMufflerScreen.getAnchors().get(i);
                 if (!anchor.getMuffledSounds().contains(sound.getSoundLocation())) {
-                    return;
+                    continue;
                 }
                 if (soundPos.withinDistance(anchor.getAnchorPos(), 16D)) {
                     event.setResultSound(null);
@@ -91,4 +97,7 @@ public class EventsHandler {
         return allSoundsList;
     }
 
+    public static void isFromPlaySoundButton(boolean b) {
+        fromPSB = b;
+    }
 }
