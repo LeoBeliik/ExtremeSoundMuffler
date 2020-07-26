@@ -15,9 +15,13 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class InvButton extends AbstractButton {
 
     private final Minecraft minecraft = Minecraft.getInstance();
+    private ContainerScreen<?> parent;
+    private int buttonX;
 
     public InvButton(ContainerScreen parentGui, int x, int y) {
         super(x + parentGui.getGuiLeft() + 11, parentGui.getGuiTop() + y - 2, 10, 10, StringTextComponent.EMPTY);
+        parent = parentGui;
+        buttonX = x;
     }
 
     @Override
@@ -28,12 +32,17 @@ public class InvButton extends AbstractButton {
     @ParametersAreNonnullByDefault
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        x = buttonX + parent.getGuiLeft() + 11;
+        super.render(matrixStack, mouseX, mouseY, partialTicks);
+    }
+
+    @ParametersAreNonnullByDefault
+    @Override
+    public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         if (this.visible) {
             minecraft.getTextureManager().bindTexture(SoundMufflerScreen.getGUI());
-            blit(matrixStack, x, y, 0, 0f, 0f, 10, 10, 80, 80);
-            this.renderToolTip(matrixStack, 0, 0);
-            this.isHovered = mouseX >= x && mouseY >= this.y && mouseX < x + this.width && mouseY < this.y + this.height;
-            if (isHovered) {
+            blit(matrixStack, x, y, 0f, 0f, 10, 10, 80, 80);
+            if (this.isHovered) {
                 this.drawCenteredString(matrixStack, minecraft.fontRenderer, "Muffler", x + 5, this.y + this.height + 1, 16777215);
             }
         }
