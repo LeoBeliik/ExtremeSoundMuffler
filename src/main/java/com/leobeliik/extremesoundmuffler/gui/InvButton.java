@@ -10,9 +10,13 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class InvButton extends AbstractButton {
 
     private final Minecraft minecraft = Minecraft.getInstance();
+    private ContainerScreen<?> parent;
+    private int buttonX;
 
     public InvButton(ContainerScreen parentGui, int x, int y, int width, int height) {
         super(x + parentGui.getGuiLeft() + 11, parentGui.getGuiTop() + y - 2, width, height, "Sound Muffler");
+        parent = parentGui;
+        buttonX = x;
     }
 
     @Override
@@ -20,6 +24,7 @@ public class InvButton extends AbstractButton {
 
     @Override
     public void render(int mouseX, int mouseY, float partialTicks) {
+        x = buttonX + parent.getGuiLeft() + 11;
         if (this.visible) {
             minecraft.getTextureManager().bindTexture(SoundMufflerScreen.getGUI());
             blit(x, y, 0, 0f, 0f, 10, 10, 82, 82);
