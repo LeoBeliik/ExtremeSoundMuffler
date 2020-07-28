@@ -20,11 +20,15 @@ class JsonIO {
         }
     }
 
-    static void saveAnchor(File file, Anchor anchor) {
+    static void saveAnchor(File path, File file, Anchor anchor) {
+        if (path.mkdirs()) {
+            try (Writer writer = new OutputStreamWriter(new FileOutputStream("What is this.txt"), StandardCharsets.UTF_8)) {
+                writer.write(new Gson().toJson("This is where Extreme sound muffler saves the anchors data for Server worlds"));
+            } catch (Exception ignored) {}
+        }
         try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
             writer.write(new Gson().toJson(anchor));
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) {}
     }
 
     static Set<ResourceLocation> loadMuffledList(File file) {

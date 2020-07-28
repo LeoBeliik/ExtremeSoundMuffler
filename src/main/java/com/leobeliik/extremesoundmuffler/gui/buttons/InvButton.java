@@ -32,17 +32,11 @@ public class InvButton extends AbstractButton {
     @ParametersAreNonnullByDefault
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        x = buttonX + parent.getGuiLeft() + 11;
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
-    }
-
-    @ParametersAreNonnullByDefault
-    @Override
-    public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         if (this.visible) {
+            x = buttonX + parent.getGuiLeft() + 11;
             minecraft.getTextureManager().bindTexture(SoundMufflerScreen.getGUI());
             blit(matrixStack, x, y, 0f, 0f, 10, 10, 80, 80);
-            if (this.isHovered) {
+            if (mouseX >= x && mouseY >= this.y && mouseX < x + this.width && mouseY < this.y + this.height) {
                 this.drawCenteredString(matrixStack, minecraft.fontRenderer, "Muffler", x + 5, this.y + this.height + 1, 16777215);
             }
         }

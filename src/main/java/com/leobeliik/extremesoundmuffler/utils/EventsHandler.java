@@ -4,8 +4,10 @@ import com.leobeliik.extremesoundmuffler.SoundMuffler;
 import com.leobeliik.extremesoundmuffler.gui.SoundMufflerScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
@@ -14,6 +16,8 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.util.HashSet;
@@ -22,16 +26,20 @@ import java.util.Set;
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = SoundMuffler.MODID)
 public class EventsHandler {
 
+    private static final Logger LOGGER = LogManager.getLogger(SoundMuffler.MODID);
+
     private static final String fileName = "soundsMuffled.dat";
     private static Set<String> forbiddenSounds = new HashSet<>();
     private static Set<ResourceLocation> allSoundsList = new HashSet<>(ForgeRegistries.SOUND_EVENTS.getKeys());
-    private static boolean fromPSB = false;
+    private static boolean isFromPSB = false;
+    private static boolean isFirstLoad = true;
+    private static String path = "saves/ESM/ServerWorld/";
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     @OnlyIn(Dist.CLIENT)
     public static void onSoundPlaying(PlaySoundEvent event) {
-        if (fromPSB) {
-            fromPSB = false;
+        if (isFromPSB) {
+            isFromPSB = false;
             return;
         }
 
@@ -62,31 +70,63 @@ public class EventsHandler {
 
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
-    public static void loadMufledList(WorldEvent.Load event) {
-        Set<ResourceLocation> list = JsonIO.loadMuffledList(new File(fileName));
-        SoundMufflerScreen.getAnchors().clear();
-        removeForbiddenSounds();
-        if (list != null) {
-            SoundMufflerScreen.setMuffledList(list);
-        }
-        for (int i = 0; i <= 9; i++) {
-            SoundMufflerScreen.getAnchors().add(JsonIO.loadAnchor(new File("ESM/Anchor" + i + ".dat"), i));
+    public static void onWorldSave(WorldEvent.Save event) {
+        if (isFirstLoad) {
+            isFirstLoad = false;
+            ClientWorld clientWorld = Minecraft.getInstance().world;
+            String worldName = event.getWorld().toString();
+
+            if (clientWorld != null && clientWorld.isRemote && worldName.contains("ServerLevel")) {
+                path = "saves/" + event.getWorld().toString().substring(12, worldName.length() - 1).replaceAll("\\.", "_") + "/ESM/";
+                loadList(path);
+            }
         }
     }
 
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
-    public static void saveMufledList(WorldEvent.Unload event) {
+    public static void onWorldLoad(WorldEvent.Load event) {
+        path = "saves/ESM/ServerWorld/";
+        loadList(path);
+    }
+
+    @SubscribeEvent
+    @OnlyIn(Dist.CLIENT)
+    public static void onWorldUnload(WorldEvent.Unload event) {
+        World clientWorld = Minecraft.getInstance().world;
+        String worldName = event.getWorld().toString();
+        if (clientWorld != null && clientWorld.isRemote) {
+            if (worldName.contains("ServerLevel")) {
+                path = "saves/" + event.getWorld().toString().substring(12, worldName.length() - 1).replaceAll("\\.", "_") + "/ESM/";
+            }
+        }
+
         JsonIO.saveMuffledList(new File(fileName), SoundMufflerScreen.getMuffledList());
-        //TODO find world name/save folder and create intermediate folders or something
+
         for (int i = 0; i <= 9; i++) {
-            if (Minecraft.getInstance().world == null || SoundMufflerScreen.getAnchors().get(i) == null) continue;
-            JsonIO.saveAnchor(new File("ESM/Anchor" + i + ".dat"), SoundMufflerScreen.getAnchors().get(i));
+            JsonIO.saveAnchor(new File(path), new File(path + "Anchor" + i + ".dat"), SoundMufflerScreen.getAnchors().get(i));
+        }
+
+        isFirstLoad = true;
+        path = "saves/ESM/ServerWorld/";
+    }
+
+    private static void loadList(String path) {
+        Set<ResourceLocation> list = JsonIO.loadMuffledList(new File(fileName));
+        SoundMufflerScreen.getAnchors().clear();
+        removeForbiddenSounds();
+
+        if (list != null) {
+            SoundMufflerScreen.setMuffledList(list);
+        }
+
+        for (int i = 0; i <= 9; i++) {
+            SoundMufflerScreen.getAnchors().add(JsonIO.loadAnchor(new File(path + "Anchor" + i + ".dat"), i));
         }
     }
 
     private static void removeForbiddenSounds() {
-            forbiddenSounds().forEach(fs -> allSoundsList.removeIf(sl -> sl.toString().contains(fs)));
+        forbiddenSounds().forEach(fs -> allSoundsList.removeIf(sl -> sl.toString().contains(fs)));
     }
 
     public static Set<String> forbiddenSounds() {
@@ -98,6 +138,6 @@ public class EventsHandler {
     }
 
     public static void isFromPlaySoundButton(boolean b) {
-        fromPSB = b;
+        isFromPSB = b;
     }
 }

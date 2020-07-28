@@ -57,7 +57,6 @@ public class SoundMufflerScreen extends Screen {
     private TextFieldWidget searchBar;
     private TextFieldWidget editTitleBar;
     private Anchor anchor;
-    //TODO clean this mess
 
     private SoundMufflerScreen() {
         super(StringTextComponent.EMPTY);
@@ -274,7 +273,9 @@ public class SoundMufflerScreen extends Screen {
                 open(screenTitle, btnToggleSoundsList.getMessage().getString());
             });
             int colorGreen = 3010605;
-            btnAnchor.setFGColor(anchors.get(Integer.parseInt(btnAnchor.getMessage().getString())).getAnchorPos() != null ? colorGreen : colorWhite);
+            if (!anchors.isEmpty()) {
+                btnAnchor.setFGColor(anchors.get(Integer.parseInt(btnAnchor.getMessage().getString())).getAnchorPos() != null ? colorGreen : colorWhite);
+            }
             addButton(btnAnchor).setAlpha(0);
             buttonW += 20;
         }
