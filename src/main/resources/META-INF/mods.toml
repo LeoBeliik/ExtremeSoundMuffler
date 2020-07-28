@@ -1,5 +1,7 @@
 modLoader="javafml"
 loaderVersion="[28,)"
+license= "GNU LESSER GENERAL PUBLIC LICENSE"
+licenseURL= "https://github.com/LeoBeliik/ExtremeSoundMuffler/blob/master/LICENSE.txt"
 issueTrackerURL="https://github.com/LeoBeliik/ExtremeSoundMuffler/issues"
 [[mods]]
 modId="extremesoundmuffler"
@@ -8,17 +10,17 @@ displayName="Extreme Sound Muffler"
 displayURL="https://www.curseforge.com/minecraft/mc-mods/extreme-sound-muffler"
 authors="LeoBeliik"
 description='''
-Client side sound muffler.
+Client side selective sound muffler.
 '''
 [[dependencies.extremeSoundMuffler]]
     modId="forge"
     mandatory=true
-    versionRange="[28,)"
+    versionRange="[32,)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.extremeSoundMuffler]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.14.4]"
+    versionRange="[1.16.1]"
     ordering="NONE"
     side="BOTH"
