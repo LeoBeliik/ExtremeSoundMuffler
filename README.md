@@ -15,10 +15,16 @@ Extreme sound muffler is a client side mod that allows you to muffle sounds sele
 
 **Some objects (like minecarts) make a constant sound, they need to be replaced after you muffle the sound.**
 
+You can play the sound pressing the **play button** next to the sound name
+
 You can toggle the muffled sound on/off with the **toggle muffle button**
+
 You can search sounds; click on the **search button** to open the **search bar** and type the name of the sound you want.
+
 You can configure **anchors*** (10 max) to muffle sounds in a 16 blocks radious.
+
 You can rename **anchors**
 
 The list of muffled sounds are store in the profile folder, so you don't need to re-muffle the sounds on every world.
+
 Anchors are saves in saves/(client world name)/ESM or saves/ESM/ServerWorld if you're playing on a server.
