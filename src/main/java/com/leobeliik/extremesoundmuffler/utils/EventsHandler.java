@@ -30,7 +30,7 @@ public class EventsHandler {
 
     private static final String fileName = "soundsMuffled.dat";
     private static Set<String> forbiddenSounds = new HashSet<>();
-    private static Set<ResourceLocation> allSoundsList = new HashSet<>(ForgeRegistries.SOUND_EVENTS.getKeys());
+    private static Set<ResourceLocation> allSoundsList;
     private static boolean isFromPSB = false;
     private static boolean isFirstLoad = true;
     private static String path = "saves/ESM/ServerWorld/";
@@ -87,6 +87,7 @@ public class EventsHandler {
     @OnlyIn(Dist.CLIENT)
     public static void onWorldLoad(WorldEvent.Load event) {
         path = "saves/ESM/ServerWorld/";
+        allSoundsList = new HashSet<>(ForgeRegistries.SOUND_EVENTS.getKeys());
         loadList(path);
     }
 
