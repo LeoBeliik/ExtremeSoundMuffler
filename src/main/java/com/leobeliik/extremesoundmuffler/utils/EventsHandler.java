@@ -16,8 +16,6 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.util.HashSet;
@@ -25,8 +23,6 @@ import java.util.Set;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = SoundMuffler.MODID)
 public class EventsHandler {
-
-    private static final Logger LOGGER = LogManager.getLogger(SoundMuffler.MODID);
 
     private static final String fileName = "soundsMuffled.dat";
     private static Set<String> forbiddenSounds = new HashSet<>();
@@ -38,6 +34,10 @@ public class EventsHandler {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     @OnlyIn(Dist.CLIENT)
     public static void onSoundPlaying(PlaySoundEvent event) {
+        if (Minecraft.getInstance().world == null) {
+            return;
+        }
+
         if (isFromPSB) {
             isFromPSB = false;
             return;
