@@ -1,5 +1,6 @@
 package com.leobeliik.extremesoundmuffler.gui;
 
+import com.leobeliik.extremesoundmuffler.Config;
 import com.leobeliik.extremesoundmuffler.SoundMuffler;
 import com.leobeliik.extremesoundmuffler.gui.buttons.PlaySoundButton;
 import com.leobeliik.extremesoundmuffler.utils.Anchor;
@@ -46,6 +47,7 @@ public class SoundMufflerScreen extends Screen {
     private final String mainTitle = "ESM - Main Screen";
     private int minYButton;
     private int maxYButton;
+    private boolean isAnchorsDisabled = Config.getDisableAchors().get();
     private Button btnToggleMuffled;
     private Button btnDelete;
     private Button btnToggleSoundsList;
@@ -260,21 +262,29 @@ public class SoundMufflerScreen extends Screen {
     private void addAnchors() {
         int buttonW = getX() + 30;
         for (int i = 0; i <= 9; i++) {
-            int finalI = i;
-            btnAnchor = new Button(buttonW, getY() + 24, 16, 16, new TranslationTextComponent(String.valueOf(i)), b -> {
-                anchor = anchors.get(finalI);
-                if (anchor == null) return;
-                if (screenTitle.equals(anchor.getName())) {
-                    screenTitle = mainTitle;
-                } else {
-                    screenTitle = anchor.getName();
+            if (isAnchorsDisabled) {
+                String[] disabledMsg = {"-", "D", "i", "s", "a", "b", "l", "e", "d", "-"};
+                btnAnchor = new Button(buttonW, getY() + 24, 16, 16, new TranslationTextComponent(String.valueOf(i)), b -> {
+                });
+                btnAnchor.setMessage(ITextComponent.func_241827_a_(disabledMsg[i]));
+                btnAnchor.active = false;
+            } else {
+                int finalI = i;
+                btnAnchor = new Button(buttonW, getY() + 24, 16, 16, new TranslationTextComponent(String.valueOf(i)), b -> {
+                    anchor = anchors.get(finalI);
+                    if (anchor == null) return;
+                    if (screenTitle.equals(anchor.getName())) {
+                        screenTitle = mainTitle;
+                    } else {
+                        screenTitle = anchor.getName();
+                    }
+                    buttons.clear();
+                    open(screenTitle, btnToggleSoundsList.getMessage().getString());
+                });
+                int colorGreen = 3010605;
+                if (!anchors.isEmpty()) {
+                    btnAnchor.setFGColor(anchors.get(Integer.parseInt(btnAnchor.getMessage().getString())).getAnchorPos() != null ? colorGreen : colorWhite);
                 }
-                buttons.clear();
-                open(screenTitle, btnToggleSoundsList.getMessage().getString());
-            });
-            int colorGreen = 3010605;
-            if (!anchors.isEmpty()) {
-                btnAnchor.setFGColor(anchors.get(Integer.parseInt(btnAnchor.getMessage().getString())).getAnchorPos() != null ? colorGreen : colorWhite);
             }
             addButton(btnAnchor).setAlpha(0);
             buttonW += 20;
@@ -392,15 +402,16 @@ public class SoundMufflerScreen extends Screen {
         }
 
         //draw anchor buttons tooltip
-        for (Anchor a : anchors) {
-            Widget btn = buttons.get(soundsList.size() * 2 + a.getId());
+        for (int i = 0; i <= 9; i++) {
+            Widget btn = buttons.get(soundsList.size() * 2 + i);
             x = btn.x + 8;
             y = btn.y;
-            stringW = font.getStringWidth(a.getName()) / 2;
+            message = isAnchorsDisabled ? "Anchors are disabled" : anchors.get(i).getName();
+            stringW = font.getStringWidth(message) / 2;
 
             if (btn.isHovered()) {
                 fill(matrixStack, x - stringW - 2, y - 2, x + stringW + 2, y - 13, darkBG);
-                btnAnchor.drawCenteredString(matrixStack, font, a.getName(), x, y - 11, colorWhite);
+                btnAnchor.drawCenteredString(matrixStack, font, message, x, y - 11, colorWhite);
             }
         }
 
@@ -409,7 +420,7 @@ public class SoundMufflerScreen extends Screen {
         y = btnToggleSoundsList.y;
         message = btnToggleSoundsList.getMessage().getString();
         font.drawString(matrixStack, message, x + 2, y + 1, 0);
-        if (mouseX > x && mouseX < x + 10 && mouseY > y && mouseY < y +10) {
+        if (mouseX > x && mouseX < x + 10 && mouseY > y && mouseY < y + 10) {
             fill(matrixStack, x - 50, y - 22, x - 10, y + 10, darkBG);
             drawString(matrixStack, font, "Show", x - 48, y - 20, colorWhite);
             drawString(matrixStack, font, message.equals("R") ? "all" : "recent", x - 48, y - 10, colorWhite);

@@ -1,5 +1,6 @@
 package com.leobeliik.extremesoundmuffler.utils;
 
+import com.leobeliik.extremesoundmuffler.Config;
 import com.leobeliik.extremesoundmuffler.SoundMuffler;
 import com.leobeliik.extremesoundmuffler.gui.SoundMufflerScreen;
 import net.minecraft.client.Minecraft;
@@ -29,6 +30,7 @@ public class EventsHandler {
     private static Set<ResourceLocation> allSoundsList;
     private static boolean isFromPSB = false;
     private static boolean isFirstLoad = true;
+    private static boolean isAnchorsDisabled = Config.getDisableAchors().get();
     private static String path = "saves/ESM/ServerWorld/";
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -55,6 +57,11 @@ public class EventsHandler {
             if (SoundMufflerScreen.getMuffledList().contains(sound.getSoundLocation())) {
                 event.setResultSound(null);
             }
+
+            if (isAnchorsDisabled) {
+                return;
+            }
+
             for (int i = 0; i < 9; i++) {
                 Anchor anchor = SoundMufflerScreen.getAnchors().get(i);
                 if (!anchor.getMuffledSounds().contains(sound.getSoundLocation())) {
@@ -104,8 +111,10 @@ public class EventsHandler {
 
         JsonIO.saveMuffledList(new File(fileName), SoundMufflerScreen.getMuffledList());
 
-        for (int i = 0; i <= 9; i++) {
-            JsonIO.saveAnchor(new File(path), new File(path + "Anchor" + i + ".dat"), SoundMufflerScreen.getAnchors().get(i));
+        if (!isAnchorsDisabled) {
+            for (int i = 0; i <= 9; i++) {
+                JsonIO.saveAnchor(new File(path), new File(path + "Anchor" + i + ".dat"), SoundMufflerScreen.getAnchors().get(i));
+            }
         }
 
         isFirstLoad = true;
@@ -113,6 +122,9 @@ public class EventsHandler {
     }
 
     private static void loadList(String path) {
+        if (isAnchorsDisabled) {
+            return;
+        }
         Set<ResourceLocation> list = JsonIO.loadMuffledList(new File(fileName));
         SoundMufflerScreen.getAnchors().clear();
         removeForbiddenSounds();

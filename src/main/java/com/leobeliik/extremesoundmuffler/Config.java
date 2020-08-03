@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Mod.EventBusSubscriber
-class Config {
+public class Config {
 
     private static final String CATEGORY_GENERAL = "general";
     private static final ForgeConfigSpec.Builder CLIENT_BUILDER = new ForgeConfigSpec.Builder();
@@ -19,6 +19,7 @@ class Config {
 
     private static ForgeConfigSpec.ConfigValue<List<? extends String>> forbiddenSounds;
     private static ForgeConfigSpec.BooleanValue disableInventoryButton;
+    private static ForgeConfigSpec.BooleanValue disableAnchors;
 
     static {
         CLIENT_BUILDER.comment("general settings").push(CATEGORY_GENERAL);
@@ -26,6 +27,7 @@ class Config {
                 .defineList("forbiddenSounds", Arrays.asList("ui.", "music.", "ambient."), o -> o instanceof String);
         disableInventoryButton = CLIENT_BUILDER.comment("Disable the Muffle button in the player inventory?")
                 .define("disableInventoryButton", false);
+        disableAnchors = CLIENT_BUILDER.comment("Disable the anchors?").define("disableAnchors", false);
 
         CLIENT_BUILDER.pop();
         CLIENT_CONFIG = CLIENT_BUILDER.build();
@@ -45,5 +47,9 @@ class Config {
 
     public static ForgeConfigSpec.BooleanValue getDisableInventoryButton() {
         return disableInventoryButton;
+    }
+
+    public static ForgeConfigSpec.BooleanValue getDisableAchors() {
+        return disableAnchors;
     }
 }
