@@ -1,6 +1,8 @@
 # ExtremeSoundMuffler
 ## Client side sound Muffler
 
+Download: https://www.curseforge.com/minecraft/mc-mods/
+
 Extreme sound muffler is a client side mod that allows you to muffle sounds selectively.
 
 **This Mod needs FORGE to work.**
@@ -26,6 +28,8 @@ You can browse between the **Recent sounds** and **All the sounds** pressing the
 You can configure **Anchors** (10 max) to muffle sounds in a 16 blocks radius.
 
 You can rename **Anchors**.
+
+You can **disable Anchors** in the config.
 
 You can change the location of the **Anchors** whenever you want.
 
