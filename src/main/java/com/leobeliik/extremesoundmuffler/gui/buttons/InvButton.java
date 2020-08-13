@@ -37,7 +37,7 @@ public class InvButton extends AbstractButton {
             minecraft.getTextureManager().bindTexture(SoundMufflerScreen.getGUI());
             blit(matrixStack, x, y, 0f, 0f, 10, 10, 80, 80);
             if (mouseX >= x && mouseY >= this.y && mouseX < x + this.width && mouseY < this.y + this.height) {
-                this.drawCenteredString(matrixStack, minecraft.fontRenderer, "Muffler", x + 5, this.y + this.height + 1, 16777215);
+                drawCenteredString(matrixStack, minecraft.fontRenderer, "Muffler", x + 5, this.y + this.height + 1, 16777215);
             }
         }
     }
