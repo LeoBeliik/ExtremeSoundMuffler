@@ -8,7 +8,7 @@ import java.util.TreeSet;
 
 public class Anchor {
 
-    private int id;
+    private final int id;
     private BlockPos anchorPos;
     private String name;
     private SortedSet<ResourceLocation> muffledSounds = new TreeSet<>();

@@ -31,12 +31,12 @@ public class SoundMufflerScreen extends Screen {
     private static final ResourceLocation GUI = new ResourceLocation(SoundMuffler.MODID, "textures/gui/sm_gui.png");
     private static final Minecraft minecraft = Minecraft.getInstance();
     private static boolean isMuffling = true;
-    private static SortedSet<ResourceLocation> soundsList = new TreeSet<>();
-    private static SortedSet<ResourceLocation> recentSoundsList = new TreeSet<>();
-    private static Set<ResourceLocation> muffledList = new HashSet<>();
-    private static List<Anchor> anchors = new ArrayList<>();
-    private static List<Button> filteredButtons = new ArrayList<>();
-    private static Map<Button, PlaySoundButton> soundButtonList = new HashMap<>();
+    private static final SortedSet<ResourceLocation> soundsList = new TreeSet<>();
+    private static final SortedSet<ResourceLocation> recentSoundsList = new TreeSet<>();
+    private static final Set<ResourceLocation> muffledList = new HashSet<>();
+    private static final List<Anchor> anchors = new ArrayList<>();
+    private static final List<Button> filteredButtons = new ArrayList<>();
+    private static final Map<Button, PlaySoundButton> soundButtonList = new HashMap<>();
     private static String screenTitle = "";
     private static String toggleSoundsListMessage;
     private final int xSize = 256;
@@ -47,12 +47,11 @@ public class SoundMufflerScreen extends Screen {
     private final String mainTitle = "ESM - Main Screen";
     private int minYButton;
     private int maxYButton;
-    private boolean isAnchorsDisabled = Config.getDisableAchors().get();
+    private final boolean isAnchorsDisabled = Config.getDisableAchors().get();
     private Button btnToggleMuffled;
     private Button btnDelete;
     private Button btnToggleSoundsList;
     private Button btnSetCoord;
-    private Button btnAnchor;
     private Button btnEnableTitleEdit;
     private Button btnAccept;
     private Button btnCancel;
@@ -129,13 +128,13 @@ public class SoundMufflerScreen extends Screen {
         minYButton = getY() + 37;
         maxYButton = getY() + 148;
 
-        addListener(btnToggleSoundsList = new Button(getX() + 10, getY() + 34, 10, 10, ITextComponent.func_241827_a_(toggleSoundsListMessage), b -> {
+        addListener(btnToggleSoundsList = new Button(getX() + 10, getY() + 34, 10, 10, ITextComponent.func_244388_a(toggleSoundsListMessage), b -> {
             if (btnToggleSoundsList.getMessage().getString().equals("R")) {
                 toggleSoundsListMessage = "A";
             } else {
                 toggleSoundsListMessage = "R";
             }
-            btnToggleSoundsList.setMessage(ITextComponent.func_241827_a_(toggleSoundsListMessage));
+            btnToggleSoundsList.setMessage(ITextComponent.func_244388_a(toggleSoundsListMessage));
             buttons.clear();
             open(screenTitle, toggleSoundsListMessage);
         }));
@@ -171,7 +170,7 @@ public class SoundMufflerScreen extends Screen {
         addButton(editTitleBar = new TextFieldWidget(font, getX() + 258, getY() + 59, 84, 13, emptyText));
         editTitleBar.visible = false;
 
-        addButton(btnAccept = new Button(getX() + 259, getY() + 75, 40, 20, ITextComponent.func_241827_a_("Accept"), b -> {
+        addButton(btnAccept = new Button(getX() + 259, getY() + 75, 40, 20, ITextComponent.func_244388_a("Accept"), b -> {
             anchor = getAnchorByName(screenTitle);
             if (!editTitleBar.getText().isEmpty() && anchor != null) {
                 anchor.setName(editTitleBar.getText());
@@ -180,7 +179,7 @@ public class SoundMufflerScreen extends Screen {
             }
         })).visible = false;
 
-        addButton(btnCancel = new Button(getX() + 300, getY() + 75, 40, 20, ITextComponent.func_241827_a_("Cancel"), b -> editTitle())).visible = false;
+        addButton(btnCancel = new Button(getX() + 300, getY() + 75, 40, 20, ITextComponent.func_244388_a("Cancel"), b -> editTitle())).visible = false;
 
         addButton(btnEnableTitleEdit = new Button(getX() + 274, getY() + 42, 10, 10, emptyText, b -> editTitle())).setAlpha(0);
 
@@ -262,11 +261,12 @@ public class SoundMufflerScreen extends Screen {
     private void addAnchors() {
         int buttonW = getX() + 30;
         for (int i = 0; i <= 9; i++) {
+            Button btnAnchor;
             if (isAnchorsDisabled) {
                 String[] disabledMsg = {"-", "D", "i", "s", "a", "b", "l", "e", "d", "-"};
                 btnAnchor = new Button(buttonW, getY() + 24, 16, 16, new TranslationTextComponent(String.valueOf(i)), b -> {
                 });
-                btnAnchor.setMessage(ITextComponent.func_241827_a_(disabledMsg[i]));
+                btnAnchor.setMessage(ITextComponent.func_244388_a(disabledMsg[i]));
                 btnAnchor.active = false;
             } else {
                 int finalI = i;
@@ -317,7 +317,7 @@ public class SoundMufflerScreen extends Screen {
             message = font.func_238412_a_(rs.getPath() + ":" + rs.getNamespace(), 200); //trim to width
             String fullMessage = rs.getPath() + ":" + rs.getNamespace();
             //draws the name of the sound; sound name : mod name
-            drawString(matrixStack, font, message, x, y, btn.getFGColor());
+            font.drawString(matrixStack, message, x, y, btn.getFGColor());
             minecraft.getTextureManager().bindTexture(GUI);
 
             //if muffled
@@ -331,7 +331,7 @@ public class SoundMufflerScreen extends Screen {
             }
             if (mouseX > x && mouseX < x + 200 && mouseY > y && mouseY < y + font.FONT_HEIGHT) {
                 fill(matrixStack, x - 2, y - 2, x + font.getStringWidth(fullMessage) + 2, y + font.FONT_HEIGHT + 2, -16777215);
-                drawString(matrixStack, font, fullMessage, x, y, btn.getFGColor());
+                font.drawString(matrixStack, fullMessage, x, y, btn.getFGColor());
             }
         }
 
@@ -345,7 +345,7 @@ public class SoundMufflerScreen extends Screen {
         stringW = font.getStringWidth(message) / 2;
         if (btnDelete.isHovered()) {
             fill(matrixStack, x - stringW - 2, y + 17, x + stringW + 2, y + 31, darkBG);
-            btnDelete.drawCenteredString(matrixStack, font, message, x, y + 20, colorWhite);
+            drawCenteredString(matrixStack, font, message, x, y + 20, colorWhite);
         }
 
 
@@ -365,7 +365,7 @@ public class SoundMufflerScreen extends Screen {
 
         if (btnToggleMuffled.isHovered()) {
             fill(matrixStack, x - stringW - 2, y + 18, x + stringW + 2, y + 31, darkBG);
-            btnToggleMuffled.drawCenteredString(matrixStack, font, message, x, y + 20, colorWhite);
+            drawCenteredString(matrixStack, font, message, x, y + 20, colorWhite);
         }
 
         //Anchor coordinates and set coord button
@@ -389,8 +389,8 @@ public class SoundMufflerScreen extends Screen {
 
         if (btnSetCoord.isHovered() && !editTitleBar.visible) {
             fill(matrixStack, x - 5, y + 16, x + 62, y + 40, darkBG);
-            btnSetCoord.drawString(matrixStack, font, "Set", x, y + 20, colorWhite);
-            btnSetCoord.drawString(matrixStack, font, "coordinates", x, y + 30, colorWhite);
+            font.drawString(matrixStack, "Set", x, y + 20, colorWhite);
+            font.drawString(matrixStack, "coordinates", x, y + 30, colorWhite);
         }
 
         message = "Edit title";
@@ -398,7 +398,7 @@ public class SoundMufflerScreen extends Screen {
 
         if (btnEnableTitleEdit.isHovered() && !editTitleBar.visible) {
             fill(matrixStack, x - 5, y + 16, x + stringW + 2, y + 29, darkBG);
-            btnSetCoord.drawString(matrixStack, font, message, x, y + 18, colorWhite);
+            font.drawString(matrixStack, message, x, y + 18, colorWhite);
         }
 
         //draw anchor buttons tooltip
@@ -411,7 +411,7 @@ public class SoundMufflerScreen extends Screen {
 
             if (btn.isHovered()) {
                 fill(matrixStack, x - stringW - 2, y - 2, x + stringW + 2, y - 13, darkBG);
-                btnAnchor.drawCenteredString(matrixStack, font, message, x, y - 11, colorWhite);
+                drawCenteredString(matrixStack, font, message, x, y - 11, colorWhite);
             }
         }
 
@@ -422,9 +422,9 @@ public class SoundMufflerScreen extends Screen {
         font.drawString(matrixStack, message, x + 2, y + 1, 0);
         if (mouseX > x && mouseX < x + 10 && mouseY > y && mouseY < y + 10) {
             fill(matrixStack, x - 50, y - 22, x - 10, y + 10, darkBG);
-            drawString(matrixStack, font, "Show", x - 48, y - 20, colorWhite);
-            drawString(matrixStack, font, message.equals("R") ? "all" : "recent", x - 48, y - 10, colorWhite);
-            drawString(matrixStack, font, "sounds", x - 48, y, colorWhite);
+            font.drawString(matrixStack, "Show", x - 48, y - 20, colorWhite);
+            font.drawString(matrixStack, message.equals("R") ? "all" : "recent", x - 48, y - 10, colorWhite);
+            font.drawString(matrixStack, "sounds", x - 48, y, colorWhite);
         }
 
         //Edit title background

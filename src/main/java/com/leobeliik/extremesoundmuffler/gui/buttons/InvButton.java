@@ -15,8 +15,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class InvButton extends AbstractButton {
 
     private final Minecraft minecraft = Minecraft.getInstance();
-    private ContainerScreen<?> parent;
-    private int buttonX;
+    private final ContainerScreen<?> parent;
+    private final int buttonX;
 
     public InvButton(ContainerScreen parentGui, int x, int y) {
         super(x + parentGui.getGuiLeft() + 11, parentGui.getGuiTop() + y - 2, 10, 10, StringTextComponent.EMPTY);
@@ -37,7 +37,7 @@ public class InvButton extends AbstractButton {
             minecraft.getTextureManager().bindTexture(SoundMufflerScreen.getGUI());
             blit(matrixStack, x, y, 0f, 0f, 10, 10, 80, 80);
             if (mouseX >= x && mouseY >= this.y && mouseX < x + this.width && mouseY < this.y + this.height) {
-                this.drawCenteredString(matrixStack, minecraft.fontRenderer, "Muffler", x + 5, this.y + this.height + 1, 16777215);
+                drawCenteredString(matrixStack, minecraft.fontRenderer, "Muffler", x + 5, this.y + this.height + 1, 16777215);
             }
         }
     }
