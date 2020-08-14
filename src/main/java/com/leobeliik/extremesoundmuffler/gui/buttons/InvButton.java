@@ -15,8 +15,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class InvButton extends AbstractButton {
 
     private final Minecraft minecraft = Minecraft.getInstance();
-    private ContainerScreen<?> parent;
-    private int buttonX;
+    private final ContainerScreen<?> parent;
+    private final int buttonX;
 
     public InvButton(ContainerScreen parentGui, int x, int y) {
         super(x + parentGui.getGuiLeft() + 11, parentGui.getGuiTop() + y - 2, 10, 10, StringTextComponent.EMPTY);

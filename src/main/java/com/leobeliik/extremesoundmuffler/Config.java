@@ -15,18 +15,21 @@ public class Config {
 
     private static final String CATEGORY_GENERAL = "general";
     private static final ForgeConfigSpec.Builder CLIENT_BUILDER = new ForgeConfigSpec.Builder();
-    static ForgeConfigSpec CLIENT_CONFIG;
+    static final ForgeConfigSpec CLIENT_CONFIG;
 
-    private static ForgeConfigSpec.ConfigValue<List<? extends String>> forbiddenSounds;
-    private static ForgeConfigSpec.BooleanValue disableInventoryButton;
-    private static ForgeConfigSpec.BooleanValue disableAnchors;
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> forbiddenSounds;
+    private static final ForgeConfigSpec.BooleanValue disableInventoryButton;
+    private static final ForgeConfigSpec.BooleanValue disableAnchors;
 
     static {
         CLIENT_BUILDER.comment("general settings").push(CATEGORY_GENERAL);
+
         forbiddenSounds = CLIENT_BUILDER.comment("Blacklisted Sounds - add the name of the sounds to blacklist, separated with comma")
                 .defineList("forbiddenSounds", Arrays.asList("ui.", "music.", "ambient."), o -> o instanceof String);
+
         disableInventoryButton = CLIENT_BUILDER.comment("Disable the Muffle button in the player inventory?")
                 .define("disableInventoryButton", false);
+
         disableAnchors = CLIENT_BUILDER.comment("Disable the anchors?").define("disableAnchors", false);
 
         CLIENT_BUILDER.pop();
@@ -45,7 +48,7 @@ public class Config {
         EventsHandler.forbiddenSounds().addAll(forbiddenSounds.get());
     }
 
-    public static ForgeConfigSpec.BooleanValue getDisableInventoryButton() {
+    static ForgeConfigSpec.BooleanValue getDisableInventoryButton() {
         return disableInventoryButton;
     }
 

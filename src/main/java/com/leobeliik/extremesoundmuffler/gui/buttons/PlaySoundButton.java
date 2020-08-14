@@ -19,7 +19,7 @@ public class PlaySoundButton extends AbstractButton {
 
     private static final ResourceLocation GUI = new ResourceLocation(SoundMuffler.MODID, "textures/gui/sm_gui.png");
     private final Minecraft minecraft = Minecraft.getInstance();
-    private SoundEvent sound;
+    private final SoundEvent sound;
 
     public PlaySoundButton(int x, int y, SoundEvent sound) {
         super(x, y, 10, 10, StringTextComponent.EMPTY);
