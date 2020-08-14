@@ -31,12 +31,12 @@ public class SoundMufflerScreen extends Screen {
     private static final ResourceLocation GUI = new ResourceLocation(SoundMuffler.MODID, "textures/gui/sm_gui.png");
     private static final Minecraft minecraft = Minecraft.getInstance();
     private static boolean isMuffling = true;
-    private static SortedSet<ResourceLocation> soundsList = new TreeSet<>();
-    private static SortedSet<ResourceLocation> recentSoundsList = new TreeSet<>();
-    private static Set<ResourceLocation> muffledList = new HashSet<>();
-    private static List<Anchor> anchors = new ArrayList<>();
-    private static List<Button> filteredButtons = new ArrayList<>();
-    private static Map<Button, PlaySoundButton> soundButtonList = new HashMap<>();
+    private static final SortedSet<ResourceLocation> soundsList = new TreeSet<>();
+    private static final SortedSet<ResourceLocation> recentSoundsList = new TreeSet<>();
+    private static final Set<ResourceLocation> muffledList = new HashSet<>();
+    private static final List<Anchor> anchors = new ArrayList<>();
+    private static final List<Button> filteredButtons = new ArrayList<>();
+    private static final Map<Button, PlaySoundButton> soundButtonList = new HashMap<>();
     private static String screenTitle = "";
     private static String toggleSoundsListMessage;
     private final int xSize = 256;
@@ -47,7 +47,7 @@ public class SoundMufflerScreen extends Screen {
     private final String mainTitle = "ESM - Main Screen";
     private int minYButton;
     private int maxYButton;
-    private boolean isAnchorsDisabled = Config.getDisableAchors().get();
+    private final boolean isAnchorsDisabled = Config.getDisableAchors().get();
     private Button btnToggleMuffled;
     private Button btnDelete;
     private Button btnToggleSoundsList;

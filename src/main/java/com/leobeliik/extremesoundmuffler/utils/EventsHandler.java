@@ -26,12 +26,13 @@ import java.util.Set;
 public class EventsHandler {
 
     private static final String fileName = "soundsMuffled.dat";
-    private static Set<String> forbiddenSounds = new HashSet<>();
+    private static final Set<String> forbiddenSounds = new HashSet<>();
     private static Set<ResourceLocation> allSoundsList;
     private static boolean isFromPSB = false;
     private static boolean isFirstLoad = true;
-    private static boolean isAnchorsDisabled = Config.getDisableAchors().get();
-    private static String path = "saves/ESM/ServerWorld/";
+    private static final boolean isAnchorsDisabled = Config.getDisableAchors().get();
+    private static final String serverWorld = "saves/ESM/ServerWorld/";
+    private static String path = serverWorld;
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     @OnlyIn(Dist.CLIENT)
@@ -93,7 +94,7 @@ public class EventsHandler {
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public static void onWorldLoad(WorldEvent.Load event) {
-        path = "saves/ESM/ServerWorld/";
+        path = serverWorld;
         allSoundsList = new HashSet<>(ForgeRegistries.SOUND_EVENTS.getKeys());
         loadList(path);
     }
@@ -118,7 +119,7 @@ public class EventsHandler {
         }
 
         isFirstLoad = true;
-        path = "saves/ESM/ServerWorld/";
+        path = serverWorld;
     }
 
     private static void loadList(String path) {
