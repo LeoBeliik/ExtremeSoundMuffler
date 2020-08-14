@@ -1,18 +1,42 @@
 # ExtremeSoundMuffler
-## Selective sound muffler
+## Client side sound Muffler
 
-Extreme sound muffler is the spiritual successor of Super sound muffler by EdgarAllen.
+Download: https://www.curseforge.com/minecraft/mc-mods/extreme-sound-muffler
 
-This mod allows you to mute specific sounds in a 32 block radius.
+Extreme sound muffler is a client side mod that allows you to muffle sounds selectively.
 
-This mod also mute constant sounds (like moving minecarts) by default.
-
- 
+**This Mod needs FORGE to work.**
 
 ### HOW IT WORKS:
 
-The Extreme Sound Muffler block "listen" for sounds in a 32 block radius and add them on a list.
+**1-** Click on the button in your inventory or asign a key to open the gui.
 
-Simply click on the sound you want to mute.
+**2-** Click on the button next to the sound you want to muffle.
 
-Use the mouse scroll to navigate through the list.
+**3-** Enjoy peace.
+
+**Some objects (like minecarts) make a constant sound, they need to be replaced after you muffle the sound.**
+
+You can toggle the muffled sound on/off with the **toggle muffle button**.
+
+You can play the sound pressing the **play button** next to the sound name. 
+
+You can search sounds with the **search bar** just type the name of the sound you want.
+
+You can browse between the **Recent sounds** and **All the sounds** pressing the corresponding button in the GUI.
+
+You can configure **Anchors** (10 max) to muffle sounds in a 16 blocks radius.
+
+You can rename **Anchors**.
+
+You can **disable Anchors** in the config.
+
+You can change the location of the **Anchors** whenever you want.
+
+You can delete the **sounds muffled list** or the selected **Anchor** pressing the **delete button**.
+
+The **list of muffled sounds are store in the profile folder**, so you don't need to re-muffle the sounds on every world.
+
+**Anchors** are saved in saves/(client world name)/ESM or saves/ESM/ServerWorld if you're playing on a server.
+
+**Sounds can be blacklisted** in the config; blacklisted sounds won't appear in the GUI.

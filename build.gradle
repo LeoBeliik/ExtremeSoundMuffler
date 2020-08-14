@@ -13,7 +13,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version = "${modversion}"
+version = "${modversion}_Forge-${mcversion}"
 group = 'com.LeoBeliik.extremeSoundMuffler' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'extremeSoundMuffler'
 
@@ -76,7 +76,7 @@ minecraft {
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${forgeversion}"
+    minecraft "net.minecraftforge:forge:${mcversion}-${forgeversion}"
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
@@ -85,9 +85,9 @@ jar {
         attributes([
             "Specification-Title": "Extreme sound muffler",
             "Specification-Vendor": "Leobeliik",
-            "Specification-Version": "${modversion}",
+            "Specification-Version": "${modversion}_forge-${mcversion}",
             "Implementation-Title": "Extreme sound muffler",
-            "Implementation-Version": "${modversion}",
+            "Implementation-Version": "${modversion}_forge-${mcversion}",
             "Implementation-Vendor" :"LeoBeliik",
             "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
