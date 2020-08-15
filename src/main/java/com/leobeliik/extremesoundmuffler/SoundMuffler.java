@@ -30,6 +30,7 @@ import org.apache.logging.log4j.Logger;
 public class SoundMuffler {
 
     public static final String MODID = "extremesoundmuffler";
+    public static boolean isServer = false;
     private static KeyBinding openMuffleScreen;
     private static final Logger LOGGER = LogManager.getLogger(MODID);
 
@@ -42,7 +43,7 @@ public class SoundMuffler {
     }
 
     private void serverInit(final FMLCommonSetupEvent event) {
-        LOGGER.info("Extreme sound muffler is loaded in the server but it wont do anything.");
+        isServer = true;
     }
 
     private void clientInit(final FMLClientSetupEvent event) {

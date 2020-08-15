@@ -12,6 +12,8 @@ import java.util.Set;
 
 class JsonIO {
 
+    private static final String serverPath = "saves" + File.separator + "ESM" + File.separatorChar + "ServerWorld";
+
     static void saveMuffledList(File file, Set<ResourceLocation> list) {
         try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
             writer.write(new Gson().toJson(list));
@@ -21,8 +23,8 @@ class JsonIO {
     }
 
     static void saveAnchor(File path, File file, Anchor anchor) {
-        if (path.mkdirs() && path.toString().contains("Server")) {
-            try (Writer writer = new OutputStreamWriter(new FileOutputStream(path + "/What is this.txt"), StandardCharsets.UTF_8)) {
+        if (path.mkdirs() && path.toString().equals(serverPath)) {
+            try (Writer writer = new OutputStreamWriter(new FileOutputStream(path + File.separator + "What is this.txt"), StandardCharsets.UTF_8)) {
                 writer.write(new Gson().toJson("This is where Extreme sound muffler saves the Anchors for Server Worlds"));
             } catch (Exception ignored) {}
         }

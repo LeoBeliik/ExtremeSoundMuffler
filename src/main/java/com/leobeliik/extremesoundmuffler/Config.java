@@ -36,6 +36,7 @@ public class Config {
         CLIENT_CONFIG = CLIENT_BUILDER.build();
     }
 
+    @SuppressWarnings("SameParameterValue")
     static void loadConfig(ForgeConfigSpec spec, Path path) {
         final CommentedFileConfig configData = CommentedFileConfig.builder(path)
                 .sync()
