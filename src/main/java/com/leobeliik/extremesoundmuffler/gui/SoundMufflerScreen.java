@@ -597,6 +597,6 @@ public class SoundMufflerScreen extends Screen {
 
     private BlockPos getPlayerPos() {
         ClientPlayerEntity player = Objects.requireNonNull(minecraft.player);
-        return new BlockPos(player.getPosX(), minecraft.player.getPosY(), minecraft.player.getPosZ());
+        return new BlockPos(player.getPosX(), player.getPosY(), player.getPosZ());
     }
 }
