@@ -19,12 +19,13 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import java.io.File;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = SoundMuffler.MODID)
 public class EventsHandler {
 
-    private static final String fileName = "soundsMuffled.dat";
+    private static final String fileName = "soundsMuffled.json";
     private static final Set<String> forbiddenSounds = new HashSet<>();
     private static final boolean isAnchorsDisabled = Config.getDisableAchors().get();
     private static final String serverWorld = "saves/ESM/ServerWorld/";
@@ -56,8 +57,11 @@ public class EventsHandler {
         }
         SoundMufflerScreen.addSound(sound.getSoundLocation());
         if (SoundMufflerScreen.isMuffled()) {
-            if (SoundMufflerScreen.getMuffledList().contains(sound.getSoundLocation())) {
-                event.setResultSound(null);
+            if (SoundMufflerScreen.getMuffledMap().containsKey(sound.getSoundLocation())) {
+                if (!Config.getShouldMufflePlaySub().get()) {
+                    event.setResult(null);
+                }
+                event.setResultSound(new MuffledSound(sound, SoundMufflerScreen.getMuffledMap().get(sound.getSoundLocation())));
             }
 
             if (isAnchorsDisabled) {
@@ -66,7 +70,7 @@ public class EventsHandler {
 
             for (int i = 0; i < 9; i++) {
                 Anchor anchor = SoundMufflerScreen.getAnchors().get(i);
-                if (!anchor.getMuffledSounds().contains(sound.getSoundLocation())) {
+                if (!anchor.getMuffledSounds().containsKey(sound.getSoundLocation())) {
                     continue;
                 }
                 if (soundPos.withinDistance(anchor.getAnchorPos(), 16D)) {
@@ -107,12 +111,12 @@ public class EventsHandler {
 
         allSoundsList = new HashSet<>(ForgeRegistries.SOUND_EVENTS.getKeys());
 
-        Set<ResourceLocation> list = JsonIO.loadMuffledList(new File(fileName));
+        Map<String, Float> list = JsonIO.loadMuffledList(new File(fileName));
         SoundMufflerScreen.getAnchors().clear();
         removeForbiddenSounds();
 
         if (list != null) {
-            SoundMufflerScreen.setMuffledList(list);
+            list.forEach((name, volume) -> SoundMufflerScreen.setMuffledMap(new ResourceLocation(name), volume));
         }
 
         if (isAnchorsDisabled) { //TODO after set muffled list
@@ -124,7 +128,7 @@ public class EventsHandler {
             try {
                 //noinspection ResultOfMethodCallIgnored
                 SoundMufflerScreen.getAnchors().get(i);
-            } catch (IndexOutOfBoundsException  e) {
+            } catch (IndexOutOfBoundsException e) {
                 SoundMufflerScreen.setAnchor(new Anchor(i, "Anchor " + i));
             }
         }
@@ -142,7 +146,7 @@ public class EventsHandler {
             return;
         }
 
-        JsonIO.saveMuffledList(new File(fileName), SoundMufflerScreen.getMuffledList());
+        JsonIO.saveMuffledMap(new File(fileName), SoundMufflerScreen.getMuffledMap());
         if (!isAnchorsDisabled) {
             for (int i = 0; i <= 9; i++) {
                 JsonIO.saveAnchor(new File(path), new File(path + "Anchor" + i + ".dat"), SoundMufflerScreen.getAnchors().get(i));
@@ -168,4 +172,5 @@ public class EventsHandler {
     public static void isFromPlaySoundButton(boolean b) {
         isFromPSB = b;
     }
+
 }

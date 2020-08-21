@@ -13,13 +13,13 @@ import java.util.List;
 @Mod.EventBusSubscriber
 public class Config {
 
+    static final ForgeConfigSpec CLIENT_CONFIG;
     private static final String CATEGORY_GENERAL = "general";
     private static final ForgeConfigSpec.Builder CLIENT_BUILDER = new ForgeConfigSpec.Builder();
-    static final ForgeConfigSpec CLIENT_CONFIG;
-
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> forbiddenSounds;
     private static final ForgeConfigSpec.BooleanValue disableInventoryButton;
     private static final ForgeConfigSpec.BooleanValue disableAnchors;
+    private static final ForgeConfigSpec.BooleanValue shouldMufflePlaySub;
 
     static {
         CLIENT_BUILDER.comment("general settings").push(CATEGORY_GENERAL);
@@ -31,6 +31,9 @@ public class Config {
                 .define("disableInventoryButton", false);
 
         disableAnchors = CLIENT_BUILDER.comment("Disable the anchors?").define("disableAnchors", false);
+
+        shouldMufflePlaySub = CLIENT_BUILDER.comment("Should muted sounds play subtitles?\nMuffled sounds (sounds with volume > 0) will play them regardless.")
+                .define("shouldMufflePlaySub", false);
 
         CLIENT_BUILDER.pop();
         CLIENT_CONFIG = CLIENT_BUILDER.build();
@@ -55,5 +58,9 @@ public class Config {
 
     public static ForgeConfigSpec.BooleanValue getDisableAchors() {
         return disableAnchors;
+    }
+
+    public static ForgeConfigSpec.BooleanValue getShouldMufflePlaySub() {
+        return shouldMufflePlaySub;
     }
 }

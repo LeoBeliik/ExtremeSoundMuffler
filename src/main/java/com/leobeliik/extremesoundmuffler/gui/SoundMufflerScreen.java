@@ -29,14 +29,14 @@ public class SoundMufflerScreen extends Screen {
     private static boolean isMuffling = true;
     private static final SortedSet<ResourceLocation> soundsList = new TreeSet<>();
     private static final SortedSet<ResourceLocation> recentSoundsList = new TreeSet<>();
-    private static final Set<ResourceLocation> muffledList = new HashSet<>();
+    private static final Map<ResourceLocation, Float> muffledMap = new HashMap<>();
     private static final List<Anchor> anchors = new ArrayList<>();
     private static final List<Button> filteredButtons = new ArrayList<>();
     private static final Map<Button, PlaySoundButton> soundButtonList = new HashMap<>();
     private static String screenTitle = "";
     private static String toggleSoundsListMessage;
     private final int xSize = 256;
-    private final int ySize = 224;
+    private final int ySize = 188;
     private final int colorWhite = 16777215;
     private final int colorViolet = 24523966;
     private final String emptyText = "";
@@ -53,6 +53,7 @@ public class SoundMufflerScreen extends Screen {
     private Button btnCancel;
     private TextFieldWidget searchBar;
     private TextFieldWidget editTitleBar;
+    //private MuffledSlider slider;
     private Anchor anchor;
 
     private SoundMufflerScreen() {
@@ -81,12 +82,12 @@ public class SoundMufflerScreen extends Screen {
         recentSoundsList.add(sound);
     }
 
-    public static Set<ResourceLocation> getMuffledList() {
-        return muffledList;
+    public static Map<ResourceLocation, Float> getMuffledMap() {
+        return muffledMap;
     }
 
-    public static void setMuffledList(Set<ResourceLocation> list) {
-        muffledList.addAll(list);
+    public static void setMuffledMap(ResourceLocation name, Float volume) {
+        muffledMap.put(name, volume);
     }
 
     public static List<Anchor> getAnchors() {
@@ -110,6 +111,7 @@ public class SoundMufflerScreen extends Screen {
         this.blit(getX(), getY(), 0, 32, xSize, ySize); //Main screen bounds
         drawCenteredString(font, screenTitle, getX() + 128, getY() + 8, colorWhite); //Screen title
         renderButtonsTextures(mouseX, mouseY);
+        //slider.render(mouseX, mouseY, partialTicks);
         super.render(mouseX, mouseY, partialTicks);
     }
 
@@ -144,7 +146,7 @@ public class SoundMufflerScreen extends Screen {
         addButton(btnDelete = new Button(getX() + 11, getY() + 165, 16, 16, emptyText, b -> {
                     anchor = getAnchorByName(screenTitle);
                     if (screenTitle.equals(mainTitle)) {
-                        muffledList.clear();
+                        muffledMap.clear();
                         open(mainTitle, btnToggleSoundsList.getMessage());
                     } else {
                         if (anchor == null) {
@@ -186,6 +188,7 @@ public class SoundMufflerScreen extends Screen {
 
         addButton(searchBar = new TextFieldWidget(font, getX() + 75, getY() + 168, 105, 10, emptyText));
         searchBar.setEnableBackgroundDrawing(false);
+
     }
 
     private void addSoundButtons() {
@@ -200,10 +203,10 @@ public class SoundMufflerScreen extends Screen {
         if (btnToggleSoundsList.getMessage().equals("R")) {
             soundsList.clear();
             soundsList.addAll(recentSoundsList);
-            if (screenTitle.equals(mainTitle) && !muffledList.isEmpty()) {
-                soundsList.addAll(muffledList);
+            if (screenTitle.equals(mainTitle) && !muffledMap.isEmpty()) {
+                soundsList.addAll(muffledMap.keySet());
             } else if (anchor != null && !anchor.getMuffledSounds().isEmpty()) {
-                soundsList.addAll(anchor.getMuffledSounds());
+                soundsList.addAll(anchor.getMuffledSounds().keySet());
             }
         } else {
             soundsList.clear();
@@ -217,27 +220,30 @@ public class SoundMufflerScreen extends Screen {
         for (ResourceLocation sound : soundsList) {
             PlaySoundButton btnPlaySound = new PlaySoundButton(getX() + 233, buttonH, new SoundEvent(sound));
             Button btnToggleSound = new Button(getX() + 221, buttonH, 10, 10, emptyText, b -> {
+                float volume = 0.1F; //slider.getVolume(); //TODO make the slider prettier, with a gradient bg and things
                 if (b.getFGColor() == colorViolet) {
+                    //slider.visible = false;
                     if (screenTitle.equals(mainTitle)) {
-                        muffledList.remove(sound);
+                        muffledMap.remove(sound);
                     } else {
                         anchor.removeSound(sound);
                     }
                     b.setFGColor(colorWhite);
                     btnPlaySound.active = true;
                 } else {
+                    //slider.visible = true;
                     if (screenTitle.equals(mainTitle)) {
-                        muffledList.add(sound);
+                        muffledMap.put(sound, volume);
                     } else {
-                        anchor.addSound(sound);
+                        anchor.addSound(sound, volume);
                     }
                     b.setFGColor(colorViolet);
                     btnPlaySound.active = false;
                 }
             });
 
-            boolean muffledAnchor = anchor != null && screenTitle.equals(anchor.getName()) && !anchor.getMuffledSounds().isEmpty() && anchor.getMuffledSounds().contains(sound);
-            boolean muffledScreen = screenTitle.equals(mainTitle) && !muffledList.isEmpty() && muffledList.contains(sound);
+            boolean muffledAnchor = anchor != null && screenTitle.equals(anchor.getName()) && !anchor.getMuffledSounds().isEmpty() && anchor.getMuffledSounds().containsKey(sound);
+            boolean muffledScreen = screenTitle.equals(mainTitle) && !muffledMap.isEmpty() && muffledMap.containsKey(sound);
 
             if (muffledAnchor || muffledScreen) {
                 btnToggleSound.setFGColor(colorViolet);
