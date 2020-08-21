@@ -122,9 +122,7 @@ public class EventsHandler {
     }
 
     private static void loadList(String path) {
-        if (isAnchorsDisabled) {
-            return;
-        }
+
         Set<ResourceLocation> list = JsonIO.loadMuffledList(new File(fileName));
         SoundMufflerScreen.getAnchors().clear();
         removeForbiddenSounds();
@@ -133,8 +131,18 @@ public class EventsHandler {
             SoundMufflerScreen.setMuffledList(list);
         }
 
+        if (isAnchorsDisabled) {
+            return;
+        }
+
         for (int i = 0; i <= 9; i++) {
-            SoundMufflerScreen.getAnchors().add(JsonIO.loadAnchor(new File(path + "Anchor" + i + ".dat"), i));
+            SoundMufflerScreen.setAnchor(JsonIO.loadAnchor(new File(path + "Anchor" + i + ".dat"), i));
+            try {
+                //noinspection ResultOfMethodCallIgnored
+                SoundMufflerScreen.getAnchors().get(i);
+            } catch (IndexOutOfBoundsException  e) {
+                SoundMufflerScreen.setAnchor(new Anchor(i, "Anchor " + i));
+            }
         }
     }
 
