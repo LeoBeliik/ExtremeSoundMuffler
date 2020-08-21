@@ -134,7 +134,13 @@ public class EventsHandler {
         }
 
         for (int i = 0; i <= 9; i++) {
-            SoundMufflerScreen.getAnchors().add(JsonIO.loadAnchor(new File(path + "Anchor" + i + ".dat"), i));
+            SoundMufflerScreen.setAnchor(JsonIO.loadAnchor(new File(path + "Anchor" + i + ".dat"), i));
+            try {
+                //noinspection ResultOfMethodCallIgnored
+                SoundMufflerScreen.getAnchors().get(i);
+            } catch (IndexOutOfBoundsException  e) {
+                SoundMufflerScreen.setAnchor(new Anchor(i, "Anchor " + i));
+            }
         }
     }
 

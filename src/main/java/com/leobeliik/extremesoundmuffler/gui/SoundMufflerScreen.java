@@ -98,8 +98,8 @@ public class SoundMufflerScreen extends Screen {
         return anchors;
     }
 
-    public static void setAnchors(List<Anchor> list) {
-        anchors.addAll(list);
+    public static void setAnchor(Anchor anchor) {
+        anchors.add(anchor);
     }
 
     @Nullable
