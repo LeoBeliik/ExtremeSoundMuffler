@@ -70,7 +70,7 @@ public class EventsHandler {
                 }
 
                 if (anchor.getAnchorPos() == null) {
-                    return;
+                    continue;
                 }
 
                 if (soundPos.withinDistance(anchor.getAnchorPos(), 16D)) {
