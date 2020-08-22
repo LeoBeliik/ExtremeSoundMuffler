@@ -15,7 +15,7 @@ Client side selective sound muffler.
 [[dependencies.extremeSoundMuffler]]
     modId="forge"
     mandatory=true
-    versionRange="[33,)"
+    versionRange="[33.0.20,)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.extremeSoundMuffler]]

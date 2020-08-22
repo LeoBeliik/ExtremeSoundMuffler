@@ -248,7 +248,7 @@ public class SoundMufflerScreen extends Screen {
                 btnPlaySound.active = false;
             }
 
-            buttonH += btnToggleSound.getHeight() + 1;
+            buttonH += btnToggleSound.getWidth_CLASH() + 1;
             btnToggleSound.visible = btnToggleSound.y <= maxYButton;
             btnPlaySound.visible = btnPlaySound.y <= maxYButton;
 
@@ -466,11 +466,11 @@ public class SoundMufflerScreen extends Screen {
             Button b = (Button) buttons.get(i);
             Widget psb = soundButtonList.get(b);
             if (direction > 0) {
-                b.y = b.y + (b.getHeight() + 1);
-                psb.y = psb.y + (b.getHeight() + 1);
+                b.y = b.y + (b.getWidth_CLASH() + 1);
+                psb.y = psb.y + (b.getWidth_CLASH() + 1);
             } else {
-                b.y = b.y - (b.getHeight() + 1);
-                psb.y = psb.y - (b.getHeight() + 1);
+                b.y = b.y - (b.getWidth_CLASH() + 1);
+                psb.y = psb.y - (b.getWidth_CLASH() + 1);
             }
 
             if (b.y >= minYButton && b.y <= maxYButton) {
@@ -499,11 +499,11 @@ public class SoundMufflerScreen extends Screen {
             Button b = filteredButtons.get(i);
             Widget psb = soundButtonList.get(b);
             if (direction > 0) {
-                b.y = b.y + (b.getHeight() + 1);
-                psb.y = psb.y + (b.getHeight() + 1);
+                b.y = b.y + (b.getWidth_CLASH() + 1);
+                psb.y = psb.y + (b.getWidth_CLASH() + 1);
             } else {
-                b.y = b.y - (b.getHeight() + 1);
-                psb.y = psb.y - (b.getHeight() + 1);
+                b.y = b.y - (b.getWidth_CLASH() + 1);
+                psb.y = psb.y - (b.getWidth_CLASH() + 1);
             }
 
             if (b.y >= minYButton && b.y <= maxYButton) {
@@ -533,7 +533,7 @@ public class SoundMufflerScreen extends Screen {
                 psb.y = buttonH;
                 psb.visible = b.y >= minYButton && b.y <= maxYButton;
                 filteredButtons.add(b);
-                buttonH += b.getHeight() + 1;
+                buttonH += b.getWidth_CLASH() + 1;
             } else {
                 //b.active = true;
                 b.visible = false;
