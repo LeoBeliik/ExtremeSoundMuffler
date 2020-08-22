@@ -69,6 +69,11 @@ public class EventsHandler {
                 if (!anchor.getMuffledSounds().contains(sound.getSoundLocation())) {
                     continue;
                 }
+
+                if (anchor.getAnchorPos() == null) {
+                    continue;
+                }
+
                 if (soundPos.withinDistance(anchor.getAnchorPos(), 16D)) {
                     event.setResultSound(null);
                     return;
@@ -115,7 +120,7 @@ public class EventsHandler {
             SoundMufflerScreen.setMuffledList(list);
         }
 
-        if (isAnchorsDisabled) { //TODO after set muffled list
+        if (isAnchorsDisabled) {
             return;
         }
 
