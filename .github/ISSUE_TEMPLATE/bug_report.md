@@ -1,5 +1,5 @@
 ---
-name: Bug report
+name: Bug/Crash report
 about: What happened?
 title: ''
 labels: ''
