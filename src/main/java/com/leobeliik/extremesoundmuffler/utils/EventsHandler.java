@@ -89,7 +89,7 @@ public class EventsHandler {
             isThisClient = true;
             if (SoundMuffler.isServer) {
                 if (event.getWorld() instanceof ServerWorld) {
-                    path = "saves/" + ((ServerWorld) event.getWorld()).getServer().getFolderName() + "/ESM/";
+                    path = "saves/" + ((ServerWorld) event.getWorld()).getServer().getDataDirectory() + "/ESM/"; //TODO
                 }
             } else {
                 path = serverWorld;
@@ -103,7 +103,7 @@ public class EventsHandler {
         isWorldLoaded++;
         if (SoundMuffler.isServer) {
             if (event.getWorld() instanceof ServerWorld) {
-                path = "saves/" + ((ServerWorld) event.getWorld()).getServer().getFolderName() + "/ESM/";
+                path = "saves/" + ((ServerWorld) event.getWorld()).getServer().getDataDirectory() + "/ESM/";
             }
         } else {
             path = serverWorld;

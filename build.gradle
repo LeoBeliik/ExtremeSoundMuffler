@@ -75,6 +75,10 @@ minecraft {
     }
 }
 
+repositories {
+    maven { url 'https://www.dogforce-games.com/maven/' }
+}
+
 dependencies {
     minecraft "net.minecraftforge:forge:${mcversion}-${forgeversion}"
 }
@@ -83,13 +87,13 @@ dependencies {
 jar {
     manifest {
         attributes([
-            "Specification-Title": "Extreme sound muffler",
-            "Specification-Vendor": "Leobeliik",
-            "Specification-Version": "${modversion}_forge-${mcversion}",
-            "Implementation-Title": "Extreme sound muffler",
-            "Implementation-Version": "${modversion}_forge-${mcversion}",
-            "Implementation-Vendor" :"LeoBeliik",
-            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+                "Specification-Title"     : "Extreme sound muffler",
+                "Specification-Vendor"    : "Leobeliik",
+                "Specification-Version"   : "${modversion}_forge-${mcversion}",
+                "Implementation-Title"    : "Extreme sound muffler",
+                "Implementation-Version"  : "${modversion}_forge-${mcversion}",
+                "Implementation-Vendor"   : "LeoBeliik",
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
 }

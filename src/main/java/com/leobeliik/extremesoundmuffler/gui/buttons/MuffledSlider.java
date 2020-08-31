@@ -1,35 +1,41 @@
 package com.leobeliik.extremesoundmuffler.gui.buttons;
 
 import com.leobeliik.extremesoundmuffler.gui.SoundMufflerScreen;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.AbstractSlider;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+
+import javax.annotation.ParametersAreNonnullByDefault;
 
 public class MuffledSlider extends AbstractSlider {
 
     private static final ResourceLocation GUI = SoundMufflerScreen.getGUI();
     private static final Minecraft minecraft = Minecraft.getInstance();
     private static final FontRenderer font = minecraft.fontRenderer;
-    private float volume;
+    private double volume;
 
-    public MuffledSlider(int xIn, int yIn, float valueIn) {
-        super(xIn, yIn, 104, 12, valueIn);
-        volume = valueIn;
+    public MuffledSlider(int x, int y, int width, int height, ITextComponent message, double defaultValue) {
+        super(x, y, width, height, message, defaultValue);
+        volume = defaultValue;
     }
 
+
+    @ParametersAreNonnullByDefault
     @Override
-    public void render(int x, int y, float partialTicks) {
+    public void render(MatrixStack matrix, int x, int y, float partialTicks) {
         if (this.visible) {
-            String message = "Volume: " + (int) (value * 100);
+            String message = "Volume: " + (int) (sliderValue * 100);
             minecraft.getTextureManager().bindTexture(GUI);
-            blit(this.x, this.y, 0, 220, 104, 15); //Slider bg
-            blit(this.x + (int) (value * (width - 8)) + 3, this.y + 3, 70, 0F, 5, 10, 80, 80); //Slider
-            font.drawString(message, this.x + (this.width / 2F) - (font.getStringWidth(message) / 2F), this.y + 4F, 16777215);
+            blit(matrix, this.x, this.y, 0, 220, 104, 15); //Slider bg
+            blit(matrix, this.x + (int) (sliderValue * (width - 8)) + 3, this.y + 3, 70, 0F, 5, 10, 80, 80); //Slider
+            font.drawString(matrix, message, this.x + (this.width / 2F) - (font.getStringWidth(message) / 2F), this.y + 4F, 16777215);
         }
     }
 
-    public float getVolume() {
+    public double getVolume() {
         return volume;
     }
 
@@ -38,11 +44,12 @@ public class MuffledSlider extends AbstractSlider {
     }
 
     @Override
-    protected void updateMessage() {
+    protected void func_230979_b_() {
+
     }
 
     @Override
-    protected void applyValue() {
+    protected void func_230972_a_() {
 
     }
 }

@@ -7,6 +7,7 @@ import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.gui.widget.button.AbstractButton;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -21,7 +22,7 @@ public class PlaySoundButton extends AbstractButton {
     private final SoundEvent sound;
 
     public PlaySoundButton(int x, int y, SoundEvent sound) {
-        super(x, y, 10, 10, "");
+        super(x, y, 10, 10, ITextComponent.func_241827_a_(""));
         this.setAlpha(0);
         this.sound = sound;
     }
