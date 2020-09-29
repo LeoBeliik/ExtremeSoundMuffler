@@ -2,6 +2,7 @@ package com.leobeliik.extremesoundmuffler.gui;
 
 import com.leobeliik.extremesoundmuffler.Config;
 import com.leobeliik.extremesoundmuffler.SoundMuffler;
+import com.leobeliik.extremesoundmuffler.gui.buttons.MuffledSlider;
 import com.leobeliik.extremesoundmuffler.gui.buttons.PlaySoundButton;
 import com.leobeliik.extremesoundmuffler.utils.Anchor;
 import com.leobeliik.extremesoundmuffler.utils.EventsHandler;
@@ -31,7 +32,7 @@ public class SoundMufflerScreen extends Screen {
     private static boolean isMuffling = true;
     private static final SortedSet<ResourceLocation> soundsList = new TreeSet<>();
     private static final SortedSet<ResourceLocation> recentSoundsList = new TreeSet<>();
-    private static final Map<ResourceLocation, Float> muffledMap = new HashMap<>();
+    private static final Map<ResourceLocation, Double> muffledMap = new HashMap<>();
     private static final List<Anchor> anchors = new ArrayList<>();
     private static final List<Button> filteredButtons = new ArrayList<>();
     private static final Map<Button, PlaySoundButton> soundButtonList = new HashMap<>();
@@ -55,7 +56,7 @@ public class SoundMufflerScreen extends Screen {
     private Button btnCancel;
     private TextFieldWidget searchBar;
     private TextFieldWidget editTitleBar;
-    //private MuffledSlider slider;
+    private MuffledSlider slider;
     private Anchor anchor;
 
     private SoundMufflerScreen() {
@@ -69,7 +70,7 @@ public class SoundMufflerScreen extends Screen {
     }
 
     public static void open() {
-        open("ESM - Main Screen", ITextComponent.func_241827_a_("R"));
+        open("ESM - Main Screen", ITextComponent.getTextComponentOrEmpty("R"));
     }
 
     public static ResourceLocation getGUI() {
@@ -84,11 +85,11 @@ public class SoundMufflerScreen extends Screen {
         recentSoundsList.add(sound);
     }
 
-    public static Map<ResourceLocation, Float> getMuffledMap() {
+    public static Map<ResourceLocation, Double> getMuffledMap() {
         return muffledMap;
     }
 
-    public static void setMuffledMap(ResourceLocation name, Float volume) {
+    public static void setMuffledMap(ResourceLocation name, Double volume) {
         muffledMap.put(name, volume);
     }
 
@@ -113,7 +114,8 @@ public class SoundMufflerScreen extends Screen {
         this.blit(matrix, getX(), getY(), 0, 32, xSize, ySize); //Main screen bounds
         drawCenteredString(matrix, font, screenTitle, getX() + 128, getY() + 8, colorWhite); //Screen title
         renderButtonsTextures(matrix, mouseX, mouseY);
-        //slider.render(mouseX, mouseY, partialTicks);
+        if (slider != null)
+            slider.render(matrix, mouseX, mouseY, partialTicks);
         super.render(matrix, mouseX, mouseY, partialTicks);
     }
 
@@ -129,10 +131,10 @@ public class SoundMufflerScreen extends Screen {
         maxYButton = getY() + 148;
 
         addListener(btnToggleSoundsList = new Button(getX() + 10, getY() + 34, 10, 10, toggleSoundsListMessage, b -> {
-            if (btnToggleSoundsList.getMessage().equals(ITextComponent.func_241827_a_("R"))) {
-                toggleSoundsListMessage = ITextComponent.func_241827_a_("A");
+            if (btnToggleSoundsList.getMessage().equals(ITextComponent.getTextComponentOrEmpty("R"))) {
+                toggleSoundsListMessage = ITextComponent.getTextComponentOrEmpty("A");
             } else {
-                toggleSoundsListMessage = ITextComponent.func_241827_a_("R");
+                toggleSoundsListMessage = ITextComponent.getTextComponentOrEmpty("R");
             }
             btnToggleSoundsList.setMessage(toggleSoundsListMessage);
             buttons.clear();
@@ -170,7 +172,7 @@ public class SoundMufflerScreen extends Screen {
         addButton(editTitleBar = new TextFieldWidget(font, getX() + 258, getY() + 59, 84, 13, emptyText));
         editTitleBar.visible = false;
 
-        addButton(btnAccept = new Button(getX() + 259, getY() + 75, 40, 20, ITextComponent.func_241827_a_("Accept"), b -> {
+        addButton(btnAccept = new Button(getX() + 259, getY() + 75, 40, 20, ITextComponent.getTextComponentOrEmpty("Accept"), b -> {
             anchor = getAnchorByName(screenTitle);
             if (!editTitleBar.getText().isEmpty() && anchor != null) {
                 anchor.setName(editTitleBar.getText());
@@ -179,7 +181,7 @@ public class SoundMufflerScreen extends Screen {
             }
         })).visible = false;
 
-        addButton(btnCancel = new Button(getX() + 300, getY() + 75, 40, 20, ITextComponent.func_241827_a_("Cancel"), b -> editTitle())).visible = false;
+        addButton(btnCancel = new Button(getX() + 300, getY() + 75, 40, 20, ITextComponent.getTextComponentOrEmpty("Cancel"), b -> editTitle())).visible = false;
 
         addButton(btnEnableTitleEdit = new Button(getX() + 274, getY() + 42, 10, 10, emptyText, b -> editTitle())).setAlpha(0);
 
@@ -202,7 +204,7 @@ public class SoundMufflerScreen extends Screen {
         }
 
         soundButtonList.clear();
-        if (btnToggleSoundsList.getMessage().equals(ITextComponent.func_241827_a_("R"))) {
+        if (btnToggleSoundsList.getMessage().equals(ITextComponent.getTextComponentOrEmpty("R"))) {
             soundsList.clear();
             soundsList.addAll(recentSoundsList);
             if (screenTitle.equals(mainTitle) && !muffledMap.isEmpty()) {
@@ -222,9 +224,14 @@ public class SoundMufflerScreen extends Screen {
         for (ResourceLocation sound : soundsList) {
             PlaySoundButton btnPlaySound = new PlaySoundButton(getX() + 233, buttonH, new SoundEvent(sound));
             Button btnToggleSound = new Button(getX() + 221, buttonH, 10, 10, emptyText, b -> {
-                float volume = 0.1F; //slider.getVolume(); //TODO make the slider prettier, with a gradient bg and things
+                double volume = 0.1F; //slider.getVolume(); //TODO make the slider prettier, with a gradient bg and things                    slider = new MuffledSlider(getX() + 14, b.y, 100, 15, ITextComponent.getTextComponentOrEmpty("Volume"), volume);
+                addListener(slider = new MuffledSlider(getX() + 14, b.y, 100, 15, ITextComponent.getTextComponentOrEmpty("Volume"), volume));
                 if (b.getFGColor() == colorViolet) {
-                    //slider.visible = false;
+                    slider.visible = true; //TODO make slider functional, probably in their own class
+                    for (int i = 0; i < 100; i++) {
+                    }
+                    volume = slider.getVolume();
+                    slider.visible = false;
                     if (screenTitle.equals(mainTitle)) {
                         muffledMap.remove(sound);
                     } else {
@@ -233,7 +240,6 @@ public class SoundMufflerScreen extends Screen {
                     b.setFGColor(colorWhite);
                     btnPlaySound.active = true;
                 } else {
-                    //slider.visible = true;
                     if (screenTitle.equals(mainTitle)) {
                         muffledMap.put(sound, volume);
                     } else {
@@ -252,7 +258,7 @@ public class SoundMufflerScreen extends Screen {
                 btnPlaySound.active = false;
             }
 
-            buttonH += btnToggleSound.getHeight() + 1;
+            buttonH += btnToggleSound.getHeightRealms() + 1;
             btnToggleSound.visible = btnToggleSound.y <= maxYButton;
             btnPlaySound.visible = btnPlaySound.y <= maxYButton;
 
@@ -268,13 +274,13 @@ public class SoundMufflerScreen extends Screen {
             Button btnAnchor;
             if (isAnchorsDisabled) {
                 String[] disabledMsg = {"-", "D", "i", "s", "a", "b", "l", "e", "d", "-"};
-                btnAnchor = new Button(buttonW, getY() + 24, 16, 16, ITextComponent.func_241827_a_(String.valueOf(i)), b -> {
+                btnAnchor = new Button(buttonW, getY() + 24, 16, 16, ITextComponent.getTextComponentOrEmpty(String.valueOf(i)), b -> {
                 });
-                btnAnchor.setMessage(ITextComponent.func_241827_a_(disabledMsg[i]));
+                btnAnchor.setMessage(ITextComponent.getTextComponentOrEmpty(disabledMsg[i]));
                 btnAnchor.active = false;
             } else {
                 int finalI = i;
-                btnAnchor = new Button(buttonW, getY() + 24, 16, 16, ITextComponent.func_241827_a_(String.valueOf(i)), b -> {
+                btnAnchor = new Button(buttonW, getY() + 24, 16, 16, ITextComponent.getTextComponentOrEmpty(String.valueOf(i)), b -> {
                     anchor = anchors.get(finalI);
                     if (anchor == null) return;
                     if (screenTitle.equals(anchor.getName())) {
@@ -470,11 +476,11 @@ public class SoundMufflerScreen extends Screen {
             Button b = (Button) buttons.get(i);
             Widget psb = soundButtonList.get(b);
             if (direction > 0) {
-                b.y = b.y + (b.getHeight() + 1);
-                psb.y = psb.y + (b.getHeight() + 1);
+                b.y = b.y + (b.getHeightRealms() + 1);
+                psb.y = psb.y + (b.getHeightRealms() + 1);
             } else {
-                b.y = b.y - (b.getHeight() + 1);
-                psb.y = psb.y - (b.getHeight() + 1);
+                b.y = b.y - (b.getHeightRealms() + 1);
+                psb.y = psb.y - (b.getHeightRealms() + 1);
             }
 
             if (b.y >= minYButton && b.y <= maxYButton) {
@@ -503,11 +509,11 @@ public class SoundMufflerScreen extends Screen {
             Button b = filteredButtons.get(i);
             Widget psb = soundButtonList.get(b);
             if (direction > 0) {
-                b.y = b.y + (b.getHeight() + 1);
-                psb.y = psb.y + (b.getHeight() + 1);
+                b.y = b.y + (b.getHeightRealms() + 1);
+                psb.y = psb.y + (b.getHeightRealms() + 1);
             } else {
-                b.y = b.y - (b.getHeight() + 1);
-                psb.y = psb.y - (b.getHeight() + 1);
+                b.y = b.y - (b.getHeightRealms() + 1);
+                psb.y = psb.y - (b.getHeightRealms() + 1);
             }
 
             if (b.y >= minYButton && b.y <= maxYButton) {
@@ -537,7 +543,7 @@ public class SoundMufflerScreen extends Screen {
                 psb.y = buttonH;
                 psb.visible = b.y >= minYButton && b.y <= maxYButton;
                 filteredButtons.add(b);
-                buttonH += b.getHeight() + 1;
+                buttonH += b.getHeightRealms() + 1;
             } else {
                 //b.active = true;
                 b.visible = false;

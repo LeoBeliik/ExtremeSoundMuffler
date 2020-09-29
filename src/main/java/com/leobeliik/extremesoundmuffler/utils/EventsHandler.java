@@ -7,7 +7,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
@@ -15,11 +14,8 @@ import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.ForgeRegistries;
 
-import java.io.File;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = SoundMuffler.MODID)
@@ -61,7 +57,7 @@ public class EventsHandler {
                 if (!Config.getShouldMufflePlaySub().get()) {
                     event.setResult(null);
                 }
-                event.setResultSound(new MuffledSound(sound, SoundMufflerScreen.getMuffledMap().get(sound.getSoundLocation())));
+                event.setResultSound(new MuffledSound(sound, SoundMufflerScreen.getMuffledMap().get(sound.getSoundLocation()).floatValue()));
             }
 
             if (isAnchorsDisabled) {
@@ -83,78 +79,26 @@ public class EventsHandler {
 
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
-    public static void onWorldSave(WorldEvent.Save event) {
-        if (isFirstLoad) {
-            isFirstLoad = false;
-            isThisClient = true;
-            if (SoundMuffler.isServer) {
-                if (event.getWorld() instanceof ServerWorld) {
-                    path = "saves/" + ((ServerWorld) event.getWorld()).getServer().getDataDirectory() + "/ESM/"; //TODO
-                }
-            } else {
-                path = serverWorld;
-            }
-        }
-    }
-
-    @SubscribeEvent
-    @OnlyIn(Dist.CLIENT)
     public static void onWorldLoad(WorldEvent.Load event) {
-        isWorldLoaded++;
-        if (SoundMuffler.isServer) {
-            if (event.getWorld() instanceof ServerWorld) {
-                path = "saves/" + ((ServerWorld) event.getWorld()).getServer().getDataDirectory() + "/ESM/";
-            }
-        } else {
-            path = serverWorld;
-        }
-
-        allSoundsList = new HashSet<>(ForgeRegistries.SOUND_EVENTS.getKeys());
-
-        Map<String, Float> list = JsonIO.loadMuffledList(new File(fileName));
-        SoundMufflerScreen.getAnchors().clear();
-        removeForbiddenSounds();
-
-        if (list != null) {
-            list.forEach((name, volume) -> SoundMufflerScreen.setMuffledMap(new ResourceLocation(name), volume));
-        }
-
-        if (isAnchorsDisabled) { //TODO after set muffled list
-            return;
-        }
-
         for (int i = 0; i <= 9; i++) {
-            SoundMufflerScreen.setAnchor(JsonIO.loadAnchor(new File(path + "Anchor" + i + ".dat"), i));
-            try {
-                //noinspection ResultOfMethodCallIgnored
-                SoundMufflerScreen.getAnchors().get(i);
-            } catch (IndexOutOfBoundsException e) {
-                SoundMufflerScreen.setAnchor(new Anchor(i, "Anchor " + i));
-            }
+           SoundMufflerScreen.setAnchor(new Anchor(i, "Anchor: " + i));
+        }
+
+        if (SoundMuffler.isServer) {
+            //Save
+        } else {
+            //Save json
         }
     }
 
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public static void onWorldUnload(WorldEvent.Unload event) {
-        if (isWorldLoaded == 3) {
-            return;
+        if (SoundMuffler.isServer) {
+            //Load
+        } else {
+            //Load json
         }
-
-        if (isThisClient) {
-            isThisClient = false;
-            return;
-        }
-
-        JsonIO.saveMuffledMap(new File(fileName), SoundMufflerScreen.getMuffledMap());
-        if (!isAnchorsDisabled) {
-            for (int i = 0; i <= 9; i++) {
-                JsonIO.saveAnchor(new File(path), new File(path + "Anchor" + i + ".dat"), SoundMufflerScreen.getAnchors().get(i));
-            }
-        }
-        isWorldLoaded = 0;
-        isFirstLoad = true;
-        path = serverWorld;
     }
 
     private static void removeForbiddenSounds() {

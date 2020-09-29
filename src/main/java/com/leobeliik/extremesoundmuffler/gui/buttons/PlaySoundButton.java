@@ -22,7 +22,7 @@ public class PlaySoundButton extends AbstractButton {
     private final SoundEvent sound;
 
     public PlaySoundButton(int x, int y, SoundEvent sound) {
-        super(x, y, 10, 10, ITextComponent.func_241827_a_(""));
+        super(x, y, 10, 10, ITextComponent.getTextComponentOrEmpty(null));
         this.setAlpha(0);
         this.sound = sound;
     }

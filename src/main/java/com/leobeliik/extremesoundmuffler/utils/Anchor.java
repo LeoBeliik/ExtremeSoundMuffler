@@ -11,7 +11,7 @@ public class Anchor {
     private final int id;
     private BlockPos anchorPos;
     private String name;
-    private SortedMap<ResourceLocation, Float> muffledSounds = new TreeMap<>();
+    private SortedMap<ResourceLocation, Double> muffledSounds = new TreeMap<>();
 
     Anchor(int id, String name) {
         this.id = id;
@@ -38,15 +38,15 @@ public class Anchor {
         this.name = name;
     }
 
-    public SortedMap<ResourceLocation, Float> getMuffledSounds() {
+    public SortedMap<ResourceLocation, Double> getMuffledSounds() {
         return muffledSounds;
     }
 
-    public void setMuffledSounds(SortedMap<ResourceLocation, Float> muffledSounds) {
+    public void setMuffledSounds(SortedMap<ResourceLocation, Double> muffledSounds) {
         this.muffledSounds = muffledSounds;
     }
 
-    public void addSound(ResourceLocation sound, float volume) {
+    public void addSound(ResourceLocation sound, double volume) {
         muffledSounds.put(sound, volume);
     }
 
