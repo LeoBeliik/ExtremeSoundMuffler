@@ -26,6 +26,7 @@ import java.util.Set;
 public class EventsHandler {
 
     private static final String fileName = "soundsMuffled.dat";
+    private static final double anchorRadius = Config.getAnchorRadius().get();
     private static Set<String> forbiddenSounds = new HashSet<>();
     private static Set<ResourceLocation> allSoundsList;
     private static boolean isFromPSB = false;
@@ -72,7 +73,7 @@ public class EventsHandler {
                     continue;
                 }
 
-                if (soundPos.withinDistance(anchor.getAnchorPos(), 16D)) {
+                if (soundPos.withinDistance(anchor.getAnchorPos(), anchorRadius)) {
                     event.setResultSound(null);
                     return;
                 }

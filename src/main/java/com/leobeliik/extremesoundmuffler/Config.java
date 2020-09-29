@@ -20,6 +20,7 @@ public class Config {
     private static ForgeConfigSpec.ConfigValue<List<? extends String>> forbiddenSounds;
     private static ForgeConfigSpec.BooleanValue disableInventoryButton;
     private static ForgeConfigSpec.BooleanValue disableAnchors;
+    private static ForgeConfigSpec.DoubleValue anchorRadius;
 
     static {
         CLIENT_BUILDER.comment("general settings").push(CATEGORY_GENERAL);
@@ -27,7 +28,10 @@ public class Config {
                 .defineList("forbiddenSounds", Arrays.asList("ui.", "music.", "ambient."), o -> o instanceof String);
         disableInventoryButton = CLIENT_BUILDER.comment("Disable the Muffle button in the player inventory?")
                 .define("disableInventoryButton", false);
-        disableAnchors = CLIENT_BUILDER.comment("Disable the anchors?").define("disableAnchors", false);
+        disableAnchors = CLIENT_BUILDER.comment("Disable the anchors?")
+                .define("disableAnchors", false);
+        anchorRadius = CLIENT_BUILDER.comment("Sets the radius for the Anchors, from your feet X blocks in the 6 directions")
+                .defineInRange("anchorRadius", 16D, 2D, 16D);
 
         CLIENT_BUILDER.pop();
         CLIENT_CONFIG = CLIENT_BUILDER.build();
@@ -51,5 +55,9 @@ public class Config {
 
     public static ForgeConfigSpec.BooleanValue getDisableAchors() {
         return disableAnchors;
+    }
+
+    public static ForgeConfigSpec.DoubleValue getAnchorRadius() {
+        return anchorRadius;
     }
 }
