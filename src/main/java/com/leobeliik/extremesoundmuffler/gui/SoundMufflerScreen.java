@@ -128,13 +128,13 @@ public class SoundMufflerScreen extends Screen {
         minYButton = getY() + 37;
         maxYButton = getY() + 148;
 
-        addListener(btnToggleSoundsList = new Button(getX() + 10, getY() + 34, 10, 10, ITextComponent.func_244388_a(toggleSoundsListMessage), b -> {
+        addListener(btnToggleSoundsList = new Button(getX() + 10, getY() + 34, 10, 10, ITextComponent.getTextComponentOrEmpty(toggleSoundsListMessage), b -> {
             if (btnToggleSoundsList.getMessage().getString().equals("R")) {
                 toggleSoundsListMessage = "A";
             } else {
                 toggleSoundsListMessage = "R";
             }
-            btnToggleSoundsList.setMessage(ITextComponent.func_244388_a(toggleSoundsListMessage));
+            btnToggleSoundsList.setMessage(ITextComponent.getTextComponentOrEmpty(toggleSoundsListMessage));
             buttons.clear();
             open(screenTitle, toggleSoundsListMessage);
         }));
@@ -170,7 +170,7 @@ public class SoundMufflerScreen extends Screen {
         addButton(editTitleBar = new TextFieldWidget(font, getX() + 258, getY() + 59, 84, 13, emptyText));
         editTitleBar.visible = false;
 
-        addButton(btnAccept = new Button(getX() + 259, getY() + 75, 40, 20, ITextComponent.func_244388_a("Accept"), b -> {
+        addButton(btnAccept = new Button(getX() + 259, getY() + 75, 40, 20, ITextComponent.getTextComponentOrEmpty("Accept"), b -> {
             anchor = getAnchorByName(screenTitle);
             if (!editTitleBar.getText().isEmpty() && anchor != null) {
                 anchor.setName(editTitleBar.getText());
@@ -179,7 +179,7 @@ public class SoundMufflerScreen extends Screen {
             }
         })).visible = false;
 
-        addButton(btnCancel = new Button(getX() + 300, getY() + 75, 40, 20, ITextComponent.func_244388_a("Cancel"), b -> editTitle())).visible = false;
+        addButton(btnCancel = new Button(getX() + 300, getY() + 75, 40, 20, ITextComponent.getTextComponentOrEmpty("Cancel"), b -> editTitle())).visible = false;
 
         addButton(btnEnableTitleEdit = new Button(getX() + 274, getY() + 42, 10, 10, emptyText, b -> editTitle())).setAlpha(0);
 
@@ -248,7 +248,7 @@ public class SoundMufflerScreen extends Screen {
                 btnPlaySound.active = false;
             }
 
-            buttonH += btnToggleSound.getWidth_CLASH() + 1;
+            buttonH += btnToggleSound.getHeightRealms() + 1;
             btnToggleSound.visible = btnToggleSound.y <= maxYButton;
             btnPlaySound.visible = btnPlaySound.y <= maxYButton;
 
@@ -266,7 +266,7 @@ public class SoundMufflerScreen extends Screen {
                 String[] disabledMsg = {"-", "D", "i", "s", "a", "b", "l", "e", "d", "-"};
                 btnAnchor = new Button(buttonW, getY() + 24, 16, 16, new TranslationTextComponent(String.valueOf(i)), b -> {
                 });
-                btnAnchor.setMessage(ITextComponent.func_244388_a(disabledMsg[i]));
+                btnAnchor.setMessage(ITextComponent.getTextComponentOrEmpty(disabledMsg[i]));
                 btnAnchor.active = false;
             } else {
                 int finalI = i;
@@ -466,11 +466,11 @@ public class SoundMufflerScreen extends Screen {
             Button b = (Button) buttons.get(i);
             Widget psb = soundButtonList.get(b);
             if (direction > 0) {
-                b.y = b.y + (b.getWidth_CLASH() + 1);
-                psb.y = psb.y + (b.getWidth_CLASH() + 1);
+                b.y = b.y + (b.getHeightRealms() + 1);
+                psb.y = psb.y + (b.getHeightRealms() + 1);
             } else {
-                b.y = b.y - (b.getWidth_CLASH() + 1);
-                psb.y = psb.y - (b.getWidth_CLASH() + 1);
+                b.y = b.y - (b.getHeightRealms() + 1);
+                psb.y = psb.y - (b.getHeightRealms() + 1);
             }
 
             if (b.y >= minYButton && b.y <= maxYButton) {
@@ -499,11 +499,11 @@ public class SoundMufflerScreen extends Screen {
             Button b = filteredButtons.get(i);
             Widget psb = soundButtonList.get(b);
             if (direction > 0) {
-                b.y = b.y + (b.getWidth_CLASH() + 1);
-                psb.y = psb.y + (b.getWidth_CLASH() + 1);
+                b.y = b.y + (b.getHeightRealms() + 1);
+                psb.y = psb.y + (b.getHeightRealms() + 1);
             } else {
-                b.y = b.y - (b.getWidth_CLASH() + 1);
-                psb.y = psb.y - (b.getWidth_CLASH() + 1);
+                b.y = b.y - (b.getHeightRealms() + 1);
+                psb.y = psb.y - (b.getHeightRealms() + 1);
             }
 
             if (b.y >= minYButton && b.y <= maxYButton) {
@@ -533,7 +533,7 @@ public class SoundMufflerScreen extends Screen {
                 psb.y = buttonH;
                 psb.visible = b.y >= minYButton && b.y <= maxYButton;
                 filteredButtons.add(b);
-                buttonH += b.getWidth_CLASH() + 1;
+                buttonH += b.getHeightRealms() + 1;
             } else {
                 //b.active = true;
                 b.visible = false;
