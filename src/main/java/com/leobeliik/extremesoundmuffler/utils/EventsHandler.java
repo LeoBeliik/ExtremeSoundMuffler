@@ -64,12 +64,19 @@ public class EventsHandler {
             }
 
             for (int i = 0; i < 9; i++) {
-                Anchor anchor = SoundMufflerScreen.getAnchors().get(i);
-                if (!anchor.getMuffledSounds().contains(sound.getSoundLocation())) {
-                    continue;
+                Anchor anchor;
+
+                try {
+                    anchor = SoundMufflerScreen.getAnchors().get(i);
+                } catch (Exception e) {
+                    anchor = new Anchor(i, "Anchor " + i);
                 }
 
                 if (anchor.getAnchorPos() == null) {
+                    continue;
+                }
+
+                if (!anchor.getMuffledSounds().contains(sound.getSoundLocation())) {
                     continue;
                 }
 
