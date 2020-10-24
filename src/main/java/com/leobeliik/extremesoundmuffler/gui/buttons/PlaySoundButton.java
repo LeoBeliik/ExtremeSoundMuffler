@@ -1,7 +1,8 @@
 package com.leobeliik.extremesoundmuffler.gui.buttons;
 
 import com.leobeliik.extremesoundmuffler.SoundMuffler;
-import com.leobeliik.extremesoundmuffler.utils.EventsHandler;
+import com.leobeliik.extremesoundmuffler.utils.eventHandlers.SoundEventHandler;
+import com.leobeliik.extremesoundmuffler.utils.eventHandlers.WorldEventsHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.gui.widget.button.AbstractButton;
@@ -30,7 +31,7 @@ public class PlaySoundButton extends AbstractButton {
     @Override
     public void onPress() {
         if (this.active && this.visible) {
-            EventsHandler.isFromPlaySoundButton(true);
+            SoundEventHandler.isFromPlaySoundButton(true);
             Objects.requireNonNull(minecraft.player).playSound(sound, 100, 1);
         }
     }

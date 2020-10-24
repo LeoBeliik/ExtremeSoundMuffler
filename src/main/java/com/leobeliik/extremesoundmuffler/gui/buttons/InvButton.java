@@ -1,6 +1,6 @@
 package com.leobeliik.extremesoundmuffler.gui.buttons;
 
-import com.leobeliik.extremesoundmuffler.gui.SoundMufflerScreen;
+import com.leobeliik.extremesoundmuffler.gui.MainScreen;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -26,7 +26,7 @@ public class InvButton extends AbstractButton {
 
     @Override
     public void onPress() {
-        SoundMufflerScreen.open();
+        MainScreen.open();
     }
 
     @ParametersAreNonnullByDefault
@@ -34,7 +34,7 @@ public class InvButton extends AbstractButton {
     public void render(MatrixStack matrix, int mouseX, int mouseY, float partialTicks) {
         if (this.visible) {
             x = buttonX + parent.getGuiLeft() + 11;
-            minecraft.getTextureManager().bindTexture(SoundMufflerScreen.getGUI());
+            minecraft.getTextureManager().bindTexture(MainScreen.getGUI());
             blit(matrix, x, y, 0f, 0f, 10, 10, 80, 80);
             if (mouseX >= x && mouseY >= this.y && mouseX < x + this.width && mouseY < this.y + this.height) {
                 drawCenteredString(matrix, minecraft.fontRenderer, "Muffler", x + 5, this.y + this.height + 1, 16777215);

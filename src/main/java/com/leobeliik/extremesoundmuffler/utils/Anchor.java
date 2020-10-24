@@ -11,9 +11,10 @@ public class Anchor {
     private final int id;
     private BlockPos anchorPos;
     private String name;
+    private double radius;
     private SortedMap<ResourceLocation, Double> muffledSounds = new TreeMap<>();
 
-    Anchor(int id, String name) {
+    public Anchor(int id, String name) {
         this.id = id;
         this.name = name;
     }
@@ -32,6 +33,14 @@ public class Anchor {
 
     public String getName() {
         return name;
+    }
+
+    public double getRadius() {
+        return radius;
+    }
+
+    public void setRadius(double radius) {
+        this.radius = radius;
     }
 
     public void setName(String name) {

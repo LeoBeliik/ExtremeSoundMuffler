@@ -2,7 +2,8 @@ package com.leobeliik.extremesoundmuffler;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.io.WritingMode;
-import com.leobeliik.extremesoundmuffler.utils.EventsHandler;
+import com.leobeliik.extremesoundmuffler.utils.eventHandlers.SoundEventHandler;
+import com.leobeliik.extremesoundmuffler.utils.eventHandlers.WorldEventsHandler;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.common.Mod;
 
@@ -19,7 +20,6 @@ public class Config {
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> forbiddenSounds;
     private static final ForgeConfigSpec.BooleanValue disableInventoryButton;
     private static final ForgeConfigSpec.BooleanValue disableAnchors;
-    private static final ForgeConfigSpec.BooleanValue shouldMufflePlaySub;
 
     static {
         CLIENT_BUILDER.comment("general settings").push(CATEGORY_GENERAL);
@@ -31,9 +31,6 @@ public class Config {
                 .define("disableInventoryButton", false);
 
         disableAnchors = CLIENT_BUILDER.comment("Disable the anchors?").define("disableAnchors", false);
-
-        shouldMufflePlaySub = CLIENT_BUILDER.comment("Should muted sounds play subtitles?\nMuffled sounds (sounds with volume > 0) will play them regardless.")
-                .define("shouldMufflePlaySub", false);
 
         CLIENT_BUILDER.pop();
         CLIENT_CONFIG = CLIENT_BUILDER.build();
@@ -49,7 +46,7 @@ public class Config {
 
         configData.load();
         spec.setConfig(configData);
-        EventsHandler.forbiddenSounds().addAll(forbiddenSounds.get());
+        SoundEventHandler.forbiddenSounds().addAll(forbiddenSounds.get());
     }
 
     static ForgeConfigSpec.BooleanValue getDisableInventoryButton() {
@@ -58,9 +55,5 @@ public class Config {
 
     public static ForgeConfigSpec.BooleanValue getDisableAchors() {
         return disableAnchors;
-    }
-
-    public static ForgeConfigSpec.BooleanValue getShouldMufflePlaySub() {
-        return shouldMufflePlaySub;
     }
 }

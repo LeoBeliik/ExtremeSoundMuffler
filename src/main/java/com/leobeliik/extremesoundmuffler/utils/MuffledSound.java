@@ -13,12 +13,13 @@ import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @OnlyIn(Dist.CLIENT)
+public
 class MuffledSound implements ISound {
 
     private ISound sound;
     private float volume;
 
-    MuffledSound(ISound sound, float volume) {
+    public MuffledSound(ISound sound, float volume) {
         this.sound = sound;
         this.volume = volume;
     }

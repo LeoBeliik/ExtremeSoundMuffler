@@ -1,6 +1,6 @@
 package com.leobeliik.extremesoundmuffler;
 
-import com.leobeliik.extremesoundmuffler.gui.SoundMufflerScreen;
+import com.leobeliik.extremesoundmuffler.gui.MainScreen;
 import com.leobeliik.extremesoundmuffler.gui.buttons.InvButton;
 import net.minecraft.client.gui.DisplayEffectsScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -73,7 +73,7 @@ public class SoundMuffler {
     @OnlyIn(Dist.CLIENT)
     public void onKeyInput(InputEvent.KeyInputEvent event) {
         if (openMuffleScreen.isPressed()) {
-            SoundMufflerScreen.open();
+            MainScreen.open();
         }
     }
 

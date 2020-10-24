@@ -1,6 +1,6 @@
 package com.leobeliik.extremesoundmuffler.gui.buttons;
 
-import com.leobeliik.extremesoundmuffler.gui.SoundMufflerScreen;
+import com.leobeliik.extremesoundmuffler.gui.MainScreen;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -12,7 +12,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 public class MuffledSlider extends AbstractSlider {
 
-    private static final ResourceLocation GUI = SoundMufflerScreen.getGUI();
+    private static final ResourceLocation GUI = MainScreen.getGUI();
     private static final Minecraft minecraft = Minecraft.getInstance();
     private static final FontRenderer font = minecraft.fontRenderer;
     private double volume;
