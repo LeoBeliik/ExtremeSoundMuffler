@@ -48,8 +48,8 @@ public class SoundEventHandler implements ISoundLists {
         recentSoundsList.add(sound.getSoundLocation());
 
         if (MainScreen.isMuffled()) {
-            if (MainScreen.getMuffledMap().containsKey(sound.getSoundLocation())) {
-                event.setResultSound(new MuffledSound(sound, MainScreen.getMuffledMap().get(sound.getSoundLocation()).floatValue()));
+            if (muffledSounds.containsKey(sound.getSoundLocation())) {
+                event.setResultSound(new MuffledSound(sound, muffledSounds.get(sound.getSoundLocation()).floatValue()));
                 return;
             }
 
@@ -62,7 +62,7 @@ public class SoundEventHandler implements ISoundLists {
                 if (soundPos.withinDistance(anchor.getAnchorPos(), anchor.getRadius())) {
                     if (anchor.getMuffledSounds().containsKey(sound.getSoundLocation())) {
                         //TODO this is not ok i think
-                        event.setResultSound(new MuffledSound(sound, MainScreen.getMuffledMap().get(sound.getSoundLocation()).floatValue()));
+                        event.setResultSound(new MuffledSound(sound, muffledSounds.get(sound.getSoundLocation()).floatValue()));
                     }
                 }
             }

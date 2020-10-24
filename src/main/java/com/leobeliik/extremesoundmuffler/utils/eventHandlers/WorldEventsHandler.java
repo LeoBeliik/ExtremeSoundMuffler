@@ -50,7 +50,7 @@ public class WorldEventsHandler {
     @OnlyIn(Dist.CLIENT)
     public static void onWorldUnload(WorldEvent.Unload event) {
 
-        JsonIO.saveMuffledMap(new File(fileName), MainScreen.getMuffledMap());
+        //JsonIO.saveMuffledMap(new File(fileName), muffledSounds);
 
         //For anchors
         if (SoundMuffler.isServer) {

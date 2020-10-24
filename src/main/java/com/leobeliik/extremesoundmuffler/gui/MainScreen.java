@@ -5,8 +5,7 @@ import com.leobeliik.extremesoundmuffler.SoundMuffler;
 import com.leobeliik.extremesoundmuffler.gui.buttons.MuffledSlider;
 import com.leobeliik.extremesoundmuffler.gui.buttons.PlaySoundButton;
 import com.leobeliik.extremesoundmuffler.utils.Anchor;
-import com.leobeliik.extremesoundmuffler.utils.eventHandlers.SoundEventHandler;
-import com.leobeliik.extremesoundmuffler.utils.eventHandlers.WorldEventsHandler;
+import com.leobeliik.extremesoundmuffler.utils.ISoundLists;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
@@ -28,26 +27,25 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 
 @OnlyIn(Dist.CLIENT)
-public class MainScreen extends Screen {
+public class MainScreen extends Screen implements ISoundLists {
 
     private static final Minecraft minecraft = Minecraft.getInstance();
     private static final ResourceLocation GUI = new ResourceLocation(SoundMuffler.MODID, "textures/gui/sm_gui.png");
-    private final int colorViolet = 24523966;
-    private static boolean isMuffling = true;
-    private static final Map<ResourceLocation, Double> muffledMap = new HashMap<>();
     private static final List<Anchor> anchors = new ArrayList<>();
     private static final List<Button> filteredButtons = new ArrayList<>();
     private static final Map<Button, PlaySoundButton> soundButtonList = new HashMap<>();
+    private static boolean isMuffling = true;
     private static String screenTitle = "";
     private static ITextComponent toggleSoundsListMessage;
     private final int xSize = 256;
     private final int ySize = 200;
     private final int colorWhite = 16777215;
+    private final int colorViolet = 24523966;
+    private final boolean isAnchorsDisabled = Config.getDisableAchors().get();
     private final ITextComponent emptyText = StringTextComponent.EMPTY;
     private final String mainTitle = "ESM - Main Screen";
     private int minYButton;
     private int maxYButton;
-    private final boolean isAnchorsDisabled = Config.getDisableAchors().get();
     private Button btnToggleMuffled;
     private Button btnDelete;
     private Button btnToggleSoundsList;
@@ -57,9 +55,8 @@ public class MainScreen extends Screen {
     private Button btnCancel;
     private TextFieldWidget searchBar;
     private TextFieldWidget editTitleBar;
-    private MuffledSlider slider;
+    private MuffledSlider volumeSlider;
     private Anchor anchor;
-    private SortedSet<ResourceLocation> soundsList = SoundEventHandler.getSoundsList();
 
     private MainScreen() {
         super(new StringTextComponent(""));
@@ -83,12 +80,12 @@ public class MainScreen extends Screen {
         return isMuffling;
     }
 
-    public static Map<ResourceLocation, Double> getMuffledMap() {
-        return muffledMap;
+    public static Map<ResourceLocation, Double> getmuffledSounds() {
+        return muffledSounds;
     }
 
-    public static void setMuffledMap(ResourceLocation name, Double volume) {
-        muffledMap.put(name, volume);
+    public static void setmuffledSounds(ResourceLocation name, Double volume) {
+        muffledSounds.put(name, volume);
     }
 
     public static List<Anchor> getAnchors() {
@@ -111,9 +108,7 @@ public class MainScreen extends Screen {
         minecraft.getTextureManager().bindTexture(GUI);
         this.blit(matrix, getX(), getY(), 0, 0, xSize, ySize); //Main screen bounds
         drawCenteredString(matrix, font, screenTitle, getX() + 128, getY() + 8, colorWhite); //Screen title
-        renderButtonsTextures(matrix, mouseX, mouseY);
-        if (slider != null)
-            slider.render(matrix, mouseX, mouseY, partialTicks);
+        renderButtonsTextures(matrix, mouseX, mouseY, partialTicks);
         super.render(matrix, mouseX, mouseY, partialTicks);
     }
 
@@ -148,7 +143,7 @@ public class MainScreen extends Screen {
         addButton(btnDelete = new Button(getX() + 205, getY() + 179, 17, 17, emptyText, b -> {
                     anchor = getAnchorByName(screenTitle);
                     if (screenTitle.equals(mainTitle)) {
-                        muffledMap.clear();
+                        muffledSounds.clear();
                         open(mainTitle, btnToggleSoundsList.getMessage());
                     } else {
                         if (anchor == null) {
@@ -203,8 +198,8 @@ public class MainScreen extends Screen {
 
         soundButtonList.clear();
         if (btnToggleSoundsList.getMessage().equals(ITextComponent.getTextComponentOrEmpty("Recent"))) {
-            if (screenTitle.equals(mainTitle) && !muffledMap.isEmpty()) {
-                soundsList.addAll(muffledMap.keySet());
+            if (screenTitle.equals(mainTitle) && !muffledSounds.isEmpty()) {
+                soundsList.addAll(muffledSounds.keySet());
             } else if (anchor != null && !anchor.getMuffledSounds().isEmpty()) {
                 soundsList.addAll(anchor.getMuffledSounds().keySet());
             }
@@ -217,50 +212,29 @@ public class MainScreen extends Screen {
         }
 
         for (ResourceLocation sound : soundsList) {
-            PlaySoundButton btnPlaySound = new PlaySoundButton(getX() + 233, buttonH, new SoundEvent(sound));
-            Button btnToggleSound = new Button(getX() + 221, buttonH, 11, 11, emptyText, b -> {
-                double volume = 0.1F; //slider.getVolume(); //TODO make the slider prettier, with a gradient bg and things                    slider = new MuffledSlider(getX() + 14, b.y, 100, 15, ITextComponent.getTextComponentOrEmpty("Volume"), volume);
-                //addListener(slider = new MuffledSlider(getX() + 14, b.y, 100, 15, ITextComponent.getTextComponentOrEmpty("Volume"), volume));
-                if (b.getFGColor() == colorViolet) {
-                    //slider.visible = true; //TODO make slider functional, probably in their own class
-                    for (int i = 0; i < 100; i++) {
-                    }
-                    //volume = slider.getVolume();
-                    //slider.visible = false;
-                    if (screenTitle.equals(mainTitle)) {
-                        muffledMap.remove(sound);
-                    } else {
-                        anchor.removeSound(sound);
-                    }
-                    b.setFGColor(colorWhite);
-                    //btnPlaySound.active = true;
-                } else {
-                    if (screenTitle.equals(mainTitle)) {
-                        muffledMap.put(sound, volume);
-                    } else {
-                        anchor.addSound(sound, volume);
-                    }
-                    b.setFGColor(colorViolet);
-                    //btnPlaySound.active = false;
-                }
-            });
+            ITextComponent message = ITextComponent.getTextComponentOrEmpty(sound.getPath() + ":" + sound.getNamespace());
+            volumeSlider = new MuffledSlider(getX() + 13, buttonH + 2, 205, 11, sound, 1D, screenTitle, anchor);
 
             boolean muffledAnchor = anchor != null && screenTitle.equals(anchor.getName()) && !anchor.getMuffledSounds().isEmpty() && anchor.getMuffledSounds().containsKey(sound);
-            boolean muffledScreen = screenTitle.equals(mainTitle) && !muffledMap.isEmpty() && muffledMap.containsKey(sound);
+            boolean muffledScreen = screenTitle.equals(mainTitle) && !muffledSounds.isEmpty() && muffledSounds.containsKey(sound);
 
             if (muffledAnchor || muffledScreen) {
-                btnToggleSound.setFGColor(colorViolet);
-                btnPlaySound.active = false;
+                volumeSlider.setFGColor(colorViolet);
             }
 
-            buttonH += btnToggleSound.getHeightRealms() + 2;
-            btnToggleSound.visible = btnToggleSound.y <= maxYButton;
-            btnPlaySound.visible = btnPlaySound.y <= maxYButton;
+            buttonH += volumeSlider.getHeightRealms() + 2;
+            volumeSlider.visible = volumeSlider.y <= maxYButton;
+            //btnPlaySound.visible = btnPlaySound.y <= maxYButton;
+            //volumeSlider.visible = btnPlaySound.y <= maxYButton;
 
-            soundButtonList.put(btnToggleSound, btnPlaySound);
-            addButton(btnToggleSound).setAlpha(0);
+            //soundButtonList.put(btnToggleSound, btnPlaySound);
+            //addButton(btnToggleSound).setAlpha(0);
+            addButton(volumeSlider);
+            addListener(volumeSlider.getBtnToggleSound());
+            addListener(volumeSlider.getBtnPlaySound());
+
         }
-        soundButtonList.forEach((v, k) -> addButton(k));
+        //soundButtonList.forEach((v, k) -> addButton(k));
     }
 
     private void addAnchors() {
@@ -296,9 +270,10 @@ public class MainScreen extends Screen {
         }
     }
 
-    private void renderButtonsTextures(MatrixStack matrix, double mouseX, double mouseY) {
+    private void renderButtonsTextures(MatrixStack matrix, double mouseX, double mouseY, float partialTicks) {
         int x; //start x point of the button
         int y; //start y point of the button
+        int i = 0;
         float v; //start x point of the texture
         String message; //Button message
         int stringW; //text width
@@ -308,39 +283,44 @@ public class MainScreen extends Screen {
         if (buttons.size() < soundsList.size()) {
             return;
         }
-        for (int i = 0; i < soundsList.size(); i++) {
-            Widget btn = buttons.get(i);
+
+/*
+        for (Widget btn : soundButtonList.keySet()) {
 
             if (!btn.visible) {
                 continue;
             }
 
             ResourceLocation rs = (ResourceLocation) soundsList.toArray()[i];
+            i++;
             x = getX() + 14;
             y = btn.y + 4;
             stringW = 205;
             message = font.func_238412_a_(rs.getPath() + ":" + rs.getNamespace(), stringW); //trim to width
             String fullMessage = rs.getPath() + ":" + rs.getNamespace();
             //draws the name of the sound; sound name : mod name
-            font.drawString(matrix, message, x, y, btn.getFGColor());
+            //font.drawString(matrix, message, x, y, btn.getFGColor());
             minecraft.getTextureManager().bindTexture(GUI);
 
             //if muffled
             v = btn.getFGColor() == colorViolet ? 213F : 202F;
             minecraft.getTextureManager().bindTexture(GUI);
 
-            blit(matrix, getX() + 221, btn.y + 2, 43F, v, 11, 11, xSize, xSize); //muffle button
-            blit(matrix, getX() + 233, btn.y + 2, 32F, 202F, 11, 11, xSize, xSize); //play button
+            blit(matrix, btn.x + 12, btn.y + 2, 32F, 202F, 11, 11, xSize, xSize); //play button
+            volumeSlider.renderGradient(matrix, volumeSlider.x, btn.y + 2, btn.x - 2, btn.y + 13); //Slider bg
 
             //render full names for the trim sound names when hovered
-            if (font.getStringWidth(fullMessage) < stringW) {
+            */
+/*if (font.getStringWidth(fullMessage) < stringW) {
                 continue;
             }
             if (mouseX > x && mouseX < x + stringW && mouseY > y && mouseY < y + font.FONT_HEIGHT) {
                 fill(matrix, x - 2, y - 2, x + font.getStringWidth(fullMessage) + 2, y + font.FONT_HEIGHT + 2, -16777215);
                 font.drawString(matrix, fullMessage, x, y, btn.getFGColor());
-            }
+            }*//*
+
         }
+*/
 
         //Delete button
         x = btnDelete.x + 8;
@@ -403,11 +383,12 @@ public class MainScreen extends Screen {
         }
 
         //draw anchor buttons tooltip
-        for (int i = 0; i <= 9; i++) {
-            Widget btn = buttons.get(soundsList.size() * 2 + i);
+/*
+        for (int j = 0; j <= 9; j++) {
+            Widget btn = buttons.get(soundsList.size() * 2 + j);
             x = btn.x + 8;
             y = btn.y;
-            message = isAnchorsDisabled ? "Anchors are disabled" : anchors.get(i).getName();
+            message = isAnchorsDisabled ? "Anchors are disabled" : anchors.get(j).getName();
             stringW = font.getStringWidth(message) / 2;
 
             if (btn.isHovered()) {
@@ -415,6 +396,7 @@ public class MainScreen extends Screen {
                 drawCenteredString(matrix, font, message, x, y - 11, colorWhite);
             }
         }
+*/
 
         //Toggle List button draw message
         x = btnToggleSoundsList.x;
@@ -474,9 +456,8 @@ public class MainScreen extends Screen {
             return false; //last button is on the bottom
         }
 
-        for (int i = 0; i < size; i++) {
-            Button b = (Button) buttons.get(i);
-            Widget psb = soundButtonList.get(b);
+/*
+        soundButtonList.forEach((b, psb) -> {
             if (direction > 0) {
                 b.y = b.y + (b.getHeightRealms() + 1);
                 psb.y = psb.y + (b.getHeightRealms() + 1);
@@ -492,7 +473,8 @@ public class MainScreen extends Screen {
                 b.visible = false;
                 psb.visible = false;
             }
-        }
+        });
+*/
         return true;
     }
 
@@ -507,9 +489,8 @@ public class MainScreen extends Screen {
             return false; //last button is on the bottom
         }
 
-        for (int i = 0; i < size; i++) {
-            Button b = filteredButtons.get(i);
-            Widget psb = soundButtonList.get(b);
+/*
+        soundButtonList.forEach((b, psb) -> {
             if (direction > 0) {
                 b.y = b.y + (b.getHeightRealms() + 1);
                 psb.y = psb.y + (b.getHeightRealms() + 1);
@@ -525,16 +506,18 @@ public class MainScreen extends Screen {
                 b.visible = false;
                 psb.visible = false;
             }
-        }
+        });
+*/
         return true;
     }
 
     private void updateText() {
         int buttonH = getY() + 46;
+        int i = 0;
         Object[] soundName = soundsList.toArray();
         filteredButtons.clear();
-        for (int i = 0; i < soundsList.size(); i++) {
-            Button b = (Button) buttons.get(i);
+/*
+            for (Button b : soundButtonList.keySet()) {
             Widget psb = soundButtonList.get(b);
 
             if (soundName[i].toString().contains(searchBar.getText())) {
@@ -552,7 +535,9 @@ public class MainScreen extends Screen {
                 //psb.active = true;
                 psb.visible = false;
             }
+            i++;
         }
+*/
     }
 
     @Override
@@ -599,7 +584,7 @@ public class MainScreen extends Screen {
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
-    int getX() {
+    private int getX() {
         return (this.width - xSize) / 2;
     }
 
@@ -612,7 +597,7 @@ public class MainScreen extends Screen {
         return new BlockPos(player.getX(), player.getY(), player.getZ());
     }
 
-    private  <T extends Widget> void addListener(T p_addButton_1_) {
+    /*private  <T extends Widget> void addListener(T p_addButton_1_) {
         super.children.add(p_addButton_1_);
-    }
+    }*/
 }
