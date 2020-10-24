@@ -27,7 +27,7 @@ public class WorldEventsHandler {
     public static void onWorldLoad(WorldEvent.Load event) {
 
         //TODO loads the sound muffled, should refer to SoundEventHandler not MainScreen
-        JsonIO.loadMuffledMap(new File(fileName)).forEach((R, V) -> MainScreen.setMuffledMap(new ResourceLocation(R), V));
+        //JsonIO.loadMuffledMap(new File(fileName)).forEach((R, V) -> MainScreen.setMuffledMap(new ResourceLocation(R), V));
 
         //Fill the sound list with all the sounds registered
         SoundEventHandler.AddAllSounds(ForgeRegistries.SOUND_EVENTS.getKeys());

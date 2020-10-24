@@ -19,7 +19,7 @@ public class InvButton extends AbstractButton {
     private final int buttonX;
 
     public InvButton(ContainerScreen parentGui, int x, int y) {
-        super(x + parentGui.getGuiLeft() + 11, parentGui.getGuiTop() + y - 2, 10, 10, StringTextComponent.EMPTY);
+        super(x + parentGui.getGuiLeft() + 11, parentGui.getGuiTop() + y - 2, 11, 11, StringTextComponent.EMPTY);
         parent = parentGui;
         buttonX = x;
     }
@@ -35,7 +35,7 @@ public class InvButton extends AbstractButton {
         if (this.visible) {
             x = buttonX + parent.getGuiLeft() + 11;
             minecraft.getTextureManager().bindTexture(MainScreen.getGUI());
-            blit(matrix, x, y, 0f, 0f, 10, 10, 80, 80);
+            blit(matrix, x, y, 43f, 202f, 11, 11, 256, 256);
             if (mouseX >= x && mouseY >= this.y && mouseX < x + this.width && mouseY < this.y + this.height) {
                 drawCenteredString(matrix, minecraft.fontRenderer, "Muffler", x + 5, this.y + this.height + 1, 16777215);
             }

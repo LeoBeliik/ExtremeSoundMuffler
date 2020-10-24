@@ -18,6 +18,8 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -28,10 +30,9 @@ import java.util.*;
 @OnlyIn(Dist.CLIENT)
 public class MainScreen extends Screen {
 
-    static final Minecraft minecraft = Minecraft.getInstance();
-    static final ResourceLocation GUI = new ResourceLocation(SoundMuffler.MODID, "textures/gui/sm_gui.png");
-    final int colorViolet = 24523966;
-
+    private static final Minecraft minecraft = Minecraft.getInstance();
+    private static final ResourceLocation GUI = new ResourceLocation(SoundMuffler.MODID, "textures/gui/sm_gui.png");
+    private final int colorViolet = 24523966;
     private static boolean isMuffling = true;
     private static final Map<ResourceLocation, Double> muffledMap = new HashMap<>();
     private static final List<Anchor> anchors = new ArrayList<>();
@@ -40,7 +41,7 @@ public class MainScreen extends Screen {
     private static String screenTitle = "";
     private static ITextComponent toggleSoundsListMessage;
     private final int xSize = 256;
-    private final int ySize = 202;
+    private final int ySize = 200;
     private final int colorWhite = 16777215;
     private final ITextComponent emptyText = StringTextComponent.EMPTY;
     private final String mainTitle = "ESM - Main Screen";
@@ -60,8 +61,7 @@ public class MainScreen extends Screen {
     private Anchor anchor;
     private SortedSet<ResourceLocation> soundsList = SoundEventHandler.getSoundsList();
 
-
-    MainScreen() {
+    private MainScreen() {
         super(new StringTextComponent(""));
     }
 
@@ -125,8 +125,8 @@ public class MainScreen extends Screen {
     @Override
     protected void init() {
         super.init();
-        minYButton = getY() + 37;
-        maxYButton = getY() + 148;
+        minYButton = getY() + 44;
+        maxYButton = getY() + 164;
 
         addListener(btnToggleSoundsList = new Button(getX() + 23, getY() + 181, 43, 13, toggleSoundsListMessage, b -> {
             if (btnToggleSoundsList.getMessage().equals(ITextComponent.getTextComponentOrEmpty("Recent"))) {
@@ -188,13 +188,13 @@ public class MainScreen extends Screen {
             btnEnableTitleEdit.visible = false;
         }
 
-        addButton(searchBar = new TextFieldWidget(font, getX() + 75, getY() + 168, 105, 10, emptyText));
+        addButton(searchBar = new TextFieldWidget(font, getX() + 74, getY() + 183, 119, 13, emptyText));
         searchBar.setEnableBackgroundDrawing(false);
 
     }
 
     private void addSoundButtons() {
-        int buttonH = getY() + 46;
+        int buttonH = minYButton;
         anchor = getAnchorByName(screenTitle);
 
         if (!screenTitle.equals(mainTitle) && anchor == null) {
@@ -218,22 +218,22 @@ public class MainScreen extends Screen {
 
         for (ResourceLocation sound : soundsList) {
             PlaySoundButton btnPlaySound = new PlaySoundButton(getX() + 233, buttonH, new SoundEvent(sound));
-            Button btnToggleSound = new Button(getX() + 221, buttonH, 10, 10, emptyText, b -> {
+            Button btnToggleSound = new Button(getX() + 221, buttonH, 11, 11, emptyText, b -> {
                 double volume = 0.1F; //slider.getVolume(); //TODO make the slider prettier, with a gradient bg and things                    slider = new MuffledSlider(getX() + 14, b.y, 100, 15, ITextComponent.getTextComponentOrEmpty("Volume"), volume);
-                addListener(slider = new MuffledSlider(getX() + 14, b.y, 100, 15, ITextComponent.getTextComponentOrEmpty("Volume"), volume));
+                //addListener(slider = new MuffledSlider(getX() + 14, b.y, 100, 15, ITextComponent.getTextComponentOrEmpty("Volume"), volume));
                 if (b.getFGColor() == colorViolet) {
-                    slider.visible = true; //TODO make slider functional, probably in their own class
+                    //slider.visible = true; //TODO make slider functional, probably in their own class
                     for (int i = 0; i < 100; i++) {
                     }
-                    volume = slider.getVolume();
-                    slider.visible = false;
+                    //volume = slider.getVolume();
+                    //slider.visible = false;
                     if (screenTitle.equals(mainTitle)) {
                         muffledMap.remove(sound);
                     } else {
                         anchor.removeSound(sound);
                     }
                     b.setFGColor(colorWhite);
-                    btnPlaySound.active = true;
+                    //btnPlaySound.active = true;
                 } else {
                     if (screenTitle.equals(mainTitle)) {
                         muffledMap.put(sound, volume);
@@ -241,7 +241,7 @@ public class MainScreen extends Screen {
                         anchor.addSound(sound, volume);
                     }
                     b.setFGColor(colorViolet);
-                    btnPlaySound.active = false;
+                    //btnPlaySound.active = false;
                 }
             });
 
@@ -253,7 +253,7 @@ public class MainScreen extends Screen {
                 btnPlaySound.active = false;
             }
 
-            buttonH += btnToggleSound.getHeightRealms() + 1;
+            buttonH += btnToggleSound.getHeightRealms() + 2;
             btnToggleSound.visible = btnToggleSound.y <= maxYButton;
             btnPlaySound.visible = btnPlaySound.y <= maxYButton;
 
@@ -317,7 +317,7 @@ public class MainScreen extends Screen {
 
             ResourceLocation rs = (ResourceLocation) soundsList.toArray()[i];
             x = getX() + 14;
-            y = btn.y + 2;
+            y = btn.y + 4;
             stringW = 205;
             message = font.func_238412_a_(rs.getPath() + ":" + rs.getNamespace(), stringW); //trim to width
             String fullMessage = rs.getPath() + ":" + rs.getNamespace();
@@ -329,8 +329,8 @@ public class MainScreen extends Screen {
             v = btn.getFGColor() == colorViolet ? 213F : 202F;
             minecraft.getTextureManager().bindTexture(GUI);
 
-            blit(matrix, getX() + 221, btn.y + 1, 43F, v, 11, 11, xSize, xSize); //muffle button
-            blit(matrix, getX() + 233, btn.y + 1, 32F, 202F, 11, 11, xSize, xSize); //play button
+            blit(matrix, getX() + 221, btn.y + 2, 43F, v, 11, 11, xSize, xSize); //muffle button
+            blit(matrix, getX() + 233, btn.y + 2, 32F, 202F, 11, 11, xSize, xSize); //play button
 
             //render full names for the trim sound names when hovered
             if (font.getStringWidth(fullMessage) < stringW) {
@@ -436,6 +436,14 @@ public class MainScreen extends Screen {
         y = editTitleBar.y;
         if (editTitleBar.visible) {
             fill(matrix, x - 2, y - 4, x + editTitleBar.getWidth() + 3, btnAccept.y + 22, darkBG);
+        }
+
+        //Draw Searchbar prompt text
+        x = searchBar.x;
+        y = searchBar.y;
+        ITextComponent searchHint = (new TranslationTextComponent("gui.recipebook.search_hint")).mergeStyle(TextFormatting.ITALIC).mergeStyle(TextFormatting.GRAY); //Stolen from Vanilla ;)
+        if (!this.searchBar.isFocused() && this.searchBar.getText().isEmpty()) {
+            drawString(matrix, font, searchHint, x + 1, y, -1);
         }
     }
 
