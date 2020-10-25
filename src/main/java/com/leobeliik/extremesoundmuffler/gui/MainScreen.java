@@ -40,7 +40,7 @@ public class MainScreen extends Screen implements ISoundLists {
     private final int xSize = 256;
     private final int ySize = 200;
     private final int colorWhite = 16777215;
-    private final int colorViolet = 24523966;
+    private final int colorViolet = 0xffff00;
     private final boolean isAnchorsDisabled = Config.getDisableAchors().get();
     private final ITextComponent emptyText = StringTextComponent.EMPTY;
     private final String mainTitle = "ESM - Main Screen";
@@ -213,7 +213,7 @@ public class MainScreen extends Screen implements ISoundLists {
 
         for (ResourceLocation sound : soundsList) {
             ITextComponent message = ITextComponent.getTextComponentOrEmpty(sound.getPath() + ":" + sound.getNamespace());
-            volumeSlider = new MuffledSlider(getX() + 13, buttonH + 2, 205, 11, sound, 1D, screenTitle, anchor);
+            volumeSlider = new MuffledSlider(getX() + 13, buttonH + 2, 205, 11, sound, screenTitle, anchor);
 
             boolean muffledAnchor = anchor != null && screenTitle.equals(anchor.getName()) && !anchor.getMuffledSounds().isEmpty() && anchor.getMuffledSounds().containsKey(sound);
             boolean muffledScreen = screenTitle.equals(mainTitle) && !muffledSounds.isEmpty() && muffledSounds.containsKey(sound);
