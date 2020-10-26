@@ -59,7 +59,7 @@ public class SoundMuffler {
     @OnlyIn(Dist.CLIENT)
     public void onGuiInit(GuiScreenEvent.InitGuiEvent.Post event) {
         Screen screen = event.getGui();
-        if (Config.getDisableInventoryButton().get() || screen instanceof CreativeScreen || event.getWidgetList() == null) {
+        if (Config.getDisableInventoryButton() || screen instanceof CreativeScreen || event.getWidgetList() == null) {
             return;
         }
         try {

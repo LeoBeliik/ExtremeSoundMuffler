@@ -34,11 +34,15 @@ public class InvButton extends AbstractButton {
     public void render(MatrixStack matrix, int mouseX, int mouseY, float partialTicks) {
         if (this.visible) {
             x = buttonX + parent.getGuiLeft() + 11;
-            minecraft.getTextureManager().bindTexture(MainScreen.getGUI());
+            minecraft.getTextureManager().bindTexture(MainScreen.GUI);
             blit(matrix, x, y, 43f, 202f, 11, 11, 256, 256);
-            if (mouseX >= x && mouseY >= this.y && mouseX < x + this.width && mouseY < this.y + this.height) {
-                drawCenteredString(matrix, minecraft.fontRenderer, "Muffler", x + 5, this.y + this.height + 1, 16777215);
+            if (this.isHovered(mouseX, mouseY)) {
+                drawCenteredString(matrix, minecraft.fontRenderer, "Muffler", x + 5, this.y + this.height + 1, 0xffffff);
             }
         }
+    }
+
+    private boolean isHovered(int mouseX, int mouseY) {
+        return mouseX >= x && mouseY >= this.y && mouseX < x + this.width && mouseY < this.y + this.height;
     }
 }

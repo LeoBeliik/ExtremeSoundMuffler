@@ -54,7 +54,7 @@ public class SoundEventHandler implements ISoundLists {
             }
 
             //If Anchors are disabled in config
-            if (Config.getDisableAchors().get()) {
+            if (Config.getDisableAchors()) {
                 return;
             }
 

@@ -3,7 +3,6 @@ package com.leobeliik.extremesoundmuffler;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.io.WritingMode;
 import com.leobeliik.extremesoundmuffler.utils.eventHandlers.SoundEventHandler;
-import com.leobeliik.extremesoundmuffler.utils.eventHandlers.WorldEventsHandler;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.common.Mod;
 
@@ -20,6 +19,7 @@ public class Config {
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> forbiddenSounds;
     private static final ForgeConfigSpec.BooleanValue disableInventoryButton;
     private static final ForgeConfigSpec.BooleanValue disableAnchors;
+    private static final ForgeConfigSpec.DoubleValue defaultMuteVolume;
 
     static {
         CLIENT_BUILDER.comment("general settings").push(CATEGORY_GENERAL);
@@ -31,6 +31,8 @@ public class Config {
                 .define("disableInventoryButton", false);
 
         disableAnchors = CLIENT_BUILDER.comment("Disable the anchors?").define("disableAnchors", false);
+
+        defaultMuteVolume = CLIENT_BUILDER.comment("Volume set when pressed the mute button").defineInRange("defaultMuteVolume", 0, 0, 0.9);
 
         CLIENT_BUILDER.pop();
         CLIENT_CONFIG = CLIENT_BUILDER.build();
@@ -49,11 +51,15 @@ public class Config {
         SoundEventHandler.forbiddenSounds().addAll(forbiddenSounds.get());
     }
 
-    static ForgeConfigSpec.BooleanValue getDisableInventoryButton() {
-        return disableInventoryButton;
+    static boolean getDisableInventoryButton() {
+        return disableInventoryButton.get();
     }
 
-    public static ForgeConfigSpec.BooleanValue getDisableAchors() {
-        return disableAnchors;
+    public static boolean getDisableAchors() {
+        return disableAnchors.get();
+    }
+
+    public static double getDefaultMuteVolume() {
+        return defaultMuteVolume.get();
     }
 }

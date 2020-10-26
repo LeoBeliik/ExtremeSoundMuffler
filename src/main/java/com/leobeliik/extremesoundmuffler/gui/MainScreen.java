@@ -10,10 +10,8 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -30,18 +28,16 @@ import java.util.*;
 public class MainScreen extends Screen implements ISoundLists {
 
     private static final Minecraft minecraft = Minecraft.getInstance();
-    private static final ResourceLocation GUI = new ResourceLocation(SoundMuffler.MODID, "textures/gui/sm_gui.png");
+    public static final ResourceLocation GUI = new ResourceLocation(SoundMuffler.MODID, "textures/gui/sm_gui.png");
     private static final List<Anchor> anchors = new ArrayList<>();
     private static final List<Button> filteredButtons = new ArrayList<>();
-    private static final Map<Button, PlaySoundButton> soundButtonList = new HashMap<>();
     private static boolean isMuffling = true;
     private static String screenTitle = "";
     private static ITextComponent toggleSoundsListMessage;
     private final int xSize = 256;
     private final int ySize = 200;
-    private final int colorWhite = 16777215;
-    private final int colorViolet = 0xffff00;
-    private final boolean isAnchorsDisabled = Config.getDisableAchors().get();
+    private final int colorWhite = 0xffffff;
+    private final boolean isAnchorsDisabled = Config.getDisableAchors();
     private final ITextComponent emptyText = StringTextComponent.EMPTY;
     private final String mainTitle = "ESM - Main Screen";
     private int minYButton;
@@ -72,20 +68,8 @@ public class MainScreen extends Screen implements ISoundLists {
         open("ESM - Main Screen", ITextComponent.getTextComponentOrEmpty("Recent"));
     }
 
-    public static ResourceLocation getGUI() {
-        return GUI;
-    }
-
     public static boolean isMuffled() {
         return isMuffling;
-    }
-
-    public static Map<ResourceLocation, Double> getmuffledSounds() {
-        return muffledSounds;
-    }
-
-    public static void setmuffledSounds(ResourceLocation name, Double volume) {
-        muffledSounds.put(name, volume);
     }
 
     public static List<Anchor> getAnchors() {
@@ -196,7 +180,6 @@ public class MainScreen extends Screen implements ISoundLists {
             return;
         }
 
-        soundButtonList.clear();
         if (btnToggleSoundsList.getMessage().equals(ITextComponent.getTextComponentOrEmpty("Recent"))) {
             if (screenTitle.equals(mainTitle) && !muffledSounds.isEmpty()) {
                 soundsList.addAll(muffledSounds.keySet());
@@ -212,14 +195,14 @@ public class MainScreen extends Screen implements ISoundLists {
         }
 
         for (ResourceLocation sound : soundsList) {
-            ITextComponent message = ITextComponent.getTextComponentOrEmpty(sound.getPath() + ":" + sound.getNamespace());
-            volumeSlider = new MuffledSlider(getX() + 13, buttonH + 2, 205, 11, sound, screenTitle, anchor);
+            double volume = muffledSounds.get(sound) == null ? 1D : muffledSounds.get(sound);
+            volumeSlider = new MuffledSlider(getX() + 11, buttonH + 2, 205, 11, volume, sound, screenTitle, anchor);
 
             boolean muffledAnchor = anchor != null && screenTitle.equals(anchor.getName()) && !anchor.getMuffledSounds().isEmpty() && anchor.getMuffledSounds().containsKey(sound);
             boolean muffledScreen = screenTitle.equals(mainTitle) && !muffledSounds.isEmpty() && muffledSounds.containsKey(sound);
 
             if (muffledAnchor || muffledScreen) {
-                volumeSlider.setFGColor(colorViolet);
+                volumeSlider.setFGColor(0xffff00);
             }
 
             buttonH += volumeSlider.getHeightRealms() + 2;
@@ -564,7 +547,7 @@ public class MainScreen extends Screen implements ISoundLists {
         }
         //Close screen when press "E" or the mod hotkey outside the search bar or edit title bar
         if (!searchBar.isFocused() && !editTitleBar.isFocused() && (key1 == 69 || key1 == SoundMuffler.getHotkey())) {
-            onClose();
+            closeScreen();
             return true;
         }
         return super.keyPressed(key1, key2, key3);
@@ -584,6 +567,12 @@ public class MainScreen extends Screen implements ISoundLists {
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        MuffledSlider.showSlider = false;
+        return super.mouseReleased(mouseX, mouseY, button);
+    }
+
     private int getX() {
         return (this.width - xSize) / 2;
     }
@@ -597,7 +586,4 @@ public class MainScreen extends Screen implements ISoundLists {
         return new BlockPos(player.getX(), player.getY(), player.getZ());
     }
 
-    /*private  <T extends Widget> void addListener(T p_addButton_1_) {
-        super.children.add(p_addButton_1_);
-    }*/
 }
