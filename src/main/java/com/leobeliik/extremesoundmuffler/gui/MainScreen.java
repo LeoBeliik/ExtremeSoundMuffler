@@ -3,13 +3,13 @@ package com.leobeliik.extremesoundmuffler.gui;
 import com.leobeliik.extremesoundmuffler.Config;
 import com.leobeliik.extremesoundmuffler.SoundMuffler;
 import com.leobeliik.extremesoundmuffler.gui.buttons.MuffledSlider;
-import com.leobeliik.extremesoundmuffler.gui.buttons.PlaySoundButton;
 import com.leobeliik.extremesoundmuffler.utils.Anchor;
 import com.leobeliik.extremesoundmuffler.utils.ISoundLists;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -22,7 +22,9 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @OnlyIn(Dist.CLIENT)
 public class MainScreen extends Screen implements ISoundLists {
@@ -30,7 +32,7 @@ public class MainScreen extends Screen implements ISoundLists {
     private static final Minecraft minecraft = Minecraft.getInstance();
     public static final ResourceLocation GUI = new ResourceLocation(SoundMuffler.MODID, "textures/gui/sm_gui.png");
     private static final List<Anchor> anchors = new ArrayList<>();
-    private static final List<Button> filteredButtons = new ArrayList<>();
+    private List<Widget> filteredButtons = new ArrayList<>();
     private static boolean isMuffling = true;
     private static String screenTitle = "";
     private static ITextComponent toggleSoundsListMessage;
@@ -42,6 +44,7 @@ public class MainScreen extends Screen implements ISoundLists {
     private final String mainTitle = "ESM - Main Screen";
     private int minYButton;
     private int maxYButton;
+    private int index;
     private Button btnToggleMuffled;
     private Button btnDelete;
     private Button btnToggleSoundsList;
@@ -49,9 +52,12 @@ public class MainScreen extends Screen implements ISoundLists {
     private Button btnEnableTitleEdit;
     private Button btnAccept;
     private Button btnCancel;
+    private Button btnAnchor;
     private TextFieldWidget searchBar;
     private TextFieldWidget editTitleBar;
     private MuffledSlider volumeSlider;
+    private Button nextSounds;
+    private Button prevSounds;
     private Anchor anchor;
 
     private MainScreen() {
@@ -104,7 +110,8 @@ public class MainScreen extends Screen implements ISoundLists {
     @Override
     protected void init() {
         super.init();
-        minYButton = getY() + 44;
+
+        minYButton = getY() + 46;
         maxYButton = getY() + 164;
 
         addListener(btnToggleSoundsList = new Button(getX() + 23, getY() + 181, 43, 13, toggleSoundsListMessage, b -> {
@@ -170,6 +177,13 @@ public class MainScreen extends Screen implements ISoundLists {
         addButton(searchBar = new TextFieldWidget(font, getX() + 74, getY() + 183, 119, 13, emptyText));
         searchBar.setEnableBackgroundDrawing(false);
 
+        addListener(prevSounds = new Button(getX() + 10, getY() + 22, 13, 20, emptyText, b ->
+                listScroll(searchBar.getText().length() > 0 ? filteredButtons : buttons, -1)));
+
+        addListener(nextSounds = new Button(getX() + 233, getY() + 22, 13, 20, emptyText, b ->
+                listScroll(searchBar.getText().length() > 0 ? filteredButtons : buttons, 1)));
+
+        updateText();
     }
 
     private void addSoundButtons() {
@@ -195,8 +209,18 @@ public class MainScreen extends Screen implements ISoundLists {
         }
 
         for (ResourceLocation sound : soundsList) {
-            double volume = muffledSounds.get(sound) == null ? 1D : muffledSounds.get(sound);
-            volumeSlider = new MuffledSlider(getX() + 11, buttonH + 2, 205, 11, volume, sound, screenTitle, anchor);
+
+            double volume;
+
+            if (screenTitle.equals(mainTitle)) {
+                volume = muffledSounds.get(sound) == null ? 1D : muffledSounds.get(sound);
+            } else if (anchor != null) {
+                volume = anchor.getMuffledSounds().get(sound) == null ? 1D : muffledSounds.get(sound);
+            } else {
+                volume = 1D;
+            }
+
+            volumeSlider = new MuffledSlider(getX() + 11, buttonH, 205, 11, volume, sound, screenTitle, anchor);
 
             boolean muffledAnchor = anchor != null && screenTitle.equals(anchor.getName()) && !anchor.getMuffledSounds().isEmpty() && anchor.getMuffledSounds().containsKey(sound);
             boolean muffledScreen = screenTitle.equals(mainTitle) && !muffledSounds.isEmpty() && muffledSounds.containsKey(sound);
@@ -206,24 +230,17 @@ public class MainScreen extends Screen implements ISoundLists {
             }
 
             buttonH += volumeSlider.getHeightRealms() + 2;
-            volumeSlider.visible = volumeSlider.y <= maxYButton;
-            //btnPlaySound.visible = btnPlaySound.y <= maxYButton;
-            //volumeSlider.visible = btnPlaySound.y <= maxYButton;
-
-            //soundButtonList.put(btnToggleSound, btnPlaySound);
-            //addButton(btnToggleSound).setAlpha(0);
             addButton(volumeSlider);
+            volumeSlider.visible = buttons.indexOf(volumeSlider) < index + 10;
             addListener(volumeSlider.getBtnToggleSound());
             addListener(volumeSlider.getBtnPlaySound());
 
         }
-        //soundButtonList.forEach((v, k) -> addButton(k));
     }
 
     private void addAnchors() {
         int buttonW = getX() + 30;
         for (int i = 0; i <= 9; i++) {
-            Button btnAnchor;
             if (isAnchorsDisabled) {
                 String[] disabledMsg = {"-", "D", "i", "s", "a", "b", "l", "e", "d", "-"};
                 btnAnchor = new Button(buttonW, getY() + 24, 16, 16, ITextComponent.getTextComponentOrEmpty(String.valueOf(i)), b -> {
@@ -267,44 +284,6 @@ public class MainScreen extends Screen implements ISoundLists {
             return;
         }
 
-/*
-        for (Widget btn : soundButtonList.keySet()) {
-
-            if (!btn.visible) {
-                continue;
-            }
-
-            ResourceLocation rs = (ResourceLocation) soundsList.toArray()[i];
-            i++;
-            x = getX() + 14;
-            y = btn.y + 4;
-            stringW = 205;
-            message = font.func_238412_a_(rs.getPath() + ":" + rs.getNamespace(), stringW); //trim to width
-            String fullMessage = rs.getPath() + ":" + rs.getNamespace();
-            //draws the name of the sound; sound name : mod name
-            //font.drawString(matrix, message, x, y, btn.getFGColor());
-            minecraft.getTextureManager().bindTexture(GUI);
-
-            //if muffled
-            v = btn.getFGColor() == colorViolet ? 213F : 202F;
-            minecraft.getTextureManager().bindTexture(GUI);
-
-            blit(matrix, btn.x + 12, btn.y + 2, 32F, 202F, 11, 11, xSize, xSize); //play button
-            volumeSlider.renderGradient(matrix, volumeSlider.x, btn.y + 2, btn.x - 2, btn.y + 13); //Slider bg
-
-            //render full names for the trim sound names when hovered
-            */
-/*if (font.getStringWidth(fullMessage) < stringW) {
-                continue;
-            }
-            if (mouseX > x && mouseX < x + stringW && mouseY > y && mouseY < y + font.FONT_HEIGHT) {
-                fill(matrix, x - 2, y - 2, x + font.getStringWidth(fullMessage) + 2, y + font.FONT_HEIGHT + 2, -16777215);
-                font.drawString(matrix, fullMessage, x, y, btn.getFGColor());
-            }*//*
-
-        }
-*/
-
         //Delete button
         x = btnDelete.x + 8;
         y = btnDelete.y;
@@ -314,7 +293,6 @@ public class MainScreen extends Screen implements ISoundLists {
             fill(matrix, x - stringW - 2, y + 20, x + stringW + 2, y + 31, darkBG);
             drawCenteredString(matrix, font, message, x, y + 22, colorWhite);
         }
-
 
         //toggle muffled button
         x = btnToggleMuffled.x + 8;
@@ -349,6 +327,29 @@ public class MainScreen extends Screen implements ISoundLists {
             minecraft.getTextureManager().bindTexture(GUI);
             blit(matrix, x, y, 0, 69.45F, 11, 11, 88, 88); //set coordinates button
             blit(matrix, btnEnableTitleEdit.x, btnEnableTitleEdit.y, 32F, 213F, 11, 11, xSize, xSize); //change title button
+
+            for (Widget button : buttons) {
+                if (!(button instanceof MuffledSlider)) {
+                    if (button.getMessage().getString().equals(String.valueOf(anchor.getId()))) {
+                        blit(matrix, button.x - 5, button.y - 2, 71F, 202F, 27, 22, xSize, xSize); //fancy selected Anchor indicator
+                        break;
+                    }
+                }
+            }
+        }
+
+        for (Widget button : buttons) {
+            if (button.equals(btnAnchor) && button.isHovered()) {
+                x = button.x + 8;
+                y = button.y;
+                message = isAnchorsDisabled ? "Anchors are disabled" : button.getMessage().getString();
+                stringW = font.getStringWidth(message) / 2;
+
+                if (button.isHovered()) {
+                    fill(matrix, x - stringW - 2, y - 2, x + stringW + 2, y - 13, darkBG);
+                    drawCenteredString(matrix, font, message, x, y - 11, colorWhite);
+                }
+            }
         }
 
         if (btnSetCoord.isHovered() && !editTitleBar.visible) {
@@ -366,9 +367,8 @@ public class MainScreen extends Screen implements ISoundLists {
         }
 
         //draw anchor buttons tooltip
-/*
         for (int j = 0; j <= 9; j++) {
-            Widget btn = buttons.get(soundsList.size() * 2 + j);
+            Widget btn = buttons.get(soundsList.size() + j);
             x = btn.x + 8;
             y = btn.y;
             message = isAnchorsDisabled ? "Anchors are disabled" : anchors.get(j).getName();
@@ -379,7 +379,6 @@ public class MainScreen extends Screen implements ISoundLists {
                 drawCenteredString(matrix, font, message, x, y - 11, colorWhite);
             }
         }
-*/
 
         //Toggle List button draw message
         x = btnToggleSoundsList.x;
@@ -410,6 +409,28 @@ public class MainScreen extends Screen implements ISoundLists {
         if (!this.searchBar.isFocused() && this.searchBar.getText().isEmpty()) {
             drawString(matrix, font, searchHint, x + 1, y, -1);
         }
+
+        //next sounds button tooltip
+        x = nextSounds.x;
+        y = nextSounds.y;
+        message = "Next Sounds";
+        stringW = font.getStringWidth(message) / 2;
+
+        if (mouseX > x && mouseX < x + nextSounds.getWidth() && mouseY > y && mouseY < y + nextSounds.getHeightRealms()) {
+            fill(matrix, x - stringW - 2, y - 2, x + stringW + 2, y - 13, darkBG);
+            drawCenteredString(matrix, font, message, x, y - 11, colorWhite);
+        }
+
+        //previuos sounds button tooltip
+        x = prevSounds.x;
+        y = prevSounds.y;
+        message = "Previuos Sounds";
+        stringW = font.getStringWidth(message) / 2;
+
+        if (mouseX > x && mouseX < x + prevSounds.getWidth() && mouseY > y && mouseY < y + prevSounds.getHeightRealms()) {
+            fill(matrix, x - stringW - 2, y - 2, x + stringW + 2, y - 13, darkBG);
+            drawCenteredString(matrix, font, message, x, y - 11, colorWhite);
+        }
     }
 
     private void editTitle() {
@@ -421,106 +442,68 @@ public class MainScreen extends Screen implements ISoundLists {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double direction) {
-        if (searchBar.getText().length() > 0) {
-            return filteredScroll(filteredButtons.size(), direction);
-        } else {
-            return normalScroll(soundsList.size(), direction);
-        }
+        return searchBar.getText().length() > 0 ? listScroll(filteredButtons, direction * -1) : listScroll(buttons, direction * -1);
     }
 
-    private boolean normalScroll(int size, double direction) {
-        if (size <= 10) {
-            return false; //enough empty screen, no need for scroll
-        }
-        if (buttons.get(0).y >= minYButton && direction > 0f) {
-            return false; //first button is on the top
-        }
-        if (buttons.get(size - 1).y <= maxYButton && direction < 0f) {
-            return false; //last button is on the bottom
+    private boolean listScroll(List<Widget> buttonList, double direction) {
+        int buttonH = minYButton;
+
+        if (index <= 0 && direction < 0) {
+            return false;
         }
 
-/*
-        soundButtonList.forEach((b, psb) -> {
-            if (direction > 0) {
-                b.y = b.y + (b.getHeightRealms() + 1);
-                psb.y = psb.y + (b.getHeightRealms() + 1);
-            } else {
-                b.y = b.y - (b.getHeightRealms() + 1);
-                psb.y = psb.y - (b.getHeightRealms() + 1);
+        if ((index >= buttonList.size() - 10 || index >= soundsList.size() - 10) && direction > 0) {
+            return false;
+        }
+
+        index += direction > 0 ? 10 : -10;
+
+        for (Widget button : buttonList) {
+            if (button instanceof MuffledSlider) {
+                int buttonIndex = buttonList.indexOf(button);
+                button.visible = buttonIndex < index + 10 && buttonIndex >= index;
+
+                if (button.visible) {
+                    button.y = buttonH;
+                    buttonH += button.getHeightRealms() + 2;
+                }
+
+                ((MuffledSlider) button).getBtnToggleSound().y = button.y;
+                ((MuffledSlider) button).getBtnToggleSound().active = button.visible;
+                ((MuffledSlider) button).getBtnPlaySound().y = button.y;
+                ((MuffledSlider) button).getBtnPlaySound().active = button.visible;
             }
-
-            if (b.y >= minYButton && b.y <= maxYButton) {
-                b.visible = true;
-                psb.visible = true;
-            } else {
-                b.visible = false;
-                psb.visible = false;
-            }
-        });
-*/
-        return true;
-    }
-
-    private boolean filteredScroll(int size, double direction) {
-        if (size <= 10) {
-            return false; //enough empty screen, no need for scroll
-        }
-        if (filteredButtons.get(0).y >= minYButton && direction > 0f) {
-            return false; //first button is on the top
-        }
-        if (filteredButtons.get(size - 1).y <= maxYButton && direction < 0f) {
-            return false; //last button is on the bottom
         }
 
-/*
-        soundButtonList.forEach((b, psb) -> {
-            if (direction > 0) {
-                b.y = b.y + (b.getHeightRealms() + 1);
-                psb.y = psb.y + (b.getHeightRealms() + 1);
-            } else {
-                b.y = b.y - (b.getHeightRealms() + 1);
-                psb.y = psb.y - (b.getHeightRealms() + 1);
-            }
-
-            if (b.y >= minYButton && b.y <= maxYButton) {
-                b.visible = true;
-                psb.visible = true;
-            } else {
-                b.visible = false;
-                psb.visible = false;
-            }
-        });
-*/
         return true;
     }
 
     private void updateText() {
-        int buttonH = getY() + 46;
-        int i = 0;
-        Object[] soundName = soundsList.toArray();
+        int buttonH = minYButton;
         filteredButtons.clear();
-/*
-            for (Button b : soundButtonList.keySet()) {
-            Widget psb = soundButtonList.get(b);
 
-            if (soundName[i].toString().contains(searchBar.getText())) {
-                //b.active = true;
-                b.y = buttonH;
-                b.visible = b.y >= minYButton && b.y <= maxYButton;
-                //psb.active = true;
-                psb.y = buttonH;
-                psb.visible = b.y >= minYButton && b.y <= maxYButton;
-                filteredButtons.add(b);
-                buttonH += b.getHeightRealms() + 1;
-            } else {
-                //b.active = true;
-                b.visible = false;
-                //psb.active = true;
-                psb.visible = false;
+        for (Widget button : buttons) {
+            if (button instanceof MuffledSlider) {
+                if (button.getMessage().toString().contains(searchBar.getText())) {
+                    if (!filteredButtons.contains(button))
+                        filteredButtons.add(button);
+
+                    button.y = buttonH;
+                    buttonH += button.getHeightRealms() + 2;
+
+                    button.visible = button.y < maxYButton;
+                } else {
+                    button.visible = false;
+                }
+
+                ((MuffledSlider) button).getBtnToggleSound().y = button.y;
+                ((MuffledSlider) button).getBtnToggleSound().active = button.visible;
+                ((MuffledSlider) button).getBtnPlaySound().y = button.y;
+                ((MuffledSlider) button).getBtnPlaySound().active = button.visible;
+
             }
-            i++;
         }
-*/
+
     }
 
     @Override
@@ -548,6 +531,7 @@ public class MainScreen extends Screen implements ISoundLists {
         //Close screen when press "E" or the mod hotkey outside the search bar or edit title bar
         if (!searchBar.isFocused() && !editTitleBar.isFocused() && (key1 == 69 || key1 == SoundMuffler.getHotkey())) {
             closeScreen();
+            filteredButtons.clear();
             return true;
         }
         return super.keyPressed(key1, key2, key3);
@@ -571,6 +555,13 @@ public class MainScreen extends Screen implements ISoundLists {
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         MuffledSlider.showSlider = false;
         return super.mouseReleased(mouseX, mouseY, button);
+    }
+
+    @ParametersAreNonnullByDefault
+    @Override
+    public void resize(Minecraft minecraft, int width, int height) {
+        updateText();
+        super.resize(minecraft, width, height);
     }
 
     private int getX() {

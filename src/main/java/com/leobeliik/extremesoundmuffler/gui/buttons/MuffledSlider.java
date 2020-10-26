@@ -1,22 +1,26 @@
 package com.leobeliik.extremesoundmuffler.gui.buttons;
 
+import com.google.common.collect.ImmutableMap;
 import com.leobeliik.extremesoundmuffler.Config;
 import com.leobeliik.extremesoundmuffler.gui.MainScreen;
 import com.leobeliik.extremesoundmuffler.utils.Anchor;
 import com.leobeliik.extremesoundmuffler.utils.ISoundLists;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.ITextProperties;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.List;
 
 public class MuffledSlider extends Widget implements ISoundLists {
 
@@ -33,8 +37,8 @@ public class MuffledSlider extends Widget implements ISoundLists {
         super(x, y, width, height, ITextComponent.getTextComponentOrEmpty(sound.getPath() + ":" + sound.getNamespace()));
         this.sliderValue = sliderValue;
         this.sound = sound;
-        setMuffleButton(screenTitle, sound, anchor);
-        setPlaySoundButton(sound);
+        setBtnToggleSound(screenTitle, sound, anchor);
+        setBtnPlaySound(sound);
     }
 
     @ParametersAreNonnullByDefault
@@ -44,8 +48,8 @@ public class MuffledSlider extends Widget implements ISoundLists {
         minecraft.getTextureManager().bindTexture(MainScreen.GUI);
         drawGradient(matrixStack);
         float v = this.getFGColor() == 0xffff00 ? 213F : 202F;
-        blit(matrixStack, btnToggleSound.x, btnToggleSound.y, 43F, v, 11, 11, 256, 256); //muffle button
-        blit(matrixStack, btnPlaySound.x, btnPlaySound.y, 32F, 202F, 11, 11, 256, 256); //play button
+        blit(matrixStack, btnToggleSound.x, btnToggleSound.y, 43F, v, 11, 11, 256, 256); //muffle button bg
+        blit(matrixStack, btnPlaySound.x, btnPlaySound.y, 32F, 202F, 11, 11, 256, 256); //play button bg
         drawMessage(matrixStack, minecraft);
     }
 
@@ -54,8 +58,14 @@ public class MuffledSlider extends Widget implements ISoundLists {
         if (showSlider && this.getFGColor() == colorYellow) {
             drawCenteredString(matrixStack, font, "Volume: " + (int) (sliderValue * 100), this.x + (this.width / 2), this.y + 2, 0xffffff); //title
         } else {
-            String message = this.isHovered ? getMessage().getString() : getMessage().getStringTruncated(41);
-            font.drawStringWithShadow(matrixStack, message, this.x + 2, this.y + 2F, getFGColor()); //title
+            String msgTruncated;
+            if (this.isHovered) {
+                msgTruncated = getMessage().getString();
+                fill(matrixStack, this.x + this.width, this.y, this.x + font.getStringWidth(getMessage().getString()) + 2, this.y + font.FONT_HEIGHT + 2, -1325400064);
+            } else {
+                msgTruncated = font.func_238417_a_(getMessage(), 205).getString();
+            }
+            font.drawStringWithShadow(matrixStack, msgTruncated, this.x + 2, this.y + 2, getFGColor()); //title
         }
     }
 
@@ -68,7 +78,7 @@ public class MuffledSlider extends Widget implements ISoundLists {
         }
     }
 
-    private void setMuffleButton(String screenTitle, ResourceLocation sound, Anchor anchor) {
+    private void setBtnToggleSound(String screenTitle, ResourceLocation sound, Anchor anchor) {
         btnToggleSound = new Button(this.x + width + 5, this.y, 11, 11, StringTextComponent.EMPTY, b -> {
             if (getFGColor() == colorYellow) {
                 if (screenTitle.equals(mainTitle)) {
@@ -90,12 +100,12 @@ public class MuffledSlider extends Widget implements ISoundLists {
         });
     }
 
-    private void setPlaySoundButton(ResourceLocation sound) {
-        btnPlaySound = new PlaySoundButton(this.x + width + 17, this.y, new SoundEvent(sound));
-    }
-
     public Button getBtnToggleSound() {
         return btnToggleSound;
+    }
+
+    private void setBtnPlaySound(ResourceLocation sound) {
+        btnPlaySound = new PlaySoundButton(this.x + width + 17, this.y, new SoundEvent(sound));
     }
 
     public PlaySoundButton getBtnPlaySound() {
