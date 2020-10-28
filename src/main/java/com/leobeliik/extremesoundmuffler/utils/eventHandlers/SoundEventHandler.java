@@ -15,10 +15,8 @@ import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.TreeSet;
 
 public class SoundEventHandler implements ISoundLists {
 

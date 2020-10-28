@@ -12,7 +12,6 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -29,35 +28,26 @@ import java.util.Objects;
 @OnlyIn(Dist.CLIENT)
 public class MainScreen extends Screen implements ISoundLists {
 
-    private static final Minecraft minecraft = Minecraft.getInstance();
     public static final ResourceLocation GUI = new ResourceLocation(SoundMuffler.MODID, "textures/gui/sm_gui.png");
+
+    private static final Minecraft minecraft = Minecraft.getInstance();
     private static final List<Anchor> anchors = new ArrayList<>();
     private List<Widget> filteredButtons = new ArrayList<>();
     private static boolean isMuffling = true;
     private static String screenTitle = "";
     private static ITextComponent toggleSoundsListMessage;
     private final int xSize = 256;
-    private final int ySize = 200;
+    private final int ySize = 202;
     private final int colorWhite = 0xffffff;
     private final boolean isAnchorsDisabled = Config.getDisableAchors();
     private final ITextComponent emptyText = StringTextComponent.EMPTY;
     private final String mainTitle = "ESM - Main Screen";
-    private int minYButton;
-    private int maxYButton;
-    private int index;
-    private Button btnToggleMuffled;
-    private Button btnDelete;
-    private Button btnToggleSoundsList;
-    private Button btnSetCoord;
-    private Button btnEnableTitleEdit;
-    private Button btnAccept;
-    private Button btnCancel;
-    private Button btnAnchor;
-    private TextFieldWidget searchBar;
-    private TextFieldWidget editTitleBar;
+
+    private int minYButton, maxYButton, index;
+    private Button btnToggleMuffled, btnDelete, btnToggleSoundsList, btnSetAnchor, btnEditAnchor, nextSounds, prevSounds;
+    private Button btnAccept, btnCancel, btnAnchor;
+    private TextFieldWidget searchBar, editAnchorTitleBar, editAnchorX, editAnchorY, editAnchorZ, editAnchorRadious, editAnchorDimension;
     private MuffledSlider volumeSlider;
-    private Button nextSounds;
-    private Button prevSounds;
     private Anchor anchor;
 
     private MainScreen() {
@@ -140,38 +130,37 @@ public class MainScreen extends Screen implements ISoundLists {
                         if (anchor == null) {
                             return;
                         }
-                        anchor.getMuffledSounds().clear();
-                        anchor.setAnchorPos(null);
-                        anchor.setName("Anchor " + anchor.getId());
+                        anchor.deleteAnchor();
                         buttons.clear();
                         open(anchor.getName(), btnToggleSoundsList.getMessage());
                     }
                 })
         ).setAlpha(0);
 
-        addButton(btnSetCoord = new Button(getX() + 260, getY() + 42, 10, 10, emptyText, b ->
-                Objects.requireNonNull(getAnchorByName(screenTitle)).setAnchorPos(getPlayerPos())));
-        btnSetCoord.setAlpha(0);
+        addButton(btnSetAnchor = new Button(getX() + 260, getY() + 62, 11, 11, emptyText, b -> {
+            anchor = Objects.requireNonNull(getAnchorByName(screenTitle));
+            anchor.loadAnchor();
+        })).setAlpha(0);
 
-        addButton(editTitleBar = new TextFieldWidget(font, getX() + 258, getY() + 59, 84, 13, emptyText));
-        editTitleBar.visible = false;
+        addButton(editAnchorTitleBar = new TextFieldWidget(font, getX() + 258, getY() + 79, 84, 13, emptyText));
+        editAnchorTitleBar.visible = false;
 
-        addButton(btnAccept = new Button(getX() + 259, getY() + 75, 40, 20, ITextComponent.getTextComponentOrEmpty("Accept"), b -> {
+        addButton(btnAccept = new Button(getX() + 259, getY() + 95, 40, 20, ITextComponent.getTextComponentOrEmpty("Accept"), b -> {
             anchor = getAnchorByName(screenTitle);
-            if (!editTitleBar.getText().isEmpty() && anchor != null) {
-                anchor.setName(editTitleBar.getText());
-                screenTitle = editTitleBar.getText();
+            if (!editAnchorTitleBar.getText().isEmpty() && anchor != null) {
+                anchor.setName(editAnchorTitleBar.getText());
+                screenTitle = editAnchorTitleBar.getText();
                 editTitle();
             }
         })).visible = false;
 
-        addButton(btnCancel = new Button(getX() + 300, getY() + 75, 40, 20, ITextComponent.getTextComponentOrEmpty("Cancel"), b -> editTitle())).visible = false;
+        addButton(btnCancel = new Button(getX() + 300, getY() + 95, 40, 20, ITextComponent.getTextComponentOrEmpty("Cancel"), b -> editTitle())).visible = false;
 
-        addButton(btnEnableTitleEdit = new Button(getX() + 274, getY() + 42, 10, 10, emptyText, b -> editTitle())).setAlpha(0);
+        addButton(btnEditAnchor = new Button(getX() + 274, getY() + 62, 11, 11, emptyText, b -> editTitle())).setAlpha(0);
 
         if (screenTitle.equals(mainTitle)) {
-            btnSetCoord.visible = false;
-            btnEnableTitleEdit.visible = false;
+            btnSetAnchor.visible = false;
+            btnEditAnchor.visible = false;
         }
 
         addButton(searchBar = new TextFieldWidget(font, getX() + 74, getY() + 183, 119, 13, emptyText));
@@ -312,21 +301,33 @@ public class MainScreen extends Screen implements ISoundLists {
 
         //Anchor coordinates and set coord button
         Anchor anchor = getAnchorByName(screenTitle);
-        x = btnSetCoord.x;
-        y = btnSetCoord.y;
+        String dimensionName = "";
+        String radious;
+        x = btnSetAnchor.x;
+        y = btnSetAnchor.y;
 
         if (anchor != null) {
-            int xW = font.getStringWidth(anchor.getX()) + font.getStringWidth("X: ");
-            int yW = font.getStringWidth(anchor.getY()) + font.getStringWidth("Y: ");
-            int zW = font.getStringWidth(anchor.getZ()) + font.getStringWidth("Z: ");
-            stringW = Math.max(Math.max(xW, yW), Math.max(zW, 22));
-            fill(matrix, x - 5, y - 36, x + stringW + 6, y + 16, darkBG);
-            drawString(matrix, font, "X: " + anchor.getX(), x + 1, y - 30, colorWhite);
-            drawString(matrix, font, "Y: " + anchor.getY(), x + 1, y - 20, colorWhite);
-            drawString(matrix, font, "Z: " + anchor.getZ(), x + 1, y - 10, colorWhite);
+            stringW = font.getStringWidth("Dimension: ");
+            radious = anchor.getRadius() == 0 ? "" : String.valueOf(anchor.getRadius());
+            if (anchor.getDimension() != null) {
+                stringW += font.getStringWidth(anchor.getDimension().getPath());
+                dimensionName = anchor.getDimension().getPath();
+            }
+            fill(matrix, x - 5, y - 56, x + stringW + 6, y + 16, darkBG);
+            drawString(matrix, font, "X: " + anchor.getX(), x + 1, y - 50, colorWhite);
+            drawString(matrix, font, "Y: " + anchor.getY(), x + 1, y - 40, colorWhite);
+            drawString(matrix, font, "Z: " + anchor.getZ(), x + 1, y - 30, colorWhite);
+            drawString(matrix, font, "Radious: " + radious, x + 1, y - 20, colorWhite);
+            drawString(matrix, font, "Dimension: " + dimensionName, x + 1, y - 10, colorWhite);
             minecraft.getTextureManager().bindTexture(GUI);
             blit(matrix, x, y, 0, 69.45F, 11, 11, 88, 88); //set coordinates button
-            blit(matrix, btnEnableTitleEdit.x, btnEnableTitleEdit.y, 32F, 213F, 11, 11, xSize, xSize); //change title button
+
+            if (anchor.getAnchorPos() != null) {
+                btnEditAnchor.active = true;
+                blit(matrix, btnEditAnchor.x, btnEditAnchor.y, 32F, 213F, 11, 11, xSize, xSize); //change title button
+            } else {
+                btnEditAnchor.active = false;
+            }
 
             for (Widget button : buttons) {
                 if (!(button instanceof MuffledSlider)) {
@@ -338,6 +339,7 @@ public class MainScreen extends Screen implements ISoundLists {
             }
         }
 
+        //Anchor buttons tooltip
         for (Widget button : buttons) {
             if (button.equals(btnAnchor) && button.isHovered()) {
                 x = button.x + 8;
@@ -352,16 +354,19 @@ public class MainScreen extends Screen implements ISoundLists {
             }
         }
 
-        if (btnSetCoord.isHovered() && !editTitleBar.visible) {
-            fill(matrix, x - 5, y + 16, x + 62, y + 40, darkBG);
-            font.drawString(matrix, "Set", x, y + 20, colorWhite);
-            font.drawString(matrix, "coordinates", x, y + 30, colorWhite);
-        }
-
-        message = "Edit title";
+        message = "Set Anchor";
         stringW = font.getStringWidth(message) + 2;
 
-        if (btnEnableTitleEdit.isHovered() && !editTitleBar.visible) {
+        //Set Anchor tooltip
+        if (btnSetAnchor.isHovered() && !editAnchorTitleBar.visible) {
+            fill(matrix, x - 5, y + 16, x + stringW, y + 29, darkBG);
+            font.drawString(matrix, message, x, y + 18, colorWhite);
+        }
+
+        message = "Edit Anchor";
+        stringW = font.getStringWidth(message) + 2;
+
+        if (btnEditAnchor.active && btnEditAnchor.isHovered() && !editAnchorTitleBar.visible) {
             fill(matrix, x - 5, y + 16, x + stringW + 2, y + 29, darkBG);
             font.drawString(matrix, message, x, y + 18, colorWhite);
         }
@@ -396,10 +401,10 @@ public class MainScreen extends Screen implements ISoundLists {
         }
 
         //Edit title background
-        x = editTitleBar.x;
-        y = editTitleBar.y;
-        if (editTitleBar.visible) {
-            fill(matrix, x - 2, y - 4, x + editTitleBar.getWidth() + 3, btnAccept.y + 22, darkBG);
+        x = editAnchorTitleBar.x;
+        y = editAnchorTitleBar.y;
+        if (editAnchorTitleBar.visible) {
+            fill(matrix, x - 2, y - 4, x + editAnchorTitleBar.getWidth() + 3, btnAccept.y + 22, darkBG);
         }
 
         //Draw Searchbar prompt text
@@ -436,8 +441,8 @@ public class MainScreen extends Screen implements ISoundLists {
     private void editTitle() {
         btnAccept.visible = !btnAccept.visible;
         btnCancel.visible = !btnCancel.visible;
-        editTitleBar.setText(screenTitle);
-        editTitleBar.visible = !editTitleBar.visible;
+        editAnchorTitleBar.setText(screenTitle);
+        editAnchorTitleBar.visible = !editAnchorTitleBar.visible;
     }
 
     @Override
@@ -525,11 +530,11 @@ public class MainScreen extends Screen implements ISoundLists {
         //Search bar & Edit title bar looses focus when pressed "Enter" or "Intro"
         if (key1 == 257 || key1 == 335) {
             searchBar.setFocused2(false);
-            editTitleBar.setFocused2(false);
+            editAnchorTitleBar.setFocused2(false);
             return true;
         }
         //Close screen when press "E" or the mod hotkey outside the search bar or edit title bar
-        if (!searchBar.isFocused() && !editTitleBar.isFocused() && (key1 == 69 || key1 == SoundMuffler.getHotkey())) {
+        if (!searchBar.isFocused() && !editAnchorTitleBar.isFocused() && (key1 == 69 || key1 == SoundMuffler.getHotkey())) {
             closeScreen();
             filteredButtons.clear();
             return true;
@@ -544,8 +549,8 @@ public class MainScreen extends Screen implements ISoundLists {
                 searchBar.setText("");
                 updateText();
             }
-            if (editTitleBar.isFocused()) {
-                editTitleBar.setText("");
+            if (editAnchorTitleBar.isFocused()) {
+                editAnchorTitleBar.setText("");
             }
         }
         return super.mouseClicked(mouseX, mouseY, button);
@@ -570,11 +575,6 @@ public class MainScreen extends Screen implements ISoundLists {
 
     private int getY() {
         return (this.height - ySize) / 2;
-    }
-
-    private BlockPos getPlayerPos() {
-        BlockPos player = Objects.requireNonNull(minecraft.player).getPosition();
-        return new BlockPos(player.getX(), player.getY(), player.getZ());
     }
 
 }

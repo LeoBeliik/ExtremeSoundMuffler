@@ -1,8 +1,12 @@
 package com.leobeliik.extremesoundmuffler.utils;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 
+import java.util.Objects;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -11,7 +15,8 @@ public class Anchor {
     private final int id;
     private BlockPos anchorPos;
     private String name;
-    private double radius;
+    private ResourceLocation dimension;
+    private int radius;
     private SortedMap<ResourceLocation, Double> muffledSounds = new TreeMap<>();
 
     public Anchor(int id, String name) {
@@ -35,11 +40,11 @@ public class Anchor {
         return name;
     }
 
-    public double getRadius() {
+    public int getRadius() {
         return radius;
     }
 
-    public void setRadius(double radius) {
+    public void setRadius(int radius) {
         this.radius = radius;
     }
 
@@ -71,7 +76,38 @@ public class Anchor {
         return anchorPos != null ? String.valueOf(anchorPos.getZ()) : "";
     }
 
+    public ResourceLocation getDimension() {
+        return dimension;
+    }
+
+    public void setDimension(ResourceLocation dimension) {
+        this.dimension = dimension;
+    }
+
     public void removeSound(ResourceLocation sound) {
         muffledSounds.remove(sound);
+    }
+
+    public void loadAnchor() {
+        ClientPlayerEntity player = Objects.requireNonNull(Minecraft.getInstance().player);
+        this.setAnchorPos(player.getPosition());
+        this.setDimension(player.worldClient.getDimensionKey().getLocation());
+        this.setRadius(32);
+    }
+
+    public void deleteAnchor() {
+        this.setName("Anchor: " + this.getId());
+        this.setAnchorPos(null);
+        this.setDimension(null);
+        this.setRadius(0);
+        this.getMuffledSounds().clear();
+    }
+
+    public void editAnchor(String title, BlockPos playerPos, ResourceLocation dimension, int radious) {
+        this.setName(title);
+        this.setAnchorPos(playerPos);
+        this.setDimension(dimension);
+        this.setRadius(radious);
+
     }
 }
