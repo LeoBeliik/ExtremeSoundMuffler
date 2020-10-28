@@ -88,11 +88,11 @@ public class Anchor {
         muffledSounds.remove(sound);
     }
 
-    public void loadAnchor() {
+    public void setAnchor() {
         ClientPlayerEntity player = Objects.requireNonNull(Minecraft.getInstance().player);
         this.setAnchorPos(player.getPosition());
         this.setDimension(player.worldClient.getDimensionKey().getLocation());
-        this.setRadius(32);
+        this.setRadius(this.getRadius() == 0 ? 32 : this.getRadius());
     }
 
     public void deleteAnchor() {
@@ -103,11 +103,8 @@ public class Anchor {
         this.getMuffledSounds().clear();
     }
 
-    public void editAnchor(String title, BlockPos playerPos, ResourceLocation dimension, int radious) {
+    public void editAnchor(String title, int radious) {
         this.setName(title);
-        this.setAnchorPos(playerPos);
-        this.setDimension(dimension);
         this.setRadius(radious);
-
     }
 }

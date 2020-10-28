@@ -23,8 +23,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 @Mod("extremesoundmuffler")
 public class SoundMuffler {
@@ -32,8 +30,7 @@ public class SoundMuffler {
     public static final String MODID = "extremesoundmuffler";
     public static boolean isServer = false;
     private static KeyBinding openMuffleScreen;
-    private static final Logger LOGGER = LogManager.getLogger(MODID);
-
+//TODO, fix the number only textfield, fix the delete key on textfield
     public SoundMuffler() {
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.CLIENT_CONFIG);
         MinecraftForge.EVENT_BUS.register(this);
@@ -66,7 +63,8 @@ public class SoundMuffler {
             if (screen instanceof DisplayEffectsScreen) {
                 event.addWidget(new InvButton((ContainerScreen) screen, 64, 9));
             }
-        } catch (NullPointerException ignored) {}
+        } catch (NullPointerException ignored) {
+        }
     }
 
     @SubscribeEvent

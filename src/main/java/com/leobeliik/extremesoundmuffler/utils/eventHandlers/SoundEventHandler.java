@@ -1,6 +1,7 @@
 package com.leobeliik.extremesoundmuffler.utils.eventHandlers;
 
 import com.leobeliik.extremesoundmuffler.Config;
+import com.leobeliik.extremesoundmuffler.SoundMuffler;
 import com.leobeliik.extremesoundmuffler.gui.MainScreen;
 import com.leobeliik.extremesoundmuffler.utils.Anchor;
 import com.leobeliik.extremesoundmuffler.utils.ISoundLists;
@@ -14,10 +15,12 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
 import java.util.Set;
 import java.util.SortedSet;
 
+@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = SoundMuffler.MODID)
 public class SoundEventHandler implements ISoundLists {
 
     private static boolean isFromPSB = false;
@@ -25,6 +28,7 @@ public class SoundEventHandler implements ISoundLists {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     @OnlyIn(Dist.CLIENT)
     public static void onSoundPlaying(PlaySoundEvent event) {
+
         if (Minecraft.getInstance().world == null) {
             return;
         }
@@ -56,14 +60,14 @@ public class SoundEventHandler implements ISoundLists {
                 return;
             }
 
-            for (Anchor anchor : MainScreen.getAnchors()) {
+            /*for (Anchor anchor : MainScreen.getAnchors()) {
                 if (soundPos.withinDistance(anchor.getAnchorPos(), anchor.getRadius())) {
                     if (anchor.getMuffledSounds().containsKey(sound.getSoundLocation())) {
                         //TODO this is not ok i think
                         event.setResultSound(new MuffledSound(sound, muffledSounds.get(sound.getSoundLocation()).floatValue()));
                     }
                 }
-            }
+            }*/
         }
     }
 
