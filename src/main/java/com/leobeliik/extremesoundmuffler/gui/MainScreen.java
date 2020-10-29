@@ -11,6 +11,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.util.ColorHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -35,11 +36,12 @@ public class MainScreen extends Screen implements ISoundLists {
     private static final List<Anchor> anchors = new ArrayList<>();
     private List<Widget> filteredButtons = new ArrayList<>();
     private static boolean isMuffling = true;
+    private static String searchBarText = "";
     private static String screenTitle = "";
     private static ITextComponent toggleSoundsListMessage;
     private final int xSize = 256;
     private final int ySize = 202;
-    private final int colorWhite = 0xffffff;
+    private final int whiteText = 0xffffff;
     private final boolean isAnchorsDisabled = Config.getDisableAchors();
     private final ITextComponent emptyText = StringTextComponent.EMPTY;
     private final String mainTitle = "ESM - Main Screen";
@@ -50,19 +52,20 @@ public class MainScreen extends Screen implements ISoundLists {
     private TextFieldWidget searchBar, editAnchorTitleBar, editAnchorRadious;
     private MuffledSlider volumeSlider;
     private Anchor anchor;
-
+//TODO change the show sounds button to show what's currently happening, not what comes next
     private MainScreen() {
         super(new StringTextComponent(""));
     }
 
-    private static void open(String title, ITextComponent message) {
+    private static void open(String title, ITextComponent message, String searchMessage) {
         toggleSoundsListMessage = message;
         screenTitle = title;
+        searchBarText = searchMessage;
         minecraft.displayGuiScreen(new MainScreen());
     }
 
     public static void open() {
-        open("ESM - Main Screen", ITextComponent.getTextComponentOrEmpty("Recent"));
+        open("ESM - Main Screen", ITextComponent.getTextComponentOrEmpty("Recent"), "");
     }
 
     public static boolean isMuffled() {
@@ -88,7 +91,7 @@ public class MainScreen extends Screen implements ISoundLists {
         this.renderBackground(matrix);
         minecraft.getTextureManager().bindTexture(GUI);
         this.blit(matrix, getX(), getY(), 0, 0, xSize, ySize); //Main screen bounds
-        drawCenteredString(matrix, font, screenTitle, getX() + 128, getY() + 8, colorWhite); //Screen title
+        drawCenteredString(matrix, font, screenTitle, getX() + 128, getY() + 8, whiteText); //Screen title
         renderButtonsTextures(matrix, mouseX, mouseY, partialTicks);
         super.render(matrix, mouseX, mouseY, partialTicks);
     }
@@ -101,21 +104,21 @@ public class MainScreen extends Screen implements ISoundLists {
     @Override
     protected void init() {
         super.init();
-
+        minecraft.keyboardListener.enableRepeatEvents(true);
         minYButton = getY() + 46;
         maxYButton = getY() + 164;
 
         addListener(btnToggleSoundsList = new Button(getX() + 23, getY() + 181, 43, 13, toggleSoundsListMessage, b -> {
             if (btnToggleSoundsList.getMessage().equals(ITextComponent.getTextComponentOrEmpty("Recent"))) {
                 toggleSoundsListMessage = ITextComponent.getTextComponentOrEmpty("All");
-            } else if (!muffledSounds.isEmpty() && btnToggleSoundsList.getMessage().equals(ITextComponent.getTextComponentOrEmpty("All"))){
+            } else if (!muffledSounds.isEmpty() && btnToggleSoundsList.getMessage().equals(ITextComponent.getTextComponentOrEmpty("All"))) {
                 toggleSoundsListMessage = ITextComponent.getTextComponentOrEmpty("Muffled");
             } else {
                 toggleSoundsListMessage = ITextComponent.getTextComponentOrEmpty("Recent");
             }
             btnToggleSoundsList.setMessage(toggleSoundsListMessage);
             buttons.clear();
-            open(screenTitle, toggleSoundsListMessage);
+            open(screenTitle, toggleSoundsListMessage, searchBar.getText());
         }));
 
         addSoundButtons();
@@ -128,14 +131,14 @@ public class MainScreen extends Screen implements ISoundLists {
                     anchor = getAnchorByName(screenTitle);
                     if (screenTitle.equals(mainTitle)) {
                         muffledSounds.clear();
-                        open(mainTitle, btnToggleSoundsList.getMessage());
+                        open(mainTitle, btnToggleSoundsList.getMessage(), searchBar.getText());
                     } else {
                         if (anchor == null) {
                             return;
                         }
                         anchor.deleteAnchor();
                         buttons.clear();
-                        open(anchor.getName(), btnToggleSoundsList.getMessage());
+                        open(anchor.getName(), btnToggleSoundsList.getMessage(), searchBar.getText());
                     }
                 })
         ).setAlpha(0);
@@ -155,6 +158,7 @@ public class MainScreen extends Screen implements ISoundLists {
 
         addButton(searchBar = new TextFieldWidget(font, getX() + 74, getY() + 183, 119, 13, emptyText));
         searchBar.setEnableBackgroundDrawing(false);
+        searchBar.setText(searchBarText);
 
         addListener(prevSounds = new Button(getX() + 10, getY() + 22, 13, 20, emptyText, b ->
                 listScroll(searchBar.getText().length() > 0 ? filteredButtons : buttons, -1)));
@@ -181,7 +185,7 @@ public class MainScreen extends Screen implements ISoundLists {
                 soundsList.addAll(anchor.getMuffledSounds().keySet());
             }
             soundsList.addAll(recentSoundsList);
-        } else if (btnToggleSoundsList.getMessage().equals(ITextComponent.getTextComponentOrEmpty("All"))){
+        } else if (btnToggleSoundsList.getMessage().equals(ITextComponent.getTextComponentOrEmpty("All"))) {
             soundsList.clear();
             soundsList.addAll(ForgeRegistries.SOUND_EVENTS.getKeys());
         } else {
@@ -243,11 +247,11 @@ public class MainScreen extends Screen implements ISoundLists {
                         screenTitle = anchor.getName();
                     }
                     buttons.clear();
-                    open(screenTitle, btnToggleSoundsList.getMessage());
+                    open(screenTitle, btnToggleSoundsList.getMessage(), searchBar.getText());
                 });
                 int colorGreen = 3010605;
                 if (!anchors.isEmpty()) {
-                    btnAnchor.setFGColor(anchors.get(Integer.parseInt(btnAnchor.getMessage().getString())).getAnchorPos() != null ? colorGreen : colorWhite);
+                    btnAnchor.setFGColor(anchors.get(Integer.parseInt(btnAnchor.getMessage().getString())).getAnchorPos() != null ? colorGreen : whiteText);
                 }
             }
             addButton(btnAnchor).setAlpha(0);
@@ -293,7 +297,7 @@ public class MainScreen extends Screen implements ISoundLists {
         float v; //start x point of the texture
         String message; //Button message
         int stringW; //text width
-        int darkBG = -1325400064; //background color for Screen::fill()
+        int darkBG = ColorHelper.PackedColor.packColor(223, 0, 0, 0); //background color for Screen::fill()
 
         //Mute sound buttons and play sound buttons; Sound names
         if (buttons.size() < soundsList.size()) {
@@ -307,7 +311,7 @@ public class MainScreen extends Screen implements ISoundLists {
         stringW = font.getStringWidth(message) / 2;
         if (btnDelete.isHovered()) {
             fill(matrix, x - stringW - 2, y + 20, x + stringW + 2, y + 31, darkBG);
-            drawCenteredString(matrix, font, message, x, y + 22, colorWhite);
+            drawCenteredString(matrix, font, message, x, y + 22, whiteText);
         }
 
         //toggle muffled button
@@ -323,7 +327,7 @@ public class MainScreen extends Screen implements ISoundLists {
         stringW = font.getStringWidth(message) / 2;
         if (btnToggleMuffled.isHovered()) {
             fill(matrix, x - stringW - 2, y + 20, x + stringW + 2, y + 31, darkBG);
-            drawCenteredString(matrix, font, message, x, y + 22, colorWhite);
+            drawCenteredString(matrix, font, message, x, y + 22, whiteText);
         }
 
         //Anchor coordinates and set coord button
@@ -341,11 +345,11 @@ public class MainScreen extends Screen implements ISoundLists {
                 dimensionName = anchor.getDimension().getPath();
             }
             fill(matrix, x - 5, y - 56, x + stringW + 6, y + 16, darkBG);
-            drawString(matrix, font, "X: " + anchor.getX(), x + 1, y - 50, colorWhite);
-            drawString(matrix, font, "Y: " + anchor.getY(), x + 1, y - 40, colorWhite);
-            drawString(matrix, font, "Z: " + anchor.getZ(), x + 1, y - 30, colorWhite);
-            drawString(matrix, font, "Radious: " + radious, x + 1, y - 20, colorWhite);
-            drawString(matrix, font, "Dimension: " + dimensionName, x + 1, y - 10, colorWhite);
+            drawString(matrix, font, "X: " + anchor.getX(), x + 1, y - 50, whiteText);
+            drawString(matrix, font, "Y: " + anchor.getY(), x + 1, y - 40, whiteText);
+            drawString(matrix, font, "Z: " + anchor.getZ(), x + 1, y - 30, whiteText);
+            drawString(matrix, font, "Radious: " + radious, x + 1, y - 20, whiteText);
+            drawString(matrix, font, "Dimension: " + dimensionName, x + 1, y - 10, whiteText);
             minecraft.getTextureManager().bindTexture(GUI);
             blit(matrix, x, y, 0, 69.45F, 11, 11, 88, 88); //set coordinates button
 
@@ -372,7 +376,7 @@ public class MainScreen extends Screen implements ISoundLists {
         //Set Anchor tooltip
         if (btnSetAnchor.isHovered() && !editAnchorTitleBar.visible) {
             fill(matrix, x - 5, y + 16, x + stringW, y + 29, darkBG);
-            font.drawString(matrix, message, x, y + 18, colorWhite);
+            font.drawString(matrix, message, x, y + 18, whiteText);
         }
 
         message = "Edit Anchor";
@@ -380,7 +384,7 @@ public class MainScreen extends Screen implements ISoundLists {
 
         if (btnEditAnchor.visible && !editAnchorTitleBar.visible && btnEditAnchor.isHovered()) {
             fill(matrix, x - 5, y + 16, x + stringW + 2, y + 29, darkBG);
-            font.drawString(matrix, message, x, y + 18, colorWhite);
+            font.drawString(matrix, message, x, y + 18, whiteText);
         }
 
         //draw anchor buttons tooltip
@@ -393,7 +397,7 @@ public class MainScreen extends Screen implements ISoundLists {
 
             if (btn.isHovered()) {
                 fill(matrix, x - stringW - 2, y - 2, x + stringW + 2, y - 13, darkBG);
-                drawCenteredString(matrix, font, message, x, y - 11, colorWhite);
+                drawCenteredString(matrix, font, message, x, y - 11, whiteText);
             }
         }
 
@@ -402,7 +406,7 @@ public class MainScreen extends Screen implements ISoundLists {
         y = btnToggleSoundsList.y;
         if (btnToggleSoundsList.getMessage().equals(ITextComponent.getTextComponentOrEmpty("Recent"))) {
             message = "All";
-        } else if (!muffledSounds.isEmpty() && btnToggleSoundsList.getMessage().equals(ITextComponent.getTextComponentOrEmpty("All"))){
+        } else if (!muffledSounds.isEmpty() && btnToggleSoundsList.getMessage().equals(ITextComponent.getTextComponentOrEmpty("All"))) {
             message = "Muffled";
         } else {
             message = "Recent";
@@ -415,7 +419,7 @@ public class MainScreen extends Screen implements ISoundLists {
 
         if (mouseX > x && mouseX < x + 43 && mouseY > y && mouseY < y + 13) {
             fill(matrix, textX - 2, y + 20, textX + textW + 2, y + 22 + font.FONT_HEIGHT, darkBG);
-            font.drawString(matrix, text, textX, y + 22, colorWhite);
+            font.drawString(matrix, text, textX, y + 22, whiteText);
         }
 
         //Show Radious and Title text when editing Anchor and bg
@@ -423,8 +427,17 @@ public class MainScreen extends Screen implements ISoundLists {
         y = editAnchorTitleBar.y;
         if (editAnchorRadious.visible) {
             fill(matrix, x - 4, y - 4, editAnchorTitleBar.x + editAnchorTitleBar.getWidth() + 3, btnAccept.y + 23, darkBG);
-            font.drawString(matrix, "Title: ", x - 2, y + 1, colorWhite);
-            font.drawString(matrix, "Radious: ", x - 2, editAnchorRadious.y + 1, colorWhite);
+            font.drawString(matrix, "Title: ", x - 2, y + 1, whiteText);
+            font.drawString(matrix, "Radious: ", x - 2, editAnchorRadious.y + 1, whiteText);
+
+            x = editAnchorRadious.x + editAnchorRadious.getWidth();
+            y = editAnchorRadious.y;
+            message = "Range: 1 - 32";
+            stringW = font.getStringWidth(message);
+            if (editAnchorRadious.isHovered()) {
+                fill(matrix, x + 3, y, x + stringW + 6, y + 12, darkBG);
+                font.drawString(matrix, message, x + 5, y + 2, whiteText);
+            }
         }
 
         //Draw Searchbar prompt text
@@ -443,7 +456,7 @@ public class MainScreen extends Screen implements ISoundLists {
 
         if (mouseX > x && mouseX < x + nextSounds.getWidth() && mouseY > y && mouseY < y + nextSounds.getHeightRealms()) {
             fill(matrix, x - stringW - 2, y - 2, x + stringW + 2, y - 13, darkBG);
-            drawCenteredString(matrix, font, message, x, y - 11, colorWhite);
+            drawCenteredString(matrix, font, message, x, y - 11, whiteText);
         }
 
         //previuos sounds button tooltip
@@ -454,7 +467,7 @@ public class MainScreen extends Screen implements ISoundLists {
 
         if (mouseX > x && mouseX < x + prevSounds.getWidth() && mouseY > y && mouseY < y + prevSounds.getHeightRealms()) {
             fill(matrix, x - stringW - 2, y - 2, x + stringW + 2, y - 13, darkBG);
-            drawCenteredString(matrix, font, message, x, y - 11, colorWhite);
+            drawCenteredString(matrix, font, message, x, y - 11, whiteText);
         }
     }
 
@@ -467,6 +480,8 @@ public class MainScreen extends Screen implements ISoundLists {
 
         btnAccept.visible = !btnAccept.visible;
         btnCancel.visible = !btnCancel.visible;
+
+        editAnchorRadious.setTextColor(0xffffff);
     }
 
     @Override
@@ -513,7 +528,7 @@ public class MainScreen extends Screen implements ISoundLists {
 
         for (Widget button : buttons) {
             if (button instanceof MuffledSlider) {
-                if (button.getMessage().toString().contains(searchBar.getText())) {
+                if (button.getMessage().toString().contains(searchBar.getText().toLowerCase())) {
                     if (!filteredButtons.contains(button))
                         filteredButtons.add(button);
 
@@ -537,21 +552,41 @@ public class MainScreen extends Screen implements ISoundLists {
 
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        //pressed "backspace" inside search bar
-        if (keyCode == 259 && searchBar.isFocused()) {
-            updateText();
-            return super.keyReleased(keyCode, scanCode, modifiers);
-        }
-        //Type inside the search bar
-        if (searchBar != null && searchBar.isFocused()) {
-            updateText();
+
+        if (!editAnchorRadious.getText().isEmpty()) {
+            int radious = Integer.parseInt(editAnchorRadious.getText());
+            if (radious > 32 || radious < 1) {
+                editAnchorRadious.setTextColor(0xff0000);
+            } else {
+                editAnchorRadious.setTextColor(0xffffff);
+            }
+        } else {
+            editAnchorRadious.setTextColor(0xffffff);
         }
 
         return super.keyReleased(keyCode, scanCode, modifiers);
     }
 
     @Override
+    public boolean charTyped(char codePoint, int modifiers) {
+        if (this.searchBar.charTyped(codePoint, modifiers)) {
+            updateText();
+            return true;
+        }
+        return super.charTyped(codePoint, modifiers);
+    }
+
+    @Override
     public boolean keyPressed(int key1, int key2, int key3) {
+        //Radious only accepts numbers
+        editAnchorRadious.setValidator(this::isStringValid);
+
+        //Type inside the search bar
+        if (searchBar.keyPressed(key1, key2, key3)) {
+            updateText();
+            return true;
+        }
+
         //Search bar, Edit title bar & Edit Anchor radious bar looses focus when pressed "Enter" or "Intro"
         if (key1 == 257 || key1 == 335) {
             searchBar.setFocused2(false);
@@ -568,6 +603,11 @@ public class MainScreen extends Screen implements ISoundLists {
         }
 
         return super.keyPressed(key1, key2, key3);
+    }
+
+    //What you mean I stole this from Quark?
+    private boolean isStringValid(String s) {
+        return s.matches("[0-9]*(?:[0-9]*)?");
     }
 
     @Override

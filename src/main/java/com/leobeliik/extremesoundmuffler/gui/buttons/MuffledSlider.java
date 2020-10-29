@@ -50,12 +50,12 @@ public class MuffledSlider extends Widget implements ISoundLists {
         float v = this.getFGColor() == 0xffff00 ? 213F : 202F;
         blit(matrixStack, btnToggleSound.x, btnToggleSound.y, 43F, v, 11, 11, 256, 256); //muffle button bg
         blit(matrixStack, btnPlaySound.x, btnPlaySound.y, 32F, 202F, 11, 11, 256, 256); //play button bg
-        drawMessage(matrixStack, minecraft);
+        this.drawMessage(matrixStack, minecraft);
     }
 
     private void drawMessage(MatrixStack matrixStack, Minecraft minecraft) {
         FontRenderer font = minecraft.fontRenderer;
-        if (showSlider && this.getFGColor() == colorYellow) {
+        if (showSlider && this.isHovered) {
             drawCenteredString(matrixStack, font, "Volume: " + (int) (sliderValue * 100), this.x + (this.width / 2), this.y + 2, 0xffffff); //title
         } else {
             String msgTruncated;
@@ -144,7 +144,7 @@ public class MuffledSlider extends Widget implements ISoundLists {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (mouseX > this.x && mouseX < this.x + width && mouseY > this.y && mouseY < this.y + height && this.getFGColor() == colorYellow) {
+        if (this.isHovered && this.getFGColor() == colorYellow) {
             this.changeSliderValue(mouseX);
             showSlider = true;
         }
