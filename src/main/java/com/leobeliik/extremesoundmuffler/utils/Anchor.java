@@ -64,6 +64,10 @@ public class Anchor {
         muffledSounds.put(sound, volume);
     }
 
+    public void replaceSound(ResourceLocation sound, double volume) {
+        muffledSounds.replace(sound,volume);
+    }
+
     public String getX() {
         return anchorPos != null ? String.valueOf(anchorPos.getX()) : "";
     }

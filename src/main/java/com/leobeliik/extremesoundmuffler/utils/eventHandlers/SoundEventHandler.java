@@ -60,14 +60,13 @@ public class SoundEventHandler implements ISoundLists {
                 return;
             }
 
-            /*for (Anchor anchor : MainScreen.getAnchors()) {
-                if (soundPos.withinDistance(anchor.getAnchorPos(), anchor.getRadius())) {
+            for (Anchor anchor : MainScreen.getAnchors()) {
+                if (anchor.getAnchorPos() != null && soundPos.withinDistance(anchor.getAnchorPos(), anchor.getRadius())) {
                     if (anchor.getMuffledSounds().containsKey(sound.getSoundLocation())) {
-                        //TODO this is not ok i think
-                        event.setResultSound(new MuffledSound(sound, muffledSounds.get(sound.getSoundLocation()).floatValue()));
+                        event.setResultSound(new MuffledSound(sound, anchor.getMuffledSounds().get(sound.getSoundLocation()).floatValue()));
                     }
                 }
-            }*/
+            }
         }
     }
 

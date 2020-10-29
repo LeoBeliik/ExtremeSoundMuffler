@@ -29,9 +29,8 @@ public class WorldEventsHandler {
         SoundEventHandler.AddAllSounds(ForgeRegistries.SOUND_EVENTS.getKeys());
 
         //TODO maybe change this, make anchors not gen here or smting
-        for (int i = 0; i <= 9; i++) {
-            MainScreen.setAnchor(new Anchor(i, "Anchor: " + i));
-        }
+        MainScreen.setAnchors();
+
 
         //Save all the anchors and only the anchors
         //Simple muffled sounds still uses json save

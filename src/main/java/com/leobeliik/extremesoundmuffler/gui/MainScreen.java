@@ -47,12 +47,12 @@ public class MainScreen extends Screen implements ISoundLists {
     private final String mainTitle = "ESM - Main Screen";
 
     private int minYButton, maxYButton, index;
-    private Button btnToggleMuffled, btnDelete, btnToggleSoundsList, btnSetAnchor, btnEditAnchor, nextSounds, prevSounds;
-    private Button btnAccept, btnCancel, btnAnchor;
+    private Button btnToggleMuffled, btnDelete, btnToggleSoundsList, btnSetAnchor, btnEditAnchor, btnNextSounds, btnPrevSounds;
+    private Button btnAccept, btnCancel, btnAnchor, btnHelp;
     private TextFieldWidget searchBar, editAnchorTitleBar, editAnchorRadious;
     private MuffledSlider volumeSlider;
     private Anchor anchor;
-//TODO change the show sounds button to show what's currently happening, not what comes next
+
     private MainScreen() {
         super(new StringTextComponent(""));
     }
@@ -76,12 +76,14 @@ public class MainScreen extends Screen implements ISoundLists {
         return anchors;
     }
 
-    public static void setAnchor(Anchor anchor) {
-        anchors.add(anchor);
+    public static void setAnchors() {
+        for (int i = 0; i < 10; i++) {
+            anchors.add(new Anchor(i, "Anchor: " + i));
+        }
     }
 
     @Nullable
-    private static Anchor getAnchorByName(String name) {
+    public static Anchor getAnchorByName(String name) {
         return anchors.stream().filter(a -> a.getName().equals(name)).findFirst().orElse(null);
     }
 
@@ -160,10 +162,10 @@ public class MainScreen extends Screen implements ISoundLists {
         searchBar.setEnableBackgroundDrawing(false);
         searchBar.setText(searchBarText);
 
-        addListener(prevSounds = new Button(getX() + 10, getY() + 22, 13, 20, emptyText, b ->
+        addListener(btnPrevSounds = new Button(getX() + 10, getY() + 22, 13, 20, emptyText, b ->
                 listScroll(searchBar.getText().length() > 0 ? filteredButtons : buttons, -1)));
 
-        addListener(nextSounds = new Button(getX() + 233, getY() + 22, 13, 20, emptyText, b ->
+        addListener(btnNextSounds = new Button(getX() + 233, getY() + 22, 13, 20, emptyText, b ->
                 listScroll(searchBar.getText().length() > 0 ? filteredButtons : buttons, 1)));
 
         updateText();
@@ -204,7 +206,7 @@ public class MainScreen extends Screen implements ISoundLists {
             if (screenTitle.equals(mainTitle)) {
                 volume = muffledSounds.get(sound) == null ? 1D : muffledSounds.get(sound);
             } else if (anchor != null) {
-                volume = anchor.getMuffledSounds().get(sound) == null ? 1D : muffledSounds.get(sound);
+                volume = anchor.getMuffledSounds().get(sound) == null ? 1D : anchor.getMuffledSounds().get(sound);
             } else {
                 volume = 1D;
             }
@@ -272,14 +274,11 @@ public class MainScreen extends Screen implements ISoundLists {
 
                 if (radious > 32) {
                     radious = 32;
-                }
-
-                if (radious < 1) {
+                } else if (radious < 1) {
                     radious = 1;
                 }
 
                 anchor.editAnchor(editAnchorTitleBar.getText(), radious);
-                anchor.setName(editAnchorTitleBar.getText());
                 screenTitle = editAnchorTitleBar.getText();
                 editTitle(anchor);
             }
@@ -404,16 +403,10 @@ public class MainScreen extends Screen implements ISoundLists {
         //Toggle List button draw message
         x = btnToggleSoundsList.x;
         y = btnToggleSoundsList.y;
-        if (btnToggleSoundsList.getMessage().equals(ITextComponent.getTextComponentOrEmpty("Recent"))) {
-            message = "All";
-        } else if (!muffledSounds.isEmpty() && btnToggleSoundsList.getMessage().equals(ITextComponent.getTextComponentOrEmpty("All"))) {
-            message = "Muffled";
-        } else {
-            message = "Recent";
-        }
+        message = btnToggleSoundsList.getMessage().getString();
         int centerText = x + (btnToggleSoundsList.getWidth() / 2) - (font.getStringWidth(message) / 2);
         font.drawString(matrix, message, centerText, y + 3, 0);
-        String text = "Show " + message + " sounds";
+        String text = "Showing " + message + " sounds";
         int textW = font.getStringWidth(text);
         int textX = x + (btnToggleSoundsList.getWidth() / 2) - (textW / 2) + 6;
 
@@ -449,23 +442,23 @@ public class MainScreen extends Screen implements ISoundLists {
         }
 
         //next sounds button tooltip
-        x = nextSounds.x;
-        y = nextSounds.y;
+        x = btnNextSounds.x;
+        y = btnNextSounds.y;
         message = "Next Sounds";
         stringW = font.getStringWidth(message) / 2;
 
-        if (mouseX > x && mouseX < x + nextSounds.getWidth() && mouseY > y && mouseY < y + nextSounds.getHeightRealms()) {
+        if (mouseX > x && mouseX < x + btnNextSounds.getWidth() && mouseY > y && mouseY < y + btnNextSounds.getHeightRealms()) {
             fill(matrix, x - stringW - 2, y - 2, x + stringW + 2, y - 13, darkBG);
             drawCenteredString(matrix, font, message, x, y - 11, whiteText);
         }
 
         //previuos sounds button tooltip
-        x = prevSounds.x;
-        y = prevSounds.y;
+        x = btnPrevSounds.x;
+        y = btnPrevSounds.y;
         message = "Previuos Sounds";
         stringW = font.getStringWidth(message) / 2;
 
-        if (mouseX > x && mouseX < x + prevSounds.getWidth() && mouseY > y && mouseY < y + prevSounds.getHeightRealms()) {
+        if (mouseX > x && mouseX < x + btnPrevSounds.getWidth() && mouseY > y && mouseY < y + btnPrevSounds.getHeightRealms()) {
             fill(matrix, x - stringW - 2, y - 2, x + stringW + 2, y - 13, darkBG);
             drawCenteredString(matrix, font, message, x, y - 11, whiteText);
         }
@@ -635,6 +628,10 @@ public class MainScreen extends Screen implements ISoundLists {
     public void resize(Minecraft minecraft, int width, int height) {
         updateText();
         super.resize(minecraft, width, height);
+    }
+
+    public static String getScreenTitle() {
+        return screenTitle;
     }
 
     private int getX() {

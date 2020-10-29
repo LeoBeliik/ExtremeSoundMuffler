@@ -1,6 +1,5 @@
 package com.leobeliik.extremesoundmuffler.gui.buttons;
 
-import com.google.common.collect.ImmutableMap;
 import com.leobeliik.extremesoundmuffler.Config;
 import com.leobeliik.extremesoundmuffler.gui.MainScreen;
 import com.leobeliik.extremesoundmuffler.utils.Anchor;
@@ -10,17 +9,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.ITextProperties;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.List;
+import java.util.Objects;
 
 public class MuffledSlider extends Widget implements ISoundLists {
 
@@ -91,9 +87,11 @@ public class MuffledSlider extends Widget implements ISoundLists {
                 if (screenTitle.equals(mainTitle)) {
                     setSliderValue(Config.getDefaultMuteVolume());
                     muffledSounds.put(sound, sliderValue);
-                } else {
+                } else if (anchor.getAnchorPos() != null) {
                     setSliderValue(Config.getDefaultMuteVolume());
                     anchor.addSound(sound, sliderValue);
+                } else {
+                    return;
                 }
                 super.setFGColor(colorYellow);
             }
@@ -152,14 +150,19 @@ public class MuffledSlider extends Widget implements ISoundLists {
     }
 
     private void updateVolume() {
-        muffledSounds.replace(this.sound, this.sliderValue);
+        String screenTitle = MainScreen.getScreenTitle();
+        Anchor anchor = Objects.requireNonNull(MainScreen.getAnchorByName(screenTitle));
+
+        if (screenTitle.equals(mainTitle)) {
+            muffledSounds.replace(this.sound, this.sliderValue);
+        } else if (anchor.getAnchorPos() != null) {
+            anchor.replaceSound(this.sound, this.sliderValue);
+        }
     }
 
     private void func_230979_b_() {
-
     }
 
     private void func_230972_a_() {
-
     }
 }
