@@ -1,4 +1,4 @@
-package com.leobeliik.extremesoundmuffler.gui;
+package com.leobeliik.extremesoundmuffler.gui.Screen;
 
 import com.leobeliik.extremesoundmuffler.Config;
 import com.leobeliik.extremesoundmuffler.SoundMuffler;
@@ -110,14 +110,26 @@ public class MainScreen extends Screen implements ISoundLists {
         minYButton = getY() + 46;
         maxYButton = getY() + 164;
 
+
         addListener(btnToggleSoundsList = new Button(getX() + 23, getY() + 181, 43, 13, toggleSoundsListMessage, b -> {
+            boolean isAnchorMuffling = false;
+
+            if (!screenTitle.equals(mainTitle)) {
+                isAnchorMuffling = !Objects.requireNonNull(getAnchorByName(screenTitle)).getMuffledSounds().isEmpty();
+            }
+
             if (btnToggleSoundsList.getMessage().equals(ITextComponent.getTextComponentOrEmpty("Recent"))) {
                 toggleSoundsListMessage = ITextComponent.getTextComponentOrEmpty("All");
-            } else if (!muffledSounds.isEmpty() && btnToggleSoundsList.getMessage().equals(ITextComponent.getTextComponentOrEmpty("All"))) {
-                toggleSoundsListMessage = ITextComponent.getTextComponentOrEmpty("Muffled");
+            } else if (btnToggleSoundsList.getMessage().equals(ITextComponent.getTextComponentOrEmpty("All"))) {
+                if (!muffledSounds.isEmpty() || isAnchorMuffling) {
+                    toggleSoundsListMessage = ITextComponent.getTextComponentOrEmpty("Muffled");
+                } else {
+                    toggleSoundsListMessage = ITextComponent.getTextComponentOrEmpty("Recent");
+                }
             } else {
                 toggleSoundsListMessage = ITextComponent.getTextComponentOrEmpty("Recent");
             }
+
             btnToggleSoundsList.setMessage(toggleSoundsListMessage);
             buttons.clear();
             open(screenTitle, toggleSoundsListMessage, searchBar.getText());
@@ -168,6 +180,8 @@ public class MainScreen extends Screen implements ISoundLists {
         addListener(btnNextSounds = new Button(getX() + 233, getY() + 22, 13, 20, emptyText, b ->
                 listScroll(searchBar.getText().length() > 0 ? filteredButtons : buttons, 1)));
 
+        addListener(btnHelp = new Button(getX() + 10, getY() + 182, 8, 11, emptyText, b -> HelpScreen.open()));
+
         updateText();
     }
 
@@ -192,7 +206,11 @@ public class MainScreen extends Screen implements ISoundLists {
             soundsList.addAll(ForgeRegistries.SOUND_EVENTS.getKeys());
         } else {
             soundsList.clear();
-            soundsList.addAll(muffledSounds.keySet());
+            if (screenTitle.equals(mainTitle) && !muffledSounds.isEmpty()) {
+                soundsList.addAll(muffledSounds.keySet());
+            } else if (anchor != null && !anchor.getMuffledSounds().isEmpty()) {
+                soundsList.addAll(anchor.getMuffledSounds().keySet());
+            }
         }
 
         if (soundsList.isEmpty()) {
