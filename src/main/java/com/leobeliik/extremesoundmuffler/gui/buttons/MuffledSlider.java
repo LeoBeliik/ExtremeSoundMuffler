@@ -1,7 +1,7 @@
 package com.leobeliik.extremesoundmuffler.gui.buttons;
 
 import com.leobeliik.extremesoundmuffler.Config;
-import com.leobeliik.extremesoundmuffler.gui.Screen.MainScreen;
+import com.leobeliik.extremesoundmuffler.gui.MainScreen;
 import com.leobeliik.extremesoundmuffler.utils.Anchor;
 import com.leobeliik.extremesoundmuffler.utils.ISoundLists;
 import com.mojang.blaze3d.matrix.MatrixStack;

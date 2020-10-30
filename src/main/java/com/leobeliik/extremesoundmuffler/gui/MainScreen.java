@@ -1,4 +1,4 @@
-package com.leobeliik.extremesoundmuffler.gui.Screen;
+package com.leobeliik.extremesoundmuffler.gui;
 
 import com.leobeliik.extremesoundmuffler.Config;
 import com.leobeliik.extremesoundmuffler.SoundMuffler;
@@ -48,8 +48,8 @@ public class MainScreen extends Screen implements ISoundLists {
 
     private int minYButton, maxYButton, index;
     private Button btnToggleMuffled, btnDelete, btnToggleSoundsList, btnSetAnchor, btnEditAnchor, btnNextSounds, btnPrevSounds;
-    private Button btnAccept, btnCancel, btnAnchor, btnHelp;
-    private TextFieldWidget searchBar, editAnchorTitleBar, editAnchorRadious;
+    private Button btnAccept, btnCancel, btnAnchor;
+    private TextFieldWidget searchBar, editAnchorTitleBar, editAnchorRadiousBar;
     private MuffledSlider volumeSlider;
     private Anchor anchor;
 
@@ -82,6 +82,10 @@ public class MainScreen extends Screen implements ISoundLists {
         }
     }
 
+    public static void addAnchor(int id, Anchor anchor) {
+        anchors.add(id, anchor);
+    }
+
     @Nullable
     public static Anchor getAnchorByName(String name) {
         return anchors.stream().filter(a -> a.getName().equals(name)).findFirst().orElse(null);
@@ -111,7 +115,7 @@ public class MainScreen extends Screen implements ISoundLists {
         maxYButton = getY() + 164;
 
 
-        addListener(btnToggleSoundsList = new Button(getX() + 23, getY() + 181, 43, 13, toggleSoundsListMessage, b -> {
+        addListener(btnToggleSoundsList = new Button(getX() + 13, getY() + 181, 52, 13, toggleSoundsListMessage, b -> {
             boolean isAnchorMuffling = false;
 
             if (!screenTitle.equals(mainTitle)) {
@@ -137,7 +141,7 @@ public class MainScreen extends Screen implements ISoundLists {
 
         addSoundButtons();
 
-        addAnchors();
+        addAnchorButtons();
 
         addButton(btnToggleMuffled = new Button(getX() + 229, getY() + 179, 17, 17, emptyText, b -> isMuffling = !isMuffling)).setAlpha(0);
 
@@ -180,8 +184,6 @@ public class MainScreen extends Screen implements ISoundLists {
         addListener(btnNextSounds = new Button(getX() + 233, getY() + 22, 13, 20, emptyText, b ->
                 listScroll(searchBar.getText().length() > 0 ? filteredButtons : buttons, 1)));
 
-        addListener(btnHelp = new Button(getX() + 10, getY() + 182, 8, 11, emptyText, b -> HelpScreen.open()));
-
         updateText();
     }
 
@@ -204,6 +206,7 @@ public class MainScreen extends Screen implements ISoundLists {
         } else if (btnToggleSoundsList.getMessage().equals(ITextComponent.getTextComponentOrEmpty("All"))) {
             soundsList.clear();
             soundsList.addAll(ForgeRegistries.SOUND_EVENTS.getKeys());
+            forbiddenSounds.forEach(fs -> soundsList.removeIf(sl -> sl.toString().contains(fs)));
         } else {
             soundsList.clear();
             if (screenTitle.equals(mainTitle) && !muffledSounds.isEmpty()) {
@@ -247,7 +250,7 @@ public class MainScreen extends Screen implements ISoundLists {
         }
     }
 
-    private void addAnchors() {
+    private void addAnchorButtons() {
         int buttonW = getX() + 30;
         for (int i = 0; i <= 9; i++) {
             if (isAnchorsDisabled) {
@@ -283,12 +286,12 @@ public class MainScreen extends Screen implements ISoundLists {
 
         addButton(editAnchorTitleBar = new TextFieldWidget(font, getX() + 302, btnEditAnchor.y + 20, 84, 11, emptyText)).visible = false;
 
-        addButton(editAnchorRadious = new TextFieldWidget(font, getX() + 302, editAnchorTitleBar.y + 15, 30, 11, emptyText)).visible = false;
+        addButton(editAnchorRadiousBar = new TextFieldWidget(font, getX() + 302, editAnchorTitleBar.y + 15, 30, 11, emptyText)).visible = false;
 
-        addButton(btnAccept = new Button(getX() + 259, editAnchorRadious.y + 15, 40, 20, ITextComponent.getTextComponentOrEmpty("Accept"), b -> {
+        addButton(btnAccept = new Button(getX() + 259, editAnchorRadiousBar.y + 15, 40, 20, ITextComponent.getTextComponentOrEmpty("Accept"), b -> {
             anchor = getAnchorByName(screenTitle);
-            if (!editAnchorTitleBar.getText().isEmpty() && !editAnchorRadious.getText().isEmpty() && anchor != null) {
-                int radious = Integer.parseInt(editAnchorRadious.getText());
+            if (!editAnchorTitleBar.getText().isEmpty() && !editAnchorRadiousBar.getText().isEmpty() && anchor != null) {
+                int radious = Integer.parseInt(editAnchorRadiousBar.getText());
 
                 if (radious > 32) {
                     radious = 32;
@@ -302,7 +305,7 @@ public class MainScreen extends Screen implements ISoundLists {
             }
         })).visible = false;
 
-        addButton(btnCancel = new Button(getX() + 300, editAnchorRadious.y + 15, 40, 20, ITextComponent.getTextComponentOrEmpty("Cancel"), b ->
+        addButton(btnCancel = new Button(getX() + 300, editAnchorRadiousBar.y + 15, 40, 20, ITextComponent.getTextComponentOrEmpty("Cancel"), b ->
                 editTitle(Objects.requireNonNull(getAnchorByName(screenTitle))))).visible = false;
 
     }
@@ -310,7 +313,6 @@ public class MainScreen extends Screen implements ISoundLists {
     private void renderButtonsTextures(MatrixStack matrix, double mouseX, double mouseY, float partialTicks) {
         int x; //start x point of the button
         int y; //start y point of the button
-        int i = 0;
         float v; //start x point of the texture
         String message; //Button message
         int stringW; //text width
@@ -405,11 +407,11 @@ public class MainScreen extends Screen implements ISoundLists {
         }
 
         //draw anchor buttons tooltip
-        for (int j = 0; j <= 9; j++) {
-            Widget btn = buttons.get(soundsList.size() + j);
+        for (int i = 0; i <= 9; i++) {
+            Widget btn = buttons.get(soundsList.size() + i);
             x = btn.x + 8;
             y = btn.y;
-            message = isAnchorsDisabled ? "Anchors are disabled" : anchors.get(j).getName();
+            message = isAnchorsDisabled ? "Anchors are disabled" : anchors.get(i).getName();
             stringW = font.getStringWidth(message) / 2;
 
             if (btn.isHovered()) {
@@ -436,16 +438,16 @@ public class MainScreen extends Screen implements ISoundLists {
         //Show Radious and Title text when editing Anchor and bg
         x = btnSetAnchor.x;
         y = editAnchorTitleBar.y;
-        if (editAnchorRadious.visible) {
+        if (editAnchorRadiousBar.visible) {
             fill(matrix, x - 4, y - 4, editAnchorTitleBar.x + editAnchorTitleBar.getWidth() + 3, btnAccept.y + 23, darkBG);
             font.drawString(matrix, "Title: ", x - 2, y + 1, whiteText);
-            font.drawString(matrix, "Radious: ", x - 2, editAnchorRadious.y + 1, whiteText);
+            font.drawString(matrix, "Radious: ", x - 2, editAnchorRadiousBar.y + 1, whiteText);
 
-            x = editAnchorRadious.x + editAnchorRadious.getWidth();
-            y = editAnchorRadious.y;
+            x = editAnchorRadiousBar.x + editAnchorRadiousBar.getWidth();
+            y = editAnchorRadiousBar.y;
             message = "Range: 1 - 32";
             stringW = font.getStringWidth(message);
-            if (editAnchorRadious.isHovered()) {
+            if (editAnchorRadiousBar.isHovered()) {
                 fill(matrix, x + 3, y, x + stringW + 6, y + 12, darkBG);
                 font.drawString(matrix, message, x + 5, y + 2, whiteText);
             }
@@ -486,13 +488,13 @@ public class MainScreen extends Screen implements ISoundLists {
         editAnchorTitleBar.setText(anchor.getName());
         editAnchorTitleBar.visible = !editAnchorTitleBar.visible;
 
-        editAnchorRadious.setText(String.valueOf(anchor.getRadius()));
-        editAnchorRadious.visible = !editAnchorRadious.visible;
+        editAnchorRadiousBar.setText(String.valueOf(anchor.getRadius()));
+        editAnchorRadiousBar.visible = !editAnchorRadiousBar.visible;
 
         btnAccept.visible = !btnAccept.visible;
         btnCancel.visible = !btnCancel.visible;
 
-        editAnchorRadious.setTextColor(0xffffff);
+        editAnchorRadiousBar.setTextColor(0xffffff);
     }
 
     @Override
@@ -564,15 +566,15 @@ public class MainScreen extends Screen implements ISoundLists {
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
 
-        if (!editAnchorRadious.getText().isEmpty()) {
-            int radious = Integer.parseInt(editAnchorRadious.getText());
+        if (!editAnchorRadiousBar.getText().isEmpty()) {
+            int radious = Integer.parseInt(editAnchorRadiousBar.getText());
             if (radious > 32 || radious < 1) {
-                editAnchorRadious.setTextColor(0xff0000);
+                editAnchorRadiousBar.setTextColor(0xff0000);
             } else {
-                editAnchorRadious.setTextColor(0xffffff);
+                editAnchorRadiousBar.setTextColor(0xffffff);
             }
         } else {
-            editAnchorRadious.setTextColor(0xffffff);
+            editAnchorRadiousBar.setTextColor(0xffffff);
         }
 
         return super.keyReleased(keyCode, scanCode, modifiers);
@@ -588,32 +590,32 @@ public class MainScreen extends Screen implements ISoundLists {
     }
 
     @Override
-    public boolean keyPressed(int key1, int key2, int key3) {
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         //Radious only accepts numbers
-        editAnchorRadious.setValidator(this::isStringValid);
+        editAnchorRadiousBar.setValidator(this::isStringValid);
 
         //Type inside the search bar
-        if (searchBar.keyPressed(key1, key2, key3)) {
+        if (searchBar.keyPressed(keyCode, scanCode, modifiers)) {
             updateText();
             return true;
         }
 
         //Search bar, Edit title bar & Edit Anchor radious bar looses focus when pressed "Enter" or "Intro"
-        if (key1 == 257 || key1 == 335) {
+        if (keyCode == 257 || keyCode == 335) {
             searchBar.setFocused2(false);
             editAnchorTitleBar.setFocused2(false);
-            editAnchorRadious.setFocused2(false);
+            editAnchorRadiousBar.setFocused2(false);
             return true;
         }
 
         //Close screen when press "E" or the mod hotkey outside the search bar or edit title bar
-        if (!searchBar.isFocused() && !editAnchorTitleBar.isFocused() && !editAnchorRadious.isFocused() && (key1 == 69 || key1 == SoundMuffler.getHotkey())) {
+        if (!searchBar.isFocused() && !editAnchorTitleBar.isFocused() && !editAnchorRadiousBar.isFocused() && (keyCode == 69 || keyCode == SoundMuffler.getHotkey())) {
             closeScreen();
             filteredButtons.clear();
             return true;
         }
 
-        return super.keyPressed(key1, key2, key3);
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     //What you mean I stole this from Quark?
@@ -627,9 +629,15 @@ public class MainScreen extends Screen implements ISoundLists {
             if (searchBar.isFocused()) {
                 searchBar.setText("");
                 updateText();
+                return true;
             }
             if (editAnchorTitleBar.isFocused()) {
                 editAnchorTitleBar.setText("");
+                return true;
+            }
+            if (editAnchorRadiousBar.isHovered()) {
+                editAnchorRadiousBar.setText("");
+                return true;
             }
         }
         return super.mouseClicked(mouseX, mouseY, button);

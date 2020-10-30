@@ -1,6 +1,6 @@
 package com.leobeliik.extremesoundmuffler.gui.buttons;
 
-import com.leobeliik.extremesoundmuffler.gui.Screen.MainScreen;
+import com.leobeliik.extremesoundmuffler.gui.MainScreen;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;

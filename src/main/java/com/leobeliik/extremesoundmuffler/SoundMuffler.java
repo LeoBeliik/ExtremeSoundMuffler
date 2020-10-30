@@ -1,6 +1,6 @@
 package com.leobeliik.extremesoundmuffler;
 
-import com.leobeliik.extremesoundmuffler.gui.Screen.MainScreen;
+import com.leobeliik.extremesoundmuffler.gui.MainScreen;
 import com.leobeliik.extremesoundmuffler.gui.buttons.InvButton;
 import net.minecraft.client.gui.DisplayEffectsScreen;
 import net.minecraft.client.gui.screen.Screen;

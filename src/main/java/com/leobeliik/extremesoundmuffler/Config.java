@@ -2,7 +2,7 @@ package com.leobeliik.extremesoundmuffler;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.io.WritingMode;
-import com.leobeliik.extremesoundmuffler.utils.eventHandlers.SoundEventHandler;
+import com.leobeliik.extremesoundmuffler.utils.ISoundLists;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.common.Mod;
 
@@ -48,7 +48,7 @@ public class Config {
 
         configData.load();
         spec.setConfig(configData);
-        SoundEventHandler.forbiddenSounds().addAll(forbiddenSounds.get());
+        ISoundLists.forbiddenSounds.addAll(forbiddenSounds.get());
     }
 
     static boolean getDisableInventoryButton() {

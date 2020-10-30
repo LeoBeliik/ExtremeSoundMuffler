@@ -2,7 +2,7 @@ package com.leobeliik.extremesoundmuffler.utils.eventHandlers;
 
 import com.leobeliik.extremesoundmuffler.Config;
 import com.leobeliik.extremesoundmuffler.SoundMuffler;
-import com.leobeliik.extremesoundmuffler.gui.Screen.MainScreen;
+import com.leobeliik.extremesoundmuffler.gui.MainScreen;
 import com.leobeliik.extremesoundmuffler.utils.Anchor;
 import com.leobeliik.extremesoundmuffler.utils.ISoundLists;
 import com.leobeliik.extremesoundmuffler.utils.MuffledSound;
@@ -17,7 +17,6 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import java.util.Set;
 import java.util.SortedSet;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = SoundMuffler.MODID)
@@ -74,20 +73,8 @@ public class SoundEventHandler implements ISoundLists {
         return soundsList;
     }
 
-    private static void removeForbiddenSounds() {
-        forbiddenSounds().forEach(fs -> soundsList.removeIf(sl -> sl.toString().contains(fs)));
-    }
-
-    public static Set<String> forbiddenSounds() {
-        return forbiddenSounds;
-    }
-
     public static void isFromPlaySoundButton(boolean b) {
         isFromPSB = b;
-    }
-
-    static void AddAllSounds(Set<ResourceLocation> sounds) {
-        soundsList.addAll(sounds);
     }
 
 }
