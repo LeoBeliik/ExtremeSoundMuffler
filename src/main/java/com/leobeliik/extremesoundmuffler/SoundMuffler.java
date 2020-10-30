@@ -28,19 +28,13 @@ import net.minecraftforge.fml.loading.FMLPaths;
 public class SoundMuffler {
 
     public static final String MODID = "extremesoundmuffler";
-    public static boolean isServer = false;
     private static KeyBinding openMuffleScreen;
-//TODO, fix the number only textfield, fix the delete key on textfield
+
     public SoundMuffler() {
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.CLIENT_CONFIG);
         MinecraftForge.EVENT_BUS.register(this);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::serverInit);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientInit);
         Config.loadConfig(Config.CLIENT_CONFIG, FMLPaths.CONFIGDIR.get().resolve(MODID + "-client.toml"));
-    }
-
-    private void serverInit(final FMLCommonSetupEvent event) {
-        isServer = true;
     }
 
     private void clientInit(final FMLClientSetupEvent event) {

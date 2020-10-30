@@ -11,60 +11,42 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import static com.leobeliik.extremesoundmuffler.utils.ISoundLists.muffledSounds;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = SoundMuffler.MODID)
 public class WorldEventsHandler {
 
-    private static final String fileName = "soundsMuffled.dat";
+    private static final Logger LOGGER = LogManager.getLogger();
+
 
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public static void onWorldLoad(WorldEvent.Load event) {
-
-        //TODO loads the sound muffled, should refer to SoundEventHandler not MainScreen
-        JsonIO.loadMuffledMap(new File(fileName)).forEach((R, V) -> ISoundLists.muffledSounds.put(new ResourceLocation(R), V));
-
-        //TODO maybe change this, make anchors not gen here or smting
+        JsonIO.loadMuffledMap().forEach((R, V) -> ISoundLists.muffledSounds.put(new ResourceLocation(R), V));
         MainScreen.setAnchors();
 
 
+        //TODO figure out how to save The anchors on the player
+        //^^ look at saving the list of anchors not the anchors themselves
         //Save all the anchors and only the anchors
         //Simple muffled sounds still uses json save
-        if (SoundMuffler.isServer) {
-            //Load
-        } else {
-            for (int i = 0; i < 10; i++) {
-                try {
-                    MainScreen.addAnchor(i, JsonIO.loadAnchors(i));
-                } catch (NullPointerException ignored) {
-                    new Anchor(i, "Anchor: " + i);
-                }
-            }
-        }
+
+        MainScreen.addAnchors(JsonIO.loadAnchors());
     }
 
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public static void onWorldUnload(WorldEvent.Unload event) {
-
-        JsonIO.saveMuffledMap(new File(fileName), muffledSounds);
-
+        JsonIO.saveMuffledMap(muffledSounds);
         //For anchors
-        if (SoundMuffler.isServer) {
-            //Save
-        } else {
-            for (int i = 0; i < 9; i++) {
-                try {
-                    JsonIO.saveAnchors(MainScreen.getAnchors().get(i));
-                } catch (NullPointerException ignored) {
-                    JsonIO.saveAnchors(new Anchor(i, "Anchor: " + i));
-                }
-            }
-        }
+        JsonIO.saveAnchors(MainScreen.getAnchors());
     }
-
 }

@@ -82,8 +82,8 @@ public class MainScreen extends Screen implements ISoundLists {
         }
     }
 
-    public static void addAnchor(int id, Anchor anchor) {
-        anchors.add(id, anchor);
+    public static void addAnchors(List<Anchor> anchorList) {
+        anchors.addAll(anchorList);
     }
 
     @Nullable
