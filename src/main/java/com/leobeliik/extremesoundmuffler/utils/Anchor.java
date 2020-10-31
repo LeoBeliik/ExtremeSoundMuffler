@@ -2,7 +2,6 @@ package com.leobeliik.extremesoundmuffler.utils;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 
@@ -28,7 +27,7 @@ public class Anchor {
         return anchorPos;
     }
 
-    public void setAnchorPos(BlockPos anchorPos) {
+    private void setAnchorPos(BlockPos anchorPos) {
         this.anchorPos = anchorPos;
     }
 
@@ -44,11 +43,11 @@ public class Anchor {
         return radius;
     }
 
-    public void setRadius(int radius) {
+    private void setRadius(int radius) {
         this.radius = radius;
     }
 
-    public void setName(String name) {
+    private void setName(String name) {
         this.name = name;
     }
 
@@ -86,7 +85,7 @@ public class Anchor {
         return dimension;
     }
 
-    public void setDimension(ResourceLocation dimension) {
+    private void setDimension(ResourceLocation dimension) {
         this.dimension = dimension;
     }
 

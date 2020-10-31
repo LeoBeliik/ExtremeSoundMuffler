@@ -8,7 +8,6 @@ import com.leobeliik.extremesoundmuffler.utils.ISoundLists;
 import com.leobeliik.extremesoundmuffler.utils.MuffledSound;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -16,8 +15,6 @@ import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-
-import java.util.SortedSet;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = SoundMuffler.MODID)
 public class SoundEventHandler implements ISoundLists {
@@ -67,10 +64,6 @@ public class SoundEventHandler implements ISoundLists {
                 }
             }
         }
-    }
-
-    public static SortedSet<ResourceLocation> getSoundsList() {
-        return soundsList;
     }
 
     public static void isFromPlaySoundButton(boolean b) {

@@ -18,6 +18,7 @@ import net.minecraft.util.text.StringTextComponent;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Objects;
 
+@SuppressWarnings("EmptyMethod")
 public class MuffledSlider extends Widget implements ISoundLists {
 
     private final int colorWhite = 0xffffff;

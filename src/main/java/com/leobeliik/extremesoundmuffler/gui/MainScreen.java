@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@SuppressWarnings("SuspiciousNameCombination")
 @OnlyIn(Dist.CLIENT)
 public class MainScreen extends Screen implements ISoundLists {
 
@@ -47,10 +48,8 @@ public class MainScreen extends Screen implements ISoundLists {
     private final String mainTitle = "ESM - Main Screen";
 
     private int minYButton, maxYButton, index;
-    private Button btnToggleMuffled, btnDelete, btnToggleSoundsList, btnSetAnchor, btnEditAnchor, btnNextSounds, btnPrevSounds;
-    private Button btnAccept, btnCancel, btnAnchor;
+    private Button btnToggleMuffled, btnDelete, btnToggleSoundsList, btnSetAnchor, btnEditAnchor, btnNextSounds, btnPrevSounds, btnAccept, btnCancel;
     private TextFieldWidget searchBar, editAnchorTitleBar, editAnchorRadiousBar;
-    private MuffledSlider volumeSlider;
     private Anchor anchor;
 
     private MainScreen() {
@@ -237,7 +236,7 @@ public class MainScreen extends Screen implements ISoundLists {
                 volume = 1D;
             }
 
-            volumeSlider = new MuffledSlider(getX() + 11, buttonH, 205, 11, volume, sound, screenTitle, anchor);
+            MuffledSlider volumeSlider = new MuffledSlider(getX() + 11, buttonH, 205, 11, volume, sound, screenTitle, anchor);
 
             boolean muffledAnchor = anchor != null && screenTitle.equals(anchor.getName()) && !anchor.getMuffledSounds().isEmpty() && anchor.getMuffledSounds().containsKey(sound);
             boolean muffledScreen = screenTitle.equals(mainTitle) && !muffledSounds.isEmpty() && muffledSounds.containsKey(sound);
@@ -258,6 +257,7 @@ public class MainScreen extends Screen implements ISoundLists {
     private void addAnchorButtons() {
         int buttonW = getX() + 30;
         for (int i = 0; i <= 9; i++) {
+            Button btnAnchor;
             if (isAnchorsDisabled) {
                 String[] disabledMsg = {"-", "D", "i", "s", "a", "b", "l", "e", "d", "-"};
                 btnAnchor = new Button(buttonW, getY() + 24, 16, 16, ITextComponent.getTextComponentOrEmpty(String.valueOf(i)), b -> {

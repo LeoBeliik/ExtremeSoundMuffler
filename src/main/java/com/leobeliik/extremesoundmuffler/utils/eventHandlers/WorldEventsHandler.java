@@ -20,7 +20,7 @@ import java.util.List;
 import static com.leobeliik.extremesoundmuffler.utils.ISoundLists.muffledSounds;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = SoundMuffler.MODID)
-public class WorldEventsHandler {
+class WorldEventsHandler {
 
     private static final Logger LOGGER = LogManager.getLogger();
 

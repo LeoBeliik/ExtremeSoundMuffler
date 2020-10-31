@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class JsonIO {
 
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
