@@ -72,17 +72,22 @@ public class MainScreen extends Screen implements ISoundLists {
         return isMuffling;
     }
 
+    public static Anchor getAnchor(int id) {
+        return anchors.get(id);
+    }
+
     public static List<Anchor> getAnchors() {
         return anchors;
     }
 
     public static void setAnchors() {
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i <= 9; i++) {
             anchors.add(new Anchor(i, "Anchor: " + i));
         }
     }
 
     public static void addAnchors(List<Anchor> anchorList) {
+        anchors.clear();
         anchors.addAll(anchorList);
     }
 

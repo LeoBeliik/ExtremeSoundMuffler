@@ -17,7 +17,7 @@ public class Anchor {
     private String name;
     private ResourceLocation dimension;
     private int radius;
-    private SortedMap<ResourceLocation, Double> muffledSounds = new TreeMap<>();
+    private SortedMap<String, Double> muffledSounds = new TreeMap<>();
 
     public Anchor(int id, String name) {
         this.id = id;
@@ -53,19 +53,21 @@ public class Anchor {
     }
 
     public SortedMap<ResourceLocation, Double> getMuffledSounds() {
-        return muffledSounds;
+        SortedMap<ResourceLocation, Double> temp = new TreeMap<>();
+        this.muffledSounds.forEach((R,D) -> temp.put(new ResourceLocation(R), D));
+        return temp;
     }
 
     public void setMuffledSounds(SortedMap<ResourceLocation, Double> muffledSounds) {
-        this.muffledSounds = muffledSounds;
+        muffledSounds.forEach((R,D) -> this.muffledSounds.put(R.toString(), D));
     }
 
     public void addSound(ResourceLocation sound, double volume) {
-        muffledSounds.put(sound, volume);
+        muffledSounds.put(sound.toString(), volume);
     }
 
     public void replaceSound(ResourceLocation sound, double volume) {
-        muffledSounds.replace(sound,volume);
+        muffledSounds.replace(sound.toString(),volume);
     }
 
     public String getX() {
@@ -89,7 +91,7 @@ public class Anchor {
     }
 
     public void removeSound(ResourceLocation sound) {
-        muffledSounds.remove(sound);
+        muffledSounds.remove(sound.toString());
     }
 
     public void setAnchor() {
