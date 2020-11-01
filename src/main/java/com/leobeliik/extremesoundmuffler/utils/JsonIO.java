@@ -6,8 +6,6 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import net.minecraft.util.ResourceLocation;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -21,8 +19,6 @@ public class JsonIO {
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private static final String soundsMuffledFile = "ESM/soundsMuffled.dat";
     private static final String anchorFile = "ESM/Anchors.dat";
-    private static final Logger LOGGER = LogManager.getLogger();
-
 
     public static void saveMuffledMap(Map<ResourceLocation, Double> muffledList) {
         new File("ESM/").mkdir();
@@ -45,8 +41,7 @@ public class JsonIO {
         new File("ESM/").mkdir();
         try (Writer writer = new OutputStreamWriter(new FileOutputStream(anchorFile), StandardCharsets.UTF_8)) {
             writer.write(gson.toJson(anchor));
-        } catch (IOException e) {
-            LOGGER.error("SAVE ANCHOR: " + e);
+        } catch (IOException ignored) {
         }
     }
 
