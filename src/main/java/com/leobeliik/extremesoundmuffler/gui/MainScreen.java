@@ -5,6 +5,7 @@ import com.leobeliik.extremesoundmuffler.SoundMuffler;
 import com.leobeliik.extremesoundmuffler.gui.buttons.MuffledSlider;
 import com.leobeliik.extremesoundmuffler.utils.Anchor;
 import com.leobeliik.extremesoundmuffler.utils.ISoundLists;
+import com.leobeliik.extremesoundmuffler.utils.JsonIO;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
@@ -659,6 +660,13 @@ public class MainScreen extends Screen implements ISoundLists {
     public void resize(Minecraft minecraft, int width, int height) {
         updateText();
         super.resize(minecraft, width, height);
+    }
+
+    @Override
+    public void closeScreen() {
+        super.closeScreen();
+        JsonIO.saveAnchors(anchors);
+        JsonIO.saveMuffledMap(muffledSounds);
     }
 
     public static String getScreenTitle() {

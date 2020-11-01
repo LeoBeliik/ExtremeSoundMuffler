@@ -57,9 +57,12 @@ public class SoundEventHandler implements ISoundLists {
             }
 
             for (Anchor anchor : MainScreen.getAnchors()) {
-                if (anchor.getAnchorPos() != null && soundPos.withinDistance(anchor.getAnchorPos(), anchor.getRadius())) {
-                    if (anchor.getMuffledSounds().containsKey(sound.getSoundLocation())) {
-                        event.setResultSound(new MuffledSound(sound, anchor.getMuffledSounds().get(sound.getSoundLocation()).floatValue()));
+                if (anchor.getAnchorPos() != null) {
+                    boolean sameDimension = Minecraft.getInstance().world.getDimensionKey().getLocation().equals(anchor.getDimension());
+                    if (sameDimension && soundPos.withinDistance(anchor.getAnchorPos(), anchor.getRadius())) {
+                        if (anchor.getMuffledSounds().containsKey(sound.getSoundLocation())) {
+                            event.setResultSound(new MuffledSound(sound, anchor.getMuffledSounds().get(sound.getSoundLocation()).floatValue()));
+                        }
                     }
                 }
             }

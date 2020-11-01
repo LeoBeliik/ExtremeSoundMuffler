@@ -27,7 +27,7 @@ public class Anchor {
         return anchorPos;
     }
 
-    private void setAnchorPos(BlockPos anchorPos) {
+    public void setAnchorPos(BlockPos anchorPos) {
         this.anchorPos = anchorPos;
     }
 
@@ -43,11 +43,11 @@ public class Anchor {
         return radius;
     }
 
-    private void setRadius(int radius) {
+    public void setRadius(int radius) {
         this.radius = radius;
     }
 
-    private void setName(String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -85,7 +85,7 @@ public class Anchor {
         return dimension;
     }
 
-    private void setDimension(ResourceLocation dimension) {
+    public void setDimension(ResourceLocation dimension) {
         this.dimension = dimension;
     }
 
@@ -95,21 +95,21 @@ public class Anchor {
 
     public void setAnchor() {
         ClientPlayerEntity player = Objects.requireNonNull(Minecraft.getInstance().player);
-        this.setAnchorPos(player.getPosition());
-        this.setDimension(player.worldClient.getDimensionKey().getLocation());
-        this.setRadius(this.getRadius() == 0 ? 32 : this.getRadius());
+        setAnchorPos(player.getPosition());
+        setDimension(player.worldClient.getDimensionKey().getLocation());
+        setRadius(this.getRadius() == 0 ? 32 : this.getRadius());
     }
 
     public void deleteAnchor() {
-        this.setName("Anchor: " + this.getId());
-        this.setAnchorPos(null);
-        this.setDimension(null);
-        this.setRadius(0);
-        this.getMuffledSounds().clear();
+        setName("Anchor: " + this.getId());
+        setAnchorPos(null);
+        setDimension(null);
+        setRadius(0);
+        muffledSounds.clear();
     }
 
     public void editAnchor(String title, int radious) {
-        this.setName(title);
-        this.setRadius(radious);
+        setName(title);
+        setRadius(radious);
     }
 }
