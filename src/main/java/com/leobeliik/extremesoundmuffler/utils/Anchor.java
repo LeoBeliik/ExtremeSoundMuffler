@@ -23,6 +23,15 @@ public class Anchor {
         this.name = name;
     }
 
+    public Anchor(int id, String name, BlockPos anchorPos, ResourceLocation dimension, int radius, SortedMap<String, Double> muffledSounds) {
+        this.id = id;
+        this.name = name;
+        this.anchorPos = anchorPos;
+        this.dimension = dimension;
+        this.radius = radius;
+        this.muffledSounds = muffledSounds;
+    }
+
     public BlockPos getAnchorPos() {
         return anchorPos;
     }
@@ -31,7 +40,7 @@ public class Anchor {
         this.anchorPos = anchorPos;
     }
 
-    public int getId() {
+    public int getAnchorId() {
         return id;
     }
 
@@ -101,7 +110,7 @@ public class Anchor {
     }
 
     public void deleteAnchor() {
-        setName("Anchor: " + this.getId());
+        setName("Anchor: " + this.getAnchorId());
         setAnchorPos(null);
         setDimension(null);
         setRadius(0);

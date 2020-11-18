@@ -1,4 +1,4 @@
-package com.leobeliik.extremesoundmuffler.utils;
+package com.leobeliik.extremesoundmuffler.interfaces;
 
 import net.minecraft.util.ResourceLocation;
 

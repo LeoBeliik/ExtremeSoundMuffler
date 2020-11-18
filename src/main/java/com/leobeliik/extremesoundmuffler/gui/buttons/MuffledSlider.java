@@ -3,7 +3,7 @@ package com.leobeliik.extremesoundmuffler.gui.buttons;
 import com.leobeliik.extremesoundmuffler.Config;
 import com.leobeliik.extremesoundmuffler.gui.MainScreen;
 import com.leobeliik.extremesoundmuffler.utils.Anchor;
-import com.leobeliik.extremesoundmuffler.utils.ISoundLists;
+import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;

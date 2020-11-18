@@ -1,10 +1,11 @@
-package com.leobeliik.extremesoundmuffler.utils.eventHandlers;
+package com.leobeliik.extremesoundmuffler.eventHandlers;
 
 import com.leobeliik.extremesoundmuffler.Config;
 import com.leobeliik.extremesoundmuffler.SoundMuffler;
 import com.leobeliik.extremesoundmuffler.gui.MainScreen;
 import com.leobeliik.extremesoundmuffler.utils.Anchor;
-import com.leobeliik.extremesoundmuffler.utils.ISoundLists;
+import com.leobeliik.extremesoundmuffler.interfaces.IAnchorList;
+import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import com.leobeliik.extremesoundmuffler.utils.MuffledSound;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
@@ -17,7 +18,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = SoundMuffler.MODID)
-public class SoundEventHandler implements ISoundLists {
+public class SoundEventHandler implements ISoundLists, IAnchorList {
 
     private static boolean isFromPSB = false;
 
@@ -56,7 +57,7 @@ public class SoundEventHandler implements ISoundLists {
                 return;
             }
 
-            for (Anchor anchor : MainScreen.getAnchors()) {
+            for (Anchor anchor : anchorList) {
                 if (anchor.getAnchorPos() != null) {
                     boolean sameDimension = Minecraft.getInstance().world.getDimensionKey().getLocation().equals(anchor.getDimension());
                     if (sameDimension && soundPos.withinDistance(anchor.getAnchorPos(), anchor.getRadius())) {

@@ -2,7 +2,7 @@ package com.leobeliik.extremesoundmuffler;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.io.WritingMode;
-import com.leobeliik.extremesoundmuffler.utils.ISoundLists;
+import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.common.Mod;
 
