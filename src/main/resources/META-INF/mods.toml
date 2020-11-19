@@ -9,7 +9,7 @@ version="${file.jarVersion}"
 displayName="Extreme Sound Muffler"
 displayURL="https://www.curseforge.com/minecraft/mc-mods/extreme-sound-muffler"
 authors="LeoBeliik"
-logo="esm_logo.png"
+logoFile="esm_logo.png"
 description='''
 This mod allows you to muffle (almost) any sound selectively,
 allowing you to choose the volume of the sound you want between mute and 90%.
