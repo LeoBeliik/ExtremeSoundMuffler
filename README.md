@@ -43,7 +43,7 @@ You can **delete** the **sounds muffled list** or the selected **Anchor** pressi
 
 The list of muffled sounds are stored in the **profile folder**, so you don't need to re-muffle the sounds on every world.
 
-**Anchors** are saved in **ESM/ServerWorld/** if you're **playing on a server**, otherwise they are **saved on the player**.
+**Anchors** are saved in **ESM/ServerWorld/** if you're **using the mod Clientside only**, otherwise they are **saved on the player**.
 
 Sounds can be **blacklisted in the config**; blacklisted sounds won't appear in the GUI.
 
