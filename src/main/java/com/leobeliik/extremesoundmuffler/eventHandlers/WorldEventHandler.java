@@ -23,6 +23,7 @@ public class WorldEventHandler implements ISoundLists, IAnchorList {
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public static void onWorldLoad(WorldEvent.Load event) {
+        muffledSounds.clear();
         JsonIO.loadMuffledMap().forEach((R, V) -> ISoundLists.muffledSounds.put(new ResourceLocation(R), V));
         anchorList.clear();
 
