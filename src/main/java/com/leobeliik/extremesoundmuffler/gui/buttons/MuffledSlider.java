@@ -9,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.util.ColorHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
@@ -23,6 +24,7 @@ public class MuffledSlider extends Widget implements ISoundLists {
 
     private final int colorWhite = 0xffffff;
     private final int colorYellow = 0xffff00;
+    private int darkBG = ColorHelper.PackedColor.packColor(223, 0, 0, 0);
     private final String mainTitle = "ESM - Main Screen";
     private double sliderValue;
     private Button btnToggleSound;
@@ -44,7 +46,7 @@ public class MuffledSlider extends Widget implements ISoundLists {
         Minecraft minecraft = Minecraft.getInstance();
         minecraft.getTextureManager().bindTexture(MainScreen.GUI);
         drawGradient(matrixStack);
-        float v = this.getFGColor() == 0xffff00 ? 213F : 202F;
+        float v = this.getFGColor() == colorWhite ? 213F : 202F;
         blit(matrixStack, btnToggleSound.x, btnToggleSound.y, 43F, v, 11, 11, 256, 256); //muffle button bg
         blit(matrixStack, btnPlaySound.x, btnPlaySound.y, 32F, 202F, 11, 11, 256, 256); //play button bg
         this.drawMessage(matrixStack, minecraft);
@@ -52,13 +54,14 @@ public class MuffledSlider extends Widget implements ISoundLists {
 
     private void drawMessage(MatrixStack matrixStack, Minecraft minecraft) {
         FontRenderer font = minecraft.fontRenderer;
+        int v = Math.max(this.width, font.getStringWidth(getMessage().getString()));
         if (showSlider && this.isHovered) {
-            drawCenteredString(matrixStack, font, "Volume: " + (int) (sliderValue * 100), this.x + (this.width / 2), this.y + 2, 0xffffff); //title
+            drawCenteredString(matrixStack, font, "Volume: " + (int) (sliderValue * 100), this.x + (this.width / 2), this.y + 2, colorWhite); //title
         } else {
             String msgTruncated;
             if (this.isHovered) {
                 msgTruncated = getMessage().getString();
-                fill(matrixStack, this.x + this.width, this.y, this.x + font.getStringWidth(getMessage().getString()) + 2, this.y + font.FONT_HEIGHT + 2, -1325400064);
+                fill(matrixStack, this.x + this.width + 3, this.y, this.x + v + 3, this.y + font.FONT_HEIGHT + 2, darkBG);
             } else {
                 msgTruncated = font.func_238417_a_(getMessage(), 205).getString();
             }
