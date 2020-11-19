@@ -8,13 +8,11 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @OnlyIn(Dist.CLIENT)
-public
-class MuffledSound implements ISound {
+public class MuffledSound implements ISound {
 
     private ISound sound;
     private float volume;
@@ -93,5 +91,4 @@ class MuffledSound implements ISound {
     public AttenuationType getAttenuationType() {
         return sound.getAttenuationType();
     }
-
 }

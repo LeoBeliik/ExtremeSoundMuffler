@@ -4,7 +4,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-
 import java.util.Objects;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -36,7 +35,7 @@ public class Anchor {
         return anchorPos;
     }
 
-    public void setAnchorPos(BlockPos anchorPos) {
+    private void setAnchorPos(BlockPos anchorPos) {
         this.anchorPos = anchorPos;
     }
 
@@ -56,18 +55,18 @@ public class Anchor {
         this.radius = radius;
     }
 
-    public void setName(String name) {
+    private void setName(String name) {
         this.name = name;
     }
 
     public SortedMap<ResourceLocation, Double> getMuffledSounds() {
         SortedMap<ResourceLocation, Double> temp = new TreeMap<>();
-        this.muffledSounds.forEach((R,D) -> temp.put(new ResourceLocation(R), D));
+        this.muffledSounds.forEach((R, D) -> temp.put(new ResourceLocation(R), D));
         return temp;
     }
 
     public void setMuffledSounds(SortedMap<ResourceLocation, Double> muffledSounds) {
-        muffledSounds.forEach((R,D) -> this.muffledSounds.put(R.toString(), D));
+        muffledSounds.forEach((R, D) -> this.muffledSounds.put(R.toString(), D));
     }
 
     public void addSound(ResourceLocation sound, double volume) {
@@ -75,7 +74,7 @@ public class Anchor {
     }
 
     public void replaceSound(ResourceLocation sound, double volume) {
-        muffledSounds.replace(sound.toString(),volume);
+        muffledSounds.replace(sound.toString(), volume);
     }
 
     public String getX() {
@@ -94,7 +93,7 @@ public class Anchor {
         return dimension;
     }
 
-    public void setDimension(ResourceLocation dimension) {
+    private void setDimension(ResourceLocation dimension) {
         this.dimension = dimension;
     }
 

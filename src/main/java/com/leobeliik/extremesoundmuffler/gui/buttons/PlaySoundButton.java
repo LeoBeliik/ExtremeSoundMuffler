@@ -1,11 +1,9 @@
 package com.leobeliik.extremesoundmuffler.gui.buttons;
 
-import com.leobeliik.extremesoundmuffler.SoundMuffler;
 import com.leobeliik.extremesoundmuffler.eventHandlers.SoundEventHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.gui.widget.button.AbstractButton;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
@@ -17,7 +15,6 @@ import java.util.Objects;
 @OnlyIn(Dist.CLIENT)
 public class PlaySoundButton extends AbstractButton {
 
-    private static final ResourceLocation GUI = new ResourceLocation(SoundMuffler.MODID, "textures/gui/sm_gui.png");
     private final Minecraft minecraft = Minecraft.getInstance();
     private final SoundEvent sound;
 
@@ -37,6 +34,5 @@ public class PlaySoundButton extends AbstractButton {
 
     @ParametersAreNonnullByDefault
     @Override
-    public void playDownSound(SoundHandler soundHandler) {
-    }
+    public void playDownSound(SoundHandler soundHandler) {}
 }

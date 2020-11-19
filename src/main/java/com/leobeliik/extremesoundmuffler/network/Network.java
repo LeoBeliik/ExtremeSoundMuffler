@@ -7,6 +7,10 @@ import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 
+/**
+ * Credits:
+ * <a href="https://github.com/McJty/YouTubeModding14/blob/master/src/main/java/com/mcjty/mytutorial/network/Networking.java">McJty</a>
+ */
 public class Network {
 
     private static SimpleChannel INSTANCE;
@@ -17,7 +21,10 @@ public class Network {
     }
 
     public static void registerMessages() {
-        INSTANCE = NetworkRegistry.newSimpleChannel(new ResourceLocation(SoundMuffler.MODID), () -> "1.0", s -> true, s -> true);
+        INSTANCE = NetworkRegistry.newSimpleChannel(new ResourceLocation(SoundMuffler.MODID),
+                () -> "1.0",
+                s -> true,
+                s -> true);
 
         INSTANCE.messageBuilder(PacketDataList.class, nextID())
                 .encoder(PacketDataList::toBytes)

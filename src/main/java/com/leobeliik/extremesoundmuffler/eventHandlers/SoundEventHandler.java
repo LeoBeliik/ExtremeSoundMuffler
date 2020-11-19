@@ -3,9 +3,9 @@ package com.leobeliik.extremesoundmuffler.eventHandlers;
 import com.leobeliik.extremesoundmuffler.Config;
 import com.leobeliik.extremesoundmuffler.SoundMuffler;
 import com.leobeliik.extremesoundmuffler.gui.MainScreen;
-import com.leobeliik.extremesoundmuffler.utils.Anchor;
 import com.leobeliik.extremesoundmuffler.interfaces.IAnchorList;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
+import com.leobeliik.extremesoundmuffler.utils.Anchor;
 import com.leobeliik.extremesoundmuffler.utils.MuffledSound;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
@@ -73,5 +73,4 @@ public class SoundEventHandler implements ISoundLists, IAnchorList {
     public static void isFromPlaySoundButton(boolean b) {
         isFromPSB = b;
     }
-
 }

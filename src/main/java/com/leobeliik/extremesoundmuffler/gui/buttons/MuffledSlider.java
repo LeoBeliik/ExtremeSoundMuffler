@@ -2,14 +2,14 @@ package com.leobeliik.extremesoundmuffler.gui.buttons;
 
 import com.leobeliik.extremesoundmuffler.Config;
 import com.leobeliik.extremesoundmuffler.gui.MainScreen;
-import com.leobeliik.extremesoundmuffler.utils.Anchor;
+import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
+import com.leobeliik.extremesoundmuffler.utils.Anchor;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.ColorHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
@@ -19,12 +19,8 @@ import net.minecraft.util.text.StringTextComponent;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Objects;
 
-@SuppressWarnings("EmptyMethod")
-public class MuffledSlider extends Widget implements ISoundLists {
+public class MuffledSlider extends Widget implements ISoundLists, IColorsGui {
 
-    private final int whiteText = 0xffffff;
-    private final int yellowText = 0xffff00;
-    private int darkBG = ColorHelper.PackedColor.packColor(223, 0, 0, 0);
     private final String mainTitle = "ESM - Main Screen";
     private double sliderValue;
     private Button btnToggleSound;
@@ -44,7 +40,7 @@ public class MuffledSlider extends Widget implements ISoundLists {
     @Override
     public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         Minecraft minecraft = Minecraft.getInstance();
-        minecraft.getTextureManager().bindTexture(MainScreen.GUI);
+        minecraft.getTextureManager().bindTexture(GUI);
         drawGradient(matrixStack);
         float v = this.getFGColor() == whiteText ? 213F : 202F;
         blit(matrixStack, btnToggleSound.x, btnToggleSound.y, 43F, v, 11, 11, 256, 256); //muffle button bg

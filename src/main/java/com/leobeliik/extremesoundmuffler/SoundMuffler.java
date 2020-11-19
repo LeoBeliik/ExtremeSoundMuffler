@@ -24,6 +24,8 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fml.network.NetworkRegistry;
 
 @Mod("extremesoundmuffler")
 public class SoundMuffler {
@@ -63,8 +65,7 @@ public class SoundMuffler {
             if (screen instanceof DisplayEffectsScreen) {
                 event.addWidget(new InvButton((ContainerScreen) screen, 64, 9));
             }
-        } catch (NullPointerException ignored) {
-        }
+        } catch (NullPointerException ignored) {}
     }
 
     @SubscribeEvent

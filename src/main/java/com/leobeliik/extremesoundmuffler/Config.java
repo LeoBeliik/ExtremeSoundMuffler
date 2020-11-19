@@ -5,7 +5,6 @@ import com.electronwill.nightconfig.core.io.WritingMode;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.common.Mod;
-
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
@@ -32,11 +31,14 @@ public class Config {
         disableInventoryButton = CLIENT_BUILDER.comment("Disable the Muffle button in the player inventory?")
                 .define("disableInventoryButton", false);
 
-        disableAnchors = CLIENT_BUILDER.comment("Disable the anchors?").define("disableAnchors", false);
+        disableAnchors = CLIENT_BUILDER.comment("Disable the Anchors?")
+                .define("disableAnchors", false);
 
-        defaultMuteVolume = CLIENT_BUILDER.comment("Volume set when pressed the mute button").defineInRange("defaultMuteVolume", 0, 0, 0.9);
+        defaultMuteVolume = CLIENT_BUILDER.comment("Volume set when pressed the mute button by default")
+                .defineInRange("defaultMuteVolume", 0, 0, 0.9);
 
-        showTip = CLIENT_BUILDER.comment("Show a message the first time a sound is muffled indicating that you can change the volume").define("showTip", true);
+        showTip = CLIENT_BUILDER.comment("Show a message the first time a sound is muffled indicating that you can change the volume")
+                .define("showTip", true);
 
         CLIENT_BUILDER.pop();
         CLIENT_CONFIG = CLIENT_BUILDER.build();

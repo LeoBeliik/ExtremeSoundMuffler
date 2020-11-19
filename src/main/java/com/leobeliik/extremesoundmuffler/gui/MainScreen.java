@@ -4,6 +4,7 @@ import com.leobeliik.extremesoundmuffler.Config;
 import com.leobeliik.extremesoundmuffler.SoundMuffler;
 import com.leobeliik.extremesoundmuffler.gui.buttons.MuffledSlider;
 import com.leobeliik.extremesoundmuffler.interfaces.IAnchorList;
+import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import com.leobeliik.extremesoundmuffler.network.PacketAnchorList;
 import com.leobeliik.extremesoundmuffler.utils.Anchor;
@@ -13,13 +14,11 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.ColorHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.*;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.ForgeRegistries;
-
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
@@ -28,9 +27,7 @@ import java.util.Objects;
 
 @SuppressWarnings("SuspiciousNameCombination")
 @OnlyIn(Dist.CLIENT)
-public class MainScreen extends Screen implements ISoundLists, IAnchorList {
-
-    public static final ResourceLocation GUI = new ResourceLocation(SoundMuffler.MODID, "textures/gui/sm_gui.png");
+public class MainScreen extends Screen implements ISoundLists, IAnchorList, IColorsGui {
 
     private static final Minecraft minecraft = Minecraft.getInstance();
     private List<Widget> filteredButtons = new ArrayList<>();
@@ -40,7 +37,6 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList {
     private static ITextComponent toggleSoundsListMessage;
     private final int xSize = 256;
     private final int ySize = 202;
-    private final int whiteText = 0xffffff;
     private final boolean isAnchorsDisabled = Config.getDisableAchors();
     private final ITextComponent emptyText = StringTextComponent.EMPTY;
     private final String mainTitle = "ESM - Main Screen";
@@ -51,7 +47,7 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList {
     private Anchor anchor;
 
     private MainScreen() {
-        super(new StringTextComponent(""));
+        super(StringTextComponent.EMPTY);
     }
 
     private static void open(String title, ITextComponent message, String searchMessage) {
@@ -65,14 +61,12 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList {
         open("ESM - Main Screen", ITextComponent.getTextComponentOrEmpty("Recent"), "");
     }
 
-    public static boolean isMuffled() {
-        return isMuffling;
+    private void bindTexture() {
+        minecraft.getTextureManager().bindTexture(GUI);
     }
 
-    public static void setAnchors() {
-        for (int i = 0; i <= 9; i++) {
-            anchorList.add(new Anchor(i, "Anchor: " + i));
-        }
+    public static boolean isMuffled() {
+        return isMuffling;
     }
 
     @Nullable
@@ -84,7 +78,7 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList {
     @Override
     public void render(MatrixStack matrix, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(matrix);
-        minecraft.getTextureManager().bindTexture(GUI);
+        this.bindTexture();
         this.blit(matrix, getX(), getY(), 0, 0, xSize, ySize); //Main screen bounds
         drawCenteredString(matrix, font, screenTitle, getX() + 128, getY() + 8, whiteText); //Screen title
         renderButtonsTextures(matrix, mouseX, mouseY, partialTicks);
@@ -227,7 +221,7 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList {
             boolean muffledScreen = screenTitle.equals(mainTitle) && !muffledSounds.isEmpty() && muffledSounds.containsKey(sound);
 
             if (muffledAnchor || muffledScreen) {
-                volumeSlider.setFGColor(0xffff00);
+                volumeSlider.setFGColor(yellowText);
             }
 
             buttonH += volumeSlider.getHeightRealms() + 2;
@@ -262,9 +256,8 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList {
                     buttons.clear();
                     open(screenTitle, btnToggleSoundsList.getMessage(), searchBar.getText());
                 });
-                int colorGreen = 3010605;
                 if (!anchorList.isEmpty()) {
-                    btnAnchor.setFGColor(anchorList.get(Integer.parseInt(btnAnchor.getMessage().getString())).getAnchorPos() != null ? colorGreen : whiteText);
+                    btnAnchor.setFGColor(anchorList.get(Integer.parseInt(btnAnchor.getMessage().getString())).getAnchorPos() != null ? greenText : whiteText);
                 }
             }
             addButton(btnAnchor).setAlpha(0);
@@ -308,7 +301,6 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList {
         float v; //start x point of the texture
         String message; //Button message
         int stringW; //text width
-        int darkBG = ColorHelper.PackedColor.packColor(223, 0, 0, 0); //background color for Screen::fill()
 
         //Mute sound buttons and play sound buttons; Sound names
         if (buttons.size() < soundsList.size()) {
@@ -328,7 +320,7 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList {
         //toggle muffled button
         x = btnToggleMuffled.x + 8;
         y = btnToggleMuffled.y;
-        minecraft.getTextureManager().bindTexture(GUI);
+        this.bindTexture();
 
         if (isMuffling) {
             blit(matrix, x - 8, y, 54F, 202F, 17, 17, xSize, xSize); //muffle button
@@ -361,7 +353,7 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList {
             drawString(matrix, font, "Z: " + anchor.getZ(), x + 1, y - 30, whiteText);
             drawString(matrix, font, "Radious: " + radious, x + 1, y - 20, whiteText);
             drawString(matrix, font, "Dimension: " + dimensionName, x + 1, y - 10, whiteText);
-            minecraft.getTextureManager().bindTexture(GUI);
+            this.bindTexture();
             blit(matrix, x, y, 0, 69.45F, 11, 11, 88, 88); //set coordinates button
 
             if (anchor.getAnchorPos() != null) {
@@ -461,7 +453,7 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList {
         //Draw Searchbar prompt text
         x = searchBar.x;
         y = searchBar.y;
-        ITextComponent searchHint = (new TranslationTextComponent("gui.recipebook.search_hint")).mergeStyle(TextFormatting.ITALIC).mergeStyle(TextFormatting.GRAY); //Stolen from Vanilla ;)
+        ITextComponent searchHint = (new TranslationTextComponent("gui.recipebook.search_hint")).mergeStyle(TextFormatting.ITALIC).mergeStyle(TextFormatting.GRAY); //from Vanilla recipebook GUI
         if (!this.searchBar.isFocused() && this.searchBar.getText().isEmpty()) {
             drawString(matrix, font, searchHint, x + 1, y, -1);
         }
@@ -513,7 +505,7 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList {
         btnAccept.visible = !btnAccept.visible;
         btnCancel.visible = !btnCancel.visible;
 
-        editAnchorRadiousBar.setTextColor(0xffffff);
+        editAnchorRadiousBar.setTextColor(whiteText);
     }
 
     @Override
@@ -588,12 +580,12 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList {
         if (!editAnchorRadiousBar.getText().isEmpty()) {
             int radious = Integer.parseInt(editAnchorRadiousBar.getText());
             if (radious > 32 || radious < 1) {
-                editAnchorRadiousBar.setTextColor(0xff0000);
+                editAnchorRadiousBar.setTextColor(yellowText);
             } else {
-                editAnchorRadiousBar.setTextColor(0xffffff);
+                editAnchorRadiousBar.setTextColor(whiteText);
             }
         } else {
-            editAnchorRadiousBar.setTextColor(0xffffff);
+            editAnchorRadiousBar.setTextColor(whiteText);
         }
 
         return super.keyReleased(keyCode, scanCode, modifiers);
@@ -637,7 +629,10 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList {
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
-    //What you mean I stole this from Quark?
+    /***
+     * Credits:
+     * <a href="https://github.com/Vazkii/Quark/blob/master/src/main/java/vazkii/quark/base/client/config/obj/DoubleObject.java#L24">Quark</a>
+     */
     private boolean isStringValid(String s) {
         return s.matches("[0-9]*(?:[0-9]*)?");
     }
@@ -692,5 +687,4 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList {
     private int getY() {
         return (this.height - ySize) / 2;
     }
-
 }
