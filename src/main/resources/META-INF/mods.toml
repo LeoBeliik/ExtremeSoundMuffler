@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[28,)"
+loaderVersion="[35,)"
 license= "GNU LESSER GENERAL PUBLIC LICENSE"
 licenseURL= "https://github.com/LeoBeliik/ExtremeSoundMuffler/blob/master/LICENSE.txt"
 issueTrackerURL="https://github.com/LeoBeliik/ExtremeSoundMuffler/issues"
@@ -9,18 +9,21 @@ version="${file.jarVersion}"
 displayName="Extreme Sound Muffler"
 displayURL="https://www.curseforge.com/minecraft/mc-mods/extreme-sound-muffler"
 authors="LeoBeliik"
+logo="esm_logo.png"
 description='''
-Client side selective sound muffler.
+This mod allows you to muffle (almost) any sound selectively,
+allowing you to choose the volume of the sound you want between mute and 90%.
+This mod also works Clientside only.
 '''
 [[dependencies.extremeSoundMuffler]]
     modId="forge"
     mandatory=true
-    versionRange="[34,)"
+    versionRange="[35,)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.extremeSoundMuffler]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.16.3]"
+    versionRange="[1.16.4]"
     ordering="NONE"
     side="BOTH"
