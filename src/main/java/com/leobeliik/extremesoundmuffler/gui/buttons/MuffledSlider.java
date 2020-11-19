@@ -22,8 +22,8 @@ import java.util.Objects;
 @SuppressWarnings("EmptyMethod")
 public class MuffledSlider extends Widget implements ISoundLists {
 
-    private final int colorWhite = 0xffffff;
-    private final int colorYellow = 0xffff00;
+    private final int whiteText = 0xffffff;
+    private final int yellowText = 0xffff00;
     private int darkBG = ColorHelper.PackedColor.packColor(223, 0, 0, 0);
     private final String mainTitle = "ESM - Main Screen";
     private double sliderValue;
@@ -46,7 +46,7 @@ public class MuffledSlider extends Widget implements ISoundLists {
         Minecraft minecraft = Minecraft.getInstance();
         minecraft.getTextureManager().bindTexture(MainScreen.GUI);
         drawGradient(matrixStack);
-        float v = this.getFGColor() == colorWhite ? 213F : 202F;
+        float v = this.getFGColor() == whiteText ? 213F : 202F;
         blit(matrixStack, btnToggleSound.x, btnToggleSound.y, 43F, v, 11, 11, 256, 256); //muffle button bg
         blit(matrixStack, btnPlaySound.x, btnPlaySound.y, 32F, 202F, 11, 11, 256, 256); //play button bg
         this.drawMessage(matrixStack, minecraft);
@@ -56,7 +56,7 @@ public class MuffledSlider extends Widget implements ISoundLists {
         FontRenderer font = minecraft.fontRenderer;
         int v = Math.max(this.width, font.getStringWidth(getMessage().getString()));
         if (showSlider && this.isHovered) {
-            drawCenteredString(matrixStack, font, "Volume: " + (int) (sliderValue * 100), this.x + (this.width / 2), this.y + 2, colorWhite); //title
+            drawCenteredString(matrixStack, font, "Volume: " + (int) (sliderValue * 100), this.x + (this.width / 2), this.y + 2, whiteText); //title
         } else {
             String msgTruncated;
             if (this.isHovered) {
@@ -70,7 +70,7 @@ public class MuffledSlider extends Widget implements ISoundLists {
     }
 
     private void drawGradient(MatrixStack matrixStack) {
-        if (this.getFGColor() == colorYellow) {
+        if (this.getFGColor() == yellowText) {
             blit(matrixStack, this.x, this.y - 1, 0, 234, (int) (sliderValue * (width - 6)) + 5, height + 1, 256, 256); //draw bg
             if (this.isHovered) {
                 blit(matrixStack, this.x + (int) (sliderValue * (width - 6)) + 1, this.y + 1, 32F, 224F, 5, 9, 256, 256); //Slider
@@ -80,13 +80,13 @@ public class MuffledSlider extends Widget implements ISoundLists {
 
     private void setBtnToggleSound(String screenTitle, ResourceLocation sound, Anchor anchor) {
         btnToggleSound = new Button(this.x + width + 5, this.y, 11, 11, StringTextComponent.EMPTY, b -> {
-            if (getFGColor() == colorYellow) {
+            if (getFGColor() == yellowText) {
                 if (screenTitle.equals(mainTitle)) {
                     muffledSounds.remove(sound);
                 } else {
                     anchor.removeSound(sound);
                 }
-                super.setFGColor(colorWhite);
+                super.setFGColor(whiteText);
             } else {
                 if (screenTitle.equals(mainTitle)) {
                     setSliderValue(Config.getDefaultMuteVolume());
@@ -97,7 +97,7 @@ public class MuffledSlider extends Widget implements ISoundLists {
                 } else {
                     return;
                 }
-                super.setFGColor(colorYellow);
+                super.setFGColor(yellowText);
             }
         });
     }
@@ -126,6 +126,7 @@ public class MuffledSlider extends Widget implements ISoundLists {
 
     private void changeSliderValue(double mouseX) {
         this.setSliderValue((mouseX - (double) (this.x + 4)) / (double) (this.width - 8));
+        Config.setShowTip(false);
     }
 
     private void setSliderValue(double value) {
@@ -146,7 +147,7 @@ public class MuffledSlider extends Widget implements ISoundLists {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (this.isHovered && this.getFGColor() == colorYellow) {
+        if (this.isHovered && this.getFGColor() == yellowText) {
             this.changeSliderValue(mouseX);
             showSlider = true;
         }

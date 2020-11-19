@@ -15,10 +15,7 @@ import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.ColorHelper;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.util.text.*;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -306,6 +303,8 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList {
     private void renderButtonsTextures(MatrixStack matrix, double mouseX, double mouseY, float partialTicks) {
         int x; //start x point of the button
         int y; //start y point of the button
+        int mX; //start x point for mouse hovering
+        int mY; //start y point for mouse hovering
         float v; //start x point of the texture
         String message; //Button message
         int stringW; //text width
@@ -372,7 +371,19 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList {
                 btnEditAnchor.active = false;
             }
 
+            //Indicates the Anchor has to be set before muffling sounds
             for (Widget button : buttons) {
+                if (button instanceof MuffledSlider) {
+                    mX = button.x + button.getWidth() + 5;
+                    mY = button.y;
+
+                    if (mouseX > mX && mouseX < mX + 11 && mouseY > mY && mouseY < mY + 11) {
+                        fill(matrix, x - 5, y + 16, x + 65, y + 40, darkBG);
+                        font.drawString(matrix, "↑ Set the", x + 3, y + 18, whiteText);
+                        font.drawString(matrix, "Anchor first", x, y + 29, whiteText);
+                    }
+                }
+                minecraft.getTextureManager().bindTexture(GUI);
                 if (!(button instanceof MuffledSlider)) {
                     if (button.getMessage().getString().equals(String.valueOf(anchor.getAnchorId()))) {
                         blit(matrix, button.x - 5, button.y - 2, 71F, 202F, 27, 22, xSize, xSize); //fancy selected Anchor indicator
@@ -381,6 +392,7 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList {
                 }
             }
         }
+
 
         message = "Set Anchor";
         stringW = font.getStringWidth(message) + 2;
@@ -403,7 +415,7 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList {
         for (int i = 0; i <= 9; i++) {
             Widget btn = buttons.get(soundsList.size() + i);
             x = btn.x + 8;
-            y = btn.y;
+            y = btn.y + 5;
             message = isAnchorsDisabled ? "Anchors are disabled" : anchorList.get(i).getName();
             stringW = font.getStringWidth(message) / 2;
 
@@ -474,6 +486,20 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList {
         if (mouseX > x && mouseX < x + btnPrevSounds.getWidth() && mouseY > y && mouseY < y + btnPrevSounds.getHeightRealms()) {
             fill(matrix, x - stringW - 2, y - 2, x + stringW + 2, y - 13, darkBG);
             drawCenteredString(matrix, font, message, x, y - 11, whiteText);
+        }
+
+        //Show a tip the first time a sound is muffled
+        x = this.getX();
+        y = getY() + ySize;
+        ITextProperties tipMessage = ITextProperties.func_240652_a_("TIP: you can set the volume for muffled sounds by dragging the slider around");
+
+        if (muffledSounds.size() == 1 && Config.getShowTip()) {
+            if (mouseX > x + 3 && mouseX < x + xSize - 3 && mouseY > y - 30 && mouseY < y - 3) {
+                return;
+            }
+
+            fill(matrix, x + 3, y, x + xSize - 2, y + 22, darkBG);
+            font.func_238418_a_(tipMessage, x + 7, y + 2, xSize, whiteText);
         }
     }
 
