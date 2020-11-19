@@ -215,6 +215,7 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
                 volume = 1D;
             }
 
+            //Using screenTitle because is an empty String.. that was bad..
             MuffledSlider volumeSlider = new MuffledSlider(getX() + 11, buttonH, 205, 11, volume, sound, screenTitle, anchor);
 
             boolean muffledAnchor = anchor != null && screenTitle.equals(anchor.getName()) && !anchor.getMuffledSounds().isEmpty() && anchor.getMuffledSounds().containsKey(sound);
@@ -302,7 +303,6 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
         String message; //Button message
         int stringW; //text width
 
-        //Mute sound buttons and play sound buttons; Sound names
         if (buttons.size() < soundsList.size()) {
             return;
         }
