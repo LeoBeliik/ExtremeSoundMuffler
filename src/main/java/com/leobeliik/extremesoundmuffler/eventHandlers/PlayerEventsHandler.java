@@ -8,12 +8,9 @@ import com.leobeliik.extremesoundmuffler.network.PacketDataList;
 import com.leobeliik.extremesoundmuffler.utils.Anchor;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.loading.FMLEnvironment;
 
 @Mod.EventBusSubscriber(modid = SoundMuffler.MODID)
 public class PlayerEventsHandler implements IAnchorList, ISoundLists {
