@@ -275,15 +275,15 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
         addButton(btnAccept = new Button(getX() + 259, editAnchorRadiusBar.y + 15, 40, 20, ITextComponent.getTextComponentOrEmpty("Accept"), b -> {
             anchor = getAnchorByName(screenTitle);
             if (!editAnchorTitleBar.getText().isEmpty() && !editAnchorRadiusBar.getText().isEmpty() && anchor != null) {
-                int radius = Integer.parseInt(editAnchorRadiusBar.getText());
+                int Radius = Integer.parseInt(editAnchorRadiusBar.getText());
 
-                if (radius > 32) {
-                    radius = 32;
-                } else if (radius < 1) {
-                    radius = 1;
+                if (Radius > 32) {
+                    Radius = 32;
+                } else if (Radius < 1) {
+                    Radius = 1;
                 }
 
-                anchor.editAnchor(editAnchorTitleBar.getText(), radius);
+                anchor.editAnchor(editAnchorTitleBar.getText(), Radius);
                 screenTitle = editAnchorTitleBar.getText();
                 editTitle(anchor);
             }
@@ -336,13 +336,13 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
         //Anchor coordinates and set coord button
         Anchor anchor = getAnchorByName(screenTitle);
         String dimensionName = "";
-        String radius;
+        String Radius;
         x = btnSetAnchor.x;
         y = btnSetAnchor.y;
 
         if (anchor != null) {
             stringW = font.getStringWidth("Dimension: ");
-            radius = anchor.getRadius() == 0 ? "" : String.valueOf(anchor.getRadius());
+            Radius = anchor.getRadius() == 0 ? "" : String.valueOf(anchor.getRadius());
             if (anchor.getDimension() != null) {
                 stringW += font.getStringWidth(anchor.getDimension().getPath());
                 dimensionName = anchor.getDimension().getPath();
@@ -351,7 +351,7 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
             drawString(matrix, font, "X: " + anchor.getX(), x + 1, y - 50, whiteText);
             drawString(matrix, font, "Y: " + anchor.getY(), x + 1, y - 40, whiteText);
             drawString(matrix, font, "Z: " + anchor.getZ(), x + 1, y - 30, whiteText);
-            drawString(matrix, font, "radius: " + radius, x + 1, y - 20, whiteText);
+            drawString(matrix, font, "Radius: " + Radius, x + 1, y - 20, whiteText);
             drawString(matrix, font, "Dimension: " + dimensionName, x + 1, y - 10, whiteText);
             this.bindTexture();
             blit(matrix, x, y, 0, 69.45F, 11, 11, 88, 88); //set coordinates button
@@ -432,13 +432,13 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
             font.drawString(matrix, text, textX, y + 22, whiteText);
         }
 
-        //Show radius and Title text when editing Anchor and bg
+        //Show Radius and Title text when editing Anchor and bg
         x = btnSetAnchor.x;
         y = editAnchorTitleBar.y;
         if (editAnchorRadiusBar.visible) {
             fill(matrix, x - 4, y - 4, editAnchorTitleBar.x + editAnchorTitleBar.getWidth() + 3, btnAccept.y + 23, darkBG);
             font.drawString(matrix, "Title: ", x - 2, y + 1, whiteText);
-            font.drawString(matrix, "radius: ", x - 2, editAnchorRadiusBar.y + 1, whiteText);
+            font.drawString(matrix, "Radius: ", x - 2, editAnchorRadiusBar.y + 1, whiteText);
 
             x = editAnchorRadiusBar.x + editAnchorRadiusBar.getWidth();
             y = editAnchorRadiusBar.y;
@@ -578,8 +578,8 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
 
         if (!editAnchorRadiusBar.getText().isEmpty()) {
-            int radius = Integer.parseInt(editAnchorRadiusBar.getText());
-            if (radius > 32 || radius < 1) {
+            int Radius = Integer.parseInt(editAnchorRadiusBar.getText());
+            if (Radius > 32 || Radius < 1) {
                 editAnchorRadiusBar.setTextColor(yellowText);
             } else {
                 editAnchorRadiusBar.setTextColor(whiteText);
@@ -602,7 +602,7 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        //radius only accepts numbers
+        //Radius only accepts numbers
         editAnchorRadiusBar.setValidator(this::isStringValid);
 
         //Type inside the search bar
@@ -611,7 +611,7 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
             return true;
         }
 
-        //Search bar, Edit title bar & Edit Anchor radius bar looses focus when pressed "Enter" or "Intro"
+        //Search bar, Edit title bar & Edit Anchor Radius bar looses focus when pressed "Enter" or "Intro"
         if (keyCode == 257 || keyCode == 335) {
             searchBar.setFocused2(false);
             editAnchorTitleBar.setFocused2(false);
