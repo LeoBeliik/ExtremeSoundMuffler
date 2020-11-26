@@ -1,13 +1,11 @@
 package com.leobeliik.extremesoundmuffler.utils;
 
-import net.minecraft.client.audio.ISound;
-import net.minecraft.client.audio.Sound;
-import net.minecraft.client.audio.SoundEventAccessor;
-import net.minecraft.client.audio.SoundHandler;
+import net.minecraft.client.audio.*;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -90,5 +88,27 @@ public class MuffledSound implements ISound {
     @Override
     public AttenuationType getAttenuationType() {
         return sound.getAttenuationType();
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public static class MuffledTickableSound extends MuffledSound implements ITickableSound {
+
+        private final ITickableSound sound;
+        private boolean shouldPlay = true;
+
+        public MuffledTickableSound(ITickableSound sound, float volume) {
+            super(sound, volume);
+            this.sound = sound;
+        }
+
+        @Override
+        public boolean isDonePlaying() {
+            return sound.isDonePlaying();
+        }
+
+        @Override
+        public void tick() {
+            sound.tick();
+        }
     }
 }

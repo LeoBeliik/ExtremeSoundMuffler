@@ -7,8 +7,12 @@ import com.leobeliik.extremesoundmuffler.interfaces.IAnchorList;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import com.leobeliik.extremesoundmuffler.utils.Anchor;
 import com.leobeliik.extremesoundmuffler.utils.MuffledSound;
+import com.leobeliik.extremesoundmuffler.utils.MuffledSound.MuffledTickableSound;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
+import net.minecraft.client.audio.ITickableSound;
+import net.minecraft.client.audio.SoundEventAccessor;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -48,7 +52,11 @@ public class SoundEventHandler implements ISoundLists, IAnchorList {
 
         if (MainScreen.isMuffled()) {
             if (muffledSounds.containsKey(sound.getSoundLocation())) {
-                event.setResultSound(new MuffledSound(sound, muffledSounds.get(sound.getSoundLocation()).floatValue()));
+                if (sound instanceof ITickableSound) {
+                    event.setResultSound(new MuffledTickableSound((ITickableSound) event.getSound(), muffledSounds.get(sound.getSoundLocation()).floatValue()));
+                } else {
+                    event.setResultSound(new MuffledSound(sound, muffledSounds.get(sound.getSoundLocation()).floatValue()));
+                }
                 return;
             }
 
