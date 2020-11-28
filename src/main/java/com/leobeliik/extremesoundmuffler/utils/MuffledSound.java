@@ -20,6 +20,10 @@ public class MuffledSound implements ISound {
         this.volume = volume;
     }
 
+    public void setVolume(float volume) {
+        this.volume = volume;
+    }
+
     @Nonnull
     @Override
     public ResourceLocation getSoundLocation() {
@@ -94,21 +98,24 @@ public class MuffledSound implements ISound {
     public static class MuffledTickableSound extends MuffledSound implements ITickableSound {
 
         private final ITickableSound sound;
-        private boolean shouldPlay = true;
 
         public MuffledTickableSound(ITickableSound sound, float volume) {
             super(sound, volume);
             this.sound = sound;
         }
 
+        public void setVolume (float volume) {
+            super.setVolume(volume);
+        }
+
         @Override
         public boolean isDonePlaying() {
-            return sound.isDonePlaying();
+            return this.sound.isDonePlaying();
         }
 
         @Override
         public void tick() {
-            sound.tick();
+            this.sound.tick();
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.leobeliik.extremesoundmuffler.gui.buttons;
 
 import com.leobeliik.extremesoundmuffler.Config;
+import com.leobeliik.extremesoundmuffler.eventHandlers.SoundEventHandler;
 import com.leobeliik.extremesoundmuffler.gui.MainScreen;
 import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
@@ -26,6 +27,7 @@ public class MuffledSlider extends Widget implements ISoundLists, IColorsGui {
     private Button btnToggleSound;
     private PlaySoundButton btnPlaySound;
     private ResourceLocation sound;
+    public static ResourceLocation tickSound;
     public static boolean showSlider = false;
 
     public MuffledSlider(int x, int y, int width, int height, double sliderValue, ResourceLocation sound, String screenTitle, Anchor anchor) {
@@ -51,7 +53,7 @@ public class MuffledSlider extends Widget implements ISoundLists, IColorsGui {
     private void drawMessage(MatrixStack matrixStack, Minecraft minecraft) {
         FontRenderer font = minecraft.fontRenderer;
         int v = Math.max(this.width, font.getStringWidth(getMessage().getString()));
-        if (showSlider && this.isHovered) {
+        if (showSlider && this.isFocused() && this.isHovered) {
             drawCenteredString(matrixStack, font, "Volume: " + (int) (sliderValue * 100), this.x + (this.width / 2), this.y + 2, whiteText); //title
         } else {
             String msgTruncated;
@@ -82,6 +84,7 @@ public class MuffledSlider extends Widget implements ISoundLists, IColorsGui {
                 } else {
                     anchor.removeSound(sound);
                 }
+                SoundEventHandler.reloadSound(sound);
                 super.setFGColor(whiteText);
             } else {
                 if (screenTitle.equals(mainTitle)) {
@@ -93,6 +96,7 @@ public class MuffledSlider extends Widget implements ISoundLists, IColorsGui {
                 } else {
                     return;
                 }
+                SoundEventHandler.reloadSound(sound);
                 super.setFGColor(yellowText);
             }
         });
@@ -148,8 +152,16 @@ public class MuffledSlider extends Widget implements ISoundLists, IColorsGui {
         if (this.isHovered && this.getFGColor() == yellowText) {
             this.changeSliderValue(mouseX);
             showSlider = true;
+            this.setFocused(true);
+            tickSound = this.sound;
         }
         return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        this.setFocused(false);
+        return super.mouseReleased(mouseX, mouseY, button);
     }
 
     private void updateVolume() {

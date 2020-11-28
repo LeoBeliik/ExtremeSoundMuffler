@@ -2,6 +2,7 @@ package com.leobeliik.extremesoundmuffler.gui;
 
 import com.leobeliik.extremesoundmuffler.Config;
 import com.leobeliik.extremesoundmuffler.SoundMuffler;
+import com.leobeliik.extremesoundmuffler.eventHandlers.SoundEventHandler;
 import com.leobeliik.extremesoundmuffler.gui.buttons.MuffledSlider;
 import com.leobeliik.extremesoundmuffler.interfaces.IAnchorList;
 import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
@@ -660,6 +661,10 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         MuffledSlider.showSlider = false;
+        if (MuffledSlider.tickSound != null) {
+            SoundEventHandler.reloadSound(MuffledSlider.tickSound);
+        }
+        MuffledSlider.tickSound = null;
         return super.mouseReleased(mouseX, mouseY, button);
     }
 
