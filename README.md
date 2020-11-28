@@ -19,7 +19,6 @@ Extreme sound muffler is a client side mod that allows you to muffle sounds sele
 
 **4-** Enjoy peace.
 
-**Some entities (like minecarts) make a constant sound, they need to be replaced after you mute the sound or you can set the master volume to 0 and back to your preferred volume, this sounds cannot be muffled, only muted.**
 
 You can toggle the muffled sound on/off with the **toggle muffle button**.
 
