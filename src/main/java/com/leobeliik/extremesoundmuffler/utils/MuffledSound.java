@@ -117,5 +117,38 @@ public class MuffledSound implements ISound {
         public void tick() {
             this.sound.tick();
         }
+
+        @Nonnull
+        @Override
+        public ResourceLocation getSoundLocation() {
+            return sound.getSoundLocation();
+        }
+
+        @Nonnull
+        @Override
+        public Sound getSound() {
+            return sound.getSound();
+        }
+
+        @Override
+        public boolean canRepeat() {
+            return sound.canRepeat();
+        }
+
+        @Override
+        public int getRepeatDelay() {
+            return sound.getRepeatDelay();
+        }
+
+        @Nonnull
+        @Override
+        public AttenuationType getAttenuationType() {
+            return sound.getAttenuationType();
+        }
+
+        @Override
+        public boolean shouldPlaySound() {
+            return sound.shouldPlaySound();
+        }
     }
 }
