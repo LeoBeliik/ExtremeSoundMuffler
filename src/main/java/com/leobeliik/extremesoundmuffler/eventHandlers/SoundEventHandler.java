@@ -74,7 +74,6 @@ public class SoundEventHandler implements ISoundLists, IAnchorList {
             if (muffledSounds.containsKey(sound.getSoundLocation())) {
                 if (sound instanceof ITickableSound) {
                     event.setResultSound(new MuffledTickableSound((ITickableSound) sound, muffledSounds.get(sound.getSoundLocation()).floatValue()));
-                    event.getManager().stop(sound);
                 } else {
                     event.setResultSound(new MuffledSound(sound, muffledSounds.get(sound.getSoundLocation()).floatValue()));
                 }
