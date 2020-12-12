@@ -17,7 +17,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
-import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -99,6 +98,9 @@ public class SoundEventHandler implements ISoundLists, IAnchorList {
     }
 
     public static void reloadSound(ResourceLocation sound) {
+        if (soundEngine == null) {
+            return;
+        }
         for (ITickableSound tickSound : tickSoundList) {
             if (tickSound.getSoundLocation().equals(sound)) {
                 soundEngine.stop(sound, tickSound.getCategory());
