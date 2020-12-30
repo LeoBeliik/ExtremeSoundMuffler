@@ -370,7 +370,7 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
                     mX = button.x + button.getWidth() + 5;
                     mY = button.y;
 
-                    if (mouseX > mX && mouseX < mX + 11 && mouseY > mY && mouseY < mY + 11) {
+                    if (mouseX > mX && mouseX < mX + 11 && mouseY > mY && mouseY < mY + 11 && anchor.getAnchorPos() == null) {
                         fill(matrix, x - 5, y + 16, x + 65, y + 40, darkBG);
                         font.drawString(matrix, "Set the", x + 3, y + 18, whiteText);
                         font.drawString(matrix, "Anchor first", x, y + 29, whiteText);
