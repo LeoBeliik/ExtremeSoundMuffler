@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[35,)"
+loaderVersion="[34,)"
 license= "GNU LESSER GENERAL PUBLIC LICENSE"
 licenseURL= "https://github.com/LeoBeliik/ExtremeSoundMuffler/blob/master/LICENSE.txt"
 issueTrackerURL="https://github.com/LeoBeliik/ExtremeSoundMuffler/issues"
@@ -18,12 +18,12 @@ This mod also works Clientside only.
 [[dependencies.extremeSoundMuffler]]
     modId="forge"
     mandatory=true
-    versionRange="[35,)"
+    versionRange="[34,)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.extremeSoundMuffler]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.16.4]"
+    versionRange="[1.16.3,)"
     ordering="NONE"
     side="BOTH"
