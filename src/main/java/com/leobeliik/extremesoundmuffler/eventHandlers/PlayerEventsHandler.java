@@ -17,9 +17,17 @@ public class PlayerEventsHandler implements IAnchorList, ISoundLists {
 
     @SubscribeEvent
     public static void onPlayerLoggin(PlayerEvent.PlayerLoggedInEvent event) {
-        anchorList.clear();
+        //WorldEventHandler.isClientSide = true;
+        saveAnchors((ServerPlayerEntity) event.getPlayer());
+    }
 
-        ServerPlayerEntity player = (ServerPlayerEntity) event.getPlayer();
+    @SubscribeEvent
+    public static void onPlayerChangindDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
+        saveAnchors((ServerPlayerEntity) event.getPlayer());
+    }
+
+    private static void saveAnchors(ServerPlayerEntity player) {
+        anchorList.clear();
 
         if (player == null) {
             for (int i = 0; i < 10; i++) {
