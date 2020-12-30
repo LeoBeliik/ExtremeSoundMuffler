@@ -26,7 +26,7 @@ public class WorldEventHandler implements ISoundLists, IAnchorList {
         JsonIO.loadMuffledMap().forEach((R, V) -> ISoundLists.muffledSounds.put(new ResourceLocation(R), V));
         anchorList.clear();
 
-        if (JsonIO.loadAnchors() == null) {
+        if (JsonIO.loadAnchors() == null || Objects.requireNonNull(JsonIO.loadAnchors()).size() == 0) {
             for (int i = 0; i < 10; i++) {
                 anchorList.add(new Anchor(i, "Anchor " + i));
             }
@@ -39,7 +39,6 @@ public class WorldEventHandler implements ISoundLists, IAnchorList {
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public static void onWorldUnload(WorldEvent.Unload event) {
-        JsonIO.saveMuffledMap(muffledSounds);
         if (isClientSide) {
             JsonIO.saveAnchors(anchorList);
         }

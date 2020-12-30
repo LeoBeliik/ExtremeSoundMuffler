@@ -3,12 +3,14 @@ package com.leobeliik.extremesoundmuffler.gui;
 import com.leobeliik.extremesoundmuffler.Config;
 import com.leobeliik.extremesoundmuffler.SoundMuffler;
 import com.leobeliik.extremesoundmuffler.eventHandlers.SoundEventHandler;
+import com.leobeliik.extremesoundmuffler.eventHandlers.WorldEventHandler;
 import com.leobeliik.extremesoundmuffler.gui.buttons.MuffledSlider;
 import com.leobeliik.extremesoundmuffler.interfaces.IAnchorList;
 import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import com.leobeliik.extremesoundmuffler.network.PacketAnchorList;
 import com.leobeliik.extremesoundmuffler.utils.Anchor;
+import com.leobeliik.extremesoundmuffler.utils.JsonIO;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
@@ -677,7 +679,13 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
 
     @Override
     public void closeScreen() {
-        PacketAnchorList.sendAnchorList();
+        //fix this sometime
+        JsonIO.saveMuffledMap(muffledSounds);
+        if (WorldEventHandler.isClientSide) {
+            JsonIO.saveAnchors(anchorList);
+        } else {
+            PacketAnchorList.sendAnchorList();
+        }
         super.closeScreen();
     }
 
