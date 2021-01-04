@@ -36,11 +36,12 @@ public class WorldEventHandler implements ISoundLists, IAnchorList {
         isClientSide = true;
     }
 
-    @SubscribeEvent
+    //TODO think about sending all the load / unload to when the GUI is opened instead of relying on other events
+    /*@SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public static void onWorldUnload(WorldEvent.Unload event) {
         if (isClientSide) {
             JsonIO.saveAnchors(anchorList);
         }
-    }
+    }*/
 }
