@@ -5,13 +5,10 @@ import com.leobeliik.extremesoundmuffler.interfaces.IAnchorList;
 import com.leobeliik.extremesoundmuffler.network.Network;
 import com.leobeliik.extremesoundmuffler.network.PacketDataClient;
 import com.leobeliik.extremesoundmuffler.utils.DataManager;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 
@@ -51,7 +48,7 @@ public class PlayerEventsHandler implements IAnchorList {
         return playerEntity;
     }
 
-    public static void setIsClientSide(boolean clientSide) {
+    public static void setClientSide(boolean clientSide) {
         isClientSide = clientSide;
     }
 

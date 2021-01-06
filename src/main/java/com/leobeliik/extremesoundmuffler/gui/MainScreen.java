@@ -19,7 +19,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.*;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
@@ -62,7 +61,6 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
 
     public static void open() {
         DataManager.loadData();
-
         open("ESM - Main Screen", ITextComponent.getTextComponentOrEmpty("Recent"), "");
     }
 
@@ -220,7 +218,6 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
                 volume = 1D;
             }
 
-            //Using screenTitle because is an empty String.. that was bad..
             MuffledSlider volumeSlider = new MuffledSlider(getX() + 11, buttonH, 205, 11, volume, sound, screenTitle, anchor);
 
             boolean muffledAnchor = anchor != null && screenTitle.equals(anchor.getName()) && !anchor.getMuffledSounds().isEmpty() && anchor.getMuffledSounds().containsKey(sound);
@@ -245,9 +242,8 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
             Button btnAnchor;
             if (isAnchorsDisabled) {
                 String[] disabledMsg = {"-", "D", "i", "s", "a", "b", "l", "e", "d", "-"};
-                btnAnchor = new Button(buttonW, getY() + 24, 16, 16, ITextComponent.getTextComponentOrEmpty(String.valueOf(i)), b -> {
+                btnAnchor = new Button(buttonW, getY() + 24, 16, 16, ITextComponent.getTextComponentOrEmpty(disabledMsg[i]), b -> {
                 });
-                btnAnchor.setMessage(ITextComponent.getTextComponentOrEmpty(disabledMsg[i]));
                 btnAnchor.active = false;
             } else {
                 int finalI = i;

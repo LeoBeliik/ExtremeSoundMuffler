@@ -20,6 +20,7 @@ import net.minecraft.util.text.StringTextComponent;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Objects;
 
+@SuppressWarnings("EmptyMethod")
 public class MuffledSlider extends Widget implements ISoundLists, IColorsGui {
 
     private final String mainTitle = "ESM - Main Screen";
@@ -174,9 +175,7 @@ public class MuffledSlider extends Widget implements ISoundLists, IColorsGui {
         }
     }
 
-    private void func_230979_b_() {
-    }
+    private void func_230979_b_() {}
 
-    private void func_230972_a_() {
-    }
+    private void func_230972_a_() {}
 }

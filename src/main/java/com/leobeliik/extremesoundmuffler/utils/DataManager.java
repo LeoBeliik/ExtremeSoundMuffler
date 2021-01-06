@@ -31,7 +31,7 @@ public class DataManager implements IAnchorList, ISoundLists {
     public static void loadData() {
 
         if (muffledSounds.isEmpty()) {
-            DataManager.loadMuffledMap().forEach((R, V) -> ISoundLists.muffledSounds.put(new ResourceLocation(R), V));
+            loadMuffledMap().forEach((R, V) -> ISoundLists.muffledSounds.put(new ResourceLocation(R), V));
         }
 
         if (!anchorList.isEmpty()) {
@@ -58,10 +58,10 @@ public class DataManager implements IAnchorList, ISoundLists {
     }
 
     public static void saveData() {
-        DataManager.saveMuffledMap();
+        saveMuffledMap();
 
         if (PlayerEventsHandler.isClientSide()) {
-            DataManager.saveAnchors();
+            saveAnchors();
         } else {
             PacketDataServer.sendAnchorList();
         }

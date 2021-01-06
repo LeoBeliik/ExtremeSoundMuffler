@@ -26,6 +26,7 @@ public class PacketDataServer implements IAnchorList {
         buf.writeCompoundTag(data);
     }
 
+    @SuppressWarnings("SameReturnValue")
     boolean handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ServerPlayerEntity sender = ctx.get().getSender();

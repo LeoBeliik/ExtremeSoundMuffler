@@ -8,6 +8,7 @@ import net.minecraft.nbt.NBTUtil;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkEvent;
+
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.function.Supplier;
@@ -28,10 +29,11 @@ public class PacketDataClient implements IAnchorList {
         buf.writeCompoundTag(data);
     }
 
+    @SuppressWarnings("SameReturnValue")
     boolean handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             if (data.contains("isClientSide")) {
-                PlayerEventsHandler.setIsClientSide(data.getBoolean("isClientSide"));
+                PlayerEventsHandler.setClientSide(data.getBoolean("isClientSide"));
                 PlayerEventsHandler.setPlayerEntity(ctx.get().getSender());
                 return;
             }
