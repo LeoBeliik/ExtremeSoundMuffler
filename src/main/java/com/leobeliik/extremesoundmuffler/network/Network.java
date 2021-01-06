@@ -26,15 +26,16 @@ public class Network {
                 s -> true,
                 s -> true);
 
-        INSTANCE.messageBuilder(PacketDataList.class, nextID())
-                .encoder(PacketDataList::toBytes)
-                .decoder(PacketDataList::new)
-                .consumer(PacketDataList::handle)
+        INSTANCE.messageBuilder(PacketDataClient.class, nextID())
+                .encoder(PacketDataClient::toBytes)
+                .decoder(PacketDataClient::new)
+                .consumer(PacketDataClient::handle)
                 .add();
-        INSTANCE.messageBuilder(PacketAnchorList.class, nextID())
-                .encoder(PacketAnchorList::toBytes)
-                .decoder(PacketAnchorList::new)
-                .consumer(PacketAnchorList::handle)
+
+        INSTANCE.messageBuilder(PacketDataServer.class, nextID())
+                .encoder(PacketDataServer::toBytes)
+                .decoder(PacketDataServer::new)
+                .consumer(PacketDataServer::handle)
                 .add();
     }
 
@@ -45,4 +46,5 @@ public class Network {
     static void sendToServer(Object packet) {
         INSTANCE.sendToServer(packet);
     }
+
 }

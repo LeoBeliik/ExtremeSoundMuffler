@@ -10,15 +10,15 @@ import net.minecraftforge.fml.network.NetworkEvent;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-public class PacketAnchorList implements IAnchorList {
+public class PacketDataServer implements IAnchorList {
 
     private final CompoundNBT data;
 
-    PacketAnchorList(PacketBuffer buf) {
+    PacketDataServer(PacketBuffer buf) {
         data = buf.readCompoundTag();
     }
 
-    private PacketAnchorList(CompoundNBT data) {
+    private PacketDataServer(CompoundNBT data) {
         this.data = data;
     }
 
@@ -40,10 +40,10 @@ public class PacketAnchorList implements IAnchorList {
 
     public static void sendAnchorList() {
         CompoundNBT anchorNBT = new CompoundNBT();
-        for (int i = 0; i < 10; i++) {
-            anchorNBT.put("anchor" + i, PacketAnchorList.serializeNBT(anchorList.get(i)));
+        for (int i = 0; i <= 9; i++) {
+            anchorNBT.put("anchor" + i, PacketDataServer.serializeNBT(anchorList.get(i)));
         }
-        Network.sendToServer(new PacketAnchorList(anchorNBT));
+        Network.sendToServer(new PacketDataServer(anchorNBT));
     }
 
     private static CompoundNBT serializeNBT(Anchor anchor) {

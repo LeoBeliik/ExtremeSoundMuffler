@@ -3,14 +3,12 @@ package com.leobeliik.extremesoundmuffler.gui;
 import com.leobeliik.extremesoundmuffler.Config;
 import com.leobeliik.extremesoundmuffler.SoundMuffler;
 import com.leobeliik.extremesoundmuffler.eventHandlers.SoundEventHandler;
-import com.leobeliik.extremesoundmuffler.eventHandlers.WorldEventHandler;
 import com.leobeliik.extremesoundmuffler.gui.buttons.MuffledSlider;
 import com.leobeliik.extremesoundmuffler.interfaces.IAnchorList;
 import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
-import com.leobeliik.extremesoundmuffler.network.PacketAnchorList;
 import com.leobeliik.extremesoundmuffler.utils.Anchor;
-import com.leobeliik.extremesoundmuffler.utils.JsonIO;
+import com.leobeliik.extremesoundmuffler.utils.DataManager;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
@@ -21,7 +19,9 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.*;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.registries.ForgeRegistries;
+
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
@@ -61,6 +61,8 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
     }
 
     public static void open() {
+        DataManager.loadData();
+
         open("ESM - Main Screen", ITextComponent.getTextComponentOrEmpty("Recent"), "");
     }
 
@@ -679,13 +681,8 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
 
     @Override
     public void closeScreen() {
-        //fix this sometime
-        JsonIO.saveMuffledMap(muffledSounds);
-        if (WorldEventHandler.isClientSide) {
-            JsonIO.saveAnchors(anchorList);
-        } else {
-            PacketAnchorList.sendAnchorList();
-        }
+        DataManager.saveData();
+
         super.closeScreen();
     }
 

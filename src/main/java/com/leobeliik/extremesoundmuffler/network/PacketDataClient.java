@@ -1,6 +1,6 @@
 package com.leobeliik.extremesoundmuffler.network;
 
-import com.leobeliik.extremesoundmuffler.eventHandlers.WorldEventHandler;
+import com.leobeliik.extremesoundmuffler.eventHandlers.PlayerEventsHandler;
 import com.leobeliik.extremesoundmuffler.interfaces.IAnchorList;
 import com.leobeliik.extremesoundmuffler.utils.Anchor;
 import net.minecraft.nbt.CompoundNBT;
@@ -12,15 +12,15 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.function.Supplier;
 
-public class PacketDataList implements IAnchorList {
+public class PacketDataClient implements IAnchorList {
 
     private final CompoundNBT data;
 
-    PacketDataList(PacketBuffer buf) {
+    PacketDataClient(PacketBuffer buf) {
         data = buf.readCompoundTag();
     }
 
-    public PacketDataList(CompoundNBT data) {
+    public PacketDataClient(CompoundNBT data) {
         this.data = data;
     }
 
@@ -30,8 +30,13 @@ public class PacketDataList implements IAnchorList {
 
     boolean handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            WorldEventHandler.isClientSide = false;
-            for (int i = 0; i < 10; i++) {
+            if (data.contains("isClientSide")) {
+                PlayerEventsHandler.setIsClientSide(data.getBoolean("isClientSide"));
+                PlayerEventsHandler.setPlayerEntity(ctx.get().getSender());
+                return;
+            }
+
+            for (int i = 0; i <= 9; i++) {
                 if (!data.contains("anchor" + i)) {
                     anchorList.add(i, new Anchor(i, "Anchor: " + i));
                 } else {

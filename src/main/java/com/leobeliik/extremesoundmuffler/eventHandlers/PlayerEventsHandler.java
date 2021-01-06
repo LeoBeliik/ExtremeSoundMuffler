@@ -2,39 +2,60 @@ package com.leobeliik.extremesoundmuffler.eventHandlers;
 
 import com.leobeliik.extremesoundmuffler.SoundMuffler;
 import com.leobeliik.extremesoundmuffler.interfaces.IAnchorList;
-import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import com.leobeliik.extremesoundmuffler.network.Network;
-import com.leobeliik.extremesoundmuffler.network.PacketDataList;
-import com.leobeliik.extremesoundmuffler.utils.Anchor;
+import com.leobeliik.extremesoundmuffler.network.PacketDataClient;
+import com.leobeliik.extremesoundmuffler.utils.DataManager;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 
 @Mod.EventBusSubscriber(modid = SoundMuffler.MODID)
-public class PlayerEventsHandler implements IAnchorList, ISoundLists {
+public class PlayerEventsHandler implements IAnchorList {
+
+    private static boolean isClientSide = true;
+    private static ServerPlayerEntity playerEntity;
 
     @SubscribeEvent
     public static void onPlayerLoggin(PlayerEvent.PlayerLoggedInEvent event) {
-        saveData((ServerPlayerEntity) event.getPlayer());
+        anchorList.clear();
+        isClientSide = false;
+        playerEntity = (ServerPlayerEntity) event.getPlayer();
+
+        if (FMLEnvironment.dist.isDedicatedServer()) {
+            CompoundNBT data = new CompoundNBT();
+            data.putBoolean("isClientSide", isClientSide);
+            Network.sendToClient(new PacketDataClient(data), playerEntity);
+        }
+
+        DataManager.loadData();
     }
 
     @SubscribeEvent
-    public static void onPlayerChangindDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
-        saveData((ServerPlayerEntity) event.getPlayer());
+    public static void onPlayerLoggout(PlayerEvent.PlayerLoggedOutEvent event) {
+        anchorList.clear();
+        isClientSide = true;
+        playerEntity = null;
     }
 
-    private static void saveData(ServerPlayerEntity player) {
-        anchorList.clear();
+    public static boolean isClientSide() {
+        return isClientSide;
+    }
 
-        if (player == null) {
-            for (int i = 0; i < 10; i++) {
-                anchorList.add(i, new Anchor(i, "Anchor: " + i));
-            }
-        } else {
-            CompoundNBT data = player.getPersistentData();
-            Network.sendToClient(new PacketDataList(data), player);
-        }
+    public static ServerPlayerEntity getPlayerEntity() {
+        return playerEntity;
+    }
+
+    public static void setIsClientSide(boolean clientSide) {
+        isClientSide = clientSide;
+    }
+
+    public static void setPlayerEntity(ServerPlayerEntity player) {
+        playerEntity = player;
     }
 }
