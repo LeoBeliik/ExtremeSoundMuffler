@@ -3,8 +3,6 @@ name: Feature request
 about: Suggest an idea for this project
 title: ''
 labels: suggestion
-assignees: LeoBeliik
-
 ---
 
 **Is your feature request related to a problem? Please describe.**
