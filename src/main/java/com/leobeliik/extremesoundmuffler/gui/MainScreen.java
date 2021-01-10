@@ -494,6 +494,19 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
             fill(matrix, x + 3, y, x + xSize - 2, y + 22, darkBG);
             font.func_238418_a_(tipMessage, x + 7, y + 2, xSize, whiteText);
         }
+
+        //highlight every other row
+        for (int i = 0; i < buttons.size(); i++) {
+            Widget button = buttons.get(i);
+            if (button instanceof MuffledSlider) {
+                x = button.x;
+                y = button.y;
+
+                if (i % 2 == 0 && button.visible) {
+                    fill(matrix, x + 1, y, x + button.getWidth() + 29, y + button.getHeightRealms(), brightBG);
+                }
+            }
+        }
     }
 
     private void editTitle(Anchor anchor) {
