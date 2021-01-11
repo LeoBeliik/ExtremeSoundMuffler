@@ -218,7 +218,9 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
                 volume = 1D;
             }
 
-            MuffledSlider volumeSlider = new MuffledSlider(getX() + 11, buttonH, 205, 11, volume, sound, screenTitle, anchor);
+            int x = Config.getLeftButtons() ? getX() + 36 :  getX() + 11;
+
+            MuffledSlider volumeSlider = new MuffledSlider(x, buttonH, 205, 11, volume, sound, screenTitle, anchor);
 
             boolean muffledAnchor = anchor != null && screenTitle.equals(anchor.getName()) && !anchor.getMuffledSounds().isEmpty() && anchor.getMuffledSounds().containsKey(sound);
             boolean muffledScreen = screenTitle.equals(mainTitle) && !muffledSounds.isEmpty() && muffledSounds.containsKey(sound);
@@ -367,10 +369,7 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
             //Indicates the Anchor has to be set before muffling sounds
             for (Widget button : buttons) {
                 if (button instanceof MuffledSlider) {
-                    mX = button.x + button.getWidth() + 5;
-                    mY = button.y;
-
-                    if (mouseX > mX && mouseX < mX + 11 && mouseY > mY && mouseY < mY + 11 && anchor.getAnchorPos() == null) {
+                    if (((MuffledSlider) button).getBtnToggleSound().isMouseOver(mouseX, mouseY) && anchor.getAnchorPos() == null) {
                         fill(matrix, x - 5, y + 16, x + 65, y + 40, darkBG);
                         font.drawString(matrix, "Set the", x, y + 18, whiteText);
                         font.drawString(matrix, "Anchor first", x, y + 29, whiteText);
@@ -428,7 +427,7 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
         int textW = font.getStringWidth(text);
         int textX = x + (btnToggleSoundsList.getWidth() / 2) - (textW / 2) + 6;
 
-        if (mouseX > x && mouseX < x + 43 && mouseY > y && mouseY < y + 13) {
+        if (btnToggleSoundsList.isMouseOver(mouseX, mouseY)) {
             fill(matrix, textX - 2, y + 20, textX + textW + 2, y + 22 + font.FONT_HEIGHT, darkBG);
             font.drawString(matrix, text, textX, y + 22, whiteText);
         }
@@ -465,7 +464,7 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
         message = "Next Sounds";
         stringW = font.getStringWidth(message) / 2;
 
-        if (mouseX > x && mouseX < x + btnNextSounds.getWidth() && mouseY > y && mouseY < y + btnNextSounds.getHeightRealms()) {
+        if (btnNextSounds.isMouseOver(mouseX, mouseY)) {
             fill(matrix, x - stringW - 2, y - 2, x + stringW + 2, y - 13, darkBG);
             drawCenteredString(matrix, font, message, x, y - 11, whiteText);
         }
@@ -476,7 +475,7 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
         message = "Previous Sounds";
         stringW = font.getStringWidth(message) / 2;
 
-        if (mouseX > x && mouseX < x + btnPrevSounds.getWidth() && mouseY > y && mouseY < y + btnPrevSounds.getHeightRealms()) {
+        if (btnPrevSounds.isMouseOver(mouseX, mouseY)) {
             fill(matrix, x - stringW - 2, y - 2, x + stringW + 2, y - 13, darkBG);
             drawCenteredString(matrix, font, message, x, y - 11, whiteText);
         }
@@ -499,11 +498,12 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
         for (int i = 0; i < buttons.size(); i++) {
             Widget button = buttons.get(i);
             if (button instanceof MuffledSlider) {
-                x = button.x;
+                x = Config.getLeftButtons() ? button.x - 3 : button.x + 1;
                 y = button.y;
+                int bW = Config.getLeftButtons() ? x + button.getWidth() + 5 : x + button.getWidth() + 28;
 
                 if (i % 2 == 0 && button.visible) {
-                    fill(matrix, x + 1, y, x + button.getWidth() + 29, y + button.getHeightRealms(), brightBG);
+                    fill(matrix, x, y, bW, y + button.getHeightRealms(), brightBG);
                 }
             }
         }

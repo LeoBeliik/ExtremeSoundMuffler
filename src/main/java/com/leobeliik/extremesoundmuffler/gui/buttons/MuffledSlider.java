@@ -78,7 +78,8 @@ public class MuffledSlider extends Widget implements ISoundLists, IColorsGui {
     }
 
     private void setBtnToggleSound(String screenTitle, ResourceLocation sound, Anchor anchor) {
-        btnToggleSound = new Button(this.x + width + 5, this.y, 11, 11, StringTextComponent.EMPTY, b -> {
+        int x = Config.getLeftButtons() ? this.x - 24 : this.x + width + 5;
+        btnToggleSound = new Button(x, this.y, 11, 11, StringTextComponent.EMPTY, b -> {
             if (getFGColor() == yellowText) {
                 if (screenTitle.equals(mainTitle)) {
                     muffledSounds.remove(sound);
@@ -108,7 +109,7 @@ public class MuffledSlider extends Widget implements ISoundLists, IColorsGui {
     }
 
     private void setBtnPlaySound(ResourceLocation sound) {
-        btnPlaySound = new PlaySoundButton(this.x + width + 17, this.y, new SoundEvent(sound));
+        btnPlaySound = new PlaySoundButton(btnToggleSound.x + 12, this.y, new SoundEvent(sound));
     }
 
     public PlaySoundButton getBtnPlaySound() {

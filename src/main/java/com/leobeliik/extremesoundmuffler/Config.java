@@ -18,6 +18,7 @@ public class Config {
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> forbiddenSounds;
     private static final ForgeConfigSpec.BooleanValue disableInventoryButton;
     private static final ForgeConfigSpec.BooleanValue disableAnchors;
+    private static final ForgeConfigSpec.BooleanValue leftButtons;
     private static final ForgeConfigSpec.DoubleValue defaultMuteVolume;
     private static ForgeConfigSpec.BooleanValue showTip;
 
@@ -36,6 +37,9 @@ public class Config {
 
         defaultMuteVolume = CLIENT_BUILDER.comment("Volume set when pressed the mute button by default")
                 .defineInRange("defaultMuteVolume", 0, 0, 0.9);
+
+        leftButtons = CLIENT_BUILDER.comment("Set to true to move the muffle and play buttons to the left side of the GUI")
+                .define("leftButtons", false);
 
         showTip = CLIENT_BUILDER.comment("Show a message the first time a sound is muffled indicating that you can change the volume")
                 .define("showTip", true);
@@ -67,6 +71,10 @@ public class Config {
 
     public static double getDefaultMuteVolume() {
         return defaultMuteVolume.get();
+    }
+
+    public static boolean getLeftButtons() {
+        return leftButtons.get();
     }
 
     public static boolean getShowTip() {
