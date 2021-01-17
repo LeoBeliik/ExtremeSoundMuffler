@@ -38,10 +38,14 @@ public class DataManager implements IAnchorList, ISoundLists {
             return;
         }
 
+        loadAnchorsOrDefault();
+    }
+
+    public static void loadAnchorsOrDefault() {
         if (PlayerEventsHandler.isClientSide()) {
 
             if (loadAnchors() == null || Objects.requireNonNull(loadAnchors()).size() == 0) {
-                loadDefaulAnchors();
+                setAnchors();
             } else {
                 anchorList.addAll(Objects.requireNonNull(loadAnchors()));
             }
@@ -49,11 +53,17 @@ public class DataManager implements IAnchorList, ISoundLists {
         } else {
             ServerPlayerEntity player = PlayerEventsHandler.getPlayerEntity();
             if (player == null) {
-                loadDefaulAnchors(); //this should never happen
+                setAnchors(); //this should never happen
             } else {
                 CompoundNBT data = player.getPersistentData();
                 Network.sendToClient(new PacketDataClient(data), player);
             }
+        }
+    }
+
+    private static void setAnchors() {
+        for (int i = 0; i <= 9; i++) {
+            anchorList.add(i, new Anchor(i, "Anchor: " + i));
         }
     }
 
@@ -64,12 +74,6 @@ public class DataManager implements IAnchorList, ISoundLists {
             saveAnchors();
         } else {
             PacketDataServer.sendAnchorList();
-        }
-    }
-
-    private static void loadDefaulAnchors() {
-        for (int i = 0; i <= 9; i++) {
-            anchorList.add(i, new Anchor(i, "Anchor: " + i));
         }
     }
 

@@ -404,6 +404,9 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
         }
 
         //draw anchor buttons tooltip
+        if (anchorList.isEmpty()) {
+            DataManager.loadAnchorsOrDefault();
+        }
         for (int i = 0; i <= 9; i++) {
             Widget btn = buttons.get(soundsList.size() + i);
             x = btn.x + 8;
