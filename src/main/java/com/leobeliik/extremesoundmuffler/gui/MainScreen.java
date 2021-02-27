@@ -60,7 +60,6 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
     }
 
     public static void open() {
-        DataManager.loadData();
         open("ESM - Main Screen", ITextComponent.getTextComponentOrEmpty("Recent"), "");
     }
 
@@ -694,7 +693,6 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
     @Override
     public void closeScreen() {
         DataManager.saveData();
-
         super.closeScreen();
     }
 
