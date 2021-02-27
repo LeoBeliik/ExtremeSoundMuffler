@@ -42,11 +42,6 @@ public class SoundEventHandler implements ISoundLists, IAnchorList {
             return;
         }
 
-        if (!PlayerEventsHandler.isClientSide()) {
-            DataManager.loadData();
-            PlayerEventsHandler.setClientSide(true);
-        }
-
         if (isFromPSB) {
             isFromPSB = false;
             return;
