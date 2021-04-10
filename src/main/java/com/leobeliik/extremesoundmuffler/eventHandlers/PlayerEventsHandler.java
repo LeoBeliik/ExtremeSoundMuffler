@@ -15,29 +15,35 @@ import net.minecraftforge.fml.loading.FMLEnvironment;
 @Mod.EventBusSubscriber(modid = SoundMuffler.MODID)
 public class PlayerEventsHandler implements IAnchorList {
 
+    private static ServerPlayerEntity player;
     private static boolean isClientSide = true;
-    private static ServerPlayerEntity playerEntity;
 
     @SubscribeEvent
     public static void onPlayerLoggin(PlayerEvent.PlayerLoggedInEvent event) {
         anchorList.clear();
         isClientSide = false;
-        playerEntity = (ServerPlayerEntity) event.getPlayer();
+        player = (ServerPlayerEntity) event.getPlayer();
 
         if (FMLEnvironment.dist.isDedicatedServer()) {
             CompoundNBT data = new CompoundNBT();
             data.putBoolean("isClientSide", isClientSide);
-            Network.sendToClient(new PacketDataClient(data), playerEntity);
+            Network.sendToClient(new PacketDataClient(data), player);
         }
 
-        DataManager.loadData();
+        if (player == null) {
+            DataManager.setAnchors(); //this should never happen
+        } else {
+            CompoundNBT data = player.getPersistentData();
+            Network.sendToClient(new PacketDataClient(data), player);
+        }
+
     }
 
     @SubscribeEvent
     public static void onPlayerLoggout(PlayerEvent.PlayerLoggedOutEvent event) {
         anchorList.clear();
         isClientSide = true;
-        playerEntity = null;
+        player = null;
     }
 
     public static boolean isClientSide() {
@@ -45,14 +51,14 @@ public class PlayerEventsHandler implements IAnchorList {
     }
 
     public static ServerPlayerEntity getPlayerEntity() {
-        return playerEntity;
+        return player;
     }
 
     public static void setClientSide(boolean clientSide) {
         isClientSide = clientSide;
     }
 
-    public static void setPlayerEntity(ServerPlayerEntity player) {
-        playerEntity = player;
+    public static void setPlayerEntity(ServerPlayerEntity playerEntity) {
+        player = playerEntity;
     }
 }

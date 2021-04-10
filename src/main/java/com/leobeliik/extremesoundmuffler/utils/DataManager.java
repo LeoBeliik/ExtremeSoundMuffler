@@ -13,13 +13,14 @@ import com.leobeliik.extremesoundmuffler.network.PacketDataClient;
 import com.leobeliik.extremesoundmuffler.network.PacketDataServer;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
 public class DataManager implements IAnchorList, ISoundLists {
@@ -28,40 +29,7 @@ public class DataManager implements IAnchorList, ISoundLists {
     private static final String soundsMuffledFile = "ESM/soundsMuffled.dat";
     private static final String anchorFile = "ESM/ServerWorld/Anchors.dat";
 
-    public static void loadData() {
-
-        if (muffledSounds.isEmpty()) {
-            loadMuffledMap().forEach((R, V) -> ISoundLists.muffledSounds.put(new ResourceLocation(R), V));
-        }
-
-        if (!anchorList.isEmpty()) {
-            return;
-        }
-
-        loadAnchorsOrDefault();
-    }
-
-    public static void loadAnchorsOrDefault() {
-        if (PlayerEventsHandler.isClientSide()) {
-
-            if (loadAnchors() == null || Objects.requireNonNull(loadAnchors()).size() == 0) {
-                setAnchors();
-            } else {
-                anchorList.addAll(Objects.requireNonNull(loadAnchors()));
-            }
-
-        } else {
-            ServerPlayerEntity player = PlayerEventsHandler.getPlayerEntity();
-            if (player == null) {
-                setAnchors(); //this should never happen
-            } else {
-                CompoundNBT data = player.getPersistentData();
-                Network.sendToClient(new PacketDataClient(data), player);
-            }
-        }
-    }
-
-    private static void setAnchors() {
+    public static void setAnchors() {
         for (int i = 0; i <= 9; i++) {
             anchorList.add(i, new Anchor(i, "Anchor: " + i));
         }
@@ -85,7 +53,7 @@ public class DataManager implements IAnchorList, ISoundLists {
         }
     }
 
-    private static Map<String, Double> loadMuffledMap() {
+    public static Map<String, Double> loadMuffledMap() {
         try (InputStreamReader reader = new InputStreamReader(new FileInputStream(soundsMuffledFile), StandardCharsets.UTF_8)) {
             return gson.fromJson(new JsonReader(reader), new TypeToken<Map<String, Double>>() {
             }.getType());
@@ -98,13 +66,15 @@ public class DataManager implements IAnchorList, ISoundLists {
         new File("ESM/ServerWorld/").mkdir();
         try (Writer writer = new OutputStreamWriter(new FileOutputStream("ESM/ServerWorld/What is this.txt"), StandardCharsets.UTF_8)) {
             writer.write(new Gson().toJson("This is where Extreme sound muffler saves the Anchors for Server Worlds, when the mod is only loaded clientside"));
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
         try (Writer writer = new OutputStreamWriter(new FileOutputStream(anchorFile), StandardCharsets.UTF_8)) {
             writer.write(gson.toJson(IAnchorList.anchorList));
-        } catch (IOException ignored) {}
+        } catch (IOException ignored) {
+        }
     }
 
-    private static List<Anchor> loadAnchors() {
+    public static List<Anchor> loadAnchors() {
         try (InputStreamReader reader = new InputStreamReader(new FileInputStream(anchorFile), StandardCharsets.UTF_8)) {
             return gson.fromJson(new JsonReader(reader), new TypeToken<List<Anchor>>() {
             }.getType());

@@ -3,7 +3,6 @@ package com.leobeliik.extremesoundmuffler.network;
 import com.leobeliik.extremesoundmuffler.eventHandlers.PlayerEventsHandler;
 import com.leobeliik.extremesoundmuffler.interfaces.IAnchorList;
 import com.leobeliik.extremesoundmuffler.utils.Anchor;
-import com.leobeliik.extremesoundmuffler.utils.DataManager;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.network.PacketBuffer;
@@ -46,7 +45,6 @@ public class PacketDataClient implements IAnchorList {
                     anchorList.add(i, deserializeNBT(data.getCompound("anchor" + i)));
                 }
             }
-            DataManager.loadData();
         });
         return true;
     }
