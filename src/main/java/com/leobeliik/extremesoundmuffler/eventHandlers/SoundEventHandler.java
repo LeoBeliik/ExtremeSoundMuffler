@@ -28,6 +28,8 @@ import java.util.List;
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = SoundMuffler.MODID)
 public class SoundEventHandler implements ISoundLists, IAnchorList {
 
+    //Change probably all of this with mixin
+
     private static boolean isFromPSB = false;
     private static List<ITickableSound> tickSoundList = new ArrayList<>();
     private static SoundEngine soundEngine;
