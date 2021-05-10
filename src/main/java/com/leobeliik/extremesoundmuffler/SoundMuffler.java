@@ -9,6 +9,7 @@ import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.screen.inventory.CreativeScreen;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.InputMappings;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.GuiScreenEvent;
@@ -76,5 +77,10 @@ public class SoundMuffler {
 
     public static int getHotkey() {
         return openMuffleScreen.getKey().getKeyCode();
+    }
+
+    public static ResourceLocation getGui() {
+        String texture = Config.useDarkTheme() ? "textures/gui/sm_gui_dark.png" : "textures/gui/sm_gui.png";
+        return new ResourceLocation(SoundMuffler.MODID, texture);
     }
 }

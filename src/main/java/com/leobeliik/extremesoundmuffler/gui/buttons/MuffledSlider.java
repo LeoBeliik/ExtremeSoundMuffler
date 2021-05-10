@@ -1,6 +1,7 @@
 package com.leobeliik.extremesoundmuffler.gui.buttons;
 
 import com.leobeliik.extremesoundmuffler.Config;
+import com.leobeliik.extremesoundmuffler.SoundMuffler;
 import com.leobeliik.extremesoundmuffler.eventHandlers.SoundEventHandler;
 import com.leobeliik.extremesoundmuffler.gui.MainScreen;
 import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
@@ -43,7 +44,7 @@ public class MuffledSlider extends Widget implements ISoundLists, IColorsGui {
     @Override
     public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         Minecraft minecraft = Minecraft.getInstance();
-        minecraft.getTextureManager().bindTexture(GUI);
+        minecraft.getTextureManager().bindTexture(SoundMuffler.getGui());
         drawGradient(matrixStack);
         float v = this.getFGColor() == whiteText ? 213F : 202F;
         blit(matrixStack, btnToggleSound.x, btnToggleSound.y, 43F, v, 11, 11, 256, 256); //muffle button bg
@@ -69,7 +70,7 @@ public class MuffledSlider extends Widget implements ISoundLists, IColorsGui {
     }
 
     private void drawGradient(MatrixStack matrixStack) {
-        if (this.getFGColor() == yellowText) {
+        if (this.getFGColor() == cyanText) {
             blit(matrixStack, this.x, this.y - 1, 0, 234, (int) (sliderValue * (width - 6)) + 5, height + 1, 256, 256); //draw bg
             if (this.isHovered) {
                 blit(matrixStack, this.x + (int) (sliderValue * (width - 6)) + 1, this.y + 1, 32F, 224F, 5, 9, 256, 256); //Slider
@@ -80,7 +81,7 @@ public class MuffledSlider extends Widget implements ISoundLists, IColorsGui {
     private void setBtnToggleSound(String screenTitle, ResourceLocation sound, Anchor anchor) {
         int x = Config.getLeftButtons() ? this.x - 24 : this.x + width + 5;
         btnToggleSound = new Button(x, this.y, 11, 11, StringTextComponent.EMPTY, b -> {
-            if (getFGColor() == yellowText) {
+            if (getFGColor() == cyanText) {
                 if (screenTitle.equals(mainTitle)) {
                     muffledSounds.remove(sound);
                 } else {
@@ -99,7 +100,7 @@ public class MuffledSlider extends Widget implements ISoundLists, IColorsGui {
                     return;
                 }
                 SoundEventHandler.reloadSound(sound);
-                super.setFGColor(yellowText);
+                super.setFGColor(cyanText);
             }
         });
     }
@@ -151,7 +152,7 @@ public class MuffledSlider extends Widget implements ISoundLists, IColorsGui {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (this.isHovered && this.getFGColor() == yellowText) {
+        if (this.isHovered && this.getFGColor() == cyanText) {
             this.changeSliderValue(mouseX);
             showSlider = true;
             this.setFocused(true);

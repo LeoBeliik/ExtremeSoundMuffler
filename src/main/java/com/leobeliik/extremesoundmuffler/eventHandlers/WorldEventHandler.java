@@ -1,5 +1,6 @@
 package com.leobeliik.extremesoundmuffler.eventHandlers;
 
+import com.leobeliik.extremesoundmuffler.Config;
 import com.leobeliik.extremesoundmuffler.SoundMuffler;
 import com.leobeliik.extremesoundmuffler.interfaces.IAnchorList;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
@@ -21,6 +22,10 @@ public class WorldEventHandler implements ISoundLists, IAnchorList {
     public static void onWorldLoad(WorldEvent.Load event) {
         if (muffledSounds.isEmpty()) {
             DataManager.loadMuffledMap().forEach((R, V) -> ISoundLists.muffledSounds.put(new ResourceLocation(R), V));
+        }
+
+        if (!Config.isClientSide()) {
+            return;
         }
 
         if (DataManager.loadAnchors() == null || Objects.requireNonNull(DataManager.loadAnchors()).size() == 0) {

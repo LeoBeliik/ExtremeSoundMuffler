@@ -1,5 +1,6 @@
 package com.leobeliik.extremesoundmuffler.eventHandlers;
 
+import com.leobeliik.extremesoundmuffler.Config;
 import com.leobeliik.extremesoundmuffler.SoundMuffler;
 import com.leobeliik.extremesoundmuffler.interfaces.IAnchorList;
 import com.leobeliik.extremesoundmuffler.network.Network;
@@ -16,17 +17,18 @@ import net.minecraftforge.fml.loading.FMLEnvironment;
 public class PlayerEventsHandler implements IAnchorList {
 
     private static ServerPlayerEntity player;
-    private static boolean isClientSide = true;
 
     @SubscribeEvent
     public static void onPlayerLoggin(PlayerEvent.PlayerLoggedInEvent event) {
+        if (Config.isClientSide()) {
+            return;
+        }
+
         anchorList.clear();
-        isClientSide = false;
         player = (ServerPlayerEntity) event.getPlayer();
 
         if (FMLEnvironment.dist.isDedicatedServer()) {
             CompoundNBT data = new CompoundNBT();
-            data.putBoolean("isClientSide", isClientSide);
             Network.sendToClient(new PacketDataClient(data), player);
         }
 
@@ -42,20 +44,11 @@ public class PlayerEventsHandler implements IAnchorList {
     @SubscribeEvent
     public static void onPlayerLoggout(PlayerEvent.PlayerLoggedOutEvent event) {
         anchorList.clear();
-        isClientSide = true;
         player = null;
-    }
-
-    public static boolean isClientSide() {
-        return isClientSide;
     }
 
     public static ServerPlayerEntity getPlayerEntity() {
         return player;
-    }
-
-    public static void setClientSide(boolean clientSide) {
-        isClientSide = clientSide;
     }
 
     public static void setPlayerEntity(ServerPlayerEntity playerEntity) {

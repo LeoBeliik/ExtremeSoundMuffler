@@ -64,7 +64,7 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
     }
 
     private void bindTexture() {
-        minecraft.getTextureManager().bindTexture(GUI);
+        minecraft.getTextureManager().bindTexture(SoundMuffler.getGui());
     }
 
     public static boolean isMuffled() {
@@ -225,7 +225,7 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
             boolean muffledScreen = screenTitle.equals(mainTitle) && !muffledSounds.isEmpty() && muffledSounds.containsKey(sound);
 
             if (muffledAnchor || muffledScreen) {
-                volumeSlider.setFGColor(yellowText);
+                volumeSlider.setFGColor(cyanText);
             }
 
             buttonH += volumeSlider.getHeightRealms() + 2;
@@ -374,7 +374,7 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
                         font.drawString(matrix, "Anchor first", x, y + 29, whiteText);
                     }
                 }
-                minecraft.getTextureManager().bindTexture(GUI);
+                minecraft.getTextureManager().bindTexture(SoundMuffler.getGui());
                 if (!(button instanceof MuffledSlider)) {
                     if (button.getMessage().getString().equals(String.valueOf(anchor.getAnchorId()))) {
                         blit(matrix, button.x - 5, button.y - 2, 71F, 202F, 27, 22, xSize, xSize); //fancy selected Anchor indicator
@@ -457,7 +457,7 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
         y = searchBar.y;
         ITextComponent searchHint = (new TranslationTextComponent("gui.recipebook.search_hint")).mergeStyle(TextFormatting.ITALIC).mergeStyle(TextFormatting.GRAY); //from Vanilla recipebook GUI
         if (!this.searchBar.isFocused() && this.searchBar.getText().isEmpty()) {
-            drawString(matrix, font, searchHint, x + 1, y, -1);
+            drawString(matrix, font, searchHint, x + 1, y + 1, -1);
         }
 
         //next sounds button tooltip
@@ -596,7 +596,7 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
         if (!editAnchorRadiusBar.getText().isEmpty()) {
             int Radius = Integer.parseInt(editAnchorRadiusBar.getText());
             if (Radius > 32 || Radius < 1) {
-                editAnchorRadiusBar.setTextColor(yellowText);
+                editAnchorRadiusBar.setTextColor(cyanText);
             } else {
                 editAnchorRadiusBar.setTextColor(whiteText);
             }
@@ -636,7 +636,8 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
         }
 
         //Close screen when press "E" or the mod hotkey outside the search bar or edit title bar
-        if (!searchBar.isFocused() && !editAnchorTitleBar.isFocused() && !editAnchorRadiusBar.isFocused() && (keyCode == 69 || keyCode == SoundMuffler.getHotkey())) {
+        if (!searchBar.isFocused() && !editAnchorTitleBar.isFocused() && !editAnchorRadiusBar.isFocused() &&
+                (minecraft.gameSettings.keyBindInventory.matchesKey(keyCode, scanCode) || keyCode == SoundMuffler.getHotkey())) {
             this.closeScreen();
             filteredButtons.clear();
             return true;

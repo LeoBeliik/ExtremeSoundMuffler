@@ -5,17 +5,10 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
-import com.leobeliik.extremesoundmuffler.eventHandlers.PlayerEventsHandler;
+import com.leobeliik.extremesoundmuffler.Config;
 import com.leobeliik.extremesoundmuffler.interfaces.IAnchorList;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
-import com.leobeliik.extremesoundmuffler.network.Network;
-import com.leobeliik.extremesoundmuffler.network.PacketDataClient;
 import com.leobeliik.extremesoundmuffler.network.PacketDataServer;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -38,7 +31,7 @@ public class DataManager implements IAnchorList, ISoundLists {
     public static void saveData() {
         saveMuffledMap();
 
-        if (PlayerEventsHandler.isClientSide()) {
+        if (Config.isClientSide()) {
             saveAnchors();
         } else {
             PacketDataServer.sendAnchorList();

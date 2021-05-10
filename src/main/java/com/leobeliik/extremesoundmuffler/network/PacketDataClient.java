@@ -1,6 +1,5 @@
 package com.leobeliik.extremesoundmuffler.network;
 
-import com.leobeliik.extremesoundmuffler.eventHandlers.PlayerEventsHandler;
 import com.leobeliik.extremesoundmuffler.interfaces.IAnchorList;
 import com.leobeliik.extremesoundmuffler.utils.Anchor;
 import net.minecraft.nbt.CompoundNBT;
@@ -8,7 +7,6 @@ import net.minecraft.nbt.NBTUtil;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkEvent;
-
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.function.Supplier;
@@ -32,12 +30,6 @@ public class PacketDataClient implements IAnchorList {
     @SuppressWarnings("SameReturnValue")
     boolean handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            if (data.contains("isClientSide")) {
-                PlayerEventsHandler.setClientSide(data.getBoolean("isClientSide"));
-                PlayerEventsHandler.setPlayerEntity(ctx.get().getSender());
-                return;
-            }
-
             for (int i = 0; i <= 9; i++) {
                 if (!data.contains("anchor" + i)) {
                     anchorList.add(i, new Anchor(i, "Anchor: " + i));

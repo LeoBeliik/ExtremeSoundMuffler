@@ -21,6 +21,8 @@ public class Config {
     private static final ForgeConfigSpec.BooleanValue leftButtons;
     private static final ForgeConfigSpec.DoubleValue defaultMuteVolume;
     private static ForgeConfigSpec.BooleanValue showTip;
+    private static ForgeConfigSpec.BooleanValue useDarkTheme;
+    private static ForgeConfigSpec.BooleanValue isClientSide;
 
 
     static {
@@ -43,6 +45,12 @@ public class Config {
 
         showTip = CLIENT_BUILDER.comment("Show a message the first time a sound is muffled indicating that you can change the volume")
                 .define("showTip", true);
+
+        useDarkTheme = CLIENT_BUILDER.comment("Whether or not use the dark theme")
+                .define("useDarkTheme", false);
+
+        isClientSide = CLIENT_BUILDER.comment("Set to true if this mod wont be present in the server; it will load and save the Anchors in ESM -> ServerWorld")
+                .define("isClientSide", false);
 
         CLIENT_BUILDER.pop();
         CLIENT_CONFIG = CLIENT_BUILDER.build();
@@ -84,4 +92,13 @@ public class Config {
     public static void setShowTip(boolean showTip) {
         Config.showTip.set(showTip);
     }
+
+    static boolean useDarkTheme() {
+        return useDarkTheme.get();
+    }
+
+    public static boolean isClientSide() {
+        return isClientSide.get();
+    }
+
 }
