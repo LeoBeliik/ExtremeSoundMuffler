@@ -17,6 +17,8 @@ import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import javax.annotation.Nullable;
+
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = SoundMuffler.MODID)
 public class SoundEventHandler implements ISoundLists, IAnchorList {
 
@@ -36,7 +38,7 @@ public class SoundEventHandler implements ISoundLists, IAnchorList {
         }
 
         ISound sound = event.getSound();
-        BlockPos soundPos = new BlockPos(sound.getX(), sound.getY(), sound.getZ());
+
 
         if (isForbidden(sound)) {
             return;
@@ -57,15 +59,9 @@ public class SoundEventHandler implements ISoundLists, IAnchorList {
                 return;
             }
 
-            for (Anchor anchor : anchorList) {
-                if (anchor.getAnchorPos() != null) {
-                    boolean sameDimension = Minecraft.getInstance().world.getDimensionKey().getLocation().equals(anchor.getDimension());
-                    if (sameDimension && soundPos.withinDistance(anchor.getAnchorPos(), anchor.getRadius())) {
-                        if (anchor.getMuffledSounds().containsKey(sound.getSoundLocation())) {
-                            event.setResultSound(new MuffledSound(sound, anchor.getMuffledSounds().get(sound.getSoundLocation()).floatValue()));
-                        }
-                    }
-                }
+            Anchor anchor = getAnchor(sound);
+            if (anchor != null) {
+                event.setResultSound(new MuffledSound(sound, anchor.getMuffledSounds().get(sound.getSoundLocation()).floatValue()));
             }
         }
     }
@@ -77,6 +73,22 @@ public class SoundEventHandler implements ISoundLists, IAnchorList {
             }
         }
         return false;
+    }
+
+    @Nullable
+    public static Anchor getAnchor(ISound sound) {
+        BlockPos soundPos = new BlockPos(sound.getX(), sound.getY(), sound.getZ());
+        for (Anchor anchor : anchorList) {
+            if (anchor.getAnchorPos() != null) {
+                boolean sameDimension = Minecraft.getInstance().world.getDimensionKey().getLocation().equals(anchor.getDimension());
+                if (sameDimension && soundPos.withinDistance(anchor.getAnchorPos(), anchor.getRadius())) {
+                    if (anchor.getMuffledSounds().containsKey(sound.getSoundLocation())) {
+                        return anchor;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     public static void isFromPlaySoundButton(boolean b) {
