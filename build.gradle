@@ -1,17 +1,20 @@
 buildscript {
     repositories {
         maven { url = 'https://maven.minecraftforge.net' }
+        maven { url = 'https://repo.spongepowered.org/maven' }
         jcenter()
         mavenCentral()
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+        classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7-SNAPSHOT'
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
+apply plugin: 'org.spongepowered.mixin'
 
 version = "${modversion}_Forge-${mcversion}"
 group = 'com.LeoBeliik.extremeSoundMuffler' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
@@ -80,6 +83,10 @@ dependencies {
     minecraft "net.minecraftforge:forge:${mcversion}-${forgeversion}"
 }
 
+mixin {
+    add sourceSets.main, "extremesoundmuffler.refmap.json"
+}
+
 // Example for how to get properties into the manifest for reading by the runtime..
 jar {
     manifest {
@@ -90,7 +97,8 @@ jar {
                 "Implementation-Title"    : "Extreme sound muffler",
                 "Implementation-Version"  : "${modversion}_forge-${mcversion}",
                 "Implementation-Vendor"   : "LeoBeliik",
-                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                "MixinConnector"          : "com.leobeliik.extremesoundmuffler.MixinConnector"
         ])
     }
 }
