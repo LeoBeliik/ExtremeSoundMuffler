@@ -2,7 +2,6 @@ package com.leobeliik.extremesoundmuffler.gui.buttons;
 
 import com.leobeliik.extremesoundmuffler.Config;
 import com.leobeliik.extremesoundmuffler.SoundMuffler;
-import com.leobeliik.extremesoundmuffler.eventHandlers.SoundEventHandler;
 import com.leobeliik.extremesoundmuffler.gui.MainScreen;
 import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
@@ -87,7 +86,6 @@ public class MuffledSlider extends Widget implements ISoundLists, IColorsGui {
                 } else {
                     anchor.removeSound(sound);
                 }
-                SoundEventHandler.reloadSound(sound);
                 super.setFGColor(whiteText);
             } else {
                 if (screenTitle.equals(mainTitle)) {
@@ -99,7 +97,6 @@ public class MuffledSlider extends Widget implements ISoundLists, IColorsGui {
                 } else {
                     return;
                 }
-                SoundEventHandler.reloadSound(sound);
                 super.setFGColor(cyanText);
             }
         });

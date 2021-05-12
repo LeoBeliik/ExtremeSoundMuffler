@@ -90,24 +90,4 @@ public class MuffledSound implements ISound {
         return sound.getAttenuationType();
     }
 
-    @OnlyIn(Dist.CLIENT)
-    public static class MuffledTickableSound extends MuffledSound implements ITickableSound {
-
-        private final ITickableSound sound;
-
-        public MuffledTickableSound(ITickableSound sound, float volume) {
-            super(sound, volume);
-            this.sound = sound;
-        }
-
-        @Override
-        public boolean isDonePlaying() {
-            return this.sound.isDonePlaying();
-        }
-
-        @Override
-        public void tick() {
-            this.sound.tick();
-        }
-    }
 }

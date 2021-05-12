@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "com.leobeliik.extremesoundmuffler.mixins",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "extremesoundmuffler.refmap.json",
+  "minVersion": "0.8",
+  "client": [
+    "TickableSoundMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
