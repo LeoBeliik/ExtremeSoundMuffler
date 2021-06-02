@@ -87,6 +87,13 @@ mixin {
     add sourceSets.main, "extremesoundmuffler.refmap.json"
 }
 
+tasks.register("version_up") {
+    doLast {
+        def gp = file("gradle.properties")
+        gp.setText(gp.getText().replace("${modsubversion}", ("${modsubversion}".toInteger() + 1).toString()))
+    }
+}
+
 // Example for how to get properties into the manifest for reading by the runtime..
 jar {
     manifest {
