@@ -24,14 +24,14 @@ import java.util.Objects;
 public class MuffledSlider extends Widget implements ISoundLists, IColorsGui {
 
     private final String mainTitle = "ESM - Main Screen";
-    private double sliderValue;
+    private float sliderValue;
     private Button btnToggleSound;
     private PlaySoundButton btnPlaySound;
     private ResourceLocation sound;
     public static ResourceLocation tickSound;
     public static boolean showSlider = false;
 
-    public MuffledSlider(int x, int y, int width, int height, double sliderValue, ResourceLocation sound, String screenTitle, Anchor anchor) {
+    public MuffledSlider(int x, int y, int width, int height, float sliderValue, ResourceLocation sound, String screenTitle, Anchor anchor) {
         super(x, y, width, height, ITextComponent.getTextComponentOrEmpty(sound.getPath() + ":" + sound.getNamespace()));
         this.sliderValue = sliderValue;
         this.sound = sound;
@@ -119,21 +119,21 @@ public class MuffledSlider extends Widget implements ISoundLists, IColorsGui {
         boolean flag = keyCode == 263;
         if (flag || keyCode == 262) {
             float f = flag ? -1.0F : 1.0F;
-            this.setSliderValue(this.sliderValue + (double) (f / (float) (this.width - 8)));
+            this.setSliderValue(this.sliderValue + (f / (this.width - 8)));
         }
         return false;
     }
 
-    private void changeSliderValue(double mouseX) {
-        this.setSliderValue((mouseX - (double) (this.x + 4)) / (double) (this.width - 8));
+    private void changeSliderValue(float mouseX) {
+        this.setSliderValue((mouseX - (this.x + 4)) / (this.width - 8));
         if (Config.getShowTip()) {
             Config.setShowTip(false);
         }
     }
 
-    private void setSliderValue(double value) {
+    private void setSliderValue(float value) {
         double d0 = this.sliderValue;
-        this.sliderValue = MathHelper.clamp(value, 0.0D, 0.9D);
+        this.sliderValue = MathHelper.clamp(value, 0.0F, 0.9F);
         if (d0 != this.sliderValue) {
             this.func_230972_a_();
         }
@@ -143,14 +143,14 @@ public class MuffledSlider extends Widget implements ISoundLists, IColorsGui {
 
     @Override
     protected void onDrag(double mouseX, double mouseY, double dragX, double dragY) {
-        this.changeSliderValue(mouseX);
+        this.changeSliderValue((float) mouseX);
         super.onDrag(mouseX, mouseY, dragX, dragY);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (this.isHovered && this.getFGColor() == cyanText) {
-            this.changeSliderValue(mouseX);
+            this.changeSliderValue((float) mouseX);
             showSlider = true;
             this.setFocused(true);
             tickSound = this.sound;

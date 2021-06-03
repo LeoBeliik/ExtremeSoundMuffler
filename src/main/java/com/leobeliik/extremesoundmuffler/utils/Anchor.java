@@ -1,9 +1,13 @@
 package com.leobeliik.extremesoundmuffler.utils;
 
+import com.leobeliik.extremesoundmuffler.interfaces.IAnchorList;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.ISound;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+
 import java.util.Objects;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -15,14 +19,14 @@ public class Anchor {
     private String name;
     private ResourceLocation dimension;
     private int Radius;
-    private SortedMap<String, Double> muffledSounds = new TreeMap<>();
+    private SortedMap<String, Float> muffledSounds = new TreeMap<>();
 
     public Anchor(int id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public Anchor(int id, String name, BlockPos anchorPos, ResourceLocation dimension, int Radius, SortedMap<String, Double> muffledSounds) {
+    public Anchor(int id, String name, BlockPos anchorPos, ResourceLocation dimension, int Radius, SortedMap<String, Float> muffledSounds) {
         this.id = id;
         this.name = name;
         this.anchorPos = anchorPos;
@@ -59,21 +63,21 @@ public class Anchor {
         this.name = name;
     }
 
-    public SortedMap<ResourceLocation, Double> getMuffledSounds() {
-        SortedMap<ResourceLocation, Double> temp = new TreeMap<>();
-        this.muffledSounds.forEach((R, D) -> temp.put(new ResourceLocation(R), D));
+    public SortedMap<ResourceLocation, Float> getMuffledSounds() {
+        SortedMap<ResourceLocation, Float> temp = new TreeMap<>();
+        this.muffledSounds.forEach((R, F) -> temp.put(new ResourceLocation(R), F));
         return temp;
     }
 
-    public void setMuffledSounds(SortedMap<ResourceLocation, Double> muffledSounds) {
-        muffledSounds.forEach((R, D) -> this.muffledSounds.put(R.toString(), D));
+    public void setMuffledSounds(SortedMap<ResourceLocation, Float> muffledSounds) {
+        muffledSounds.forEach((R, F) -> this.muffledSounds.put(R.toString(), F));
     }
 
-    public void addSound(ResourceLocation sound, double volume) {
+    public void addSound(ResourceLocation sound, float volume) {
         muffledSounds.put(sound.toString(), volume);
     }
 
-    public void replaceSound(ResourceLocation sound, double volume) {
+    public void replaceSound(ResourceLocation sound, float volume) {
         muffledSounds.replace(sound.toString(), volume);
     }
 
@@ -119,5 +123,20 @@ public class Anchor {
     public void editAnchor(String title, int Radius) {
         setName(title);
         setRadius(Radius);
+    }
+
+    public static Anchor getAnchor(ISound sound) {
+        BlockPos soundPos = new BlockPos(sound.getX(), sound.getY(), sound.getZ());
+        for (Anchor anchor : IAnchorList.anchorList) {
+            ClientWorld world = Minecraft.getInstance().world;
+            if (anchor.getAnchorPos() != null
+                    && world != null
+                    && world.getDimensionKey().getLocation().equals(anchor.getDimension())
+                    && soundPos.withinDistance(anchor.getAnchorPos(), anchor.getRadius())
+                    && anchor.getMuffledSounds().containsKey(sound.getSoundLocation())) {
+                return anchor;
+            }
+        }
+        return null;
     }
 }

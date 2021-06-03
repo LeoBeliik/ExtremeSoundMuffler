@@ -8,6 +8,6 @@ public interface ISoundLists {
     Set<String> forbiddenSounds = new HashSet<>();
     SortedSet<ResourceLocation> soundsList = new TreeSet<>();
     SortedSet<ResourceLocation> recentSoundsList = new TreeSet<>();
-    Map<ResourceLocation, Double> muffledSounds = new HashMap<>();
+    Map<ResourceLocation, Float> muffledSounds = new HashMap<>();
 
 }

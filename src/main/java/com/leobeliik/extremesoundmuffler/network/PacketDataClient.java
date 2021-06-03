@@ -10,6 +10,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.function.Supplier;
+import java.util.stream.IntStream;
 
 public class PacketDataClient implements IAnchorList {
 
@@ -30,23 +31,23 @@ public class PacketDataClient implements IAnchorList {
     @SuppressWarnings("SameReturnValue")
     boolean handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            for (int i = 0; i <= 9; i++) {
+            IntStream.rangeClosed(0, 9).forEach(i -> {
                 if (!data.contains("anchor" + i)) {
                     anchorList.add(i, new Anchor(i, "Anchor: " + i));
                 } else {
                     anchorList.add(i, deserializeNBT(data.getCompound("anchor" + i)));
                 }
-            }
+            });
         });
         return true;
     }
 
-    private static Anchor deserializeNBT(CompoundNBT nbt) {
-        SortedMap<String, Double> muffledSounds = new TreeMap<>();
+    public static Anchor deserializeNBT(CompoundNBT nbt) {
+        SortedMap<String, Float> muffledSounds = new TreeMap<>();
         CompoundNBT muffledNBT = nbt.getCompound("MUFFLED");
 
         for (String key : muffledNBT.keySet()) {
-            muffledSounds.put(key, muffledNBT.getDouble(key));
+            muffledSounds.put(key, muffledNBT.getFloat(key));
         }
 
         if (!nbt.contains("POS")) {

@@ -206,14 +206,15 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
 
         for (ResourceLocation sound : soundsList) {
 
-            double volume;
+            float volume;
+            float maxVolume = 1F;
 
             if (screenTitle.equals(mainTitle)) {
-                volume = muffledSounds.get(sound) == null ? 1D : muffledSounds.get(sound);
+                volume = muffledSounds.get(sound) == null ? maxVolume : muffledSounds.get(sound);
             } else if (anchor != null) {
-                volume = anchor.getMuffledSounds().get(sound) == null ? 1D : anchor.getMuffledSounds().get(sound);
+                volume = anchor.getMuffledSounds().get(sound) == null ? maxVolume : anchor.getMuffledSounds().get(sound);
             } else {
-                volume = 1D;
+                volume = maxVolume;
             }
 
             int x = Config.getLeftButtons() ? getX() + 36 :  getX() + 11;

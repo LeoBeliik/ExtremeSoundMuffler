@@ -9,6 +9,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 import java.util.Objects;
 import java.util.function.Supplier;
+import java.util.stream.IntStream;
 
 public class PacketDataServer implements IAnchorList {
 
@@ -41,13 +42,11 @@ public class PacketDataServer implements IAnchorList {
 
     public static void sendAnchorList() {
         CompoundNBT anchorNBT = new CompoundNBT();
-        for (int i = 0; i <= 9; i++) {
-            anchorNBT.put("anchor" + i, PacketDataServer.serializeNBT(anchorList.get(i)));
-        }
+        IntStream.rangeClosed(0, 9).forEach(i -> anchorNBT.put("anchor" + i, PacketDataServer.serializeNBT(anchorList.get(i))));
         Network.sendToServer(new PacketDataServer(anchorNBT));
     }
 
-    private static CompoundNBT serializeNBT(Anchor anchor) {
+    public static CompoundNBT serializeNBT(Anchor anchor) {
 
         CompoundNBT anchorNBT = new CompoundNBT();
         CompoundNBT muffledNBT = new CompoundNBT();
@@ -62,7 +61,7 @@ public class PacketDataServer implements IAnchorList {
         anchorNBT.put("POS", NBTUtil.writeBlockPos(anchor.getAnchorPos()));
         anchorNBT.putString("DIM", anchor.getDimension().toString());
         anchorNBT.putInt("RAD", anchor.getRadius());
-        anchor.getMuffledSounds().forEach((r, d) -> muffledNBT.putDouble(r.toString(), d));
+        anchor.getMuffledSounds().forEach((R, F) -> muffledNBT.putFloat(R.toString(), F));
         anchorNBT.put("MUFFLED", muffledNBT);
 
         return anchorNBT;

@@ -77,8 +77,8 @@ public class Config {
         return disableAnchors.get();
     }
 
-    public static double getDefaultMuteVolume() {
-        return defaultMuteVolume.get();
+    public static float getDefaultMuteVolume() {
+        return defaultMuteVolume.get().floatValue();
     }
 
     public static boolean getLeftButtons() {

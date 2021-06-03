@@ -46,12 +46,4 @@ public class PlayerEventsHandler implements IAnchorList {
         anchorList.clear();
         player = null;
     }
-
-    public static ServerPlayerEntity getPlayerEntity() {
-        return player;
-    }
-
-    public static void setPlayerEntity(ServerPlayerEntity playerEntity) {
-        player = playerEntity;
-    }
 }

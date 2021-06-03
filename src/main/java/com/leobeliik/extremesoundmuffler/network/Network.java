@@ -2,6 +2,7 @@ package com.leobeliik.extremesoundmuffler.network;
 
 import com.leobeliik.extremesoundmuffler.SoundMuffler;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.network.NetworkManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkRegistry;

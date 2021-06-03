@@ -3,6 +3,7 @@ package com.leobeliik.extremesoundmuffler;
 import com.leobeliik.extremesoundmuffler.gui.MainScreen;
 import com.leobeliik.extremesoundmuffler.gui.buttons.InvButton;
 import com.leobeliik.extremesoundmuffler.network.Network;
+import com.leobeliik.extremesoundmuffler.utils.DataManager;
 import net.minecraft.client.gui.DisplayEffectsScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -48,6 +49,7 @@ public class SoundMuffler {
 
     private void init(final FMLCommonSetupEvent event) {
         Network.registerMessages();
+        DataManager.loadData();
     }
 
     private void clientInit(final FMLClientSetupEvent event) {
@@ -89,4 +91,6 @@ public class SoundMuffler {
         String texture = Config.useDarkTheme() ? "textures/gui/sm_gui_dark.png" : "textures/gui/sm_gui.png";
         return new ResourceLocation(SoundMuffler.MODID, texture);
     }
+
+
 }
