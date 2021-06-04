@@ -1,8 +1,6 @@
 package com.leobeliik.extremesoundmuffler.interfaces;
 
-import com.leobeliik.extremesoundmuffler.SoundMuffler;
 import net.minecraft.util.ColorHelper;
-import net.minecraft.util.ResourceLocation;
 
 public interface IColorsGui {
 

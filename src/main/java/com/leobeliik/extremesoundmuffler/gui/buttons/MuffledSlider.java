@@ -16,7 +16,6 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
-
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Objects;
 
@@ -27,7 +26,7 @@ public class MuffledSlider extends Widget implements ISoundLists, IColorsGui {
     private float sliderValue;
     private Button btnToggleSound;
     private PlaySoundButton btnPlaySound;
-    private ResourceLocation sound;
+    private final ResourceLocation sound;
     public static ResourceLocation tickSound;
     public static boolean showSlider = false;
 

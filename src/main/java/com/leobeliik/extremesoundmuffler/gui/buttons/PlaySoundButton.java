@@ -24,8 +24,7 @@ public class PlaySoundButton extends AbstractButton {
     }
 
     @Override
-    public void onPress() {
-    }
+    public void onPress() {}
 
     @ParametersAreNonnullByDefault
     @Override

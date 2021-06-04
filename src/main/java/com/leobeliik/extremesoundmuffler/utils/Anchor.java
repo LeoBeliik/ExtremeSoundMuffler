@@ -7,11 +7,11 @@ import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-
 import java.util.Objects;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+@SuppressWarnings("WeakerAccess")
 public class Anchor {
 
     private final int id;

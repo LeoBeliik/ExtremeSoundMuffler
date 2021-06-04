@@ -13,6 +13,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 
+@SuppressWarnings("ALL")
 @Mod.EventBusSubscriber(modid = SoundMuffler.MODID)
 public class PlayerEventsHandler implements IAnchorList {
 

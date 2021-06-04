@@ -8,14 +8,14 @@ import com.google.gson.stream.JsonReader;
 import com.leobeliik.extremesoundmuffler.Config;
 import com.leobeliik.extremesoundmuffler.interfaces.IAnchorList;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
+import com.leobeliik.extremesoundmuffler.network.Network;
 import com.leobeliik.extremesoundmuffler.network.PacketDataServer;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraft.util.ResourceLocation;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.IntStream;
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -34,7 +34,7 @@ public class DataManager implements IAnchorList, ISoundLists {
             return;
         }
 
-        if (loadAnchors() == null || Objects.requireNonNull(loadAnchors()).size() == 0) {
+        if (loadAnchors() == null || Objects.requireNonNull(loadAnchors()).isEmpty()) {
             setAnchors();
         } else {
             anchorList.addAll(Objects.requireNonNull(loadAnchors()));
@@ -47,7 +47,9 @@ public class DataManager implements IAnchorList, ISoundLists {
         if (Config.isClientSide()) {
             saveAnchors();
         } else {
-            PacketDataServer.sendAnchorList();
+            CompoundNBT anchorNBT = new CompoundNBT();
+            IntStream.rangeClosed(0, 9).forEach(i -> anchorNBT.put("anchor" + i, DataManager.serializeNBT(anchorList.get(i))));
+            Network.sendToServer(new PacketDataServer(anchorNBT));
         }
     }
 
@@ -55,12 +57,53 @@ public class DataManager implements IAnchorList, ISoundLists {
         IntStream.rangeClosed(0, 9).forEach(i -> anchorList.add(i, new Anchor(i, "Anchor: " + i)));
     }
 
+
+    private static CompoundNBT serializeNBT(Anchor anchor) {
+
+        CompoundNBT anchorNBT = new CompoundNBT();
+        CompoundNBT muffledNBT = new CompoundNBT();
+
+        anchorNBT.putInt("ID", anchor.getAnchorId());
+        anchorNBT.putString("NAME", anchor.getName());
+
+        if (anchor.getAnchorPos() == null) {
+            return anchorNBT;
+        }
+
+        anchorNBT.put("POS", NBTUtil.writeBlockPos(anchor.getAnchorPos()));
+        anchorNBT.putString("DIM", anchor.getDimension().toString());
+        anchorNBT.putInt("RAD", anchor.getRadius());
+        anchor.getMuffledSounds().forEach((R, F) -> muffledNBT.putFloat(R.toString(), F));
+        anchorNBT.put("MUFFLED", muffledNBT);
+
+        return anchorNBT;
+    }
+
+    public static Anchor deserializeNBT(CompoundNBT nbt) {
+        SortedMap<String, Float> muffledSounds = new TreeMap<>();
+        CompoundNBT muffledNBT = nbt.getCompound("MUFFLED");
+
+        for (String key : muffledNBT.keySet()) {
+            muffledSounds.put(key, muffledNBT.getFloat(key));
+        }
+
+        if (!nbt.contains("POS")) {
+            return new Anchor(nbt.getInt("ID"), nbt.getString("NAME"));
+        } else {
+            return new Anchor(nbt.getInt("ID"),
+                    nbt.getString("NAME"),
+                    NBTUtil.readBlockPos(nbt.getCompound("POS")),
+                    new ResourceLocation(nbt.getString("DIM")),
+                    nbt.getInt("RAD"),
+                    muffledSounds);
+        }
+    }
+
     private static void saveMuffledMap() {
         new File("ESM/").mkdir();
         try (Writer writer = new OutputStreamWriter(new FileOutputStream(soundsMuffledFile), StandardCharsets.UTF_8)) {
             writer.write(gson.toJson(ISoundLists.muffledSounds));
-        } catch (IOException ignored) {
-        }
+        } catch (IOException ignored) {}
     }
 
     private static Map<String, Float> loadMuffledMap() {

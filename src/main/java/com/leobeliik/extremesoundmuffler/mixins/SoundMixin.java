@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+@SuppressWarnings("WeakerAccess")
 @Mixin(LocatableSound.class)
 public abstract class SoundMixin implements ISound, ISoundLists {
 

@@ -19,7 +19,6 @@ import net.minecraft.util.text.*;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.ForgeRegistries;
-
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
@@ -31,7 +30,7 @@ import java.util.Objects;
 public class MainScreen extends Screen implements ISoundLists, IAnchorList, IColorsGui {
 
     private static final Minecraft minecraft = Minecraft.getInstance();
-    private List<Widget> filteredButtons = new ArrayList<>();
+    private final List<Widget> filteredButtons = new ArrayList<>();
     private static boolean isMuffling = true;
     private static String searchBarText = "";
     private static String screenTitle = "";
@@ -595,11 +594,7 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
 
         if (!editAnchorRadiusBar.getText().isEmpty()) {
             int Radius = Integer.parseInt(editAnchorRadiusBar.getText());
-            if (Radius > 32 || Radius < 1) {
-                editAnchorRadiusBar.setTextColor(cyanText);
-            } else {
-                editAnchorRadiusBar.setTextColor(whiteText);
-            }
+            editAnchorRadiusBar.setTextColor(Radius > 32 || Radius < 1 ? cyanText : whiteText);
         } else {
             editAnchorRadiusBar.setTextColor(whiteText);
         }
@@ -619,7 +614,7 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         //Radius only accepts numbers
-        editAnchorRadiusBar.setValidator(this::isStringValid);
+        editAnchorRadiusBar.setValidator(s -> s.matches("[0-9]*(?:[0-9]*)?"));
 
         //Type inside the search bar
         if (searchBar.keyPressed(keyCode, scanCode, modifiers)) {
@@ -644,14 +639,6 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
         }
 
         return super.keyPressed(keyCode, scanCode, modifiers);
-    }
-
-    /***
-     * Credits:
-     * <a href="https://github.com/Vazkii/Quark/blob/master/src/main/java/vazkii/quark/base/client/config/obj/DoubleObject.java#L24">Quark</a>
-     */
-    private boolean isStringValid(String s) {
-        return s.matches("[0-9]*(?:[0-9]*)?");
     }
 
     @Override

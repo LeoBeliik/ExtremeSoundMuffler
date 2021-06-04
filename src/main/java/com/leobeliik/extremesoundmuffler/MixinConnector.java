@@ -9,4 +9,3 @@ public class MixinConnector implements IMixinConnector {
         Mixins.addConfiguration("assets/" + SoundMuffler.MODID + "/extremesoundmuffler.mixins.json");
     }
 }
-

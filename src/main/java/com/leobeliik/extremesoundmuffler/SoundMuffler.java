@@ -34,14 +34,14 @@ import net.minecraftforge.fml.network.FMLNetworkConstants;
 public class SoundMuffler {
 
     public static final String MODID = "extremesoundmuffler";
-    private static KeyBinding openMuffleScreen;
+    private static KeyBinding openMufflerScreen;
 
     public SoundMuffler() {
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.CLIENT_CONFIG);
         MinecraftForge.EVENT_BUS.register(this);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientInit);
-        Config.loadConfig(Config.CLIENT_CONFIG, FMLPaths.CONFIGDIR.get().resolve(MODID + "-client.toml"));
+        Config.loadConfig(Config.CLIENT_CONFIG, FMLPaths.CONFIGDIR.get().resolve(MODID + ".toml"));
 
         ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.DISPLAYTEST,
                 () -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
@@ -53,12 +53,12 @@ public class SoundMuffler {
     }
 
     private void clientInit(final FMLClientSetupEvent event) {
-        openMuffleScreen = new KeyBinding(
-                "Open sound muffle screen",
+        openMufflerScreen = new KeyBinding(
+                "Open sound muffler screen",
                 KeyConflictContext.IN_GAME,
                 InputMappings.INPUT_INVALID,
                 "key.categories.misc");
-        ClientRegistry.registerKeyBinding(openMuffleScreen);
+        ClientRegistry.registerKeyBinding(openMufflerScreen);
     }
 
     @SubscribeEvent
@@ -78,13 +78,13 @@ public class SoundMuffler {
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public void onKeyInput(InputEvent.KeyInputEvent event) {
-        if (openMuffleScreen.isPressed()) {
+        if (openMufflerScreen.isPressed()) {
             MainScreen.open();
         }
     }
 
     public static int getHotkey() {
-        return openMuffleScreen.getKey().getKeyCode();
+        return openMufflerScreen.getKey().getKeyCode();
     }
 
     public static ResourceLocation getGui() {

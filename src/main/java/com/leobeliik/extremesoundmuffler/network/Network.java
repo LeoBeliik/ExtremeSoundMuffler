@@ -2,7 +2,6 @@ package com.leobeliik.extremesoundmuffler.network;
 
 import com.leobeliik.extremesoundmuffler.SoundMuffler;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.NetworkManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkRegistry;
@@ -44,7 +43,7 @@ public class Network {
         INSTANCE.sendTo(packet, player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
     }
 
-    static void sendToServer(Object packet) {
+    public static void sendToServer(Object packet) {
         INSTANCE.sendToServer(packet);
     }
 
