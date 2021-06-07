@@ -56,7 +56,7 @@ public class SoundMuffler {
         openMufflerScreen = new KeyBinding(
                 "Open sound muffler screen",
                 KeyConflictContext.IN_GAME,
-                InputMappings.INPUT_INVALID,
+                InputMappings.UNKNOWN,
                 "key.categories.misc");
         ClientRegistry.registerKeyBinding(openMufflerScreen);
     }
@@ -78,13 +78,13 @@ public class SoundMuffler {
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public void onKeyInput(InputEvent.KeyInputEvent event) {
-        if (openMufflerScreen.isPressed()) {
+        if (openMufflerScreen.consumeClick()) {
             MainScreen.open();
         }
     }
 
     public static int getHotkey() {
-        return openMufflerScreen.getKey().getKeyCode();
+        return openMufflerScreen.getKey().getValue();
     }
 
     public static ResourceLocation getGui() {

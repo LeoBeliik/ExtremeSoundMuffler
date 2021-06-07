@@ -14,7 +14,7 @@ public class PacketDataClient implements IAnchorList {
     private final CompoundNBT data;
 
     PacketDataClient(PacketBuffer buf) {
-        data = buf.readCompoundTag();
+        data = buf.readNbt();
     }
 
     public PacketDataClient(CompoundNBT data) {
@@ -22,7 +22,7 @@ public class PacketDataClient implements IAnchorList {
     }
 
     void toBytes(PacketBuffer buf) {
-        buf.writeCompoundTag(data);
+        buf.writeNbt(data);
     }
 
     @SuppressWarnings("SameReturnValue")

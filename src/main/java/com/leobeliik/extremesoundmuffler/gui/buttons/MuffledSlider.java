@@ -31,7 +31,7 @@ public class MuffledSlider extends Widget implements ISoundLists, IColorsGui {
     public static boolean showSlider = false;
 
     public MuffledSlider(int x, int y, int width, int height, float sliderValue, ResourceLocation sound, String screenTitle, Anchor anchor) {
-        super(x, y, width, height, ITextComponent.getTextComponentOrEmpty(sound.getPath() + ":" + sound.getNamespace()));
+        super(x, y, width, height, ITextComponent.nullToEmpty(sound.getPath() + ":" + sound.getNamespace()));
         this.sliderValue = sliderValue;
         this.sound = sound;
         setBtnToggleSound(screenTitle, sound, anchor);
@@ -42,7 +42,7 @@ public class MuffledSlider extends Widget implements ISoundLists, IColorsGui {
     @Override
     public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         Minecraft minecraft = Minecraft.getInstance();
-        minecraft.getTextureManager().bindTexture(SoundMuffler.getGui());
+        minecraft.getTextureManager().bind(SoundMuffler.getGui());
         drawGradient(matrixStack);
         float v = this.getFGColor() == whiteText ? 213F : 202F;
         blit(matrixStack, btnToggleSound.x, btnToggleSound.y, 43F, v, 11, 11, 256, 256); //muffle button bg
@@ -51,19 +51,19 @@ public class MuffledSlider extends Widget implements ISoundLists, IColorsGui {
     }
 
     private void drawMessage(MatrixStack matrixStack, Minecraft minecraft) {
-        FontRenderer font = minecraft.fontRenderer;
-        int v = Math.max(this.width, font.getStringWidth(getMessage().getString()));
+        FontRenderer font = minecraft.font;
+        int v = Math.max(this.width, font.width(getMessage().getString()));
         if (showSlider && this.isFocused() && this.isHovered) {
             drawCenteredString(matrixStack, font, "Volume: " + (int) (sliderValue * 100), this.x + (this.width / 2), this.y + 2, whiteText); //title
         } else {
             String msgTruncated;
             if (this.isHovered) {
                 msgTruncated = getMessage().getString();
-                fill(matrixStack, this.x + this.width + 3, this.y, this.x + v + 3, this.y + font.FONT_HEIGHT + 2, darkBG);
+                fill(matrixStack, this.x + this.width + 3, this.y, this.x + v + 3, this.y + font.lineHeight + 2, darkBG);
             } else {
-                msgTruncated = font.func_238417_a_(getMessage(), 205).getString();
+                msgTruncated = font.substrByWidth(getMessage(), 205).getString();
             }
-            font.drawStringWithShadow(matrixStack, msgTruncated, this.x + 2, this.y + 2, getFGColor()); //title
+            font.drawShadow(matrixStack, msgTruncated, this.x + 2, this.y + 2, getFGColor()); //title
         }
     }
 

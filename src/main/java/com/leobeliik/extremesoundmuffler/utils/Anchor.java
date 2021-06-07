@@ -107,8 +107,8 @@ public class Anchor {
 
     public void setAnchor() {
         ClientPlayerEntity player = Objects.requireNonNull(Minecraft.getInstance().player);
-        setAnchorPos(player.getPosition());
-        setDimension(player.worldClient.getDimensionKey().getLocation());
+        setAnchorPos(player.blockPosition());
+        setDimension(player.clientLevel.dimension().location());
         setRadius(this.getRadius() == 0 ? 32 : this.getRadius());
     }
 
@@ -128,12 +128,12 @@ public class Anchor {
     public static Anchor getAnchor(ISound sound) {
         BlockPos soundPos = new BlockPos(sound.getX(), sound.getY(), sound.getZ());
         for (Anchor anchor : IAnchorList.anchorList) {
-            ClientWorld world = Minecraft.getInstance().world;
+            ClientWorld world = Minecraft.getInstance().level;
             if (anchor.getAnchorPos() != null
                     && world != null
-                    && world.getDimensionKey().getLocation().equals(anchor.getDimension())
-                    && soundPos.withinDistance(anchor.getAnchorPos(), anchor.getRadius())
-                    && anchor.getMuffledSounds().containsKey(sound.getSoundLocation())) {
+                    && world.dimension().location().equals(anchor.getDimension())
+                    && soundPos.closerThan(anchor.getAnchorPos(), anchor.getRadius())
+                    && anchor.getMuffledSounds().containsKey(sound.getLocation())) {
                 return anchor;
             }
         }

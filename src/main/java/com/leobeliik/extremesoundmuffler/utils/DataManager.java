@@ -83,7 +83,7 @@ public class DataManager implements IAnchorList, ISoundLists {
         SortedMap<String, Float> muffledSounds = new TreeMap<>();
         CompoundNBT muffledNBT = nbt.getCompound("MUFFLED");
 
-        for (String key : muffledNBT.keySet()) {
+        for (String key : muffledNBT.getAllKeys()) {
             muffledSounds.put(key, muffledNBT.getFloat(key));
         }
 

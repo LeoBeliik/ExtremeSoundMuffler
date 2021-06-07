@@ -22,11 +22,11 @@ public abstract class SoundMixin implements ISound, ISoundLists {
             return;
         }
 
-        recentSoundsList.add(getSoundLocation());
+        recentSoundsList.add(getLocation());
 
         if (MainScreen.isMuffled()) {
-            if (muffledSounds.containsKey(getSoundLocation())) {
-                cir.setReturnValue(cir.getReturnValue() * muffledSounds.get(getSoundLocation()));
+            if (muffledSounds.containsKey(getLocation())) {
+                cir.setReturnValue(cir.getReturnValue() * muffledSounds.get(getLocation()));
                 return;
             }
 
@@ -36,14 +36,14 @@ public abstract class SoundMixin implements ISound, ISoundLists {
 
             Anchor anchor = Anchor.getAnchor(this);
             if (anchor != null) {
-                cir.setReturnValue(cir.getReturnValue() * anchor.getMuffledSounds().get(getSoundLocation()));
+                cir.setReturnValue(cir.getReturnValue() * anchor.getMuffledSounds().get(getLocation()));
             }
         }
     }
 
     private static boolean isForbidden(ISound sound) {
         for (String fs : forbiddenSounds) {
-            if (sound.getSoundLocation().toString().contains(fs)) {
+            if (sound.getLocation().toString().contains(fs)) {
                 return true;
             }
         }

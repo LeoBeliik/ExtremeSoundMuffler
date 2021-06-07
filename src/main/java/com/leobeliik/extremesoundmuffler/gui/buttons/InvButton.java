@@ -35,10 +35,10 @@ public class InvButton extends AbstractButton implements IColorsGui {
     public void render(MatrixStack matrix, int mouseX, int mouseY, float partialTicks) {
         if (this.visible) {
             x = buttonX + parent.getGuiLeft() + 11;
-            minecraft.getTextureManager().bindTexture(SoundMuffler.getGui());
+            minecraft.getTextureManager().bind(SoundMuffler.getGui());
             blit(matrix, x, y, 43f, 202f, 11, 11, 256, 256);
             if (this.isHovered(mouseX, mouseY)) {
-                drawCenteredString(matrix, minecraft.fontRenderer, "Muffler", x + 5, this.y + this.height + 1, whiteText);
+                drawCenteredString(matrix, minecraft.font, "Muffler", x + 5, this.y + this.height + 1, whiteText);
             }
         }
     }
