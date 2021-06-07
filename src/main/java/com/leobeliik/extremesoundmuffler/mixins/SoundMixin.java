@@ -6,27 +6,26 @@ import com.leobeliik.extremesoundmuffler.gui.buttons.PlaySoundButton;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import com.leobeliik.extremesoundmuffler.utils.Anchor;
 import net.minecraft.client.audio.ISound;
-import net.minecraft.client.audio.LocatableSound;
+import net.minecraft.client.audio.SoundEngine;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@SuppressWarnings("WeakerAccess")
-@Mixin(LocatableSound.class)
-public abstract class SoundMixin implements ISound, ISoundLists {
+@Mixin(SoundEngine.class)
+public abstract class SoundMixin implements ISoundLists {
 
-    @Inject(method = "getVolume", at = @At("RETURN"), cancellable = true)
-    private void getSoundVolume(CallbackInfoReturnable<Float> cir) {
-        if (isForbidden(this) || PlaySoundButton.isFromPSB()) {
+    @Inject(method = "calculateVolume", at = @At("RETURN"), cancellable = true)
+    private void calculateSoundVolume(ISound sound, CallbackInfoReturnable<Float> cir) {
+        if (isForbidden(sound) || PlaySoundButton.isFromPSB()) {
             return;
         }
 
-        recentSoundsList.add(getLocation());
+        recentSoundsList.add(sound.getLocation());
 
         if (MainScreen.isMuffled()) {
-            if (muffledSounds.containsKey(getLocation())) {
-                cir.setReturnValue(cir.getReturnValue() * muffledSounds.get(getLocation()));
+            if (muffledSounds.containsKey(sound.getLocation())) {
+                cir.setReturnValue(cir.getReturnValue() * muffledSounds.get(sound.getLocation()));
                 return;
             }
 
@@ -34,9 +33,9 @@ public abstract class SoundMixin implements ISound, ISoundLists {
                 return;
             }
 
-            Anchor anchor = Anchor.getAnchor(this);
+            Anchor anchor = Anchor.getAnchor(sound);
             if (anchor != null) {
-                cir.setReturnValue(cir.getReturnValue() * anchor.getMuffledSounds().get(getLocation()));
+                cir.setReturnValue(cir.getReturnValue() * anchor.getMuffledSounds().get(sound.getLocation()));
             }
         }
     }

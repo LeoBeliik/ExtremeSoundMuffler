@@ -16,7 +16,7 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 apply plugin: 'org.spongepowered.mixin'
 
-version = "${modversion}.${modsubversion}_Forge-${mcversion}"
+version = "${modversion}.${modsubversion}-${mcversion}"
 group = 'com.LeoBeliik.extremeSoundMuffler' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'extremeSoundMuffler'
 
@@ -90,7 +90,7 @@ mixin {
 tasks.register("version_up") {
     doLast {
         def gp = file("gradle.properties")
-        gp.setText(gp.getText().replace("${modsubversion}", ("${modsubversion}".toInteger() + 1).toString()))
+        gp.setText(gp.getText().replace("modsubversion = " + "${modsubversion}", "modsubversion = " + ("${modsubversion}".toInteger() + 1).toString()))
     }
 }
 
