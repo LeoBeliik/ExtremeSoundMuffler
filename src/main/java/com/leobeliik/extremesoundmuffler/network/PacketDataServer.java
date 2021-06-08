@@ -30,7 +30,7 @@ public class PacketDataServer implements IAnchorList {
         ctx.get().enqueueWork(() -> {
             ServerPlayerEntity sender = ctx.get().getSender();
             if (sender != null) {
-                IntStream.range(0, 10).forEach(i ->
+                IntStream.rangeClosed(0, 9).forEach(i ->
                         sender.getPersistentData().put("anchor" + i, Objects.requireNonNull(data.get("anchor" + i))));
             }
         });
