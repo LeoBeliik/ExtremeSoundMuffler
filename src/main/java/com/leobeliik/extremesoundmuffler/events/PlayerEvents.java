@@ -1,4 +1,4 @@
-package com.leobeliik.extremesoundmuffler.eventHandlers;
+package com.leobeliik.extremesoundmuffler.events;
 
 import com.leobeliik.extremesoundmuffler.Config;
 import com.leobeliik.extremesoundmuffler.SoundMuffler;
@@ -13,9 +13,8 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 
-@SuppressWarnings("ALL")
 @Mod.EventBusSubscriber(modid = SoundMuffler.MODID)
-public class PlayerEventsHandler implements IAnchorList {
+public class PlayerEvents implements IAnchorList {
 
     private static ServerPlayerEntity player;
 

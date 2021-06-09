@@ -1,5 +1,6 @@
-package com.leobeliik.extremesoundmuffler;
+package com.leobeliik.extremesoundmuffler.mixins;
 
+import com.leobeliik.extremesoundmuffler.SoundMuffler;
 import org.spongepowered.asm.mixin.Mixins;
 import org.spongepowered.asm.mixin.connect.IMixinConnector;
 

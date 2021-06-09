@@ -1,1 +1,1 @@
-MixinConnector: com.leobeliik.extremesoundmuffler.MixinConnector
+MixinConnector: com.leobeliik.extremesoundmuffler.mixins.MixinConnector

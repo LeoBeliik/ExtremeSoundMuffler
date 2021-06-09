@@ -92,5 +92,4 @@ public class SoundMuffler {
         return new ResourceLocation(SoundMuffler.MODID, texture);
     }
 
-
 }
