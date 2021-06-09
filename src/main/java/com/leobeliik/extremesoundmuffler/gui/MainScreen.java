@@ -657,6 +657,10 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
                 editAnchorRadiusBar.setValue("");
                 return true;
             }
+        } else {
+            if (searchBar.isFocused() && !searchBar.mouseClicked(mouseX, mouseY, button)) {
+                searchBar.setFocus(false);
+            }
         }
         return super.mouseClicked(mouseX, mouseY, button);
     }

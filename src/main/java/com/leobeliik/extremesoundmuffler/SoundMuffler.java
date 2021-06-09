@@ -11,7 +11,6 @@ import net.minecraft.client.gui.screen.inventory.CreativeScreen;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.util.ResourceLocation;
-import org.apache.commons.lang3.tuple.Pair;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.GuiScreenEvent;
@@ -29,6 +28,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.fml.network.FMLNetworkConstants;
+import org.apache.commons.lang3.tuple.Pair;
 
 @Mod("extremesoundmuffler")
 public class SoundMuffler {
@@ -43,8 +43,10 @@ public class SoundMuffler {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientInit);
         Config.loadConfig(Config.CLIENT_CONFIG, FMLPaths.CONFIGDIR.get().resolve(MODID + ".toml"));
 
-        ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.DISPLAYTEST,
-                () -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
+        if (Config.isClientSide()) {
+            ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.DISPLAYTEST,
+                    () -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
+        }
     }
 
     private void init(final FMLCommonSetupEvent event) {
