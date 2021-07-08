@@ -242,12 +242,12 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
             Button btnAnchor;
             if (isAnchorsDisabled) {
                 String[] disabledMsg = {"-", "D", "i", "s", "a", "b", "l", "e", "d", "-"};
-                btnAnchor = new Button(buttonW, getY() + 24, 16, 16, ITextComponent.nullToEmpty(disabledMsg[i]), b -> {
+                btnAnchor = new Button(buttonW, getY() + 22, 16, 16, ITextComponent.nullToEmpty(disabledMsg[i]), b -> {
                 });
                 btnAnchor.active = false;
             } else {
                 int finalI = i;
-                btnAnchor = new Button(buttonW, getY() + 24, 16, 16, ITextComponent.nullToEmpty(String.valueOf(i)), b -> {
+                btnAnchor = new Button(buttonW, getY() + 22, 16, 16, ITextComponent.nullToEmpty(String.valueOf(i)), b -> {
                     anchor = anchorList.get(finalI);
                     if (anchor == null) return;
                     if (screenTitle.equals(anchor.getName())) {
