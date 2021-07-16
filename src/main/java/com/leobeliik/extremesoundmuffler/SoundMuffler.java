@@ -1,15 +1,22 @@
 package com.leobeliik.extremesoundmuffler;
 
+import com.leobeliik.extremesoundmuffler.anchors.AnchorBlock;
+import com.leobeliik.extremesoundmuffler.anchors.AnchorEntity;
+import com.leobeliik.extremesoundmuffler.anchors.registry;
 import com.leobeliik.extremesoundmuffler.gui.MainScreen;
 import com.leobeliik.extremesoundmuffler.gui.buttons.InvButton;
-import com.leobeliik.extremesoundmuffler.network.Network;
 import com.leobeliik.extremesoundmuffler.utils.DataManager;
+import net.minecraft.block.Block;
 import net.minecraft.client.gui.DisplayEffectsScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.screen.inventory.CreativeScreen;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.InputMappings;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -17,6 +24,7 @@ import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -33,7 +41,7 @@ import org.apache.commons.lang3.tuple.Pair;
 @Mod("extremesoundmuffler")
 public class SoundMuffler {
 
-    public static final String MODID = "extremesoundmuffler";
+    static final String MODID = "extremesoundmuffler";
     private static KeyBinding openMufflerScreen;
 
     public SoundMuffler() {
@@ -50,10 +58,31 @@ public class SoundMuffler {
     }
 
     private void init(final FMLCommonSetupEvent event) {
-        Network.registerMessages();
         DataManager.loadData();
     }
 
+    //
+    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
+    public static class RegistryEvents {
+        @SubscribeEvent
+        public static void onBlocksRegistry(final RegistryEvent.Register<Block> event) {
+            event.getRegistry().register(new AnchorBlock());
+        }
+
+        @SubscribeEvent
+        public static void onItemsRegistry(final RegistryEvent.Register<Item> event) {
+            event.getRegistry().register(new BlockItem(registry.ANCHOR_BLOCK, new Item.Properties().tab(ItemGroup.TAB_FOOD))
+                    .setRegistryName("sound_muffler")
+            );
+        }
+
+        @SubscribeEvent
+        public static void onTileEntityRegistry(final RegistryEvent.Register<TileEntityType<?>> event) {
+            event.getRegistry().register(TileEntityType.Builder.of(AnchorEntity::new,
+                    registry.ANCHOR_BLOCK).build(null).setRegistryName("sound_muffler"));
+        }
+    }
+    //
     private void clientInit(final FMLClientSetupEvent event) {
         openMufflerScreen = new KeyBinding(
                 "Open sound muffler screen",

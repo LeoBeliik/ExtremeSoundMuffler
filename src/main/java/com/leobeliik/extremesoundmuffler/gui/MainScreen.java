@@ -6,7 +6,7 @@ import com.leobeliik.extremesoundmuffler.gui.buttons.MuffledSlider;
 import com.leobeliik.extremesoundmuffler.interfaces.IAnchorList;
 import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
-import com.leobeliik.extremesoundmuffler.utils.Anchor;
+import com.leobeliik.extremesoundmuffler.anchors.Anchor;
 import com.leobeliik.extremesoundmuffler.utils.DataManager;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
@@ -46,7 +46,7 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
     private TextFieldWidget searchBar, editAnchorTitleBar, editAnchorRadiusBar;
     private Anchor anchor;
 
-    private MainScreen() {
+    public MainScreen() {
         super(StringTextComponent.EMPTY);
     }
 
@@ -123,8 +123,6 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
         }));
 
         addSoundButtons();
-
-        addAnchorButtons();
 
         addButton(btnToggleMuffled = new Button(getX() + 229, getY() + 179, 17, 17, emptyText, b -> isMuffling = !isMuffling)).setAlpha(0);
 
@@ -236,37 +234,6 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
         }
     }
 
-    private void addAnchorButtons() {
-        int buttonW = getX() + 30;
-        for (int i = 0; i <= 9; i++) {
-            Button btnAnchor;
-            if (isAnchorsDisabled) {
-                String[] disabledMsg = {"-", "D", "i", "s", "a", "b", "l", "e", "d", "-"};
-                btnAnchor = new Button(buttonW, getY() + 22, 16, 16, ITextComponent.nullToEmpty(disabledMsg[i]), b -> {
-                });
-                btnAnchor.active = false;
-            } else {
-                int finalI = i;
-                btnAnchor = new Button(buttonW, getY() + 22, 16, 16, ITextComponent.nullToEmpty(String.valueOf(i)), b -> {
-                    anchor = anchorList.get(finalI);
-                    if (anchor == null) return;
-                    if (screenTitle.equals(anchor.getName())) {
-                        screenTitle = mainTitle;
-                    } else {
-                        screenTitle = anchor.getName();
-                    }
-                    buttons.clear();
-                    open(screenTitle, btnToggleSoundsList.getMessage(), searchBar.getValue());
-                });
-                if (!anchorList.isEmpty()) {
-                    btnAnchor.setFGColor(anchorList.get(Integer.parseInt(btnAnchor.getMessage().getString())).getAnchorPos() != null ? greenText : whiteText);
-                }
-            }
-            addButton(btnAnchor).setAlpha(0);
-            buttonW += 20;
-        }
-    }
-
     private void addEditAnchorButtons() {
 
         addButton(editAnchorTitleBar = new TextFieldWidget(font, getX() + 302, btnEditAnchor.y + 20, 84, 11, emptyText)).visible = false;
@@ -303,6 +270,14 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
         float v; //start x point of the texture
         String message; //Button message
         int stringW; //text width
+
+
+        //TODO: page number next to the arrows?
+        drawCenteredString(matrix, font, "All", getX() + 90, getY() + 26, whiteText);
+        fillGradient(matrix, getX() + 108, getY() + 24, getX() + 147, getY() + 37, brightBG, darkBG);
+
+        drawCenteredString(matrix, font, "Recent", getX() + 128, getY() + 26, whiteText);
+        drawCenteredString(matrix, font, "Muffled", getX() + 170, getY() + 26, whiteText);
 
         if (buttons.size() < soundsList.size()) {
             return;
@@ -405,7 +380,7 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
         if (anchorList.isEmpty()) {
             DataManager.setAnchors();
         }
-        for (int i = 0; i <= 9; i++) {
+        /*for (int i = 0; i <= 9; i++) {
             Widget btn = buttons.get(soundsList.size() + i);
             x = btn.x + 8;
             y = btn.y + 5;
@@ -416,9 +391,10 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
                 fill(matrix, x - stringW - 2, y - 2, x + stringW + 2, y - 13, darkBG);
                 drawCenteredString(matrix, font, message, x, y - 11, whiteText);
             }
-        }
+        }*/
 
         //Toggle List button draw message
+/*
         x = btnToggleSoundsList.x;
         y = btnToggleSoundsList.y;
         message = btnToggleSoundsList.getMessage().getString();
@@ -432,6 +408,7 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
             fill(matrix, textX - 2, y + 20, textX + textW + 2, y + 22 + font.lineHeight, darkBG);
             font.draw(matrix, text, textX, y + 22, whiteText);
         }
+*/
 
         //Show Radius and Title text when editing Anchor and bg
         x = btnSetAnchor.x;

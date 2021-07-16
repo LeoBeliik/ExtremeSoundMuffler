@@ -1,4 +1,4 @@
-package com.leobeliik.extremesoundmuffler.utils;
+package com.leobeliik.extremesoundmuffler.anchors;
 
 import com.leobeliik.extremesoundmuffler.interfaces.IAnchorList;
 import net.minecraft.client.Minecraft;
