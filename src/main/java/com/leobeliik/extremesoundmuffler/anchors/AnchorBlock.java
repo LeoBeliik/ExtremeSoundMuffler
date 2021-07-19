@@ -1,11 +1,13 @@
 package com.leobeliik.extremesoundmuffler.anchors;
 
+import com.leobeliik.extremesoundmuffler.gui.MainScreen;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.IWaterLoggable;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
@@ -16,8 +18,11 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.network.NetworkHooks;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 public class AnchorBlock extends Block implements IWaterLoggable {
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
@@ -31,6 +36,8 @@ public class AnchorBlock extends Block implements IWaterLoggable {
         setRegistryName("sound_muffler");
     }
 
+    //TODO: name
+
     @Override
     public boolean hasTileEntity(BlockState state) {
         return true;
@@ -39,19 +46,20 @@ public class AnchorBlock extends Block implements IWaterLoggable {
     @Nullable
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new AnchorEntity(new TranslationTextComponent("dunno"));
+        return new AnchorEntity();
     }
 
+    @ParametersAreNonnullByDefault
+    @Nonnull
+    @SuppressWarnings("deprecation")
     @Override
     public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
-        if (world.isClientSide()) return ActionResultType.PASS;
-        TileEntity entity = world.getBlockEntity(pos);
-        /*if (entity instanceof AnchorEntity) {
-            if (player.isCrouching())
-                ((AnchorEntity) entity).setName(new TranslationTextComponent("new name"));
-            else
-                ((AnchorEntity) entity).showName();
-        }*/
+        if (!world.isClientSide()) {
+            TileEntity blockEntity = world.getBlockEntity(pos);
+            if (blockEntity instanceof AnchorEntity) {
+                MainScreen.open();
+            }
+        }
         return super.use(state, world, pos, player, hand, result);
     }
 }

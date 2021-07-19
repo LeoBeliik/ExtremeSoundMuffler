@@ -5,7 +5,6 @@ import com.leobeliik.extremesoundmuffler.SoundMuffler;
 import com.leobeliik.extremesoundmuffler.gui.MainScreen;
 import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
-import com.leobeliik.extremesoundmuffler.anchors.Anchor;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -30,11 +29,11 @@ public class MuffledSlider extends Widget implements ISoundLists, IColorsGui {
     public static ResourceLocation tickSound;
     public static boolean showSlider = false;
 
-    public MuffledSlider(int x, int y, int width, int height, float sliderValue, ResourceLocation sound, String screenTitle, Anchor anchor) {
+    public MuffledSlider(int x, int y, int width, int height, float sliderValue, ResourceLocation sound, String screenTitle/*, Anchor anchor*/) {
         super(x, y, width, height, ITextComponent.nullToEmpty(sound.getPath() + ":" + sound.getNamespace()));
         this.sliderValue = sliderValue;
         this.sound = sound;
-        setBtnToggleSound(screenTitle, sound, anchor);
+        setBtnToggleSound(screenTitle, sound/*, anchor*/);
         setBtnPlaySound(sound);
     }
 
@@ -76,24 +75,24 @@ public class MuffledSlider extends Widget implements ISoundLists, IColorsGui {
         }
     }
 
-    private void setBtnToggleSound(String screenTitle, ResourceLocation sound, Anchor anchor) {
+    private void setBtnToggleSound(String screenTitle, ResourceLocation sound/*, Anchor anchor*/) {
         int x = Config.getLeftButtons() ? this.x - 24 : this.x + width + 5;
         btnToggleSound = new Button(x, this.y, 11, 11, StringTextComponent.EMPTY, b -> {
             if (getFGColor() == cyanText) {
                 if (screenTitle.equals(mainTitle)) {
                     muffledSounds.remove(sound);
-                } else {
+                } /*else {
                     anchor.removeSound(sound);
-                }
+                }*/
                 super.setFGColor(whiteText);
             } else {
                 if (screenTitle.equals(mainTitle)) {
                     setSliderValue(Config.getDefaultMuteVolume());
                     muffledSounds.put(sound, sliderValue);
-                } else if (anchor.getAnchorPos() != null) {
+                } /*else if (anchor.getAnchorPos() != null) {
                     setSliderValue(Config.getDefaultMuteVolume());
                     anchor.addSound(sound, sliderValue);
-                } else {
+                } */else {
                     return;
                 }
                 super.setFGColor(cyanText);
@@ -168,9 +167,9 @@ public class MuffledSlider extends Widget implements ISoundLists, IColorsGui {
 
         if (screenTitle.equals(mainTitle)) {
             muffledSounds.replace(this.sound, this.sliderValue);
-        } else {
+        } /*else {
             Objects.requireNonNull(MainScreen.getAnchorByName(screenTitle)).replaceSound(this.sound, this.sliderValue);
-        }
+        }*/
     }
 
     private void func_230979_b_() {}

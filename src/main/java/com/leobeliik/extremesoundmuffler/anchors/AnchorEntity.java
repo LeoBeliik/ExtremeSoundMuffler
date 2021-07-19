@@ -1,37 +1,38 @@
 package com.leobeliik.extremesoundmuffler.anchors;
 
+import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
-public class AnchorEntity extends TileEntity {
-    private ITextComponent name;
-    private static final Logger LOGGER = LogManager.getLogger();
+public class AnchorEntity extends TileEntity implements ISoundLists {
 
-
-    public AnchorEntity(ITextComponent name) {
-        super(registry.ANCHOR_ENTITY);
-        this.name = name;
-    }
+    private int radius;
+    private SortedMap<ResourceLocation, Float> muffledSounds;
 
     public AnchorEntity() {
-        super(registry.ANCHOR_ENTITY);
-        name = new TranslationTextComponent("new");
+        super(AnchorRegistry.ANCHOR_ENTITY);
+        radius = 32;
+        muffledSounds = new TreeMap<>();
     }
 
     @Nonnull
     @Override
     public CompoundNBT save(CompoundNBT nbt) {
-        nbt.putString("ANCHOR_NAME", name.getString());
-
-        LOGGER.error("SAVING: " + nbt.getString("ANCHOR_NAME"));
+        if (!muffledSounds.isEmpty()) {
+            CompoundNBT compound = new CompoundNBT();
+            muffledSounds.forEach((R, F) -> {
+                compound.putFloat(R.toString(), F);
+            });
+            nbt.put("muffledSounds", compound);
+            nbt.putInt("AnchorRadius", radius);
+        }
         return super.save(nbt);
     }
 
@@ -39,9 +40,20 @@ public class AnchorEntity extends TileEntity {
     @Override
     public void load(BlockState state, CompoundNBT nbt) {
         super.load(state, nbt);
-        if (!nbt.getString("ANCHOR_NAME").isEmpty()) {
-            LOGGER.error("LOADING: " + nbt.getString("ANCHOR_NAME"));
-            name = new TranslationTextComponent(nbt.getString("ANCHOR_NAME"));
+        CompoundNBT compound = nbt.getCompound("muffledSounds");
+        if (!compound.isEmpty()) {
+            for (String key : compound.getAllKeys()) {
+                muffledSounds.put(new ResourceLocation(key), compound.getFloat(key));
+            }
         }
+        radius = nbt.getInt("AnchorRadius");
+    }
+
+    public int getRadius() {
+        return radius;
+    }
+
+    public void setRadius(int radius) {
+        this.radius = radius;
     }
 }
