@@ -1,7 +1,6 @@
 package com.leobeliik.extremesoundmuffler.mixins;
 
 import com.leobeliik.extremesoundmuffler.Config;
-import com.leobeliik.extremesoundmuffler.gui.MainScreen;
 import com.leobeliik.extremesoundmuffler.gui.buttons.PlaySoundButton;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import net.minecraft.client.audio.ISound;
@@ -22,7 +21,7 @@ public abstract class SoundMixin implements ISoundLists {
 
         recentSoundsList.add(sound.getLocation());
 
-        if (MainScreen.isMuffled()) {
+        /*if (MainScreen.isMuffled()) {
             if (muffledSounds.containsKey(sound.getLocation())) {
                 cir.setReturnValue(cir.getReturnValue() * muffledSounds.get(sound.getLocation()));
                 return;
@@ -32,11 +31,11 @@ public abstract class SoundMixin implements ISoundLists {
                 return;
             }
 
-            /*Anchor anchor = Anchor.getAnchor(sound);
+            *//*Anchor anchor = Anchor.getAnchor(sound);
             if (anchor != null) {
                 cir.setReturnValue(cir.getReturnValue() * anchor.getMuffledSounds().get(sound.getLocation()));
-            }*/
-        }
+            }*//*
+        }*/
     }
 
     private static boolean isForbidden(ISound sound) {

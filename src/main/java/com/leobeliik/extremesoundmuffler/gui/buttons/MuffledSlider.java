@@ -2,7 +2,6 @@ package com.leobeliik.extremesoundmuffler.gui.buttons;
 
 import com.leobeliik.extremesoundmuffler.Config;
 import com.leobeliik.extremesoundmuffler.SoundMuffler;
-import com.leobeliik.extremesoundmuffler.gui.MainScreen;
 import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -16,12 +15,10 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Objects;
 
 @SuppressWarnings("EmptyMethod")
 public class MuffledSlider extends Widget implements ISoundLists, IColorsGui {
 
-    private final String mainTitle = "ESM - Main Screen";
     private float sliderValue;
     private Button btnToggleSound;
     private PlaySoundButton btnPlaySound;
@@ -29,11 +26,11 @@ public class MuffledSlider extends Widget implements ISoundLists, IColorsGui {
     public static ResourceLocation tickSound;
     public static boolean showSlider = false;
 
-    public MuffledSlider(int x, int y, int width, int height, float sliderValue, ResourceLocation sound, String screenTitle/*, Anchor anchor*/) {
+    public MuffledSlider(int x, int y, int width, int height, float sliderValue, ResourceLocation sound) {
         super(x, y, width, height, ITextComponent.nullToEmpty(sound.getPath() + ":" + sound.getNamespace()));
         this.sliderValue = sliderValue;
         this.sound = sound;
-        setBtnToggleSound(screenTitle, sound/*, anchor*/);
+        setBtnToggleSound(sound);
         setBtnPlaySound(sound);
     }
 
@@ -75,26 +72,14 @@ public class MuffledSlider extends Widget implements ISoundLists, IColorsGui {
         }
     }
 
-    private void setBtnToggleSound(String screenTitle, ResourceLocation sound/*, Anchor anchor*/) {
+    private void setBtnToggleSound(ResourceLocation sound) {
         int x = Config.getLeftButtons() ? this.x - 24 : this.x + width + 5;
         btnToggleSound = new Button(x, this.y, 11, 11, StringTextComponent.EMPTY, b -> {
             if (getFGColor() == cyanText) {
-                if (screenTitle.equals(mainTitle)) {
-                    muffledSounds.remove(sound);
-                } /*else {
-                    anchor.removeSound(sound);
-                }*/
+                muffledSounds.remove(sound);
                 super.setFGColor(whiteText);
             } else {
-                if (screenTitle.equals(mainTitle)) {
-                    setSliderValue(Config.getDefaultMuteVolume());
-                    muffledSounds.put(sound, sliderValue);
-                } /*else if (anchor.getAnchorPos() != null) {
-                    setSliderValue(Config.getDefaultMuteVolume());
-                    anchor.addSound(sound, sliderValue);
-                } */else {
-                    return;
-                }
+                muffledSounds.put(sound, sliderValue);
                 super.setFGColor(cyanText);
             }
         });
@@ -163,11 +148,11 @@ public class MuffledSlider extends Widget implements ISoundLists, IColorsGui {
     }
 
     private void updateVolume() {
-        String screenTitle = MainScreen.getScreenTitle();
+        /*String screenTitle = MainScreen.getScreenTitle();
 
         if (screenTitle.equals(mainTitle)) {
             muffledSounds.replace(this.sound, this.sliderValue);
-        } /*else {
+        } *//*else {
             Objects.requireNonNull(MainScreen.getAnchorByName(screenTitle)).replaceSound(this.sound, this.sliderValue);
         }*/
     }

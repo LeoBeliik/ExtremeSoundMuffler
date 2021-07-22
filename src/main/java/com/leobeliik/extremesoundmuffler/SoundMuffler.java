@@ -1,18 +1,13 @@
 package com.leobeliik.extremesoundmuffler;
 
-import com.leobeliik.extremesoundmuffler.gui.MainScreen;
-import com.leobeliik.extremesoundmuffler.gui.buttons.InvButton;
+import com.leobeliik.extremesoundmuffler.gui.MufflerScreen;
+import com.leobeliik.extremesoundmuffler.network.Network;
 import com.leobeliik.extremesoundmuffler.utils.DataManager;
-import net.minecraft.client.gui.DisplayEffectsScreen;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.gui.screen.inventory.CreativeScreen;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.MinecraftForge;
@@ -32,7 +27,7 @@ import org.apache.commons.lang3.tuple.Pair;
 @Mod("extremesoundmuffler")
 public class SoundMuffler {
 
-    static final String MODID = "extremesoundmuffler";
+    public static final String MODID = "extremesoundmuffler";
     private static KeyBinding openMufflerScreen;
 
     public SoundMuffler() {
@@ -48,6 +43,7 @@ public class SoundMuffler {
     }
 
     private void init(final FMLCommonSetupEvent event) {
+        Network.registerMessages();
         DataManager.loadData();
     }
 
@@ -60,7 +56,7 @@ public class SoundMuffler {
         ClientRegistry.registerKeyBinding(openMufflerScreen);
     }
 
-    @SubscribeEvent
+   /* @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public void onGuiInit(GuiScreenEvent.InitGuiEvent.Post event) {
         Screen screen = event.getGui();
@@ -72,15 +68,15 @@ public class SoundMuffler {
                 event.addWidget(new InvButton((ContainerScreen) screen, 64, 9));
             }
         } catch (NullPointerException ignored) {}
-    }
+    }*/
 
-    @SubscribeEvent
+    /*@SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public void onKeyInput(InputEvent.KeyInputEvent event) {
         if (openMufflerScreen.consumeClick()) {
-            MainScreen.open();
+           MufflerScreen.open();
         }
-    }
+    }*/
 
     public static int getHotkey() {
         return openMufflerScreen.getKey().getValue();

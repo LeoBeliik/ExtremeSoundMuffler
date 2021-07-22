@@ -1,7 +1,6 @@
 package com.leobeliik.extremesoundmuffler.gui.buttons;
 
 import com.leobeliik.extremesoundmuffler.SoundMuffler;
-import com.leobeliik.extremesoundmuffler.gui.MainScreen;
 import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
@@ -27,7 +26,7 @@ public class InvButton extends AbstractButton implements IColorsGui {
 
     @Override
     public void onPress() {
-        MainScreen.open();
+        //MainScreen.open();
     }
 
     @ParametersAreNonnullByDefault

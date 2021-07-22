@@ -17,15 +17,12 @@ import net.minecraft.util.text.*;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.ForgeRegistries;
-
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @OnlyIn(Dist.CLIENT)
-public class MainScreen extends Screen implements ISoundLists, IColorsGui {
+public class MainScreenOLD extends Screen implements ISoundLists, IColorsGui {
 
     private static final Minecraft minecraft = Minecraft.getInstance();
     private final List<Widget> filteredButtons = new ArrayList<>();
@@ -43,7 +40,7 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
     private Button btnToggleMuffled, btnDelete, btnToggleSoundsList, btnSetAnchor, btnEditAnchor, btnNextSounds, btnPrevSounds, btnAccept, btnCancel;
     private TextFieldWidget searchBar, editAnchorTitleBar, editAnchorRadiusBar;
 
-    public MainScreen() {
+    public MainScreenOLD() {
         super(StringTextComponent.EMPTY);
     }
 
@@ -51,7 +48,7 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
         toggleSoundsListMessage = message;
         screenTitle = title;
         searchBarText = searchMessage;
-        minecraft.setScreen(new MainScreen());
+        //minecraft.setScreen(new MainScreen());
     }
 
     public static void open() {
@@ -207,7 +204,7 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
                 volume = muffledSounds.get(sound) == null ? maxVolume : muffledSounds.get(sound);
             } /*else if (anchor != null) {
                 volume = anchor.getMuffledSounds().get(sound) == null ? maxVolume : anchor.getMuffledSounds().get(sound);
-            } */else {
+            } */ else {
                 volume = maxVolume;
             }
 
