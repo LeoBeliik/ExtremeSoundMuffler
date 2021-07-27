@@ -55,7 +55,6 @@ public class AnchorEntity extends TileEntity implements ISoundLists {
     public void setChanged() {
         currentMuffledSounds.clear();
         currentMuffledSounds.putAll(muffledSounds);
-        LOGGER.error(currentMuffledSounds.size() + " " + muffledSounds.size());
 
         super.setChanged();
     }

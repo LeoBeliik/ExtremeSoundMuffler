@@ -17,10 +17,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.HashMap;
-import java.util.Map;
 
-//@OnlyIn(Dist.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
     private static final Minecraft minecraft = Minecraft.getInstance();
@@ -30,7 +28,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     private static AnchorEntity anchor;
 
 
-    MufflerScreen(ITextComponent title) {
+    private MufflerScreen(ITextComponent title) {
         super(title);
     }
 
@@ -75,7 +73,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     @Override
     public void onClose() {
         if (anchor != null) {
-            anchor.setChanged();
+            //TODO update BE
             anchor = null;
         }
         super.onClose();
@@ -128,11 +126,11 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         minecraft.getTextureManager().bind(SoundMuffler.getGui());
     }
 
-    int getX() {
+    private int getX() {
         return (this.width - xSize) / 2;
     }
 
-    int getY() {
+    private int getY() {
         return (this.height - ySize) / 2;
     }
 }

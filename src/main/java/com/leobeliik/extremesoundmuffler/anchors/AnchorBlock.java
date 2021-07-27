@@ -1,15 +1,11 @@
 package com.leobeliik.extremesoundmuffler.anchors;
 
-import com.leobeliik.extremesoundmuffler.gui.MufflerScreen;
-import com.leobeliik.extremesoundmuffler.network.Network;
-import com.leobeliik.extremesoundmuffler.network.PacketOpenGui;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.IWaterLoggable;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
@@ -19,7 +15,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -29,6 +24,7 @@ public class AnchorBlock extends Block implements IWaterLoggable {
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
     //TODO: make the block small and give the texure; also remeber to make the texture and size dinamic
+    //TODO: just make a container and fuck all
     AnchorBlock() {
         super(Properties.of(Material.WOOL)
                 .sound(SoundType.WOOD)
@@ -61,7 +57,7 @@ public class AnchorBlock extends Block implements IWaterLoggable {
         } else {
             TileEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof AnchorEntity) {
-                Network.sendToClient(new PacketOpenGui(), (ServerPlayerEntity) player, (AnchorEntity) blockEntity);
+                //TODO open gui
                 return ActionResultType.CONSUME;
             }
         }
