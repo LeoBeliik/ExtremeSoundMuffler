@@ -1,6 +1,5 @@
 package com.leobeliik.extremesoundmuffler.anchors;
 
-import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
@@ -10,19 +9,19 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.HashMap;
+import java.util.Map;
 
-public class AnchorEntity extends TileEntity implements ISoundLists {
-    private static final Logger LOGGER = LogManager.getLogger();
+public class AnchorEntity extends TileEntity {
+    //private static final Logger LOGGER = LogManager.getLogger();
 
     private int radius;
-    private SortedMap<ResourceLocation, Float> currentMuffledSounds;
+    private Map<ResourceLocation, Float> currentMuffledSounds;
 
     AnchorEntity() {
         super(AnchorRegistry.ANCHOR_ENTITY);
+        currentMuffledSounds = new HashMap<>();
         radius = 32;
-        currentMuffledSounds = new TreeMap<>();
     }
 
     @Nonnull
@@ -53,9 +52,6 @@ public class AnchorEntity extends TileEntity implements ISoundLists {
 
     @Override
     public void setChanged() {
-        currentMuffledSounds.clear();
-        currentMuffledSounds.putAll(muffledSounds);
-
         super.setChanged();
     }
 
@@ -67,11 +63,11 @@ public class AnchorEntity extends TileEntity implements ISoundLists {
         this.radius = radius;
     }
 
-    public SortedMap<ResourceLocation, Float> getCurrentMuffledSounds() {
+    public Map<ResourceLocation, Float> getCurrentMuffledSounds() {
         return currentMuffledSounds;
     }
 
-    public void setCurrentMuffledSounds(SortedMap<ResourceLocation, Float> currentMuffledSounds) {
+    public void setCurrentMuffledSounds(Map<ResourceLocation, Float> currentMuffledSounds) {
         this.currentMuffledSounds.putAll(currentMuffledSounds);
     }
 }

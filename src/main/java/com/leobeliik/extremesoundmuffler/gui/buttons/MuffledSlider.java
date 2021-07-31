@@ -2,8 +2,8 @@ package com.leobeliik.extremesoundmuffler.gui.buttons;
 
 import com.leobeliik.extremesoundmuffler.Config;
 import com.leobeliik.extremesoundmuffler.SoundMuffler;
+import com.leobeliik.extremesoundmuffler.gui.MufflerScreen;
 import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
-import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -14,22 +14,26 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @SuppressWarnings("EmptyMethod")
-public class MuffledSlider extends Widget implements ISoundLists, IColorsGui {
+public class MuffledSlider extends Widget implements IColorsGui {
 
     private float sliderValue;
     private Button btnToggleSound;
     private PlaySoundButton btnPlaySound;
+    private MufflerScreen screen;
     private final ResourceLocation sound;
     public static ResourceLocation tickSound;
     public static boolean showSlider = false;
 
-    public MuffledSlider(int x, int y, int width, int height, float sliderValue, ResourceLocation sound) {
+
+    public MuffledSlider(int x, int y, int width, int height, float sliderValue, ResourceLocation sound, MufflerScreen screen) {
         super(x, y, width, height, ITextComponent.nullToEmpty(sound.getPath() + ":" + sound.getNamespace()));
         this.sliderValue = sliderValue;
         this.sound = sound;
+        this.screen = screen;
         setBtnToggleSound(sound);
         setBtnPlaySound(sound);
     }
@@ -76,10 +80,10 @@ public class MuffledSlider extends Widget implements ISoundLists, IColorsGui {
         int x = Config.getLeftButtons() ? this.x - 24 : this.x + width + 5;
         btnToggleSound = new Button(x, this.y, 11, 11, StringTextComponent.EMPTY, b -> {
             if (getFGColor() == cyanText) {
-                muffledSounds.remove(sound);
+                screen.removeSoundMuffled(sound);
                 super.setFGColor(whiteText);
             } else {
-                muffledSounds.put(sound, sliderValue);
+                screen.addSoundMuffled(sound, sliderValue);
                 super.setFGColor(cyanText);
             }
         });

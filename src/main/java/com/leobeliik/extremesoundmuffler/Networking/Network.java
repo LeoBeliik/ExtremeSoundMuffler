@@ -21,24 +21,23 @@ public class Network {
                 s -> true,
                 s -> true);
 
-        /*INSTANCE.messageBuilder(PacketDataClient.class, nextID())
-                .encoder(PacketDataClient::toBytes)
-                .decoder(PacketDataClient::new)
-                .consumer(PacketDataClient::handle)
+        INSTANCE.messageBuilder(PacketAnchorSounds.class, nextID())
+                .encoder(PacketAnchorSounds::encode)
+                .decoder(PacketAnchorSounds::decode)
+                .consumer(PacketAnchorSounds::handle)
                 .add();
-
-        INSTANCE.messageBuilder(PacketDataServer.class, nextID())
-                .encoder(PacketDataServer::toBytes)
-                .decoder(PacketDataServer::new)
-                .consumer(PacketDataServer::handle)
-                .add();*/
     }
+
 
     public static void sendToClient(Object packet, ServerPlayerEntity player) {
-        INSTANCE.sendTo(packet, player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+        INSTANCE.sendTo(packet, player.connection.getConnection(), NetworkDirection.PLAY_TO_CLIENT);
     }
 
-    static void sendToServer(Object packet) {
+    public static void sendTo(ServerPlayerEntity playerMP, Object toSend) {
+        INSTANCE.sendTo(toSend, playerMP.connection.getConnection(), NetworkDirection.PLAY_TO_CLIENT);
+    }
+
+    public static void sendToServer(Object packet) {
         INSTANCE.sendToServer(packet);
     }
 }

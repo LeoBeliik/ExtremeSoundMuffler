@@ -17,7 +17,7 @@ public class DataManager implements ISoundLists {
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private static final String soundsMuffledFile = "soundsMuffled.dat";
 
-    public static void loadData() {
+   /* public static void loadData() {
         if (muffledSounds.isEmpty()) {
             loadMuffledMap().forEach((R, F) -> ISoundLists.muffledSounds.put(new ResourceLocation(R), F));
         }
@@ -39,5 +39,5 @@ public class DataManager implements ISoundLists {
         } catch (JsonSyntaxException | IOException e) {
             return new HashMap<>();
         }
-    }
+    }*/
 }

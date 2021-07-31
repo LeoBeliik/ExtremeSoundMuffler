@@ -39,7 +39,7 @@ public class SoundMuffler {
 
     private void init(final FMLCommonSetupEvent event) {
         Network.registerMessages();
-        DataManager.loadData();
+        //DataManager.loadData();
     }
 
     private void clientInit(final FMLClientSetupEvent event) {
