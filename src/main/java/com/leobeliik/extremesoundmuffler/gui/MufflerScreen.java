@@ -12,6 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -20,6 +21,8 @@ import net.minecraftforge.registries.ForgeRegistries;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 @OnlyIn(Dist.CLIENT)
 public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
@@ -28,14 +31,13 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     private final int xSize = 256;
     private final int ySize = 202;
     private int minYButton, maxYButton, index;
-    private Map<ResourceLocation, Float> currentSounds;
     private BlockPos anchorPos;
     private int radius;
+    private SortedSet<ResourceLocation> soundsList = new TreeSet();
 
-    private MufflerScreen(Map<ResourceLocation, Float> ms, BlockPos anchorPos, int radius) {
-        super(new TranslationTextComponent("test"));
-        currentSounds = new HashMap<>();
-        currentSounds.putAll(ms);
+    private MufflerScreen(Map<ResourceLocation, Float> ms, BlockPos anchorPos, int radius, ITextComponent title) {
+        super(title);
+        muffledSoundsList.putAll(ms);
         this.anchorPos = anchorPos;
         this.radius = radius;
     }
@@ -80,21 +82,21 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
     @Override
     public void onClose() {
-        Network.sendToServer(new PacketAnchorSounds(currentSounds, anchorPos, radius));
-        clearCache();
+        Network.sendToServer(new PacketAnchorSounds(muffledSoundsList, anchorPos, radius, title));
+        clearAnchor();
         super.onClose();
     }
 
-    private void clearCache() {
-        currentSounds.clear();
+    private void clearAnchor() {
+        muffledSoundsList.clear();
         anchorPos = null;
         radius = -1;
     }
 
     //-----------------------------------My functions-----------------------------------//
 
-    public static void open(Map<ResourceLocation, Float> ms, BlockPos anchorPos, int radius) {
-        minecraft.setScreen(new MufflerScreen(ms, anchorPos, radius));
+    public static void open(Map<ResourceLocation, Float> ms, BlockPos anchorPos, int radius, ITextComponent title) {
+        minecraft.setScreen(new MufflerScreen(ms, anchorPos, radius, title));
     }
 
     //Buttons init
@@ -112,13 +114,13 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         for (ResourceLocation sound : soundsList) {
 
             float maxVolume = 1F;
-            float volume = currentSounds.get(sound) == null ? maxVolume : currentSounds.get(sound);
+            float volume = muffledSoundsList.get(sound) == null ? maxVolume : muffledSoundsList.get(sound);
 
             int x = Config.getLeftButtons() ? getX() + 36 : getX() + 11;
 
             MuffledSlider volumeSlider = new MuffledSlider(x, buttonH, 205, 14, volume, sound, this);
 
-            if (!currentSounds.isEmpty() && currentSounds.containsKey(sound)) {
+            if (!muffledSoundsList.isEmpty() && muffledSoundsList.containsKey(sound)) {
                 volumeSlider.setFGColor(cyanText);
             }
 
@@ -145,10 +147,14 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     }
 
     public void removeSoundMuffled(ResourceLocation sound) {
-        currentSounds.remove(sound);
+        muffledSoundsList.remove(sound);
     }
 
     public void addSoundMuffled(ResourceLocation sound, float volume) {
-        currentSounds.put(sound, volume);
+        muffledSoundsList.put(sound, volume);
+    }
+
+    public static boolean isMuffled() {
+        return false;
     }
 }

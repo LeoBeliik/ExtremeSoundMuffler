@@ -1,19 +1,17 @@
 package com.leobeliik.extremesoundmuffler.anchors;
 
+import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AnchorEntity extends TileEntity {
-    //private static final Logger LOGGER = LogManager.getLogger();
+public class AnchorEntity extends TileEntity implements ISoundLists {
 
     private int radius;
     private Map<ResourceLocation, Float> currentMuffledSounds;
@@ -22,6 +20,13 @@ public class AnchorEntity extends TileEntity {
         super(AnchorRegistry.ANCHOR_ENTITY);
         currentMuffledSounds = new HashMap<>();
         radius = 32;
+        anchorList.add(this);
+    }
+
+    @Override
+    public void setRemoved() {
+        super.setRemoved();
+        anchorList.remove(this);
     }
 
     @Nonnull
@@ -48,11 +53,6 @@ public class AnchorEntity extends TileEntity {
             }
         }
         radius = nbt.getInt("AnchorRadius");
-    }
-
-    @Override
-    public void setChanged() {
-        super.setChanged();
     }
 
     public int getRadius() {

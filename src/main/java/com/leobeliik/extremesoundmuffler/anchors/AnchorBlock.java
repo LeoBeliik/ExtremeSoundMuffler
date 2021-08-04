@@ -28,10 +28,9 @@ public class AnchorBlock extends Block implements IWaterLoggable {
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
     //TODO: make the block small and give the texure; also remeber to make the texture and size dinamic
-    //TODO: just make a container and fuck all
     AnchorBlock() {
         super(Properties.of(Material.WOOL)
-                .sound(SoundType.WOOD)
+                .sound(SoundType.WOOL)
                 .harvestLevel(1)
                 .strength(1.0f)
         );
@@ -41,6 +40,7 @@ public class AnchorBlock extends Block implements IWaterLoggable {
     //TODO: name
 
 
+    @ParametersAreNonnullByDefault
     @Override
     public void destroy(IWorld world, BlockPos pos, BlockState state) {
         TileEntity blockEntity = world.getBlockEntity(pos);
@@ -72,7 +72,8 @@ public class AnchorBlock extends Block implements IWaterLoggable {
         } else {
             TileEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof AnchorEntity) {
-                Network.sendToClient(new PacketAnchorSounds(((AnchorEntity) blockEntity).getCurrentMuffledSounds(), pos, ((AnchorEntity) blockEntity).getRadius()), (ServerPlayerEntity) player);
+                Network.sendToClient(new PacketAnchorSounds(
+                        ((AnchorEntity) blockEntity).getCurrentMuffledSounds(), pos, ((AnchorEntity) blockEntity).getRadius(), getName()), (ServerPlayerEntity) player);
                 return ActionResultType.CONSUME;
             }
         }

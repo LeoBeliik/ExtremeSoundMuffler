@@ -1,10 +1,12 @@
 package com.leobeliik.extremesoundmuffler.mixins;
 
-import com.leobeliik.extremesoundmuffler.Config;
+import com.leobeliik.extremesoundmuffler.anchors.AnchorEntity;
+import com.leobeliik.extremesoundmuffler.gui.MufflerScreen;
 import com.leobeliik.extremesoundmuffler.gui.buttons.PlaySoundButton;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.SoundEngine;
+import net.minecraft.util.math.BlockPos;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -20,22 +22,22 @@ public abstract class SoundMixin implements ISoundLists {
         }
 
         recentSoundsList.add(sound.getLocation());
+        //if (!MufflerScreen.isMuffled()) return;
 
-        /*if (MainScreen.isMuffled()) {
-            if (muffledSounds.containsKey(sound.getLocation())) {
-                cir.setReturnValue(cir.getReturnValue() * muffledSounds.get(sound.getLocation()));
+        if (muffledSoundsList.containsKey(sound.getLocation())) {
+            cir.setReturnValue(cir.getReturnValue() * muffledSoundsList.get(sound.getLocation()));
+            return;
+        }
+
+        //anchor muffling
+        BlockPos soundPos = new BlockPos(sound.getX(), sound.getY(), sound.getZ());
+        for (AnchorEntity anchor : anchorList) {
+            if (sound.getLocation().toString().contains("ancient")) System.out.println(anchor);
+            if (anchor.getCurrentMuffledSounds().containsKey(sound.getLocation()) && soundPos.closerThan(anchor.getBlockPos(), anchor.getRadius() / 2D)) {
+                cir.setReturnValue(cir.getReturnValue() * anchor.getCurrentMuffledSounds().get(sound.getLocation()));
                 return;
             }
-
-            if (Config.getDisableAchors()) {
-                return;
-            }
-
-            *//*Anchor anchor = Anchor.getAnchor(sound);
-            if (anchor != null) {
-                cir.setReturnValue(cir.getReturnValue() * anchor.getMuffledSounds().get(sound.getLocation()));
-            }*//*
-        }*/
+        }
     }
 
     private static boolean isForbidden(ISound sound) {
