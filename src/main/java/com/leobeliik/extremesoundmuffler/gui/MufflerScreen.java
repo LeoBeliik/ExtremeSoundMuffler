@@ -13,11 +13,9 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.ForgeRegistries;
-
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,15 +29,18 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     private final int xSize = 256;
     private final int ySize = 202;
     private int minYButton, maxYButton, index;
-    private BlockPos anchorPos;
     private int radius;
-    private SortedSet<ResourceLocation> soundsList = new TreeSet();
+    private boolean isMuffling;
+    private BlockPos anchorPos;
+    private SortedSet<ResourceLocation> soundsList = new TreeSet<>();
+    private Map<ResourceLocation, Float> muffledList = new HashMap<>();
 
-    private MufflerScreen(Map<ResourceLocation, Float> ms, BlockPos anchorPos, int radius, ITextComponent title) {
+    private MufflerScreen(Map<ResourceLocation, Float> ms, BlockPos anchorPos, int radius, boolean isMuffling, ITextComponent title) {
         super(title);
-        muffledSoundsList.putAll(ms);
         this.anchorPos = anchorPos;
         this.radius = radius;
+        this.isMuffling = isMuffling;
+        muffledList.putAll(anchorPos == null ? playerMuffledList : ms);
     }
 
     @ParametersAreNonnullByDefault
@@ -82,21 +83,26 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
     @Override
     public void onClose() {
-        Network.sendToServer(new PacketAnchorSounds(muffledSoundsList, anchorPos, radius, title));
-        clearAnchor();
+        if (anchorPos == null){
+            playerMuffledList.clear();
+            playerMuffledList.putAll(muffledList);
+        } else {
+            Network.sendToServer(new PacketAnchorSounds(muffledList, anchorPos, radius, isMuffling, title));
+            clearAnchorData();
+        }
         super.onClose();
     }
 
-    private void clearAnchor() {
-        muffledSoundsList.clear();
+    private void clearAnchorData() {
+        muffledList.clear();
         anchorPos = null;
         radius = -1;
     }
 
     //-----------------------------------My functions-----------------------------------//
 
-    public static void open(Map<ResourceLocation, Float> ms, BlockPos anchorPos, int radius, ITextComponent title) {
-        minecraft.setScreen(new MufflerScreen(ms, anchorPos, radius, title));
+    public static void open(Map<ResourceLocation, Float> ms, BlockPos anchorPos, int radius, boolean isMuffling, ITextComponent title) {
+        minecraft.setScreen(new MufflerScreen(ms, anchorPos, radius, isMuffling, title));
     }
 
     //Buttons init
@@ -114,13 +120,13 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         for (ResourceLocation sound : soundsList) {
 
             float maxVolume = 1F;
-            float volume = muffledSoundsList.get(sound) == null ? maxVolume : muffledSoundsList.get(sound);
+            float volume = muffledList.get(sound) == null ? maxVolume : muffledList.get(sound);
 
             int x = Config.getLeftButtons() ? getX() + 36 : getX() + 11;
 
             MuffledSlider volumeSlider = new MuffledSlider(x, buttonH, 205, 14, volume, sound, this);
 
-            if (!muffledSoundsList.isEmpty() && muffledSoundsList.containsKey(sound)) {
+            if (!muffledList.isEmpty() && muffledList.containsKey(sound)) {
                 volumeSlider.setFGColor(cyanText);
             }
 
@@ -147,14 +153,10 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     }
 
     public void removeSoundMuffled(ResourceLocation sound) {
-        muffledSoundsList.remove(sound);
+        muffledList.remove(sound);
     }
 
     public void addSoundMuffled(ResourceLocation sound, float volume) {
-        muffledSoundsList.put(sound, volume);
-    }
-
-    public static boolean isMuffled() {
-        return false;
+        muffledList.put(sound, volume);
     }
 }

@@ -19,35 +19,43 @@ public class PacketAnchorSounds {
     private static Map<ResourceLocation, Float> anchorMuffledSounds = new HashMap<>();
     private static BlockPos anchorPos;
     private static int radius;
+    private static boolean isMuffling;
     private static ITextComponent title; //TODO maybe remove this? maybe not? maybe put "anchor " + number on the list
 
-    public PacketAnchorSounds(Map<ResourceLocation, Float> ms, BlockPos pos, int rad, ITextComponent name) {
+    public PacketAnchorSounds(Map<ResourceLocation, Float> ms, BlockPos pos, int rad, boolean muffling, ITextComponent name) {
         anchorMuffledSounds.clear();
         anchorMuffledSounds.putAll(ms);
         anchorPos = pos;
         radius = rad;
+        isMuffling = muffling;
         title = name;
     }
 
-    public void encode(PacketBuffer buf) {
+    void encode(PacketBuffer buf) {
         buf.writeNbt(serializeMap());
         buf.writeBlockPos(anchorPos);
         buf.writeInt(radius);
+        buf.writeBoolean(isMuffling);
         buf.writeComponent(title);
     }
 
-    public static PacketAnchorSounds decode(PacketBuffer buf) {
+    static PacketAnchorSounds decode(PacketBuffer buf) {
         return new PacketAnchorSounds(
                 deserializeMap(Objects.requireNonNull(buf.readNbt())),
                 buf.readBlockPos(),
                 buf.readInt(),
+                buf.readBoolean(),
                 buf.readComponent());
     }
 
     private CompoundNBT serializeMap() {
-        CompoundNBT nbt = new CompoundNBT();
-        anchorMuffledSounds.forEach((R, F) -> nbt.putFloat(R.toString(), F));
-        return nbt;
+        if (anchorMuffledSounds.isEmpty()) {
+            return new CompoundNBT();
+        } else {
+            CompoundNBT nbt = new CompoundNBT();
+            anchorMuffledSounds.forEach((R, F) -> nbt.putFloat(R.toString(), F));
+            return nbt;
+        }
     }
 
     private static Map<ResourceLocation, Float> deserializeMap(CompoundNBT nbt) {
@@ -60,12 +68,14 @@ public class PacketAnchorSounds {
 
     boolean handle(Supplier<NetworkEvent.Context> ctx) {
         if (ctx.get().getDirection().getReceptionSide().isClient()) {
-            ctx.get().enqueueWork(() -> MufflerScreen.open(anchorMuffledSounds, anchorPos, radius, title));
+            ctx.get().enqueueWork(() -> MufflerScreen.open(anchorMuffledSounds, anchorPos, radius, isMuffling, title));
         } else {
-            TileEntity anchor = ctx.get().getSender().level.getBlockEntity(anchorPos);
+            TileEntity anchor = Objects.requireNonNull(ctx.get().getSender()).level.getBlockEntity(anchorPos);
             if (anchor instanceof AnchorEntity) {
+                ((AnchorEntity) anchor).clearCurrentMuffledSounds();
                 ((AnchorEntity) anchor).setCurrentMuffledSounds(anchorMuffledSounds);
                 ((AnchorEntity) anchor).setRadius(radius);
+                ((AnchorEntity) anchor).setMuffling(isMuffling);
                 anchor.setChanged();
             }
         }

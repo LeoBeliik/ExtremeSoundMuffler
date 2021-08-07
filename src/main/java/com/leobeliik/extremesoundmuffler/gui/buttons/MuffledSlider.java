@@ -83,7 +83,7 @@ public class MuffledSlider extends Widget implements IColorsGui {
                 screen.removeSoundMuffled(sound);
                 super.setFGColor(whiteText);
             } else {
-                screen.addSoundMuffled(sound, sliderValue);
+                screen.addSoundMuffled(sound, 0F);
                 super.setFGColor(cyanText);
             }
         });

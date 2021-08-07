@@ -1,9 +1,9 @@
 package com.leobeliik.extremesoundmuffler.mixins;
 
 import com.leobeliik.extremesoundmuffler.anchors.AnchorEntity;
-import com.leobeliik.extremesoundmuffler.gui.MufflerScreen;
 import com.leobeliik.extremesoundmuffler.gui.buttons.PlaySoundButton;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.SoundEngine;
 import net.minecraft.util.math.BlockPos;
@@ -11,6 +11,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.Objects;
 
 @Mixin(SoundEngine.class)
 public abstract class SoundMixin implements ISoundLists {
@@ -24,16 +26,18 @@ public abstract class SoundMixin implements ISoundLists {
         recentSoundsList.add(sound.getLocation());
         //if (!MufflerScreen.isMuffled()) return;
 
-        if (muffledSoundsList.containsKey(sound.getLocation())) {
-            cir.setReturnValue(cir.getReturnValue() * muffledSoundsList.get(sound.getLocation()));
+        if (playerMuffledList.containsKey(sound.getLocation())) {
+            cir.setReturnValue(cir.getReturnValue() * playerMuffledList.get(sound.getLocation()));
             return;
         }
 
         //anchor muffling
         BlockPos soundPos = new BlockPos(sound.getX(), sound.getY(), sound.getZ());
         for (AnchorEntity anchor : anchorList) {
-            if (sound.getLocation().toString().contains("ancient")) System.out.println(anchor);
-            if (anchor.getCurrentMuffledSounds().containsKey(sound.getLocation()) && soundPos.closerThan(anchor.getBlockPos(), anchor.getRadius() / 2D)) {
+            if (Minecraft.getInstance().level != null && !Minecraft.getInstance().level.dimension().equals(Objects.requireNonNull(anchor.getLevel()).dimension())) {
+                return;
+            }
+            if (anchor.isMuffling() && anchor.getCurrentMuffledSounds().containsKey(sound.getLocation()) && soundPos.closerThan(anchor.getBlockPos(), anchor.getRadius())) {
                 cir.setReturnValue(cir.getReturnValue() * anchor.getCurrentMuffledSounds().get(sound.getLocation()));
                 return;
             }

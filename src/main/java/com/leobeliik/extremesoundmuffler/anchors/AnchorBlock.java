@@ -73,7 +73,12 @@ public class AnchorBlock extends Block implements IWaterLoggable {
             TileEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof AnchorEntity) {
                 Network.sendToClient(new PacketAnchorSounds(
-                        ((AnchorEntity) blockEntity).getCurrentMuffledSounds(), pos, ((AnchorEntity) blockEntity).getRadius(), getName()), (ServerPlayerEntity) player);
+                                ((AnchorEntity) blockEntity).getCurrentMuffledSounds(),
+                                pos,
+                                ((AnchorEntity) blockEntity).getRadius(),
+                                ((AnchorEntity) blockEntity).isMuffling(),
+                                getName()),
+                        (ServerPlayerEntity) player);
                 return ActionResultType.CONSUME;
             }
         }

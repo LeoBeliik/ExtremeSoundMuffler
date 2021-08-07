@@ -9,6 +9,6 @@ public interface ISoundLists {
     Set<String> forbiddenSounds = new HashSet<>();
     Set<AnchorEntity> anchorList = new HashSet<>();
     SortedSet<ResourceLocation> recentSoundsList = new TreeSet<>();
-    Map<ResourceLocation, Float> muffledSoundsList = new HashMap<>();
+    Map<ResourceLocation, Float> playerMuffledList = new HashMap<>();
 
 }

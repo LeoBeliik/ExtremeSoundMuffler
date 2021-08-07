@@ -14,12 +14,14 @@ import java.util.Map;
 public class AnchorEntity extends TileEntity implements ISoundLists {
 
     private int radius;
+    private boolean isMuffling;
     private Map<ResourceLocation, Float> currentMuffledSounds;
 
     AnchorEntity() {
         super(AnchorRegistry.ANCHOR_ENTITY);
+        radius = 16;
+        isMuffling = true;
         currentMuffledSounds = new HashMap<>();
-        radius = 32;
         anchorList.add(this);
     }
 
@@ -29,6 +31,12 @@ public class AnchorEntity extends TileEntity implements ISoundLists {
         anchorList.remove(this);
     }
 
+    @Override
+    public void setChanged() {
+        //System.out.println(currentMuffledSounds);
+        super.setChanged();
+    }
+
     @Nonnull
     @ParametersAreNonnullByDefault
     @Override
@@ -36,8 +44,9 @@ public class AnchorEntity extends TileEntity implements ISoundLists {
         if (!currentMuffledSounds.isEmpty()) {
             CompoundNBT compound = new CompoundNBT();
             currentMuffledSounds.forEach((R, F) -> compound.putFloat(R.toString(), F));
+            nbt.putInt("anchorRadius", radius);
+            nbt.putBoolean("anchorMuffling", isMuffling);
             nbt.put("muffledSounds", compound);
-            nbt.putInt("AnchorRadius", radius);
         }
         return super.save(nbt);
     }
@@ -52,7 +61,8 @@ public class AnchorEntity extends TileEntity implements ISoundLists {
                 currentMuffledSounds.put(new ResourceLocation(key), compound.getFloat(key));
             }
         }
-        radius = nbt.getInt("AnchorRadius");
+        radius = nbt.getInt("anchorRadius");
+        isMuffling = nbt.getBoolean("anchorMuffling");
     }
 
     public int getRadius() {
@@ -63,11 +73,23 @@ public class AnchorEntity extends TileEntity implements ISoundLists {
         this.radius = radius;
     }
 
+    public boolean isMuffling() {
+        return isMuffling;
+    }
+
+    public void setMuffling(boolean muffling) {
+        isMuffling = muffling;
+    }
+
     public Map<ResourceLocation, Float> getCurrentMuffledSounds() {
         return currentMuffledSounds;
     }
 
     public void setCurrentMuffledSounds(Map<ResourceLocation, Float> currentMuffledSounds) {
         this.currentMuffledSounds.putAll(currentMuffledSounds);
+    }
+
+    public void clearCurrentMuffledSounds() {
+        currentMuffledSounds.clear();
     }
 }
