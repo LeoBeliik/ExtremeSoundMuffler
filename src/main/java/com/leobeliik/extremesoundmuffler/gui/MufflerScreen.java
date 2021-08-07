@@ -10,9 +10,11 @@ import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -27,7 +29,8 @@ import java.util.TreeSet;
 public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
     private static final Minecraft minecraft = Minecraft.getInstance();
-    private static final ITextComponent mainTitle = new TranslationTextComponent("ESM - Main Screen");
+    private static final ITextComponent mainTitle = ITextComponent.nullToEmpty("ESM - Main Screen");
+    private final ITextComponent emptyText = StringTextComponent.EMPTY;
     private final int xSize = 256;
     private final int ySize = 202;
     private int minYButton, maxYButton, index;
@@ -36,6 +39,9 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     private BlockPos anchorPos;
     private SortedSet<ResourceLocation> soundsList = new TreeSet<>();
     private Map<ResourceLocation, Float> muffledList = new HashMap<>();
+
+    private Button btnToggleMuffled, btnDelete, btnToggleSoundsList, btnSetAnchor, btnEditAnchor, btnNextSounds, btnPrevSounds, btnAccept, btnCancel;
+
 
     private MufflerScreen(Map<ResourceLocation, Float> ms, BlockPos anchorPos, int radius, boolean isMuffling, ITextComponent title) {
         super(title);
@@ -64,6 +70,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         minecraft.keyboardHandler.setSendRepeatsToGui(true);
 
         addSoundButtons();
+        addWidgets();
 
         super.init();
     }
@@ -95,6 +102,17 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         super.onClose();
     }
 
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double direction) {
+        if (index + 10 < soundsList.size() && direction < 0) {
+            index += 10;
+        }
+        if (index >= 10 && direction > 0) {
+            index += -10;
+        }
+        addSoundButtons();
+        return super.mouseScrolled(mouseX, mouseY, direction);
+    }
 
     //-----------------------------------My functions-----------------------------------//
 
@@ -162,7 +180,9 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
             return;
         }
 
-        for (ResourceLocation sound : soundsList) {
+        buttons.clear();
+        for (int i = index; i < Math.min(soundsList.size(), index + 10); i++) {
+            ResourceLocation sound = (ResourceLocation) soundsList.toArray()[i];
 
             float maxVolume = 1F;
             float volume = muffledList.get(sound) == null ? maxVolume : muffledList.get(sound);
@@ -177,12 +197,28 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
             buttonH += volumeSlider.getHeight();
             addButton(volumeSlider);
-            volumeSlider.visible = buttons.indexOf(volumeSlider) < index + 10;
+            volumeSlider.active = buttons.indexOf(volumeSlider) < index + 10;
             addWidget(volumeSlider.getBtnToggleSound());
             addWidget(volumeSlider.getBtnPlaySound());
-
         }
     }
+
+    private void addWidgets() {
+        addWidget(btnToggleMuffled = new Button(getX() + 229, getY() + 179, 17, 17, emptyText, b -> {
+            isMuffling = !isMuffling;
+            System.out.println(isMuffling);
+        }));
+
+        addWidget(btnDelete = new Button(getX() + 205, getY() + 179, 17, 17, emptyText, b -> {
+            muffledList.clear();
+            addSoundButtons();
+        }));
+    }
+
     //end of buttons
+
+    //Start text rendering
+
+    //end of text rendering
 
 }
