@@ -34,11 +34,8 @@ public class AnchorBlock extends Block implements IWaterLoggable {
                 .harvestLevel(1)
                 .strength(1.0f)
         );
-        setRegistryName("sound_muffler");
+        setRegistryName("sound_muffler"); //TODO: name
     }
-
-    //TODO: name
-
 
     @ParametersAreNonnullByDefault
     @Override
@@ -46,7 +43,6 @@ public class AnchorBlock extends Block implements IWaterLoggable {
         TileEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof AnchorEntity) {
             blockEntity.setRemoved();
-            ((AnchorEntity) blockEntity).getCurrentMuffledSounds().clear();
         }
         super.destroy(world, pos, state);
     }

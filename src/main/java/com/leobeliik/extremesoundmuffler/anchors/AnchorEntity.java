@@ -28,6 +28,7 @@ public class AnchorEntity extends TileEntity implements ISoundLists {
     @Override
     public void setRemoved() {
         super.setRemoved();
+        clearCurrentMuffledSounds();
         anchorList.remove(this);
     }
 

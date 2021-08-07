@@ -13,6 +13,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -26,6 +27,7 @@ import java.util.TreeSet;
 public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
     private static final Minecraft minecraft = Minecraft.getInstance();
+    private static final ITextComponent mainTitle = new TranslationTextComponent("ESM - Main Screen");
     private final int xSize = 256;
     private final int ySize = 202;
     private int minYButton, maxYButton, index;
@@ -45,17 +47,17 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
     @ParametersAreNonnullByDefault
     @Override
-    public void render(MatrixStack matrix, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(matrix);
+    public void render(MatrixStack ms, int mouseX, int mouseY, float partialTicks) {
+        this.renderBackground(ms);
         this.bindTexture();
-        this.blit(matrix, getX(), getY(), 0, 0, xSize, ySize); //Main screen bounds
-        drawCenteredString(matrix, font, this.title, getX() + 128, getY() + 8, whiteText); //Screen title
-        super.render(matrix, mouseX, mouseY, partialTicks);
+        this.blit(ms, getX(), getY(), 0, 0, xSize, ySize); //Main screen bounds
+        drawCenteredString(ms, font, this.title, getX() + 128, getY() + 8, whiteText); //Screen title
+        super.render(ms, mouseX, mouseY, partialTicks);
     }
 
     @Override
     public void init() {
-        minYButton = getY() + 36;
+        minYButton = getY() + 37;
         maxYButton = getY() + 164;
 
         //allows to hold a key to keep printing it. in this case i want it to easy erase text
@@ -93,52 +95,36 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         super.onClose();
     }
 
+
+    //-----------------------------------My functions-----------------------------------//
+
     private void clearAnchorData() {
         muffledList.clear();
         anchorPos = null;
         radius = -1;
     }
 
-    //-----------------------------------My functions-----------------------------------//
-
+    /**
+     * Open function for Anchors.
+     * @param ms Map of muffled sounds
+     * @param anchorPos position of the anchor block
+     * @param radius radius of the anchor
+     * @param isMuffling should muffle the sounds or not depending of the button in GUI
+     * @param title title for the Screen
+     */
     public static void open(Map<ResourceLocation, Float> ms, BlockPos anchorPos, int radius, boolean isMuffling, ITextComponent title) {
         minecraft.setScreen(new MufflerScreen(ms, anchorPos, radius, isMuffling, title));
     }
 
-    //Buttons init
-    private void addSoundButtons() {
-        int buttonH = minYButton;
-
-        soundsList.clear();
-        soundsList.addAll(ForgeRegistries.SOUND_EVENTS.getKeys());
-        forbiddenSounds.forEach(fs -> soundsList.removeIf(sl -> sl.toString().contains(fs)));
-
-        if (soundsList.isEmpty()) {
-            return;
-        }
-
-        for (ResourceLocation sound : soundsList) {
-
-            float maxVolume = 1F;
-            float volume = muffledList.get(sound) == null ? maxVolume : muffledList.get(sound);
-
-            int x = Config.getLeftButtons() ? getX() + 36 : getX() + 11;
-
-            MuffledSlider volumeSlider = new MuffledSlider(x, buttonH, 205, 14, volume, sound, this);
-
-            if (!muffledList.isEmpty() && muffledList.containsKey(sound)) {
-                volumeSlider.setFGColor(cyanText);
-            }
-
-            buttonH += volumeSlider.getHeight();
-            addButton(volumeSlider);
-            volumeSlider.visible = buttons.indexOf(volumeSlider) < index + 10;
-            addWidget(volumeSlider.getBtnToggleSound());
-            addWidget(volumeSlider.getBtnPlaySound());
-
-        }
+    /**
+     * Open function for Inventory button / assigned key
+     * @param ms Map of muffled sounds
+     * @param isMuffling should muffle the sounds or not depending of the button in GUI
+     * @param title title for the Screen
+     */
+    public static void open(Map<ResourceLocation, Float> ms, boolean isMuffling, ITextComponent title) {
+        open(ms, null, 0, isMuffling, title);
     }
-    //end of buttons
 
     private void bindTexture() {
         minecraft.getTextureManager().bind(SoundMuffler.getGui());
@@ -159,4 +145,44 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     public void addSoundMuffled(ResourceLocation sound, float volume) {
         muffledList.put(sound, volume);
     }
+
+    public void replaceVolume(ResourceLocation sound, float volume) {
+        muffledList.replace(sound, volume);
+    }
+
+    //Buttons init
+    private void addSoundButtons() {
+        int buttonH = minYButton;
+
+        soundsList.clear();
+        soundsList.addAll(ForgeRegistries.SOUND_EVENTS.getKeys());
+        forbiddenSounds.forEach(fs -> soundsList.removeIf(sl -> sl.toString().contains(fs)));
+
+        if (soundsList.isEmpty()) {
+            return;
+        }
+
+        for (ResourceLocation sound : soundsList) {
+
+            float maxVolume = 1F;
+            float volume = muffledList.get(sound) == null ? maxVolume : muffledList.get(sound);
+
+            int x = Config.getLeftButtons() ? getX() + 38 : getX() + 11;
+
+            MuffledSlider volumeSlider = new MuffledSlider(x, buttonH, 205, 14, volume, sound, this);
+
+            if (!muffledList.isEmpty() && muffledList.containsKey(sound)) {
+                volumeSlider.setFGColor(cyanText);
+            }
+
+            buttonH += volumeSlider.getHeight();
+            addButton(volumeSlider);
+            volumeSlider.visible = buttons.indexOf(volumeSlider) < index + 10;
+            addWidget(volumeSlider.getBtnToggleSound());
+            addWidget(volumeSlider.getBtnPlaySound());
+
+        }
+    }
+    //end of buttons
+
 }

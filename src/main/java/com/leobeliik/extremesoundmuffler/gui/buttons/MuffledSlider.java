@@ -20,13 +20,13 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @SuppressWarnings("EmptyMethod")
 public class MuffledSlider extends Widget implements IColorsGui {
 
+    private static final Minecraft minecraft = Minecraft.getInstance();
     private float sliderValue;
     private Button btnToggleSound;
     private PlaySoundButton btnPlaySound;
     private MufflerScreen screen;
     private final ResourceLocation sound;
-    public static ResourceLocation tickSound;
-    public static boolean showSlider = false;
+    private static boolean showSlider = false;
 
 
     public MuffledSlider(int x, int y, int width, int height, float sliderValue, ResourceLocation sound, MufflerScreen screen) {
@@ -40,50 +40,50 @@ public class MuffledSlider extends Widget implements IColorsGui {
 
     @ParametersAreNonnullByDefault
     @Override
-    public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        Minecraft minecraft = Minecraft.getInstance();
+    public void renderButton(MatrixStack ms, int mouseX, int mouseY, float partialTicks) {
         minecraft.getTextureManager().bind(SoundMuffler.getGui());
-        drawGradient(matrixStack);
-        float v = this.getFGColor() == whiteText ? 213F : 202F;
-        blit(matrixStack, btnToggleSound.x, btnToggleSound.y, 43F, v, 11, 11, 256, 256); //muffle button bg
-        blit(matrixStack, btnPlaySound.x, btnPlaySound.y, 32F, 202F, 11, 11, 256, 256); //play button bg
-        this.drawMessage(matrixStack, minecraft);
+        drawGradient(ms);
+        float v = getFGColor() == whiteText ? 214F : 203F;
+        blit(ms, btnToggleSound.x, btnToggleSound.y, 11F, v, 11, 11, 256, 256); //muffle button bg
+        blit(ms, btnPlaySound.x, btnPlaySound.y, 0F, 203F, 11, 11, 256, 256); //play button bg
+        drawMessage(ms);
     }
 
-    private void drawMessage(MatrixStack matrixStack, Minecraft minecraft) {
+    private void drawMessage(MatrixStack ms) {
         FontRenderer font = minecraft.font;
-        int v = Math.max(this.width, font.width(getMessage().getString()));
-        if (showSlider && this.isFocused() && this.isHovered) {
-            drawCenteredString(matrixStack, font, "Volume: " + (int) (sliderValue * 100), this.x + (this.width / 2), this.y + 2, whiteText); //title
+        int v = Math.max(width, font.width(getMessage().getString()));
+        if (showSlider && isFocused() && isHovered) {
+            drawCenteredString(ms, font, "Volume: " + (int) (sliderValue * 100), x + (width / 2), y + 2, yellowText); //title
         } else {
             String msgTruncated;
-            if (this.isHovered) {
+            if (isHovered) {
                 msgTruncated = getMessage().getString();
-                fill(matrixStack, this.x + this.width + 3, this.y, this.x + v + 3, this.y + font.lineHeight + 2, darkBG);
+                fill(ms, x + width + 3, y, x + v + 3, y + font.lineHeight + 2, darkBG);
             } else {
                 msgTruncated = font.substrByWidth(getMessage(), 205).getString();
             }
-            font.drawShadow(matrixStack, msgTruncated, this.x + 2, this.y + 2, getFGColor()); //title
+            font.drawShadow(ms, msgTruncated, x + 2, y + 2, getFGColor()); //title
         }
     }
 
-    private void drawGradient(MatrixStack matrixStack) {
-        if (this.getFGColor() == cyanText) {
-            blit(matrixStack, this.x, this.y - 1, 0, 234, (int) (sliderValue * (width - 6)) + 5, height + 1, 256, 256); //draw bg
-            if (this.isHovered) {
-                blit(matrixStack, this.x + (int) (sliderValue * (width - 6)) + 1, this.y + 1, 32F, 224F, 5, 9, 256, 256); //Slider
+    private void drawGradient(MatrixStack ms) {
+        if (getFGColor() == cyanText) {
+            blit(ms, x, y - 1, 39, 203, (int) (sliderValue * (width - 6)) + 5, height + 1, 256, 256); //draw bg
+            if (isHovered) {
+                blit(ms, x + (int) (sliderValue * (width - 6)) + 1, y, 0F, 214F, 5, 11, 256, 256); //Slider
             }
         }
     }
 
     private void setBtnToggleSound(ResourceLocation sound) {
-        int x = Config.getLeftButtons() ? this.x - 24 : this.x + width + 5;
-        btnToggleSound = new Button(x, this.y, 11, 11, StringTextComponent.EMPTY, b -> {
+        int x = Config.getLeftButtons() ? this.x - 26 : this.x + width + 4;
+        btnToggleSound = new Button(x, y, 11, 11, StringTextComponent.EMPTY, b -> {
             if (getFGColor() == cyanText) {
                 screen.removeSoundMuffled(sound);
                 super.setFGColor(whiteText);
             } else {
-                screen.addSoundMuffled(sound, 0F);
+                setSliderValue(Config.getDefaultMuteVolume());
+                screen.addSoundMuffled(sound, sliderValue);
                 super.setFGColor(cyanText);
             }
         });
@@ -94,71 +94,47 @@ public class MuffledSlider extends Widget implements IColorsGui {
     }
 
     private void setBtnPlaySound(ResourceLocation sound) {
-        btnPlaySound = new PlaySoundButton(btnToggleSound.x + 12, this.y, new SoundEvent(sound));
+        btnPlaySound = new PlaySoundButton(btnToggleSound.x + 13, y, new SoundEvent(sound));
     }
 
     public PlaySoundButton getBtnPlaySound() {
         return btnPlaySound;
     }
 
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        boolean flag = keyCode == 263;
-        if (flag || keyCode == 262) {
-            float f = flag ? -1.0F : 1.0F;
-            this.setSliderValue(this.sliderValue + (f / (this.width - 8)));
-        }
-        return false;
-    }
-
     private void changeSliderValue(float mouseX) {
-        this.setSliderValue((mouseX - (this.x + 4)) / (this.width - 8));
-        if (Config.getShowTip()) {
-            Config.setShowTip(false);
-        }
+        setSliderValue((mouseX - (x + 4)) / (width - 8));
     }
 
     private void setSliderValue(float value) {
-        double d0 = this.sliderValue;
-        this.sliderValue = MathHelper.clamp(value, 0.0F, 0.9F);
-        if (d0 != this.sliderValue) {
-            this.func_230972_a_();
+        double d0 = sliderValue;
+        sliderValue = MathHelper.clamp(value, 0.0F, 0.9F);
+        if (d0 != sliderValue) {
+            func_230972_a_();
         }
-        this.func_230979_b_();
-        updateVolume();
+        func_230979_b_();
+        screen.replaceVolume(sound, sliderValue);
     }
 
     @Override
     protected void onDrag(double mouseX, double mouseY, double dragX, double dragY) {
-        this.changeSliderValue((float) mouseX);
+        changeSliderValue((float) mouseX);
         super.onDrag(mouseX, mouseY, dragX, dragY);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (this.isHovered && this.getFGColor() == cyanText) {
-            this.changeSliderValue((float) mouseX);
+        if (isHovered && getFGColor() == cyanText) {
+            changeSliderValue((float) mouseX);
             showSlider = true;
-            this.setFocused(true);
-            tickSound = this.sound;
+            setFocused(true);
         }
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        this.setFocused(false);
+        setFocused(false);
         return super.mouseReleased(mouseX, mouseY, button);
-    }
-
-    private void updateVolume() {
-        /*String screenTitle = MainScreen.getScreenTitle();
-
-        if (screenTitle.equals(mainTitle)) {
-            muffledSounds.replace(this.sound, this.sliderValue);
-        } *//*else {
-            Objects.requireNonNull(MainScreen.getAnchorByName(screenTitle)).replaceSound(this.sound, this.sliderValue);
-        }*/
     }
 
     private void func_230979_b_() {}
