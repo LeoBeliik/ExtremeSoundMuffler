@@ -28,7 +28,6 @@ public class MuffledSlider extends Widget implements IColorsGui {
     private final ResourceLocation sound;
     private static boolean showSlider = false;
 
-
     public MuffledSlider(int x, int y, int width, int height, float sliderValue, ResourceLocation sound, MufflerScreen screen) {
         super(x, y, width, height, ITextComponent.nullToEmpty(sound.getPath() + ":" + sound.getNamespace()));
         this.sliderValue = sliderValue;
@@ -73,6 +72,18 @@ public class MuffledSlider extends Widget implements IColorsGui {
                 blit(ms, x + (int) (sliderValue * (width - 6)) + 1, y, 0F, 214F, 5, 11, 256, 256); //Slider
             }
         }
+    }
+
+    public void isVisible(boolean b) {
+        this.visible = b;
+        this.getBtnToggleSound().visible = b;
+        this.getBtnPlaySound().visible = b;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+        this.getBtnToggleSound().y = y;
+        this.getBtnPlaySound().y = y;
     }
 
     private void setBtnToggleSound(ResourceLocation sound) {

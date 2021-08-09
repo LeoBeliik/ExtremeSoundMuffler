@@ -20,6 +20,7 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.ForgeRegistries;
+
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +39,8 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     private int radius;
     private boolean isMuffling;
     private BlockPos anchorPos;
-    private Widget btnToggle, btnDelete, searchBar, btnNext, btnPrev, btnAccept, btnCancel;
+    private Widget btnToggle, btnDelete, btnNext, btnPrev, btnAccept, btnCancel;
+    private TextFieldWidget searchBar;
     private SortedSet<ResourceLocation> soundsList = new TreeSet<>();
     private Map<ResourceLocation, Float> muffledList = new HashMap<>();
 
@@ -66,10 +68,15 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         minYButton = getY() + 37;
         maxYButton = getY() + 164;
 
+        soundsList.clear();
+        soundsList.addAll(ForgeRegistries.SOUND_EVENTS.getKeys()); //adds modded sounds to the list along the vanilla ones
+        forbiddenSounds.forEach(fs -> soundsList.removeIf(sl -> sl.toString().contains(fs))); //removes blacklisted sounds
+
         //allows to hold a key to keep printing it. in this case i want it to easy erase text
         minecraft.keyboardHandler.setSendRepeatsToGui(true);
 
-        updateButtons();
+        addWidgets();
+        addSoundButtons();
         super.init();
     }
 
@@ -79,9 +86,8 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        //Close Screen
-        if (minecraft.options.keyInventory.matches(keyCode, scanCode)) {
+    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+        if (!searchBar.isFocused() && minecraft.options.keyInventory.matches(keyCode, scanCode)) {
             this.onClose();
             return true;
         }
@@ -89,8 +95,27 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     }
 
     @Override
+    public boolean charTyped(char codePoint, int modifiers) {
+        return super.charTyped(codePoint, modifiers);
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double direction) {
+        //buttons.get(0) is the searchbar, the rest are all sound sliders
+        if ((direction > 0 && buttons.get(1).y == minYButton) || (direction < 0 && buttons.get(buttons.size() - 1).y <= maxYButton)) {
+            return false;
+        }
+        buttons.stream().filter(b -> b instanceof MuffledSlider).forEach(b -> {
+            ((MuffledSlider) b).setY((int) (b.y + (b.getHeight() * 10) * direction));
+            ((MuffledSlider) b).isVisible(b.y >= minYButton && b.y <= maxYButton);
+        });
+
+        return super.mouseScrolled(mouseX, mouseY, direction);
+    }
+
+    @Override
     public void onClose() {
-        if (anchorPos == null){
+        if (anchorPos == null) {
             playerMuffledList.clear();
             playerMuffledList.putAll(muffledList);
         } else {
@@ -100,27 +125,16 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         super.onClose();
     }
 
-    @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double direction) {
-        if (index + 10 < soundsList.size() && direction < 0) {
-            index += 10;
-        }
-        if (index >= 10 && direction > 0) {
-            index += -10;
-        }
-        updateButtons();
-        return super.mouseScrolled(mouseX, mouseY, direction);
-    }
-
     //-----------------------------------My functions-----------------------------------//
 
     /**
      * Open function for Anchors.
-     * @param ms Map of muffled sounds
-     * @param anchorPos position of the anchor block
-     * @param radius radius of the anchor
+     *
+     * @param ms         Map of muffled sounds
+     * @param anchorPos  position of the anchor block
+     * @param radius     radius of the anchor
      * @param isMuffling should muffle the sounds or not depending of the button in GUI
-     * @param title title for the Screen
+     * @param title      title for the Screen
      */
     public static void open(Map<ResourceLocation, Float> ms, BlockPos anchorPos, int radius, boolean isMuffling, ITextComponent title) {
         minecraft.setScreen(new MufflerScreen(ms, anchorPos, radius, isMuffling, title));
@@ -128,9 +142,10 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
     /**
      * Open function for Inventory button / assigned key
-     * @param ms Map of muffled sounds
+     *
+     * @param ms         Map of muffled sounds
      * @param isMuffling should muffle the sounds or not depending of the button in GUI
-     * @param title title for the Screen
+     * @param title      title for the Screen
      */
     public static void open(Map<ResourceLocation, Float> ms, boolean isMuffling, ITextComponent title) {
         open(ms, null, 0, isMuffling, title);
@@ -167,29 +182,22 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     }
 
     private void updateButtons() {
-        buttons.clear();
-        children.clear(); //clear widgets
+        buttons.removeIf(MuffledSlider.class::isInstance);
         addSoundButtons();
-        addWidgets();
     }
 
     //Buttons init
     private void addSoundButtons() {
         int buttonH = minYButton;
 
-        soundsList.clear();
-        soundsList.addAll(ForgeRegistries.SOUND_EVENTS.getKeys());
-        forbiddenSounds.forEach(fs -> soundsList.removeIf(sl -> sl.toString().contains(fs)));
-
         if (soundsList.isEmpty()) {
             return;
         }
 
-        for (int i = index; i < Math.min(soundsList.size(), index + 10); i++) {
-            ResourceLocation sound = (ResourceLocation) soundsList.toArray()[i];
+        //index changes when scrolling or prev/next buttons are pressed
+        for (ResourceLocation sound : soundsList) {
 
-            float maxVolume = 1F;
-            float volume = muffledList.get(sound) == null ? maxVolume : muffledList.get(sound);
+            float volume = muffledList.get(sound) == null ? 1F : muffledList.get(sound);
 
             int x = Config.getLeftButtons() ? getX() + 38 : getX() + 11;
 
@@ -199,20 +207,18 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
                 volumeSlider.setFGColor(cyanText);
             }
 
-            buttonH += volumeSlider.getHeight();
             addButton(volumeSlider);
-            volumeSlider.active = buttons.indexOf(volumeSlider) < index + 10;
             addWidget(volumeSlider.getBtnToggleSound());
             addWidget(volumeSlider.getBtnPlaySound());
+
+            buttonH += volumeSlider.getHeight();
+            volumeSlider.isVisible(volumeSlider.y < maxYButton);
         }
     }
 
     private void addWidgets() {
         //toggle muffling sounds on/off
-        addWidget(btnToggle = new Button(getX() + 229, getY() + 179, 17, 17, emptyText, b -> {
-            isMuffling = !isMuffling;
-            System.out.println(isMuffling);
-        }));
+        addWidget(btnToggle = new Button(getX() + 229, getY() + 179, 17, 17, emptyText, b -> isMuffling = !isMuffling));
 
         //deletes current muffled list
         addWidget(btnDelete = new Button(getX() + 205, getY() + 179, 17, 17, emptyText, b -> {
@@ -226,9 +232,8 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         //forward list of sounds
         addWidget(btnNext = new Button(getX() + 22, getY() + 182, 10, 13, emptyText, b -> mouseScrolled(0D, 0D, -1D)));
 
-        addWidget(searchBar = new TextFieldWidget(font, getX() + 60, getY() + 182, 134, 11, emptyText));
+        addButton(searchBar = new TextFieldWidget(font, getX() + 63, getY() + 185, 134, 11, emptyText)).setBordered(false);
     }
-
     //end of buttons
 
     //Start text rendering
