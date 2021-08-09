@@ -4,6 +4,7 @@ import com.leobeliik.extremesoundmuffler.Config;
 import com.leobeliik.extremesoundmuffler.Networking.Network;
 import com.leobeliik.extremesoundmuffler.Networking.PacketAnchorSounds;
 import com.leobeliik.extremesoundmuffler.SoundMuffler;
+import com.leobeliik.extremesoundmuffler.gui.buttons.GradientButton;
 import com.leobeliik.extremesoundmuffler.gui.buttons.MuffledSlider;
 import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
@@ -37,10 +38,12 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     private boolean isMuffling;
     private BlockPos anchorPos;
     private Widget btnToggle, btnDelete, btnNext, btnPrev, btnAccept, btnCancel;
+    private GradientButton btnRecent, btnAll, btnMuffled;
     private TextFieldWidget searchBar;
     private SortedSet<ResourceLocation> soundsList = new TreeSet<>();
     private Map<ResourceLocation, Float> muffledList = new HashMap<>();
 
+    //TODO show anchorList (always) and anchor info (if anchor screen)
 
     private MufflerScreen(Map<ResourceLocation, Float> ms, BlockPos anchorPos, int radius, boolean isMuffling, ITextComponent title) {
         super(title);
@@ -56,7 +59,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         this.renderBackground(ms);
         this.bindTexture();
         this.blit(ms, getX(), getY(), 0, 0, xSize, ySize); //Main screen bounds
-        drawCenteredString(ms, font, this.title, getX() + 128, getY() + 8, whiteText); //Screen title
+        renderButtons(ms);
         super.render(ms, mouseX, mouseY, partialTicks);
     }
 
@@ -65,14 +68,11 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         minYButton = getY() + 37;
         maxYButton = getY() + 164;
 
-        soundsList.clear();
-        soundsList.addAll(ForgeRegistries.SOUND_EVENTS.getKeys()); //adds modded sounds to the list along the vanilla ones
-        forbiddenSounds.forEach(fs -> soundsList.removeIf(sl -> sl.toString().contains(fs))); //removes blacklisted sounds
-
         //allows to hold a key to keep printing it. in this case i want it to easy erase text
         minecraft.keyboardHandler.setSendRepeatsToGui(true);
 
-        addWidgets();
+        addButtons();
+        btnRecent.setActive(true);
         addSoundButtons();
         super.init();
     }
@@ -96,8 +96,8 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double direction) {
-        //buttons.get(0) is the searchbar, the rest are all sound sliders
-        if ((direction > 0 && buttons.get(1).y == minYButton) || (direction < 0 && buttons.get(buttons.size() - 1).y <= maxYButton)) {
+        //0 is the searchbar, 1 - 4 the top buttons, the rest are all sound sliders
+        if ((direction > 0 && buttons.get(4).y == minYButton) || (direction < 0 && buttons.get(buttons.size() - 1).y <= maxYButton)) {
             return false;
         }
         buttons.stream().filter(b -> b instanceof MuffledSlider).forEach(b -> {
@@ -110,16 +110,14 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        //right click
         if (button == 1) {
+            //clear searchbar with rmb
             if (!searchBar.getValue().isEmpty() && searchBar.isMouseOver(mouseX, mouseY)) {
                 searchBar.setValue("");
                 searchBar.setFocus(true);
                 updateButtons();
                 return true;
-            }
-        } else {
-            if (searchBar.isFocused() && !searchBar.mouseClicked(mouseX, mouseY, button)) {
-                searchBar.setFocus(false);
             }
         }
         return super.mouseClicked(mouseX, mouseY, button);
@@ -204,9 +202,29 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         addSoundButtons();
     }
 
+    private void toggleTopButtons(GradientButton button) {
+        btnRecent.setActive(false);
+        btnAll.setActive(false);
+        btnMuffled.setActive(false);
+        button.setActive(true);
+        updateButtons();
+    }
+
     //Buttons init
     private void addSoundButtons() {
         int buttonH = minYButton;
+
+        soundsList.clear();
+
+        if (btnRecent.isActive()) { //adds all the recent sounds
+            soundsList.addAll(recentSoundsList);
+        } else if (btnAll.isActive()) { //adds all the sounds (modded and vanilla) to the list
+            soundsList.addAll(ForgeRegistries.SOUND_EVENTS.getKeys());
+        } else if (btnMuffled.isActive()) { //add all the muffled sounds
+            soundsList.addAll(muffledList.keySet());
+        }
+        //removes blacklisted sounds
+        forbiddenSounds.forEach(fs -> soundsList.removeIf(sl -> sl.toString().contains(fs)));
 
         if (soundsList.isEmpty()) {
             return;
@@ -233,19 +251,25 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         }
     }
 
-    private void addWidgets() {
+    private void addButtons() {
+        //recent sounds // 41 is the lenght of the text + 2
+        addButton(btnRecent = new GradientButton(getX() + 77, getY() + 24, 41, ITextComponent.nullToEmpty("Recent"), b ->
+                toggleTopButtons((GradientButton) b))).setActive(false);
+        //all sounds // 16 is the lenght of the text + 2
+        addButton(btnAll = new GradientButton(getX() + 119, getY() + 24, 16, ITextComponent.nullToEmpty("All"), b ->
+                toggleTopButtons((GradientButton) b))).setActive(false);
+        //muffled sounds // 42 is the lenght of the text + 2
+        addButton(btnMuffled = new GradientButton(getX() + 136, getY() + 24, 42, ITextComponent.nullToEmpty("Muffled"), b ->
+                toggleTopButtons((GradientButton) b))).setActive(false);
         //toggle muffling sounds on/off
         addWidget(btnToggle = new Button(getX() + 229, getY() + 179, 17, 17, emptyText, b -> isMuffling = !isMuffling));
-
         //deletes current muffled list
         addWidget(btnDelete = new Button(getX() + 205, getY() + 179, 17, 17, emptyText, b -> {
             muffledList.clear();
             updateButtons();
         }));
-
         //backwards list of sounds
         addWidget(btnPrev = new Button(getX() + 10, getY() + 182, 10, 13, emptyText, b -> mouseScrolled(0D, 0D, 1D)));
-
         //forward list of sounds
         addWidget(btnNext = new Button(getX() + 22, getY() + 182, 10, 13, emptyText, b -> mouseScrolled(0D, 0D, -1D)));
 
@@ -254,7 +278,12 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     //end of buttons
 
     //Start text rendering
+    private void renderButtons(MatrixStack ms) {
+        //Screen title
+        drawCenteredString(ms, font, this.title, getX() + 128, getY() + 8, whiteText);
 
+        //Recent sounds button
+    }
     //end of text rendering
 
 }
