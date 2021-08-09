@@ -22,10 +22,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 @OnlyIn(Dist.CLIENT)
 public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
@@ -87,16 +84,14 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        if (!searchBar.isFocused() && minecraft.options.keyInventory.matches(keyCode, scanCode)) {
+        int tempY = minYButton;
+        if (searchBar.isFocused()) {
+            updateButtons();
+        } else if (minecraft.options.keyInventory.matches(keyCode, scanCode)) {
             this.onClose();
             return true;
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
-    }
-
-    @Override
-    public boolean charTyped(char codePoint, int modifiers) {
-        return super.charTyped(codePoint, modifiers);
+        return super.keyReleased(keyCode, scanCode, modifiers);
     }
 
     @Override
@@ -111,6 +106,23 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         });
 
         return super.mouseScrolled(mouseX, mouseY, direction);
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (button == 1) {
+            if (!searchBar.getValue().isEmpty() && searchBar.isMouseOver(mouseX, mouseY)) {
+                searchBar.setValue("");
+                searchBar.setFocus(true);
+                updateButtons();
+                return true;
+            }
+        } else {
+            if (searchBar.isFocused() && !searchBar.mouseClicked(mouseX, mouseY, button)) {
+                searchBar.setFocus(false);
+            }
+        }
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
@@ -182,7 +194,13 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     }
 
     private void updateButtons() {
-        buttons.removeIf(MuffledSlider.class::isInstance);
+        for (Iterator<Widget> iterator = buttons.iterator(); iterator.hasNext(); ) {
+            Widget button = iterator.next();
+            if (button instanceof MuffledSlider) {
+                ((MuffledSlider) button).isVisible(false);
+                iterator.remove();
+            }
+        }
         addSoundButtons();
     }
 
@@ -194,8 +212,9 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
             return;
         }
 
-        //index changes when scrolling or prev/next buttons are pressed
         for (ResourceLocation sound : soundsList) {
+
+            if (!sound.toString().contains(searchBar.getValue())) continue;
 
             float volume = muffledList.get(sound) == null ? 1F : muffledList.get(sound);
 
@@ -208,8 +227,6 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
             }
 
             addButton(volumeSlider);
-            addWidget(volumeSlider.getBtnToggleSound());
-            addWidget(volumeSlider.getBtnPlaySound());
 
             buttonH += volumeSlider.getHeight();
             volumeSlider.isVisible(volumeSlider.y < maxYButton);

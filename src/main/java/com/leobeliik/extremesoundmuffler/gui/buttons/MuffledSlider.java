@@ -134,6 +134,9 @@ public class MuffledSlider extends Widget implements IColorsGui {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        this.btnToggleSound.mouseClicked(mouseX, mouseY, button);
+        this.btnPlaySound.mouseClicked(mouseX, mouseY, button);
+
         if (isHovered && getFGColor() == cyanText) {
             changeSliderValue((float) mouseX);
             showSlider = true;
