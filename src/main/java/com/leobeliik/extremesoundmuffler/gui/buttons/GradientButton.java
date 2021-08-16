@@ -21,12 +21,14 @@ public class GradientButton extends Button implements IColorsGui {
     @ParametersAreNonnullByDefault
     @Override
     public void renderButton(MatrixStack ms, int mouseX, int mouseY, float delta) {
+        //I couldn't help myself I really need the symmetry //TODO: check this??
+        int messagePos = getMessage().getString().equals("All") ? x + width / 2 + 1 : x + width / 2;
         if (this.active) {
             fillGradient(ms, x, y - 1, x + width + 1, y + height - 2, brightBG, darkBG);
-            drawCenteredString(ms, font, getMessage(), x + width / 2, y + 2, whiteText);
+            drawCenteredString(ms, font, getMessage(), messagePos , y + 2, whiteText);
         } else {
             fillGradient(ms, x, y - 1, x + width + 1, y + height - 2, darkBG, brightBG);
-            drawCenteredString(ms, font, getMessage(), x + width / 2, y + 2, grayText);
+            drawCenteredString(ms, font, getMessage(), messagePos, y + 2, grayText);
         }
     }
 

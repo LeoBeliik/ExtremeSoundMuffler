@@ -21,18 +21,20 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class MuffledSlider extends Widget implements IColorsGui {
 
     private static final Minecraft minecraft = Minecraft.getInstance();
+    private static boolean showSlider = false;
+    private final ResourceLocation sound;
     private float sliderValue;
+    private int bg;
     private Button btnToggleSound;
     private PlaySoundButton btnPlaySound;
     private MufflerScreen screen;
-    private final ResourceLocation sound;
-    private static boolean showSlider = false;
 
-    public MuffledSlider(int x, int y, int width, int height, float sliderValue, ResourceLocation sound, MufflerScreen screen) {
-        super(x, y, width, height, ITextComponent.nullToEmpty(sound.getPath() + ":" + sound.getNamespace()));
+    public MuffledSlider(int x, int y, float sliderValue, int bg, ResourceLocation sound, MufflerScreen screen) {
+        super(x, y, 205, 14, ITextComponent.nullToEmpty(sound.getPath() + ":" + sound.getNamespace()));
         this.sliderValue = sliderValue;
         this.sound = sound;
         this.screen = screen;
+        this.bg = bg;
         setBtnToggleSound(sound);
         setBtnPlaySound(sound);
     }
@@ -41,6 +43,8 @@ public class MuffledSlider extends Widget implements IColorsGui {
     @Override
     public void renderButton(MatrixStack ms, int mouseX, int mouseY, float partialTicks) {
         minecraft.getTextureManager().bind(SoundMuffler.getGui());
+        //row highlight
+        fill(ms, x, y - 1, x + width + 4, y + height - 2, bg);
         drawGradient(ms);
         float v = getFGColor() == whiteText ? 214F : 203F;
         blit(ms, btnToggleSound.x, btnToggleSound.y, 11F, v, 11, 11, 256, 256); //muffle button bg
@@ -51,13 +55,14 @@ public class MuffledSlider extends Widget implements IColorsGui {
     private void drawMessage(MatrixStack ms) {
         FontRenderer font = minecraft.font;
         int v = Math.max(width, font.width(getMessage().getString()));
+
         if (showSlider && isFocused() && isHovered) {
             drawCenteredString(ms, font, "Volume: " + (int) (sliderValue * 100), x + (width / 2), y + 2, yellowText); //title
         } else {
             String msgTruncated;
             if (isHovered) {
                 msgTruncated = getMessage().getString();
-                fill(ms, x + width + 3, y, x + v + 3, y + font.lineHeight + 2, darkBG);
+                fill(ms, x + width + 3, y, x + v + 3, y + font.lineHeight + 2, bg);
             } else {
                 msgTruncated = font.substrByWidth(getMessage(), 205).getString();
             }
@@ -100,7 +105,7 @@ public class MuffledSlider extends Widget implements IColorsGui {
         });
     }
 
-    public Button getBtnToggleSound() {
+    private Button getBtnToggleSound() {
         return btnToggleSound;
     }
 
@@ -108,7 +113,7 @@ public class MuffledSlider extends Widget implements IColorsGui {
         btnPlaySound = new PlaySoundButton(btnToggleSound.x + 13, y, new SoundEvent(sound));
     }
 
-    public PlaySoundButton getBtnPlaySound() {
+    private PlaySoundButton getBtnPlaySound() {
         return btnPlaySound;
     }
 
@@ -151,7 +156,9 @@ public class MuffledSlider extends Widget implements IColorsGui {
         return super.mouseReleased(mouseX, mouseY, button);
     }
 
-    private void func_230979_b_() {}
+    private void func_230979_b_() {
+    }
 
-    private void func_230972_a_() {}
+    private void func_230972_a_() {
+    }
 }

@@ -10,6 +10,7 @@ import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.Widget;
@@ -18,6 +19,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -30,6 +33,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
     private static final Minecraft minecraft = Minecraft.getInstance();
     private static final ITextComponent mainTitle = ITextComponent.nullToEmpty("ESM - Main Screen");
+    private final ITextComponent searchHint = (new TranslationTextComponent("gui.recipebook.search_hint")).withStyle(TextFormatting.ITALIC).withStyle(TextFormatting.GRAY);
     private final ITextComponent emptyText = StringTextComponent.EMPTY;
     private final int xSize = 256;
     private final int ySize = 202;
@@ -37,9 +41,9 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     private int radius;
     private boolean isMuffling;
     private BlockPos anchorPos;
-    private Widget btnToggle, btnDelete, btnNext, btnPrev, btnAccept, btnCancel;
+    private Widget btnToggle, btnAccept, btnCancel;
     private GradientButton btnRecent, btnAll, btnMuffled;
-    private TextFieldWidget searchBar;
+    private TextFieldWidget searchbar;
     private SortedSet<ResourceLocation> soundsList = new TreeSet<>();
     private Map<ResourceLocation, Float> muffledList = new HashMap<>();
 
@@ -59,7 +63,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         this.renderBackground(ms);
         this.bindTexture();
         this.blit(ms, getX(), getY(), 0, 0, xSize, ySize); //Main screen bounds
-        renderButtons(ms);
+        renderButtons(ms, mouseX, mouseY);
         super.render(ms, mouseX, mouseY, partialTicks);
     }
 
@@ -85,7 +89,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
         int tempY = minYButton;
-        if (searchBar.isFocused()) {
+        if (searchbar.isFocused()) {
             updateButtons();
         } else if (minecraft.options.keyInventory.matches(keyCode, scanCode)) {
             this.onClose();
@@ -96,7 +100,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double direction) {
-        //0 is the searchbar, 1 - 4 the top buttons, the rest are all sound sliders
+        //buttons.get, 0 is the searchbar, 1 - 3 the top buttons, the rest are all sound sliders
         if ((direction > 0 && buttons.get(4).y == minYButton) || (direction < 0 && buttons.get(buttons.size() - 1).y <= maxYButton)) {
             return false;
         }
@@ -113,9 +117,9 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         //right click
         if (button == 1) {
             //clear searchbar with rmb
-            if (!searchBar.getValue().isEmpty() && searchBar.isMouseOver(mouseX, mouseY)) {
-                searchBar.setValue("");
-                searchBar.setFocus(true);
+            if (!searchbar.getValue().isEmpty() && searchbar.isMouseOver(mouseX, mouseY)) {
+                searchbar.setValue("");
+                searchbar.setFocus(true);
                 updateButtons();
                 return true;
             }
@@ -203,9 +207,9 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     }
 
     private void toggleTopButtons(GradientButton button) {
-        btnRecent.setActive(false);
-        btnAll.setActive(false);
-        btnMuffled.setActive(false);
+        for (int i = 1; i <= 3; i++) {
+            ((GradientButton) buttons.get(i)).setActive(false);
+        }
         button.setActive(true);
         updateButtons();
     }
@@ -216,10 +220,11 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
         soundsList.clear();
 
-        if (btnRecent.isActive()) { //adds all the recent sounds
-            soundsList.addAll(recentSoundsList);
-        } else if (btnAll.isActive()) { //adds all the sounds (modded and vanilla) to the list
+        //adds all the sounds (modded and vanilla) to the list
+        if (btnAll.isActive() || !searchbar.getValue().isEmpty()) {
             soundsList.addAll(ForgeRegistries.SOUND_EVENTS.getKeys());
+        } else if (btnRecent.isActive()) { //adds all the recent sounds
+            soundsList.addAll(recentSoundsList);
         } else if (btnMuffled.isActive()) { //add all the muffled sounds
             soundsList.addAll(muffledList.keySet());
         }
@@ -231,14 +236,18 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         }
 
         for (ResourceLocation sound : soundsList) {
-
-            if (!sound.toString().contains(searchBar.getValue())) continue;
-
+            //Remove sound that are not being search, show all if searchbar is empty
+            if (!sound.toString().contains(searchbar.getValue())) {
+                continue;
+            }
+            //set volume to muffled sounds if any
             float volume = muffledList.get(sound) == null ? 1F : muffledList.get(sound);
-
+            //set x depending of config
             int x = Config.getLeftButtons() ? getX() + 38 : getX() + 11;
+            //row highlight
+            int bg = buttons.size() % 2 == 0 ? darkBG : brightBG;
 
-            MuffledSlider volumeSlider = new MuffledSlider(x, buttonH, 205, 14, volume, sound, this);
+            MuffledSlider volumeSlider = new MuffledSlider(x, buttonH, volume, bg, sound, this);
 
             if (!muffledList.isEmpty() && muffledList.containsKey(sound)) {
                 volumeSlider.setFGColor(cyanText);
@@ -252,6 +261,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     }
 
     private void addButtons() {
+        addButton(searchbar = new TextFieldWidget(font, getX() + 63, getY() + 185, 134, 11, emptyText)).setBordered(false);
         //recent sounds // 41 is the lenght of the text + 2
         addButton(btnRecent = new GradientButton(getX() + 77, getY() + 24, 41, ITextComponent.nullToEmpty("Recent"), b ->
                 toggleTopButtons((GradientButton) b))).setActive(false);
@@ -264,25 +274,55 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         //toggle muffling sounds on/off
         addWidget(btnToggle = new Button(getX() + 229, getY() + 179, 17, 17, emptyText, b -> isMuffling = !isMuffling));
         //deletes current muffled list
-        addWidget(btnDelete = new Button(getX() + 205, getY() + 179, 17, 17, emptyText, b -> {
+        addWidget(new Button(getX() + 205, getY() + 179, 17, 17, ITextComponent.nullToEmpty("Delete muffled sounds"), b -> {
             muffledList.clear();
             updateButtons();
         }));
         //backwards list of sounds
-        addWidget(btnPrev = new Button(getX() + 10, getY() + 182, 10, 13, emptyText, b -> mouseScrolled(0D, 0D, 1D)));
+        addWidget(new Button(getX() + 10, getY() + 182, 10, 13, ITextComponent.nullToEmpty("Previous sounds"), b -> mouseScrolled(0D, 0D, 1D)));
         //forward list of sounds
-        addWidget(btnNext = new Button(getX() + 22, getY() + 182, 10, 13, emptyText, b -> mouseScrolled(0D, 0D, -1D)));
-
-        addButton(searchBar = new TextFieldWidget(font, getX() + 63, getY() + 185, 134, 11, emptyText)).setBordered(false);
+        addWidget(new Button(getX() + 22, getY() + 182, 10, 13, ITextComponent.nullToEmpty("Next sounds"), b -> mouseScrolled(0D, 0D, -1D)));
     }
     //end of buttons
 
     //Start text rendering
-    private void renderButtons(MatrixStack ms) {
+    private void renderButtons(MatrixStack ms, int mouseX, int mouseY) {
         //Screen title
         drawCenteredString(ms, font, this.title, getX() + 128, getY() + 8, whiteText);
+        //Render red diagonal on toggle muffling button
+        if (isMuffling) {
+            bindTexture();
+            blit(ms, btnToggle.x, btnToggle.y + 1, 22F, 203F, 17, 17, xSize, xSize);
+        }
 
-        //Recent sounds button
+        //button tooltips
+        for (IGuiEventListener widget : children) {
+            //TODO: top buttons
+            if (widget instanceof Button && widget.isMouseOver(mouseX, mouseY)) {
+                Button b = (Button) widget;
+                if (b == btnToggle) {
+                    b.setMessage(isMuffling ? ITextComponent.nullToEmpty("Stop muffing") : ITextComponent.nullToEmpty("Resume muffing"));
+                }
+                String message;
+                int buttonY = b.y;
+                if (widget instanceof GradientButton) {
+                    message = "Show " + b.getMessage().getString() + " sounds";
+                } else {
+                    message = b.getMessage().getString();
+                    buttonY = b.y + b.getHeight() * 2 + 5;
+                }
+                renderTooltip(ms, ITextComponent.nullToEmpty(message), b.x - (font.width(message) / 2), buttonY);
+            }
+        }
+        //searchbar prompt text
+        if (!this.searchbar.isFocused() && this.searchbar.getValue().isEmpty()) {
+            drawString(ms, font, searchHint, searchbar.x, searchbar.y, grayText);
+        }
+
+        //Anchor information
+        if (anchorPos != null) {
+
+        }
     }
     //end of text rendering
 
