@@ -156,9 +156,7 @@ public class MuffledSlider extends Widget implements IColorsGui {
         return super.mouseReleased(mouseX, mouseY, button);
     }
 
-    private void func_230979_b_() {
-    }
+    private void func_230979_b_() {}
 
-    private void func_230972_a_() {
-    }
+    private void func_230972_a_() {}
 }

@@ -5,8 +5,10 @@ import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +18,7 @@ public class AnchorEntity extends TileEntity implements ISoundLists {
     private int radius;
     private boolean isMuffling;
     private Map<ResourceLocation, Float> currentMuffledSounds;
+    private ITextComponent title;
 
     AnchorEntity() {
         super(AnchorRegistry.ANCHOR_ENTITY);
@@ -92,5 +95,13 @@ public class AnchorEntity extends TileEntity implements ISoundLists {
 
     public void clearCurrentMuffledSounds() {
         currentMuffledSounds.clear();
+    }
+
+    public void setTitle(ITextComponent title) {
+        this.title = title;
+    }
+
+    public ITextComponent getTitle() {
+        return title;
     }
 }

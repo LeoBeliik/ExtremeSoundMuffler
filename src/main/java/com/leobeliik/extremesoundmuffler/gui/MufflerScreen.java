@@ -4,6 +4,7 @@ import com.leobeliik.extremesoundmuffler.Config;
 import com.leobeliik.extremesoundmuffler.Networking.Network;
 import com.leobeliik.extremesoundmuffler.Networking.PacketAnchorSounds;
 import com.leobeliik.extremesoundmuffler.SoundMuffler;
+import com.leobeliik.extremesoundmuffler.anchors.AnchorEntity;
 import com.leobeliik.extremesoundmuffler.gui.buttons.GradientButton;
 import com.leobeliik.extremesoundmuffler.gui.buttons.MuffledSlider;
 import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
@@ -15,6 +16,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
@@ -24,7 +26,6 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.ForgeRegistries;
-
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 
@@ -38,12 +39,13 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     private final int xSize = 256;
     private final int ySize = 202;
     private int minYButton, maxYButton, index;
-    private int radius;
     private boolean isMuffling;
+    private int radius;
     private BlockPos anchorPos;
     private Widget btnToggle, btnAccept, btnCancel;
     private GradientButton btnRecent, btnAll, btnMuffled;
-    private TextFieldWidget searchbar;
+    private TextFieldWidget searchBar, rangeBar;
+    private MuffledSlider firstSoundButton, lastSoundButton;
     private SortedSet<ResourceLocation> soundsList = new TreeSet<>();
     private Map<ResourceLocation, Float> muffledList = new HashMap<>();
 
@@ -78,6 +80,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         addButtons();
         btnRecent.setActive(true);
         addSoundButtons();
+        rangeBar.setValue(String.valueOf(radius));
         super.init();
     }
 
@@ -88,10 +91,20 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        int tempY = minYButton;
-        if (searchbar.isFocused()) {
+
+        if (searchBar.isFocused()) {
             updateButtons();
-        } else if (minecraft.options.keyInventory.matches(keyCode, scanCode)) {
+        }
+        if (rangeBar.isFocused()) {
+            setRange();
+        }
+        //Searchbar& Rangebar looses focus when pressed "Enter" or "Intro"
+        if (keyCode == 257 || keyCode == 335) {
+            searchBar.setFocus(false);
+            rangeBar.setFocus(false);
+        }
+        //close screen when the inventory key is pressed
+        if (minecraft.options.keyInventory.matches(keyCode, scanCode)) {
             this.onClose();
             return true;
         }
@@ -101,7 +114,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double direction) {
         //buttons.get, 0 is the searchbar, 1 - 3 the top buttons, the rest are all sound sliders
-        if ((direction > 0 && buttons.get(4).y == minYButton) || (direction < 0 && buttons.get(buttons.size() - 1).y <= maxYButton)) {
+        if (direction > 0 && firstSoundButton.y == minYButton || (direction < 0 && lastSoundButton.y <= maxYButton)) {
             return false;
         }
         buttons.stream().filter(b -> b instanceof MuffledSlider).forEach(b -> {
@@ -117,11 +130,17 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         //right click
         if (button == 1) {
             //clear searchbar with rmb
-            if (!searchbar.getValue().isEmpty() && searchbar.isMouseOver(mouseX, mouseY)) {
-                searchbar.setValue("");
-                searchbar.setFocus(true);
+            if (!searchBar.getValue().isEmpty() && searchBar.isMouseOver(mouseX, mouseY)) {
+                searchBar.setValue("");
+                searchBar.setFocus(true);
                 updateButtons();
                 return true;
+            }
+            //clear rangeBar with rmb
+            if (!rangeBar.getValue().isEmpty() && rangeBar.isMouseOver(mouseX, mouseY)) {
+                rangeBar.setValue("");
+                rangeBar.setTextColor(whiteText);
+                rangeBar.setFocus(false);
             }
         }
         return super.mouseClicked(mouseX, mouseY, button);
@@ -133,6 +152,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
             playerMuffledList.clear();
             playerMuffledList.putAll(muffledList);
         } else {
+            System.out.println(radius);
             Network.sendToServer(new PacketAnchorSounds(muffledList, anchorPos, radius, isMuffling, title));
             clearAnchorData();
         }
@@ -207,11 +227,31 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     }
 
     private void toggleTopButtons(GradientButton button) {
-        for (int i = 1; i <= 3; i++) {
+        //buttons 0 = searchbar, 1 = rangebar; 2 to 4 top buttons
+        for (int i = 2; i <= 4; i++) {
             ((GradientButton) buttons.get(i)).setActive(false);
         }
         button.setActive(true);
         updateButtons();
+    }
+
+    private void setRange() {
+        //Only numbers
+        rangeBar.setFilter(s -> s.matches("[0-9]*(?:[0-9]*)?"));
+        if (!rangeBar.getValue().isEmpty()) {
+            int value = Integer.parseInt(rangeBar.getValue());
+            int maxValue = Config.getAnchorMaxRadius();
+            rangeBar.setTextColor(whiteText);
+            if (value < 1) {
+                value = 1;
+                rangeBar.setTextColor(redText);
+            }
+            if (value > maxValue) {
+                value = maxValue;
+                rangeBar.setTextColor(redText);
+            }
+            radius = value;
+        }
     }
 
     //Buttons init
@@ -221,7 +261,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         soundsList.clear();
 
         //adds all the sounds (modded and vanilla) to the list
-        if (btnAll.isActive() || !searchbar.getValue().isEmpty()) {
+        if (btnAll.isActive()) {
             soundsList.addAll(ForgeRegistries.SOUND_EVENTS.getKeys());
         } else if (btnRecent.isActive()) { //adds all the recent sounds
             soundsList.addAll(recentSoundsList);
@@ -237,7 +277,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
         for (ResourceLocation sound : soundsList) {
             //Remove sound that are not being search, show all if searchbar is empty
-            if (!sound.toString().contains(searchbar.getValue())) {
+            if (!sound.toString().contains(searchBar.getValue())) {
                 continue;
             }
             //set volume to muffled sounds if any
@@ -257,11 +297,23 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
             buttonH += volumeSlider.getHeight();
             volumeSlider.isVisible(volumeSlider.y < maxYButton);
+
+            if (soundsList.first().equals(sound)) {
+                firstSoundButton = volumeSlider;
+            }
+
+            if (soundsList.last().equals(sound)) {
+                lastSoundButton = volumeSlider;
+            }
         }
     }
 
     private void addButtons() {
-        addButton(searchbar = new TextFieldWidget(font, getX() + 63, getY() + 185, 134, 11, emptyText)).setBordered(false);
+        //Searchbar button
+        addButton(searchBar = new TextFieldWidget(font, getX() + 63, getY() + 185, 134, 11, emptyText)).setBordered(false);
+        //Anchor range button
+        addButton(rangeBar = new TextFieldWidget(font, getX() + xSize + 38, getY() + 46, 22, 11, emptyText))
+                .visible = anchorPos != null;
         //recent sounds // 41 is the lenght of the text + 2
         addButton(btnRecent = new GradientButton(getX() + 77, getY() + 24, 41, ITextComponent.nullToEmpty("Recent"), b ->
                 toggleTopButtons((GradientButton) b))).setActive(false);
@@ -271,6 +323,8 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         //muffled sounds // 42 is the lenght of the text + 2
         addButton(btnMuffled = new GradientButton(getX() + 136, getY() + 24, 42, ITextComponent.nullToEmpty("Muffled"), b ->
                 toggleTopButtons((GradientButton) b))).setActive(false);
+        //TODO: Buttons for all the anchors
+
         //toggle muffling sounds on/off
         addWidget(btnToggle = new Button(getX() + 229, getY() + 179, 17, 17, emptyText, b -> isMuffling = !isMuffling));
         //deletes current muffled list
@@ -315,14 +369,31 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
             }
         }
         //searchbar prompt text
-        if (!this.searchbar.isFocused() && this.searchbar.getValue().isEmpty()) {
-            drawString(ms, font, searchHint, searchbar.x, searchbar.y, grayText);
+        if (!this.searchBar.isFocused() && this.searchBar.getValue().isEmpty()) {
+            drawString(ms, font, searchHint, searchBar.x, searchBar.y, grayText);
         }
 
         //Anchor information
         if (anchorPos != null) {
+            int x = getX() + xSize + 3;
+            int y = getY() + 5;
+            TileEntity anchor = minecraft.level != null ? minecraft.level.getBlockEntity(anchorPos) : null;
+            if (anchor instanceof AnchorEntity) {
+                fill(ms, x - 3, y, x + 60, y + 54, darkBG);
+                drawString(ms, font, "X: " + anchorPos.getX(), x, getY() + 10, whiteText);
+                drawString(ms, font, "Y: " + anchorPos.getY(), x, getY() + 22, whiteText);
+                drawString(ms, font, "Z: " + anchorPos.getZ(), x, getY() + 34, whiteText);
+                drawString(ms, font, "Range: ", x, getY() + 46, whiteText);
+            }
 
+            if (rangeBar.isHovered()) {
+                fill(ms, rangeBar.x - 18, rangeBar.y + 14, rangeBar.x + 56, rangeBar.y + 26, darkBG);
+                font.draw(ms, "Range: 1 - " + Config.getAnchorMaxRadius(), rangeBar.x - 15, rangeBar.y + 16, whiteText);
+            }
         }
+
+        //Anchor lists
+        //TODO
     }
     //end of text rendering
 

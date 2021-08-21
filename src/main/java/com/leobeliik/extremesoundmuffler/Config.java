@@ -21,9 +21,9 @@ public class Config {
     private static final ForgeConfigSpec.BooleanValue disableAnchors;
     private static final ForgeConfigSpec.BooleanValue leftButtons;
     private static final ForgeConfigSpec.DoubleValue defaultMuteVolume;
+    private static ForgeConfigSpec.IntValue anchorMaxRadius;
     private static ForgeConfigSpec.BooleanValue showTip;
     private static ForgeConfigSpec.BooleanValue useDarkTheme;
-    private static ForgeConfigSpec.BooleanValue isClientSide;
 
 
     static {
@@ -50,8 +50,8 @@ public class Config {
         useDarkTheme = CLIENT_BUILDER.comment("Whether or not use the dark theme")
                 .define("useDarkTheme", false);
 
-        isClientSide = CLIENT_BUILDER.comment("Set to true if this mod wont be present in the server; it will load and save the Anchors in ESM -> ServerWorld")
-                .define("isClientSide", false);
+        anchorMaxRadius = CLIENT_BUILDER.comment("Set the max radius for the anchor")
+                .defineInRange("anchorMaxRadius", 16, 0, 64);
 
         CLIENT_BUILDER.pop();
         CLIENT_CONFIG = CLIENT_BUILDER.build();
@@ -98,8 +98,8 @@ public class Config {
         return useDarkTheme.get();
     }
 
-    public static boolean isClientSide() {
-        return isClientSide.get();
+    public static int getAnchorMaxRadius() {
+        return anchorMaxRadius.get();
     }
 
 }

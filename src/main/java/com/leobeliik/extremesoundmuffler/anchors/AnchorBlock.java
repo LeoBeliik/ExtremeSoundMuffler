@@ -55,7 +55,9 @@ public class AnchorBlock extends Block implements IWaterLoggable {
     @Nullable
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new AnchorEntity();
+        AnchorEntity anchorEntity = new AnchorEntity();
+        anchorEntity.setTitle(this.getName());
+        return anchorEntity;
     }
 
     @ParametersAreNonnullByDefault
