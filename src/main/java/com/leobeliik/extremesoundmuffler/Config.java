@@ -13,9 +13,9 @@ import java.util.List;
 @Mod.EventBusSubscriber
 public class Config {
 
-    static final ForgeConfigSpec CLIENT_CONFIG;
+    static final ForgeConfigSpec COMMON_CONFIG;
     private static final String CATEGORY_GENERAL = "general";
-    private static final ForgeConfigSpec.Builder CLIENT_BUILDER = new ForgeConfigSpec.Builder();
+    private static final ForgeConfigSpec.Builder COMMON_BUILDER = new ForgeConfigSpec.Builder();
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> forbiddenSounds;
     private static final ForgeConfigSpec.BooleanValue disableInventoryButton;
     private static final ForgeConfigSpec.BooleanValue disableAnchors;
@@ -27,34 +27,34 @@ public class Config {
 
 
     static {
-        CLIENT_BUILDER.comment("general settings").push(CATEGORY_GENERAL);
+        COMMON_BUILDER.comment("general settings").push(CATEGORY_GENERAL);
 
-        forbiddenSounds = CLIENT_BUILDER.comment("Blacklisted Sounds - add the name of the sounds to blacklist, separated with comma")
+        forbiddenSounds = COMMON_BUILDER.comment("Blacklisted Sounds - add the name of the sounds to blacklist, separated with comma")
                 .defineList("forbiddenSounds", Arrays.asList("ui.", "music.", "ambient."), o -> o instanceof String);
 
-        disableInventoryButton = CLIENT_BUILDER.comment("Disable the Muffle button in the player inventory?")
+        disableInventoryButton = COMMON_BUILDER.comment("Disable the Muffle button in the player inventory?")
                 .define("disableInventoryButton", false);
 
-        disableAnchors = CLIENT_BUILDER.comment("Disable the Anchors?")
+        disableAnchors = COMMON_BUILDER.comment("Disable the Anchors?")
                 .define("disableAnchors", false);
 
-        defaultMuteVolume = CLIENT_BUILDER.comment("Volume set when pressed the mute button by default")
+        defaultMuteVolume = COMMON_BUILDER.comment("Volume set when pressed the mute button by default")
                 .defineInRange("defaultMuteVolume", 0, 0, 0.9);
 
-        leftButtons = CLIENT_BUILDER.comment("Set to true to move the muffle and play buttons to the left side of the GUI")
+        leftButtons = COMMON_BUILDER.comment("Set to true to move the muffle and play buttons to the left side of the GUI")
                 .define("leftButtons", false);
 
-        showTip = CLIENT_BUILDER.comment("Show a message the first time a sound is muffled indicating that you can change the volume")
+        showTip = COMMON_BUILDER.comment("Show a message the first time a sound is muffled indicating that you can change the volume")
                 .define("showTip", true);
 
-        useDarkTheme = CLIENT_BUILDER.comment("Whether or not use the dark theme")
+        useDarkTheme = COMMON_BUILDER.comment("Whether or not use the dark theme")
                 .define("useDarkTheme", false);
 
-        anchorMaxRadius = CLIENT_BUILDER.comment("Set the max radius for the anchor")
+        anchorMaxRadius = COMMON_BUILDER.comment("Set the max radius for the anchor")
                 .defineInRange("anchorMaxRadius", 16, 0, 64);
 
-        CLIENT_BUILDER.pop();
-        CLIENT_CONFIG = CLIENT_BUILDER.build();
+        COMMON_BUILDER.pop();
+        COMMON_CONFIG = COMMON_BUILDER.build();
     }
 
     @SuppressWarnings("SameParameterValue")
