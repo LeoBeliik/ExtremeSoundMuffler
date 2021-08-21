@@ -24,8 +24,8 @@ public class AnchorEntity extends TileEntity implements ISoundLists {
         radius = 16;
         isMuffling = true;
         currentMuffledSounds = new HashMap<>();
-        title = ITextComponent.nullToEmpty("Anchor " + anchorList.size());
-        System.out.println(anchorList.size());
+        anchorList.add(this);
+        title = ITextComponent.nullToEmpty("Anchor " + anchorList.size() / 2);
     }
 
     @Override

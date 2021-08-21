@@ -8,7 +8,7 @@ import net.minecraft.client.audio.ISound;
 import net.minecraft.util.math.BlockPos;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.Objects;
+import java.util.*;
 
 public class MufflingLogic implements ISoundLists {
 
@@ -25,17 +25,26 @@ public class MufflingLogic implements ISoundLists {
             return cir;
         }
 
+        if (anchorList.isEmpty()) {
+            return cir;
+        }
+
         //anchor muffling
         BlockPos soundPos = new BlockPos(sound.getX(), sound.getY(), sound.getZ());
-        for (AnchorEntity anchor : anchorList) {
-            if (Minecraft.getInstance().level != null && !Minecraft.getInstance().level.dimension().equals(Objects.requireNonNull(anchor.getLevel()).dimension())) {
-                return cir;
+        try {
+            for (AnchorEntity anchor : anchorList) {
+                if (Minecraft.getInstance().level != null && anchor.getLevel() != null &&!Minecraft.getInstance().level.dimension().equals(anchor.getLevel().dimension())) {
+                    return cir;
+                }
+                if (anchor.isMuffling() && anchor.getCurrentMuffledSounds().containsKey(sound.getLocation()) && soundPos.closerThan(anchor.getBlockPos(), anchor.getRadius())) {
+                    cir.setReturnValue(cir.getReturnValue() * anchor.getCurrentMuffledSounds().get(sound.getLocation()));
+                    return cir;
+                }
             }
-            if (anchor.isMuffling() && anchor.getCurrentMuffledSounds().containsKey(sound.getLocation()) && soundPos.closerThan(anchor.getBlockPos(), anchor.getRadius())) {
-                cir.setReturnValue(cir.getReturnValue() * anchor.getCurrentMuffledSounds().get(sound.getLocation()));
-                return cir;
-            }
+        } catch (ConcurrentModificationException exception) {
+            return cir;
         }
+
         return cir;
     }
 
