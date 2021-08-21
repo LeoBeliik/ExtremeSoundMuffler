@@ -1,8 +1,8 @@
 package com.leobeliik.extremesoundmuffler.gui;
 
 import com.leobeliik.extremesoundmuffler.Config;
-import com.leobeliik.extremesoundmuffler.Networking.Network;
-import com.leobeliik.extremesoundmuffler.Networking.PacketAnchorSounds;
+import com.leobeliik.extremesoundmuffler.networking.Network;
+import com.leobeliik.extremesoundmuffler.networking.PacketAnchorSounds;
 import com.leobeliik.extremesoundmuffler.SoundMuffler;
 import com.leobeliik.extremesoundmuffler.anchors.AnchorEntity;
 import com.leobeliik.extremesoundmuffler.gui.buttons.GradientButton;
@@ -152,7 +152,6 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
             playerMuffledList.clear();
             playerMuffledList.putAll(muffledList);
         } else {
-            System.out.println(radius);
             Network.sendToServer(new PacketAnchorSounds(muffledList, anchorPos, radius, isMuffling, title));
             clearAnchorData();
         }
@@ -178,11 +177,9 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
      * Open function for Inventory button / assigned key
      *
      * @param ms         Map of muffled sounds
-     * @param isMuffling should muffle the sounds or not depending of the button in GUI
-     * @param title      title for the Screen
      */
-    public static void open(Map<ResourceLocation, Float> ms, boolean isMuffling, ITextComponent title) {
-        open(ms, null, 0, isMuffling, title);
+    public static void open(Map<ResourceLocation, Float> ms) {
+        open(ms, null, 0, true, mainTitle);
     }
 
     public void removeSoundMuffled(ResourceLocation sound) {

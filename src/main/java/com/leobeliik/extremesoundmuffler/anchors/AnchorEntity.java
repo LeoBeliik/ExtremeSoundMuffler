@@ -8,7 +8,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +24,8 @@ public class AnchorEntity extends TileEntity implements ISoundLists {
         radius = 16;
         isMuffling = true;
         currentMuffledSounds = new HashMap<>();
-        anchorList.add(this);
+        title = ITextComponent.nullToEmpty("Anchor " + anchorList.size());
+        System.out.println(anchorList.size());
     }
 
     @Override
@@ -37,7 +37,6 @@ public class AnchorEntity extends TileEntity implements ISoundLists {
 
     @Override
     public void setChanged() {
-        //System.out.println(currentMuffledSounds);
         super.setChanged();
     }
 
@@ -48,10 +47,11 @@ public class AnchorEntity extends TileEntity implements ISoundLists {
         if (!currentMuffledSounds.isEmpty()) {
             CompoundNBT compound = new CompoundNBT();
             currentMuffledSounds.forEach((R, F) -> compound.putFloat(R.toString(), F));
-            nbt.putInt("anchorRadius", radius);
-            nbt.putBoolean("anchorMuffling", isMuffling);
             nbt.put("muffledSounds", compound);
         }
+        nbt.putString("title", title.getString());
+        nbt.putInt("anchorRadius", radius);
+        nbt.putBoolean("anchorMuffling", isMuffling);
         return super.save(nbt);
     }
 
@@ -61,10 +61,9 @@ public class AnchorEntity extends TileEntity implements ISoundLists {
         super.load(state, nbt);
         CompoundNBT compound = nbt.getCompound("muffledSounds");
         if (!compound.isEmpty()) {
-            for (String key : compound.getAllKeys()) {
-                currentMuffledSounds.put(new ResourceLocation(key), compound.getFloat(key));
-            }
+            compound.getAllKeys().forEach(key -> currentMuffledSounds.put(new ResourceLocation(key), compound.getFloat(key)));
         }
+        title = ITextComponent.nullToEmpty(nbt.getString("title"));
         radius = nbt.getInt("anchorRadius");
         isMuffling = nbt.getBoolean("anchorMuffling");
     }

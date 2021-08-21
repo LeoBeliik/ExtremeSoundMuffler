@@ -1,4 +1,4 @@
-package com.leobeliik.extremesoundmuffler.Networking;
+package com.leobeliik.extremesoundmuffler.networking;
 
 import com.leobeliik.extremesoundmuffler.anchors.AnchorEntity;
 import com.leobeliik.extremesoundmuffler.gui.MufflerScreen;
@@ -20,7 +20,7 @@ public class PacketAnchorSounds {
     private static BlockPos anchorPos;
     private static int radius;
     private static boolean isMuffling;
-    private static ITextComponent title; //TODO maybe remove this? maybe not? maybe put "anchor " + number on the list
+    private static ITextComponent title;
 
     public PacketAnchorSounds(Map<ResourceLocation, Float> ms, BlockPos pos, int rad, boolean muffling, ITextComponent name) {
         anchorMuffledSounds.clear();

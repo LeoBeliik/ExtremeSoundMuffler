@@ -1,4 +1,4 @@
-package com.leobeliik.extremesoundmuffler.Networking;
+package com.leobeliik.extremesoundmuffler.networking;
 
 import com.leobeliik.extremesoundmuffler.SoundMuffler;
 import net.minecraft.entity.player.ServerPlayerEntity;

@@ -1,6 +1,5 @@
 package com.leobeliik.extremesoundmuffler.anchors;
 
-import com.leobeliik.extremesoundmuffler.Config;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -21,20 +20,17 @@ public class AnchorRegistry {
 
     @SubscribeEvent
     public static void onBlocksRegistry(final RegistryEvent.Register<Block> event) {
-        if (Config.getDisableAchors()) return;
         event.getRegistry().register(new AnchorBlock());
     }
 
     @SubscribeEvent
     public static void onItemsRegistry(final RegistryEvent.Register<Item> event) {
-        if (Config.getDisableAchors()) return;
         event.getRegistry().register(new BlockItem(ANCHOR_BLOCK, new Item.Properties().tab(ItemGroup.TAB_FOOD))
                 .setRegistryName("sound_muffler"));
     }
 
     @SubscribeEvent
     public static void onTileEntityRegistry(final RegistryEvent.Register<TileEntityType<?>> event) {
-        if (Config.getDisableAchors()) return;
         event.getRegistry().register(TileEntityType.Builder.of(AnchorEntity::new,
                 ANCHOR_BLOCK).build(null).setRegistryName("sound_muffler"));
     }

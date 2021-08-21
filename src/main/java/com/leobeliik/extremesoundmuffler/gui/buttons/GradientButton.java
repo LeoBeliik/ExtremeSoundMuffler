@@ -21,7 +21,7 @@ public class GradientButton extends Button implements IColorsGui {
     @ParametersAreNonnullByDefault
     @Override
     public void renderButton(MatrixStack ms, int mouseX, int mouseY, float delta) {
-        //I couldn't help myself I really need the symmetry //TODO: check this??
+        //I couldn't help myself I really need the symmetry
         int messagePos = getMessage().getString().equals("All") ? x + width / 2 + 1 : x + width / 2;
         if (this.active) {
             fillGradient(ms, x, y - 1, x + width + 1, y + height - 2, brightBG, darkBG);
