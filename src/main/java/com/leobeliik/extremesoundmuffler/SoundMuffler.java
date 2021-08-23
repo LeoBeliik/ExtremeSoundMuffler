@@ -18,6 +18,8 @@ import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -87,6 +89,13 @@ public class SoundMuffler {
         if (openMufflerScreen.consumeClick()) {
             MufflerScreen.open(ISoundLists.playerMuffledList);
         }
+    }
+
+    //clear mufflerlist on world unload
+    @SubscribeEvent
+    @OnlyIn(Dist.CLIENT)
+    public void onLevelUnload(WorldEvent.Unload event) {
+        ISoundLists.mufflerList.clear();
     }
 
     public static int getHotkey() {

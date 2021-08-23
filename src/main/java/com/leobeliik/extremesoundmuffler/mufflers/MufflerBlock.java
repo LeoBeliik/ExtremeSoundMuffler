@@ -20,7 +20,6 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -42,6 +41,7 @@ public class MufflerBlock extends Block implements IWaterLoggable {
         setRegistryName("sound_muffler");
     }
 
+    @ParametersAreNonnullByDefault
     @Override
     public void appendHoverText(ItemStack stack, @Nullable IBlockReader blockReader, List<ITextComponent> list, ITooltipFlag flag) {
         list.add(new TranslationTextComponent("block.extremesoundmuffler.sound_muffler.description"));

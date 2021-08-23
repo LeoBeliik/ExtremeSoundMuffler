@@ -2,34 +2,38 @@ package com.leobeliik.extremesoundmuffler.mufflers;
 
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.client.model.data.IModelData;
-import net.minecraftforge.client.model.data.ModelDataMap;
-import net.minecraftforge.client.model.data.ModelProperty;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class MufflerEntity extends TileEntity implements ISoundLists {
 
     private int radius;
     private boolean isMuffling;
     private Map<ResourceLocation, Float> currentMuffledSounds;
-    private ITextComponent title;
+    private ITextComponent title = ITextComponent.nullToEmpty("Sound Muffler");;
 
     MufflerEntity() {
         super(MufflerRegistry.ANCHOR_ENTITY);
         radius = 16;
         isMuffling = true;
         currentMuffledSounds = new HashMap<>();
-        mufflerList.add(this);
-        title = ITextComponent.nullToEmpty("Anchor " + mufflerList.size() / 2);
+    }
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        if (level != null && !level.isClientSide()) {
+            mufflerList.add(this);
+        }
     }
 
     @Override
@@ -104,7 +108,7 @@ public class MufflerEntity extends TileEntity implements ISoundLists {
         this.title = title;
     }
 
-    ITextComponent getTitle() {
+    public ITextComponent getTitle() {
         return title;
     }
 }

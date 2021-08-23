@@ -1,14 +1,14 @@
 package com.leobeliik.extremesoundmuffler.gui;
 
 import com.leobeliik.extremesoundmuffler.Config;
-import com.leobeliik.extremesoundmuffler.mufflers.MufflerEntity;
-import com.leobeliik.extremesoundmuffler.networking.Network;
-import com.leobeliik.extremesoundmuffler.networking.PacketAnchorSounds;
 import com.leobeliik.extremesoundmuffler.SoundMuffler;
 import com.leobeliik.extremesoundmuffler.gui.buttons.GradientButton;
 import com.leobeliik.extremesoundmuffler.gui.buttons.MuffledSlider;
 import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
+import com.leobeliik.extremesoundmuffler.mufflers.MufflerEntity;
+import com.leobeliik.extremesoundmuffler.networking.Network;
+import com.leobeliik.extremesoundmuffler.networking.PacketAnchorSounds;
 import com.leobeliik.extremesoundmuffler.utils.DataManager;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
@@ -27,6 +27,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.ForgeRegistries;
+
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 
@@ -50,8 +51,6 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     private MuffledSlider firstSoundButton, lastSoundButton;
     private SortedSet<ResourceLocation> soundsList = new TreeSet<>();
     private Map<ResourceLocation, Float> muffledList = new HashMap<>();
-
-    //TODO show mufflerList (always)
 
     private MufflerScreen(Map<ResourceLocation, Float> ms, BlockPos mufflerPos, int radius, boolean isMuffling, ITextComponent title) {
         super(title);
@@ -119,7 +118,6 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double direction) {
-        //buttons.get, 0 is the searchbar, 1 - 3 the top buttons, the rest are all sound sliders
         if (direction > 0 && firstSoundButton.y == minYButton || (direction < 0 && lastSoundButton.y <= maxYButton)) {
             return false;
         }
@@ -158,7 +156,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
             DataManager.saveData(muffledList);
         } else {
             Network.sendToServer(new PacketAnchorSounds(muffledList, mufflerPos, radius, isMuffling, title));
-            clearAnchorData();
+            clearMufflerData();
         }
         super.onClose();
     }
@@ -169,7 +167,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
      * Open function for Anchors.
      *
      * @param ms         Map of muffled sounds
-     * @param mufflerPos  position of the muffler block
+     * @param mufflerPos position of the muffler block
      * @param radius     radius of the muffler
      * @param isMuffling should muffle the sounds or not depending of the button in GUI
      * @param title      title for the Screen
@@ -181,7 +179,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     /**
      * Open function for Inventory button / assigned key
      *
-     * @param ms         Map of muffled sounds
+     * @param ms Map of muffled sounds
      */
     public static void open(Map<ResourceLocation, Float> ms) {
         open(ms, null, 0, true, mainTitle);
@@ -211,7 +209,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         return (this.height - ySize) / 2;
     }
 
-    private void clearAnchorData() {
+    private void clearMufflerData() {
         muffledList.clear();
         mufflerPos = null;
         radius = -1;
@@ -229,8 +227,8 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     }
 
     private void toggleTopButtons(GradientButton button) {
-        //buttons 0 = searchbar, 1 = rangebar; 2 to 4 top buttons
-        for (int i = 2; i <= 4; i++) {
+        //buttons 0 to 2 are top buttons
+        for (int i = 0; i <= 2; i++) {
             ((GradientButton) buttons.get(i)).setActive(false);
         }
         button.setActive(true);
@@ -315,11 +313,6 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     }
 
     private void addButtons() {
-        //Searchbar button
-        addButton(searchBar = new TextFieldWidget(font, getX() + 63, getY() + 185, 134, 11, emptyText)).setBordered(false);
-        //Anchor range button
-        addButton(rangeBar = new TextFieldWidget(font, getX() + xSize + 38, getY() + 46, 22, 11, emptyText))
-                .visible = mufflerPos != null;
         //recent sounds // 41 is the lenght of the text + 2
         addButton(btnRecent = new GradientButton(getX() + 77, getY() + 24, 41, ITextComponent.nullToEmpty("Recent"), b ->
                 toggleTopButtons((GradientButton) b))).setActive(false);
@@ -329,10 +322,16 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         //muffled sounds // 42 is the lenght of the text + 2
         addButton(btnMuffled = new GradientButton(getX() + 136, getY() + 24, 42, ITextComponent.nullToEmpty("Muffled"), b ->
                 toggleTopButtons((GradientButton) b))).setActive(false);
-        //TODO: Buttons for all the mufflers
-
+        //Searchbar button
+        addButton(searchBar = new TextFieldWidget(font, getX() + 63, getY() + 185, 134, 11, emptyText)).setBordered(false);
+        //Anchor range button
+        addButton(rangeBar = new TextFieldWidget(font, getX() + xSize + 38, getY() + 46, 22, 11, emptyText))
+                .visible = mufflerPos != null;
+        addButton(new Button(getX() - 3, getY(), 10, 10, emptyText, b -> {
+            addMufflersButtons(mufflerPos);
+        }));
         //toggle muffling sounds on/off
-        addWidget(btnToggle = new Button(getX() + 229, getY() + 179, 17, 17, emptyText, b -> {
+        addWidget(btnToggle = new Button(getX() + 229, getY() + 179, 17, 17, ITextComponent.nullToEmpty("Mufflers list"), b -> {
             if (mufflerPos != null) {
                 isMuffling = !isMuffling;
             } else {
@@ -348,6 +347,20 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         addWidget(new Button(getX() + 10, getY() + 182, 10, 13, ITextComponent.nullToEmpty("Previous sounds"), b -> mouseScrolled(0D, 0D, 1D)));
         //forward list of sounds
         addWidget(new Button(getX() + 22, getY() + 182, 10, 13, ITextComponent.nullToEmpty("Next sounds"), b -> mouseScrolled(0D, 0D, -1D)));
+    }
+
+    private void addMufflersButtons(BlockPos pos) {
+        if (!mufflerList.isEmpty()) {
+            int buttonH = getY() + 10;
+            for (MufflerEntity muffler : mufflerList) {
+                //TODO make my own buttons
+                if (muffler.getBlockPos().compareTo(mufflerPos) != 0) {
+                    addButton(new Button(getX() - 95, buttonH, 80, 12, muffler.getTitle(), b ->
+                            open(muffler.getCurrentMuffledSounds(), muffler.getBlockPos(), muffler.getRadius(), muffler.isMuffling(), muffler.getTitle())));
+                    buttonH += 15;
+                }
+            }
+        }
     }
     //end of buttons
 
@@ -367,6 +380,10 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         for (IGuiEventListener widget : children) {
             if (widget instanceof Button && widget.isMouseOver(mouseX, mouseY)) {
                 Button b = (Button) widget;
+                if (b.getMessage().equals(emptyText)) {
+                    continue;
+                }
+
                 if (b == btnToggle) {
                     b.setMessage(showMuffled ? ITextComponent.nullToEmpty("Stop muffing") : ITextComponent.nullToEmpty("Resume muffing"));
                 }
@@ -399,8 +416,9 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
             }
 
             if (rangeBar.isHovered()) {
-                message = "Range: 1 - " + Config.getMufflersMaxRadius();
-                renderTooltip(ms, ITextComponent.nullToEmpty(message), rangeBar.x - (font.width(message) / 2), rangeBar.y + 30);
+                //tooltips does not like when the screen is smol
+                fill(ms, rangeBar.x - 18, rangeBar.y + 14, rangeBar.x + 56, rangeBar.y + 26, darkBG);
+                font.draw(ms, "Range: 1 - " + Config.getMufflersMaxRadius(), rangeBar.x - 15, rangeBar.y + 16, whiteText);
             }
         }
 
