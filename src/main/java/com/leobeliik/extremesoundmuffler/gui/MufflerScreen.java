@@ -39,7 +39,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     private final ITextComponent emptyText = StringTextComponent.EMPTY;
     private final int xSize = 256;
     private final int ySize = 202;
-    private static boolean isPlayerMuffling = false;
+    private static boolean isPlayerMuffling = true;
     private int minYButton, maxYButton, index;
     private boolean isMuffling;
     private int radius;

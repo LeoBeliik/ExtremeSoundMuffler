@@ -7,6 +7,6 @@ import org.spongepowered.asm.mixin.connect.IMixinConnector;
 public class MixinConnector implements IMixinConnector {
     @Override
     public void connect() {
-        Mixins.addConfiguration("assets/" + SoundMuffler.MODID + "/extremesoundmuffler.mixins.json");
+        Mixins.addConfiguration("extremesoundmuffler.mixins.json");
     }
 }
