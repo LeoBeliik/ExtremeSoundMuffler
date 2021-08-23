@@ -1,14 +1,14 @@
 package com.leobeliik.extremesoundmuffler.interfaces;
 
-import com.leobeliik.extremesoundmuffler.anchors.AnchorEntity;
+import com.leobeliik.extremesoundmuffler.mufflers.MufflerEntity;
 import net.minecraft.util.ResourceLocation;
 import java.util.*;
 
 public interface ISoundLists {
 
     Set<String> forbiddenSounds = new HashSet<>();
-    Set<AnchorEntity> anchorList = new HashSet<>();
-    SortedSet<ResourceLocation> recentSoundsList = new TreeSet<>();
+    Set<MufflerEntity> mufflerList = new HashSet<>();
     Map<ResourceLocation, Float> playerMuffledList = new HashMap<>();
+    SortedSet<ResourceLocation> recentSoundsList = new TreeSet<>();
 
 }

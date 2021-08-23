@@ -1,6 +1,7 @@
 package com.leobeliik.extremesoundmuffler.utils;
 
-import com.leobeliik.extremesoundmuffler.anchors.AnchorEntity;
+import com.leobeliik.extremesoundmuffler.mufflers.MufflerEntity;
+import com.leobeliik.extremesoundmuffler.gui.MufflerScreen;
 import com.leobeliik.extremesoundmuffler.gui.buttons.PlaySoundButton;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import net.minecraft.client.Minecraft;
@@ -18,22 +19,21 @@ public class MufflingLogic implements ISoundLists {
         }
 
         recentSoundsList.add(sound.getLocation());
-        //if (!MufflerScreen.isMuffled()) return;
 
-        if (playerMuffledList.containsKey(sound.getLocation())) {
+        if (MufflerScreen.isMuffling() && playerMuffledList.containsKey(sound.getLocation())) {
             cir.setReturnValue(cir.getReturnValue() * playerMuffledList.get(sound.getLocation()));
             return cir;
         }
 
-        if (anchorList.isEmpty()) {
+        if (mufflerList.isEmpty()) {
             return cir;
         }
 
         //anchor muffling
         BlockPos soundPos = new BlockPos(sound.getX(), sound.getY(), sound.getZ());
         try {
-            for (AnchorEntity anchor : anchorList) {
-                if (Minecraft.getInstance().level != null && anchor.getLevel() != null &&!Minecraft.getInstance().level.dimension().equals(anchor.getLevel().dimension())) {
+            for (MufflerEntity anchor : mufflerList) {
+                if (Minecraft.getInstance().level != null && anchor.getLevel() != null && !Minecraft.getInstance().level.dimension().equals(anchor.getLevel().dimension())) {
                     return cir;
                 }
                 if (anchor.isMuffling() && anchor.getCurrentMuffledSounds().containsKey(sound.getLocation()) && soundPos.closerThan(anchor.getBlockPos(), anchor.getRadius())) {

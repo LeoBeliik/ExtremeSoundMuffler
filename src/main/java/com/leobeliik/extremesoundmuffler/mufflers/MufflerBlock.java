@@ -1,17 +1,14 @@
-package com.leobeliik.extremesoundmuffler.anchors;
+package com.leobeliik.extremesoundmuffler.mufflers;
 
-import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import com.leobeliik.extremesoundmuffler.networking.Network;
 import com.leobeliik.extremesoundmuffler.networking.PacketAnchorSounds;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.IWaterLoggable;
-import net.minecraft.block.SoundType;
+import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.properties.BlockStateProperties;
@@ -21,21 +18,22 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.thread.SidedThreadGroups;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.List;
 
-public class AnchorBlock extends Block implements IWaterLoggable {
+public class MufflerBlock extends Block implements IWaterLoggable {
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
-    private AnchorEntity entity;
+    private MufflerEntity entity;
 
     //TODO: make the block small and give the texure; also remeber to make the texture and size dinamic
-    AnchorBlock() {
+    MufflerBlock() {
         super(Properties.of(Material.WOOL)
                 .sound(SoundType.WOOL)
                 .harvestLevel(1)
@@ -44,10 +42,10 @@ public class AnchorBlock extends Block implements IWaterLoggable {
         setRegistryName("sound_muffler");
     }
 
-    @ParametersAreNonnullByDefault
     @Override
-    public void destroy(IWorld world, BlockPos pos, BlockState state) {
-        super.destroy(world, pos, state);
+    public void appendHoverText(ItemStack stack, @Nullable IBlockReader blockReader, List<ITextComponent> list, ITooltipFlag flag) {
+        list.add(new TranslationTextComponent("block.extremesoundmuffler.sound_muffler.description"));
+        super.appendHoverText(stack, blockReader, list, flag);
     }
 
     @Override
@@ -58,7 +56,7 @@ public class AnchorBlock extends Block implements IWaterLoggable {
     @Nullable
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new AnchorEntity();
+        return new MufflerEntity();
     }
 
     @ParametersAreNonnullByDefault
@@ -66,8 +64,8 @@ public class AnchorBlock extends Block implements IWaterLoggable {
     public void setPlacedBy(World world, BlockPos pos, BlockState blockState, @Nullable LivingEntity livingEntity, ItemStack itemStack) {
         TileEntity blockEntity = world.getBlockEntity(pos);
         ITextComponent title = itemStack.getHoverName();
-        if (blockEntity instanceof AnchorEntity && !title.equals(this.getName())) {
-            ((AnchorEntity) blockEntity).setTitle(title);
+        if (blockEntity instanceof MufflerEntity && !title.equals(this.getName())) {
+            ((MufflerEntity) blockEntity).setTitle(title);
         }
         super.setPlacedBy(world, pos, blockState, livingEntity, itemStack);
     }
@@ -77,19 +75,23 @@ public class AnchorBlock extends Block implements IWaterLoggable {
     @SuppressWarnings("deprecation")
     @Override
     public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
-        if (world.isClientSide()) {
-            return ActionResultType.SUCCESS;
-        } else {
-            TileEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof AnchorEntity) {
+        TileEntity blockEntity = world.getBlockEntity(pos);
+        if (blockEntity instanceof MufflerEntity) {
+            ItemStack item = player.getItemInHand(hand);
+            if (!item.isEmpty() && item.getItem() instanceof BlockItem && ((BlockItem) item.getItem()).getBlock() != Blocks.AIR) {
+
+                return ActionResultType.SUCCESS;
+            }
+            if (world.isClientSide()) {
+                return ActionResultType.SUCCESS;
+            } else {
                 Network.sendToClient(new PacketAnchorSounds(
-                                ((AnchorEntity) blockEntity).getCurrentMuffledSounds(),
+                                ((MufflerEntity) blockEntity).getCurrentMuffledSounds(),
                                 pos,
-                                ((AnchorEntity) blockEntity).getRadius(),
-                                ((AnchorEntity) blockEntity).isMuffling(),
-                                ((AnchorEntity) blockEntity).getTitle()),
+                                ((MufflerEntity) blockEntity).getRadius(),
+                                ((MufflerEntity) blockEntity).isMuffling(),
+                                ((MufflerEntity) blockEntity).getTitle()),
                         (ServerPlayerEntity) player);
-                return ActionResultType.CONSUME;
             }
         }
         return super.use(state, world, pos, player, hand, result);

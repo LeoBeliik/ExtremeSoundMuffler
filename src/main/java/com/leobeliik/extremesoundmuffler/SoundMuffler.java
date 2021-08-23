@@ -1,7 +1,10 @@
 package com.leobeliik.extremesoundmuffler;
 
+import com.leobeliik.extremesoundmuffler.gui.MufflerScreen;
 import com.leobeliik.extremesoundmuffler.gui.buttons.InvButton;
+import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import com.leobeliik.extremesoundmuffler.networking.Network;
+import com.leobeliik.extremesoundmuffler.utils.DataManager;
 import net.minecraft.client.gui.DisplayEffectsScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -12,6 +15,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -34,11 +38,11 @@ public class SoundMuffler {
     private static KeyBinding openMufflerScreen;
 
     public SoundMuffler() {
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.COMMON_CONFIG);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.CLIENT_CONFIG);
         MinecraftForge.EVENT_BUS.register(this);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientInit);
-        Config.loadConfig(Config.COMMON_CONFIG, FMLPaths.CONFIGDIR.get().resolve(MODID + "-common.toml"));
+        Config.loadConfig(Config.CLIENT_CONFIG, FMLPaths.CONFIGDIR.get().resolve(MODID + "-client.toml"));
 
         ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.DISPLAYTEST,
                 () -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
@@ -47,10 +51,12 @@ public class SoundMuffler {
 
     private void init(final FMLCommonSetupEvent event) {
         Network.registerMessages();
-        //DataManager.loadData();
+        //load player muffled sounds
+        DataManager.loadData();
     }
 
     private void clientInit(final FMLClientSetupEvent event) {
+        //set keybind empty
         openMufflerScreen = new KeyBinding(
                 "Open sound muffler screen",
                 KeyConflictContext.IN_GAME,
@@ -59,6 +65,7 @@ public class SoundMuffler {
         ClientRegistry.registerKeyBinding(openMufflerScreen);
     }
 
+    //Add inventory button
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public void onGuiInit(GuiScreenEvent.InitGuiEvent.Post event) {
@@ -72,19 +79,21 @@ public class SoundMuffler {
             }
         } catch (NullPointerException ignored) {}
     }
-/*
+
+    //listen for keybind (empty by default)
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public void onKeyInput(InputEvent.KeyInputEvent event) {
         if (openMufflerScreen.consumeClick()) {
-            //MufflerScreen.open(); //TODO open with key
+            MufflerScreen.open(ISoundLists.playerMuffledList);
         }
-    }*/
+    }
 
     public static int getHotkey() {
         return openMufflerScreen.getKey().getValue();
     }
 
+    //set gui dark or bright
     public static ResourceLocation getGui() {
         String texture = Config.useDarkTheme() ? "textures/gui/sm_gui_dark.png" : "textures/gui/sm_gui.png";
         return new ResourceLocation(SoundMuffler.MODID, texture);

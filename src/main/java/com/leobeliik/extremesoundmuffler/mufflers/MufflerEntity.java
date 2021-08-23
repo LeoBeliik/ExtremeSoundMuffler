@@ -1,38 +1,42 @@
-package com.leobeliik.extremesoundmuffler.anchors;
+package com.leobeliik.extremesoundmuffler.mufflers;
 
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.client.model.data.ModelDataMap;
+import net.minecraftforge.client.model.data.ModelProperty;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AnchorEntity extends TileEntity implements ISoundLists {
+public class MufflerEntity extends TileEntity implements ISoundLists {
 
     private int radius;
     private boolean isMuffling;
     private Map<ResourceLocation, Float> currentMuffledSounds;
     private ITextComponent title;
 
-    AnchorEntity() {
-        super(AnchorRegistry.ANCHOR_ENTITY);
+    MufflerEntity() {
+        super(MufflerRegistry.ANCHOR_ENTITY);
         radius = 16;
         isMuffling = true;
         currentMuffledSounds = new HashMap<>();
-        anchorList.add(this);
-        title = ITextComponent.nullToEmpty("Anchor " + anchorList.size() / 2);
+        mufflerList.add(this);
+        title = ITextComponent.nullToEmpty("Anchor " + mufflerList.size() / 2);
     }
 
     @Override
     public void setRemoved() {
         super.setRemoved();
         clearCurrentMuffledSounds();
-        anchorList.remove(this);
+        mufflerList.remove(this);
     }
 
     @Override
@@ -96,11 +100,11 @@ public class AnchorEntity extends TileEntity implements ISoundLists {
         currentMuffledSounds.clear();
     }
 
-    public void setTitle(ITextComponent title) {
+    void setTitle(ITextComponent title) {
         this.title = title;
     }
 
-    public ITextComponent getTitle() {
+    ITextComponent getTitle() {
         return title;
     }
 }

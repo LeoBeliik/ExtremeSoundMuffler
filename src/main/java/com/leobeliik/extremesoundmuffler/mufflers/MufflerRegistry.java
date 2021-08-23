@@ -1,4 +1,4 @@
-package com.leobeliik.extremesoundmuffler.anchors;
+package com.leobeliik.extremesoundmuffler.mufflers;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
@@ -11,16 +11,16 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ObjectHolder;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
-public class AnchorRegistry {
+public class MufflerRegistry {
     @ObjectHolder("extremesoundmuffler:sound_muffler")
-    private static AnchorBlock ANCHOR_BLOCK;
+    private static MufflerBlock ANCHOR_BLOCK;
 
     @ObjectHolder("extremesoundmuffler:sound_muffler")
-    static TileEntityType<AnchorEntity> ANCHOR_ENTITY;
+    static TileEntityType<MufflerEntity> ANCHOR_ENTITY;
 
     @SubscribeEvent
     public static void onBlocksRegistry(final RegistryEvent.Register<Block> event) {
-        event.getRegistry().register(new AnchorBlock());
+        event.getRegistry().register(new MufflerBlock());
     }
 
     @SubscribeEvent
@@ -31,7 +31,7 @@ public class AnchorRegistry {
 
     @SubscribeEvent
     public static void onTileEntityRegistry(final RegistryEvent.Register<TileEntityType<?>> event) {
-        event.getRegistry().register(TileEntityType.Builder.of(AnchorEntity::new,
+        event.getRegistry().register(TileEntityType.Builder.of(MufflerEntity::new,
                 ANCHOR_BLOCK).build(null).setRegistryName("sound_muffler"));
     }
 }

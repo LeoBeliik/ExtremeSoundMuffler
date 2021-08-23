@@ -1,6 +1,6 @@
 package com.leobeliik.extremesoundmuffler.networking;
 
-import com.leobeliik.extremesoundmuffler.anchors.AnchorEntity;
+import com.leobeliik.extremesoundmuffler.mufflers.MufflerEntity;
 import com.leobeliik.extremesoundmuffler.gui.MufflerScreen;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
@@ -71,11 +71,11 @@ public class PacketAnchorSounds {
             ctx.get().enqueueWork(() -> MufflerScreen.open(anchorMuffledSounds, anchorPos, radius, isMuffling, title));
         } else {
             TileEntity anchor = Objects.requireNonNull(ctx.get().getSender()).level.getBlockEntity(anchorPos);
-            if (anchor instanceof AnchorEntity) {
-                ((AnchorEntity) anchor).clearCurrentMuffledSounds();
-                ((AnchorEntity) anchor).setCurrentMuffledSounds(anchorMuffledSounds);
-                ((AnchorEntity) anchor).setRadius(radius);
-                ((AnchorEntity) anchor).setMuffling(isMuffling);
+            if (anchor instanceof MufflerEntity) {
+                ((MufflerEntity) anchor).clearCurrentMuffledSounds();
+                ((MufflerEntity) anchor).setCurrentMuffledSounds(anchorMuffledSounds);
+                ((MufflerEntity) anchor).setRadius(radius);
+                ((MufflerEntity) anchor).setMuffling(isMuffling);
                 anchor.setChanged();
             }
         }

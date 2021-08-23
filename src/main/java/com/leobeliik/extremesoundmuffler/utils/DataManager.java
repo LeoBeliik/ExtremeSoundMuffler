@@ -17,19 +17,21 @@ public class DataManager implements ISoundLists {
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private static final String soundsMuffledFile = "soundsMuffled.dat";
 
-   /* public static void loadData() {
-        if (muffledSounds.isEmpty()) {
-            loadMuffledMap().forEach((R, F) -> ISoundLists.muffledSounds.put(new ResourceLocation(R), F));
+    public static void loadData() {
+        if (playerMuffledList.isEmpty()) {
+            loadMuffledMap().forEach((R, F) -> playerMuffledList.put(new ResourceLocation(R), F));
         }
     }
 
-    public static void saveData() {
+    public static void saveData(Map<ResourceLocation, Float> muffledList) {
+        playerMuffledList.clear();
+        playerMuffledList.putAll(muffledList);
         saveMuffledMap();
     }
 
     private static void saveMuffledMap() {
         try (Writer writer = new OutputStreamWriter(new FileOutputStream(soundsMuffledFile), StandardCharsets.UTF_8)) {
-            writer.write(gson.toJson(ISoundLists.muffledSounds));
+            writer.write(gson.toJson(playerMuffledList));
         } catch (IOException ignored) {}
     }
 
@@ -39,5 +41,5 @@ public class DataManager implements ISoundLists {
         } catch (JsonSyntaxException | IOException e) {
             return new HashMap<>();
         }
-    }*/
+    }
 }
