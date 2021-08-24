@@ -64,7 +64,7 @@ public class MufflerBlock extends Block implements IWaterLoggable {
     public void setPlacedBy(World world, BlockPos pos, BlockState blockState, @Nullable LivingEntity livingEntity, ItemStack itemStack) {
         TileEntity blockEntity = world.getBlockEntity(pos);
         ITextComponent title = itemStack.getHoverName();
-        if (blockEntity instanceof MufflerEntity && !title.equals(this.getName())) {
+        if (blockEntity instanceof MufflerEntity) {
             ((MufflerEntity) blockEntity).setTitle(title);
         }
         super.setPlacedBy(world, pos, blockState, livingEntity, itemStack);

@@ -2,24 +2,24 @@ package com.leobeliik.extremesoundmuffler.mufflers;
 
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class MufflerEntity extends TileEntity implements ISoundLists {
 
     private int radius;
     private boolean isMuffling;
     private Map<ResourceLocation, Float> currentMuffledSounds;
-    private ITextComponent title = ITextComponent.nullToEmpty("Sound Muffler");;
+    private String title = "Sound Muffler";
+    ;
 
     MufflerEntity() {
         super(MufflerRegistry.ANCHOR_ENTITY);
@@ -57,7 +57,7 @@ public class MufflerEntity extends TileEntity implements ISoundLists {
             currentMuffledSounds.forEach((R, F) -> compound.putFloat(R.toString(), F));
             nbt.put("muffledSounds", compound);
         }
-        nbt.putString("title", title.getString());
+        nbt.putString("title", title);
         nbt.putInt("anchorRadius", radius);
         nbt.putBoolean("anchorMuffling", isMuffling);
         return super.save(nbt);
@@ -71,7 +71,7 @@ public class MufflerEntity extends TileEntity implements ISoundLists {
         if (!compound.isEmpty()) {
             compound.getAllKeys().forEach(key -> currentMuffledSounds.put(new ResourceLocation(key), compound.getFloat(key)));
         }
-        title = ITextComponent.nullToEmpty(nbt.getString("title"));
+        title = nbt.getString("title");
         radius = nbt.getInt("anchorRadius");
         isMuffling = nbt.getBoolean("anchorMuffling");
     }
@@ -105,10 +105,10 @@ public class MufflerEntity extends TileEntity implements ISoundLists {
     }
 
     void setTitle(ITextComponent title) {
-        this.title = title;
+        this.title = title.getString();
     }
 
     public ITextComponent getTitle() {
-        return title;
+        return new StringTextComponent(title);
     }
 }
