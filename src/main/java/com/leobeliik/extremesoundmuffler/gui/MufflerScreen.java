@@ -92,14 +92,22 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        //close screen when the inventory key or the mod hotkey is pressed
-        if (minecraft.options.keyInventory.matches(keyCode, scanCode) || keyCode == SoundMuffler.getHotkey()) {
-            this.onClose();
-            return true;
+        //Only numbers lower than 100
+        rangeBar.setFilter(s -> s.matches("([0-9][0-9]?$|^100$)?"));
+        if (!searchBar.isFocused() && !rangeBar.isFocused()) {
+            //close screen when the inventory key or the mod hotkey is pressed
+            if (minecraft.options.keyInventory.matches(keyCode, scanCode) || keyCode == SoundMuffler.getHotkey()) {
+                this.onClose();
+                return true;
+            }
         }
         //Searchbar & Rangebar looses focus when pressed "Enter" or "Intro"
         if (keyCode == 257 || keyCode == 335) {
+            updateButtons();
             searchBar.setFocus(false);
+            setRange();
+            rangeBar.setValue(String.valueOf(radius));
+            rangeBar.setTextColor(whiteText);
             rangeBar.setFocus(false);
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
@@ -147,6 +155,10 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
                 rangeBar.setFocus(false);
             }
         }
+        if (rangeBar.visible && !rangeBar.isMouseOver(mouseX, mouseY)) {
+            rangeBar.setValue(String.valueOf(radius));
+            rangeBar.setTextColor(whiteText);
+        }
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
@@ -155,6 +167,9 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         if (mufflerPos == null) {
             DataManager.saveData(muffledList);
         } else {
+            if (minecraft.level != null) {
+                ((MufflerEntity) minecraft.level.getBlockEntity(mufflerPos)).updateMuffler(muffledList, radius, isMuffling, title);
+            }
             Network.sendToServer(new PacketAnchorSounds(muffledList, mufflerPos, radius, isMuffling, title));
             clearMufflerData();
         }
@@ -236,8 +251,6 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     }
 
     private void setRange() {
-        //Only numbers
-        rangeBar.setFilter(s -> s.matches("[0-9]*(?:[0-9]*)?"));
         if (!rangeBar.getValue().isEmpty()) {
             int value = Integer.parseInt(rangeBar.getValue());
             int maxValue = Config.getMufflersMaxRadius();

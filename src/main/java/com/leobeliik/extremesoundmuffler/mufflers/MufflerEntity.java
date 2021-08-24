@@ -1,12 +1,19 @@
 package com.leobeliik.extremesoundmuffler.mufflers;
 
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
+import com.leobeliik.extremesoundmuffler.networking.Network;
+import com.leobeliik.extremesoundmuffler.networking.PacketAnchorSounds;
+import com.leobeliik.extremesoundmuffler.networking.PacketClientMuffler;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraftforge.fml.network.NetworkHooks;
+import sun.net.NetHooks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -19,7 +26,6 @@ public class MufflerEntity extends TileEntity implements ISoundLists {
     private boolean isMuffling;
     private Map<ResourceLocation, Float> currentMuffledSounds;
     private String title = "Sound Muffler";
-    ;
 
     MufflerEntity() {
         super(MufflerRegistry.ANCHOR_ENTITY);
@@ -31,9 +37,20 @@ public class MufflerEntity extends TileEntity implements ISoundLists {
     @Override
     public void onLoad() {
         super.onLoad();
-        if (level != null && !level.isClientSide()) {
-            mufflerList.add(this);
+        if (level != null) {
+            if (!level.isClientSide()) {
+                mufflerList.add(this);
+            } else {
+                mufflerClientList.add(this);
+            }
         }
+    }
+
+    @Override
+    public void onChunkUnloaded() {
+        super.onChunkUnloaded();
+        mufflerList.remove(this);
+        mufflerClientList.remove(this);
     }
 
     @Override
@@ -41,6 +58,7 @@ public class MufflerEntity extends TileEntity implements ISoundLists {
         super.setRemoved();
         clearCurrentMuffledSounds();
         mufflerList.remove(this);
+        mufflerClientList.remove(this);
     }
 
     @Override
@@ -110,5 +128,12 @@ public class MufflerEntity extends TileEntity implements ISoundLists {
 
     public ITextComponent getTitle() {
         return new StringTextComponent(title);
+    }
+
+    public void updateMuffler(Map<ResourceLocation, Float> muffledList, int radius, boolean isMuffling, ITextComponent title) {
+        this.setCurrentMuffledSounds(muffledList);
+        this.setRadius(radius);
+        this.setMuffling(isMuffling);
+        this.setTitle(title);
     }
 }

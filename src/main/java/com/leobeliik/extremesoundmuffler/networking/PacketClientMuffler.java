@@ -1,7 +1,8 @@
 package com.leobeliik.extremesoundmuffler.networking;
 
-import com.leobeliik.extremesoundmuffler.gui.MufflerScreen;
+import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import com.leobeliik.extremesoundmuffler.mufflers.MufflerEntity;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
@@ -9,23 +10,22 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fml.network.NetworkEvent;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-public class PacketAnchorSounds {
-    private static Map<ResourceLocation, Float> anchorMuffledSounds = new HashMap<>();
-    private static BlockPos anchorPos;
+public class PacketClientMuffler implements ISoundLists {
+    private static Map<ResourceLocation, Float> muffledSounds = new HashMap<>();
+    private static BlockPos MufflerPos;
     private static int radius;
     private static boolean isMuffling;
     private static ITextComponent title;
 
-    public PacketAnchorSounds(Map<ResourceLocation, Float> ms, BlockPos pos, int rad, boolean muffling, ITextComponent name) {
-        anchorMuffledSounds.clear();
-        anchorMuffledSounds.putAll(ms);
-        anchorPos = pos;
+    public PacketClientMuffler(Map<ResourceLocation, Float> ms, BlockPos pos, int rad, boolean muffling, ITextComponent name) {
+        muffledSounds.clear();
+        muffledSounds.putAll(ms);
+        MufflerPos = pos;
         radius = rad;
         isMuffling = muffling;
         title = name;
@@ -33,14 +33,14 @@ public class PacketAnchorSounds {
 
     void encode(PacketBuffer buf) {
         buf.writeNbt(serializeMap());
-        buf.writeBlockPos(anchorPos);
+        buf.writeBlockPos(MufflerPos);
         buf.writeInt(radius);
         buf.writeBoolean(isMuffling);
         buf.writeComponent(title);
     }
 
-    static PacketAnchorSounds decode(PacketBuffer buf) {
-        return new PacketAnchorSounds(
+    static PacketClientMuffler decode(PacketBuffer buf) {
+        return new PacketClientMuffler(
                 deserializeMap(Objects.requireNonNull(buf.readNbt())),
                 buf.readBlockPos(),
                 buf.readInt(),
@@ -49,11 +49,11 @@ public class PacketAnchorSounds {
     }
 
     private CompoundNBT serializeMap() {
-        if (anchorMuffledSounds.isEmpty()) {
+        if (muffledSounds.isEmpty()) {
             return new CompoundNBT();
         } else {
             CompoundNBT nbt = new CompoundNBT();
-            anchorMuffledSounds.forEach((R, F) -> nbt.putFloat(R.toString(), F));
+            muffledSounds.forEach((R, F) -> nbt.putFloat(R.toString(), F));
             return nbt;
         }
     }
@@ -67,19 +67,14 @@ public class PacketAnchorSounds {
     }
 
     boolean handle(Supplier<NetworkEvent.Context> ctx) {
-        if (ctx.get().getDirection().getReceptionSide().isClient()) {
-            ctx.get().enqueueWork(() -> MufflerScreen.open(anchorMuffledSounds, anchorPos, radius, isMuffling, title));
-        } else {
-            TileEntity anchor = Objects.requireNonNull(ctx.get().getSender()).level.getBlockEntity(anchorPos);
-            if (anchor instanceof MufflerEntity) {
-                ((MufflerEntity) anchor).clearCurrentMuffledSounds();
-                ((MufflerEntity) anchor).setCurrentMuffledSounds(anchorMuffledSounds);
-                ((MufflerEntity) anchor).setRadius(radius);
-                ((MufflerEntity) anchor).setMuffling(isMuffling);
-                anchor.setChanged();
+        if (ctx.get().getDirection().getReceptionSide().isClient() && Minecraft.getInstance().level != null) {
+            TileEntity muffler = Minecraft.getInstance().level.getBlockEntity(MufflerPos);
+            if (muffler instanceof MufflerEntity) {
+                ((MufflerEntity) muffler).clearCurrentMuffledSounds();
+                ((MufflerEntity) muffler).updateMuffler(muffledSounds, radius, isMuffling, title);
+                mufflerClientList.add((MufflerEntity) muffler);
             }
         }
         return true;
     }
-
 }

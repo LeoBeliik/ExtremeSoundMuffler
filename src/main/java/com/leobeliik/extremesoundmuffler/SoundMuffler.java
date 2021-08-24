@@ -3,7 +3,9 @@ package com.leobeliik.extremesoundmuffler;
 import com.leobeliik.extremesoundmuffler.gui.MufflerScreen;
 import com.leobeliik.extremesoundmuffler.gui.buttons.InvButton;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
+import com.leobeliik.extremesoundmuffler.mufflers.MufflerEntity;
 import com.leobeliik.extremesoundmuffler.networking.Network;
+import com.leobeliik.extremesoundmuffler.networking.PacketClientMuffler;
 import com.leobeliik.extremesoundmuffler.utils.DataManager;
 import net.minecraft.client.gui.DisplayEffectsScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -11,6 +13,7 @@ import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.screen.inventory.CreativeScreen;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.InputMappings;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -18,6 +21,7 @@ import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -93,9 +97,18 @@ public class SoundMuffler {
 
     //clear mufflerlist on world unload
     @SubscribeEvent
-    @OnlyIn(Dist.CLIENT)
-    public void onLevelUnload(WorldEvent.Unload event) {
-        ISoundLists.mufflerList.clear();
+    public void playerLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.getPlayer() instanceof ServerPlayerEntity) {
+            for (MufflerEntity muffler : ISoundLists.mufflerList) {
+                Network.sendToClient(new PacketClientMuffler(
+                        muffler.getCurrentMuffledSounds(),
+                        muffler.getBlockPos(),
+                        muffler.getRadius(),
+                        muffler.isMuffling(),
+                        muffler.getTitle()),
+                        (ServerPlayerEntity) event.getPlayer());
+            }
+        }
     }
 
     public static int getHotkey() {

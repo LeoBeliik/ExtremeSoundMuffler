@@ -8,6 +8,7 @@ public interface ISoundLists {
 
     Set<String> forbiddenSounds = new HashSet<>();
     Set<MufflerEntity> mufflerList = new HashSet<>();
+    Set<MufflerEntity> mufflerClientList = new HashSet<>();
     Map<ResourceLocation, Float> playerMuffledList = new HashMap<>();
     SortedSet<ResourceLocation> recentSoundsList = new TreeSet<>();
 

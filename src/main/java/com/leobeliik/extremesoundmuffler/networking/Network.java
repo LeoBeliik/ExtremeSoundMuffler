@@ -5,6 +5,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 public class Network {
@@ -26,6 +27,12 @@ public class Network {
                 .decoder(PacketAnchorSounds::decode)
                 .consumer(PacketAnchorSounds::handle)
                 .add();
+         INSTANCE.messageBuilder(PacketClientMuffler.class, nextID())
+                .encoder(PacketClientMuffler::encode)
+                .decoder(PacketClientMuffler::decode)
+                .consumer(PacketClientMuffler::handle)
+                .add();
+
     }
 
 
@@ -33,8 +40,8 @@ public class Network {
         INSTANCE.sendTo(packet, player.connection.getConnection(), NetworkDirection.PLAY_TO_CLIENT);
     }
 
-    public static void sendTo(ServerPlayerEntity playerMP, Object toSend) {
-        INSTANCE.sendTo(toSend, playerMP.connection.getConnection(), NetworkDirection.PLAY_TO_CLIENT);
+    public static void sendToAll(Object packet) {
+        INSTANCE.send(PacketDistributor.ALL.noArg(), packet);
     }
 
     public static void sendToServer(Object packet) {
