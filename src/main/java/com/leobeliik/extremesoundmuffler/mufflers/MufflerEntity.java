@@ -1,20 +1,13 @@
 package com.leobeliik.extremesoundmuffler.mufflers;
 
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
-import com.leobeliik.extremesoundmuffler.networking.Network;
-import com.leobeliik.extremesoundmuffler.networking.PacketAnchorSounds;
-import com.leobeliik.extremesoundmuffler.networking.PacketClientMuffler;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraftforge.fml.network.NetworkHooks;
-import sun.net.NetHooks;
-
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.HashMap;
@@ -32,6 +25,15 @@ public class MufflerEntity extends TileEntity implements ISoundLists {
         radius = 16;
         isMuffling = true;
         currentMuffledSounds = new HashMap<>();
+    }
+
+    public MufflerEntity(BlockPos pos, int radius, boolean isMuffling, Map<ResourceLocation, Float> currentMuffledSounds, ITextComponent title) {
+        super(MufflerRegistry.ANCHOR_ENTITY);
+        this.worldPosition = pos;
+        this.radius = radius;
+        this.isMuffling = isMuffling;
+        this.currentMuffledSounds = currentMuffledSounds;
+        this.setTitle(title);
     }
 
     @Override

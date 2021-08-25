@@ -5,11 +5,11 @@ import com.leobeliik.extremesoundmuffler.mufflers.MufflerEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fml.network.NetworkEvent;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -17,15 +17,16 @@ import java.util.function.Supplier;
 
 public class PacketClientMuffler implements ISoundLists {
     private static Map<ResourceLocation, Float> muffledSounds = new HashMap<>();
-    private static BlockPos MufflerPos;
+    private static BlockPos mufflerPos;
     private static int radius;
     private static boolean isMuffling;
     private static ITextComponent title;
 
     public PacketClientMuffler(Map<ResourceLocation, Float> ms, BlockPos pos, int rad, boolean muffling, ITextComponent name) {
         muffledSounds.clear();
+        mufflerClientList.clear();
         muffledSounds.putAll(ms);
-        MufflerPos = pos;
+        mufflerPos = pos;
         radius = rad;
         isMuffling = muffling;
         title = name;
@@ -33,7 +34,7 @@ public class PacketClientMuffler implements ISoundLists {
 
     void encode(PacketBuffer buf) {
         buf.writeNbt(serializeMap());
-        buf.writeBlockPos(MufflerPos);
+        buf.writeBlockPos(mufflerPos);
         buf.writeInt(radius);
         buf.writeBoolean(isMuffling);
         buf.writeComponent(title);
@@ -68,12 +69,8 @@ public class PacketClientMuffler implements ISoundLists {
 
     boolean handle(Supplier<NetworkEvent.Context> ctx) {
         if (ctx.get().getDirection().getReceptionSide().isClient() && Minecraft.getInstance().level != null) {
-            TileEntity muffler = Minecraft.getInstance().level.getBlockEntity(MufflerPos);
-            if (muffler instanceof MufflerEntity) {
-                ((MufflerEntity) muffler).clearCurrentMuffledSounds();
-                ((MufflerEntity) muffler).updateMuffler(muffledSounds, radius, isMuffling, title);
-                mufflerClientList.add((MufflerEntity) muffler);
-            }
+            MufflerEntity muffler = new MufflerEntity(mufflerPos, radius, isMuffling, muffledSounds, title);
+            mufflerClientList.add(muffler);
         }
         return true;
     }

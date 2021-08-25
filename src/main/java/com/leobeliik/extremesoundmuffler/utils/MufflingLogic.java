@@ -29,21 +29,15 @@ public class MufflingLogic implements ISoundLists {
         if (mufflerClientList.isEmpty()) {
             return cir;
         }
-
-        if (sound.getLocation().toString().contains("grass")) {
-            for (MufflerEntity muffler : mufflerClientList) {
-                System.out.println(muffler.getCurrentMuffledSounds());
-            }
-        }
         //anchor muffling
         BlockPos soundPos = new BlockPos(sound.getX(), sound.getY(), sound.getZ());
         try {
-            for (MufflerEntity anchor : mufflerClientList) {
-                if (Minecraft.getInstance().level != null && anchor.getLevel() != null && !Minecraft.getInstance().level.dimension().equals(anchor.getLevel().dimension())) {
+            for (MufflerEntity muffler : mufflerClientList) {
+                if (Minecraft.getInstance().level != null && muffler.getLevel() != null && !Minecraft.getInstance().level.dimension().equals(muffler.getLevel().dimension())) {
                     return cir;
                 }
-                if (anchor.isMuffling() && anchor.getCurrentMuffledSounds().containsKey(sound.getLocation()) && soundPos.closerThan(anchor.getBlockPos(), anchor.getRadius())) {
-                    cir.setReturnValue(cir.getReturnValue() * anchor.getCurrentMuffledSounds().get(sound.getLocation()));
+                if (muffler.isMuffling() && muffler.getCurrentMuffledSounds().containsKey(sound.getLocation()) && soundPos.closerThan(muffler.getBlockPos(), muffler.getRadius())) {
+                    cir.setReturnValue(cir.getReturnValue() * muffler.getCurrentMuffledSounds().get(sound.getLocation()));
                     return cir;
                 }
             }
