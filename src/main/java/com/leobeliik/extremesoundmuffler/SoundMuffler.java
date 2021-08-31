@@ -5,7 +5,7 @@ import com.leobeliik.extremesoundmuffler.gui.buttons.InvButton;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import com.leobeliik.extremesoundmuffler.mufflers.MufflerEntity;
 import com.leobeliik.extremesoundmuffler.networking.Network;
-import com.leobeliik.extremesoundmuffler.networking.PacketClientMuffler;
+import com.leobeliik.extremesoundmuffler.networking.PacketMufflers;
 import com.leobeliik.extremesoundmuffler.utils.DataManager;
 import net.minecraft.client.gui.DisplayEffectsScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -36,7 +36,7 @@ import net.minecraftforge.fml.network.FMLNetworkConstants;
 import org.apache.commons.lang3.tuple.Pair;
 
 @Mod("extremesoundmuffler")
-public class SoundMuffler {
+public class SoundMuffler implements ISoundLists {
 
     public static final String MODID = "extremesoundmuffler";
     private static KeyBinding openMufflerScreen;
@@ -89,24 +89,32 @@ public class SoundMuffler {
     @OnlyIn(Dist.CLIENT)
     public void onKeyInput(InputEvent.KeyInputEvent event) {
         if (openMufflerScreen.consumeClick()) {
-            MufflerScreen.open(ISoundLists.playerMuffledList);
+            MufflerScreen.open(playerMuffledList);
         }
     }
 
-
+    //load client list of mufflers
     @SubscribeEvent
-    public void playerLogin(PlayerEvent.PlayerLoggedInEvent event) {
+    public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getPlayer() instanceof ServerPlayerEntity) {
-            for (MufflerEntity muffler : ISoundLists.mufflerList) {
-                Network.sendToClient(new PacketClientMuffler(
-                        muffler.getCurrentMuffledSounds(),
-                        muffler.getBlockPos(),
-                        muffler.getRadius(),
-                        muffler.isMuffling(),
-                        muffler.getTitle()),
+            for (MufflerEntity muffler : mufflerList) {
+                Network.sendToClient(new PacketMufflers(
+                                muffler.getCurrentMuffledSounds(),
+                                muffler.getBlockPos(),
+                                muffler.getRadius(),
+                                muffler.isMuffling(),
+                                muffler.getTitle(),
+                                false),
                         (ServerPlayerEntity) event.getPlayer());
             }
         }
+    }
+
+    //clear list to not interfere with other worlds
+    @SubscribeEvent
+    @OnlyIn(Dist.CLIENT)
+    public void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
+        mufflerList.clear();
     }
 
     public static int getHotkey() {

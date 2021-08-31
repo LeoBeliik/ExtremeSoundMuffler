@@ -8,7 +8,7 @@ import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import com.leobeliik.extremesoundmuffler.mufflers.MufflerEntity;
 import com.leobeliik.extremesoundmuffler.networking.Network;
-import com.leobeliik.extremesoundmuffler.networking.PacketAnchorSounds;
+import com.leobeliik.extremesoundmuffler.networking.PacketMufflers;
 import com.leobeliik.extremesoundmuffler.utils.DataManager;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
@@ -166,11 +166,11 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     public void onClose() {
         if (mufflerPos == null) {
             DataManager.saveData(muffledList);
-        } else {
+        } else { //TODO the muffled sounds are leaking on all mufflers!
             if (minecraft.level != null) {
                 ((MufflerEntity) minecraft.level.getBlockEntity(mufflerPos)).updateMuffler(muffledList, radius, isMuffling, title);
             }
-            Network.sendToServer(new PacketAnchorSounds(muffledList, mufflerPos, radius, isMuffling, title));
+            Network.sendToServer(new PacketMufflers(muffledList, mufflerPos, radius, isMuffling, title, false));
             clearMufflerData();
         }
         super.onClose();
@@ -368,8 +368,10 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
             for (MufflerEntity muffler : mufflerList) {
                 //TODO make my own buttons
                 if (muffler.getBlockPos().compareTo(mufflerPos) != 0) {
-                    addButton(new Button(getX() - 95, buttonH, 80, 12, muffler.getTitle(), b ->
-                            open(muffler.getCurrentMuffledSounds(), muffler.getBlockPos(), muffler.getRadius(), muffler.isMuffling(), muffler.getTitle())));
+                    addButton(new Button(getX() - 95, buttonH, 80, 12, muffler.getTitle(), b -> {
+                        this.onClose();
+                        open(muffler.getCurrentMuffledSounds(), muffler.getBlockPos(), muffler.getRadius(), muffler.isMuffling(), muffler.getTitle());
+                    }));
                     buttonH += 15;
                 }
             }

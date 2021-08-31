@@ -17,14 +17,13 @@ public class MufflerEntity extends TileEntity implements ISoundLists {
 
     private int radius;
     private boolean isMuffling;
-    private Map<ResourceLocation, Float> currentMuffledSounds;
+    private Map<ResourceLocation, Float> currentMuffledSounds = new HashMap<>();;
     private String title = "Sound Muffler";
 
     MufflerEntity() {
         super(MufflerRegistry.ANCHOR_ENTITY);
         radius = 16;
         isMuffling = true;
-        currentMuffledSounds = new HashMap<>();
     }
 
     public MufflerEntity(BlockPos pos, int radius, boolean isMuffling, Map<ResourceLocation, Float> currentMuffledSounds, ITextComponent title) {
@@ -32,7 +31,7 @@ public class MufflerEntity extends TileEntity implements ISoundLists {
         this.worldPosition = pos;
         this.radius = radius;
         this.isMuffling = isMuffling;
-        this.currentMuffledSounds = currentMuffledSounds;
+        this.currentMuffledSounds.putAll(currentMuffledSounds);
         this.setTitle(title);
     }
 

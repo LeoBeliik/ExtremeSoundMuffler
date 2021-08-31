@@ -1,7 +1,7 @@
 package com.leobeliik.extremesoundmuffler.mufflers;
 
 import com.leobeliik.extremesoundmuffler.networking.Network;
-import com.leobeliik.extremesoundmuffler.networking.PacketAnchorSounds;
+import com.leobeliik.extremesoundmuffler.networking.PacketMufflers;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.util.ITooltipFlag;
@@ -85,12 +85,13 @@ public class MufflerBlock extends Block implements IWaterLoggable {
             if (world.isClientSide()) {
                 return ActionResultType.SUCCESS;
             } else {
-                Network.sendToClient(new PacketAnchorSounds(
+                Network.sendToClient(new PacketMufflers(
                                 ((MufflerEntity) blockEntity).getCurrentMuffledSounds(),
                                 pos,
                                 ((MufflerEntity) blockEntity).getRadius(),
                                 ((MufflerEntity) blockEntity).isMuffling(),
-                                ((MufflerEntity) blockEntity).getTitle()),
+                                ((MufflerEntity) blockEntity).getTitle(),
+                                true),
                         (ServerPlayerEntity) player);
             }
         }

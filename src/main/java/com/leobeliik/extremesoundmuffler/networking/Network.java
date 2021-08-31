@@ -22,26 +22,15 @@ public class Network {
                 s -> true,
                 s -> true);
 
-        INSTANCE.messageBuilder(PacketAnchorSounds.class, nextID())
-                .encoder(PacketAnchorSounds::encode)
-                .decoder(PacketAnchorSounds::decode)
-                .consumer(PacketAnchorSounds::handle)
+        INSTANCE.messageBuilder(PacketMufflers.class, nextID())
+                .encoder(PacketMufflers::encode)
+                .decoder(PacketMufflers::decode)
+                .consumer(PacketMufflers::handle)
                 .add();
-         INSTANCE.messageBuilder(PacketClientMuffler.class, nextID())
-                .encoder(PacketClientMuffler::encode)
-                .decoder(PacketClientMuffler::decode)
-                .consumer(PacketClientMuffler::handle)
-                .add();
-
     }
-
 
     public static void sendToClient(Object packet, ServerPlayerEntity player) {
         INSTANCE.sendTo(packet, player.connection.getConnection(), NetworkDirection.PLAY_TO_CLIENT);
-    }
-
-    public static void sendToAll(Object packet) {
-        INSTANCE.send(PacketDistributor.ALL.noArg(), packet);
     }
 
     public static void sendToServer(Object packet) {
