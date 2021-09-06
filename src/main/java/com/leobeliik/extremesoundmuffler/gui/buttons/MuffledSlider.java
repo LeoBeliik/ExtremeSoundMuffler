@@ -21,6 +21,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class MuffledSlider extends Widget implements IColorsGui {
 
     private static final Minecraft minecraft = Minecraft.getInstance();
+    private final FontRenderer font = minecraft.font;
     private static boolean showSlider = false;
     private final ResourceLocation sound;
     private float sliderValue;
@@ -53,9 +54,7 @@ public class MuffledSlider extends Widget implements IColorsGui {
     }
 
     private void drawMessage(MatrixStack ms) {
-        FontRenderer font = minecraft.font;
         int v = Math.max(width, font.width(getMessage().getString()));
-
         if (showSlider && isFocused() && isHovered) {
             drawCenteredString(ms, font, "Volume: " + (int) (sliderValue * 100), x + (width / 2), y + 2, yellowText); //title
         } else {
@@ -156,7 +155,9 @@ public class MuffledSlider extends Widget implements IColorsGui {
         return super.mouseReleased(mouseX, mouseY, button);
     }
 
-    private void func_230979_b_() {}
+    private void func_230979_b_() {
+    }
 
-    private void func_230972_a_() {}
+    private void func_230972_a_() {
+    }
 }

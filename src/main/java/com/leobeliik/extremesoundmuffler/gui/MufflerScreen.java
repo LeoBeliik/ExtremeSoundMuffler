@@ -4,6 +4,7 @@ import com.leobeliik.extremesoundmuffler.Config;
 import com.leobeliik.extremesoundmuffler.SoundMuffler;
 import com.leobeliik.extremesoundmuffler.gui.buttons.GradientButton;
 import com.leobeliik.extremesoundmuffler.gui.buttons.MuffledSlider;
+import com.leobeliik.extremesoundmuffler.gui.buttons.MufflerListButton;
 import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import com.leobeliik.extremesoundmuffler.mufflers.MufflerEntity;
@@ -20,10 +21,7 @@ import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.util.text.*;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -42,10 +40,10 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     private final int ySize = 202;
     private static boolean isPlayerMuffling = true;
     private int minYButton, maxYButton, index;
-    private boolean isMuffling;
+    private boolean isMuffling, showMufflerList, showMuffled;
     private int radius;
     private BlockPos mufflerPos;
-    private Widget btnToggle, btnAccept, btnCancel;
+    private Widget btnToggle, btnAccept, btnCancel, btnMufflerList;
     private GradientButton btnRecent, btnAll, btnMuffled;
     private TextFieldWidget searchBar, rangeBar;
     private MuffledSlider firstSoundButton, lastSoundButton;
@@ -63,11 +61,13 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     @ParametersAreNonnullByDefault
     @Override
     public void render(MatrixStack ms, int mouseX, int mouseY, float partialTicks) {
+        showMuffled = mufflerPos != null && isMuffling || mufflerPos == null && isPlayerMuffling;
         this.renderBackground(ms);
         this.bindTexture();
         this.blit(ms, getX(), getY(), 0, 0, xSize, ySize); //Main screen bounds
         renderButtons(ms, mouseX, mouseY);
         super.render(ms, mouseX, mouseY, partialTicks);
+        renderTips(ms, mouseX, mouseY, partialTicks);
     }
 
     @Override
@@ -166,9 +166,9 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     public void onClose() {
         if (mufflerPos == null) {
             DataManager.saveData(muffledList);
-        } else { //TODO the muffled sounds are leaking on all mufflers!
+        } else {
             if (minecraft.level != null) {
-                ((MufflerEntity) minecraft.level.getBlockEntity(mufflerPos)).updateMuffler(muffledList, radius, isMuffling, title);
+                ((MufflerEntity) Objects.requireNonNull(minecraft.level.getBlockEntity(mufflerPos))).updateMuffler(muffledList, radius, isMuffling, title);
             }
             Network.sendToServer(new PacketMufflers(muffledList, mufflerPos, radius, isMuffling, title, false));
             clearMufflerData();
@@ -335,16 +335,18 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         //muffled sounds // 42 is the lenght of the text + 2
         addButton(btnMuffled = new GradientButton(getX() + 136, getY() + 24, 42, ITextComponent.nullToEmpty("Muffled"), b ->
                 toggleTopButtons((GradientButton) b))).setActive(false);
-        //Searchbar button
+        //Searchbar
         addButton(searchBar = new TextFieldWidget(font, getX() + 63, getY() + 185, 134, 11, emptyText)).setBordered(false);
-        //Anchor range button
+        //Muffler range editor
         addButton(rangeBar = new TextFieldWidget(font, getX() + xSize + 38, getY() + 46, 22, 11, emptyText))
                 .visible = mufflerPos != null;
-        addButton(new Button(getX() - 3, getY(), 10, 10, emptyText, b -> {
-            addMufflersButtons(mufflerPos);
-        }));
+        //Muffler List button; shows / hides the list of mufflers
+        addWidget(btnMufflerList = new Button(getX() + 41, getY() + 183, 10, 12, ITextComponent.nullToEmpty("Show Muffler list"), b ->
+                hideMufflerButtons(!showMufflerList)));
+        //List of mufflers
+        addMufflersButtons(mufflerPos);
         //toggle muffling sounds on/off
-        addWidget(btnToggle = new Button(getX() + 229, getY() + 179, 17, 17, ITextComponent.nullToEmpty("Mufflers list"), b -> {
+        addWidget(btnToggle = new Button(getX() + 229, getY() + 179, 17, 17, ITextComponent.nullToEmpty("Stop muffing"), b -> {
             if (mufflerPos != null) {
                 isMuffling = !isMuffling;
             } else {
@@ -364,25 +366,35 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
     private void addMufflersButtons(BlockPos pos) {
         if (!mufflerList.isEmpty()) {
-            int buttonH = getY() + 10;
+            int buttonH = getY() + 25;
             for (MufflerEntity muffler : mufflerList) {
-                //TODO make my own buttons
                 if (muffler.getBlockPos().compareTo(mufflerPos) != 0) {
-                    addButton(new Button(getX() - 95, buttonH, 80, 12, muffler.getTitle(), b -> {
+                    addButton(new MufflerListButton(getX() - 90, buttonH, muffler.getTitle(), b -> {
                         this.onClose();
                         open(muffler.getCurrentMuffledSounds(), muffler.getBlockPos(), muffler.getRadius(), muffler.isMuffling(), muffler.getTitle());
-                    }));
+                    })).visible = false;
                     buttonH += 15;
                 }
             }
         }
     }
+
+    private void hideMufflerButtons(boolean hide) {
+        String s = showMufflerList ? "Show" : "Hide";
+        btnMufflerList.setMessage(ITextComponent.nullToEmpty(s + " Muffler list"));
+        if (!mufflerList.isEmpty()) {
+            for (Widget button : buttons) {
+                if (button instanceof MufflerListButton) {
+                    button.visible = hide;
+                }
+            }
+        }
+        showMufflerList = !showMufflerList;
+    }
     //end of buttons
 
     //Start text rendering
     private void renderButtons(MatrixStack ms, int mouseX, int mouseY) {
-        boolean showMuffled = mufflerPos != null && isMuffling || mufflerPos == null && isPlayerMuffling;
-        String message;
         //Screen title
         drawCenteredString(ms, font, this.title, getX() + 128, getY() + 8, whiteText);
         //Render red diagonal on toggle muffling button
@@ -390,34 +402,18 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
             bindTexture();
             blit(ms, btnToggle.x, btnToggle.y + 1, 22F, 203F, 17, 17, xSize, xSize);
         }
-
-        //button tooltips
-        for (IGuiEventListener widget : children) {
-            if (widget instanceof Button && widget.isMouseOver(mouseX, mouseY)) {
-                Button b = (Button) widget;
-                if (b.getMessage().equals(emptyText)) {
-                    continue;
-                }
-
-                if (b == btnToggle) {
-                    b.setMessage(showMuffled ? ITextComponent.nullToEmpty("Stop muffing") : ITextComponent.nullToEmpty("Resume muffing"));
-                }
-                int buttonY = b.y;
-                if (widget instanceof GradientButton) {
-                    message = "Show " + b.getMessage().getString() + " sounds";
-                } else {
-                    message = b.getMessage().getString();
-                    buttonY = b.y + b.getHeight() * 2 + 5;
-                }
-                renderTooltip(ms, ITextComponent.nullToEmpty(message), b.x - (font.width(message) / 2), buttonY);
-            }
+        //Muffler list pannel
+        if (showMufflerList) {
+            String m = mufflerList.size() > 1 ? "Mufflers:" : "No more Mufflers to show";
+            fill(ms, getX(), getY() + 5, getX() - 100, getY() + 180, darkBG);
+            font.drawWordWrap(ITextProperties.of(m), getX() - 71, getY() + 10, 65, whiteText);
         }
+
         //searchbar prompt text
         if (!this.searchBar.isFocused() && this.searchBar.getValue().isEmpty()) {
             drawString(ms, font, searchHint, searchBar.x, searchBar.y, grayText);
         }
-
-        //Anchor information
+        //Muffler information
         if (mufflerPos != null) {
             int x = getX() + xSize + 3;
             int y = getY() + 5;
@@ -436,12 +432,45 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
                 font.draw(ms, "Range: 1 - " + Config.getMufflersMaxRadius(), rangeBar.x - 15, rangeBar.y + 16, whiteText);
             }
         }
-
-        //Anchor lists
-        //TODO
-
         //tips
         //TODO
+
+    }
+
+    //button tooltips
+    private void renderTips(MatrixStack ms, int mouseX, int mouseY, float partialTicks) {
+        for (IGuiEventListener widget : children) {
+            if (widget instanceof MufflerListButton) {
+                MufflerListButton mb = (MufflerListButton) widget;
+                if (widget.isMouseOver(mouseX, mouseY)) {
+                    if (font.width(((MufflerListButton) widget).getMessage()) > 76) {
+                        String m = mb.getMessage().getString();
+                        renderTooltip(ms, ITextComponent.nullToEmpty(m), mb.x + 28 - (font.width(m) / 2), mb.y + 15);
+                    } else {
+                        mb.setFGColor(cyanText);
+                    }
+                } else {
+                    mb.setFGColor(whiteText);
+                }
+            } else if (widget instanceof Button && widget.isMouseOver(mouseX, mouseY)) {
+                Button b = (Button) widget;
+                String message = b.getMessage().getString();
+                if (b.getMessage().equals(emptyText)) {
+                    continue;
+                }
+                if (b == btnToggle) {
+                    b.setMessage(showMuffled ? ITextComponent.nullToEmpty("Stop muffing") : ITextComponent.nullToEmpty("Resume muffing"));
+                }
+                int buttonY = b.y;
+                int buttonX = b.x;
+                if (widget instanceof GradientButton) {
+                    message = "Show " + b.getMessage().getString() + " sounds";
+                } else {
+                    buttonY = b.y + b.getHeight() * 2 + 5;
+                }
+                renderTooltip(ms, ITextComponent.nullToEmpty(message), buttonX - (font.width(message) / 2), buttonY);
+            }
+        }
     }
     //end of text rendering
 

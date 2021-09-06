@@ -11,5 +11,6 @@ public interface IColorsGui {
     int redText = 0xff0000;
     int darkBG = ColorHelper.PackedColor.color(223, 0, 0, 0);
     int brightBG = ColorHelper.PackedColor.color(200, 50, 50, 50);
+    int whitetBG = ColorHelper.PackedColor.color(255, 255, 255, 255);
 
 }
