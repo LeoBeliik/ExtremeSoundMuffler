@@ -39,7 +39,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     private final int xSize = 256;
     private final int ySize = 202;
     private static boolean isPlayerMuffling = true;
-    private int minYButton, maxYButton, index;
+    private int minYButton, maxYButton, minMufflerListY, maxMufflerListY;
     private boolean isMuffling, showMufflerList, showMuffled;
     private int radius;
     private BlockPos mufflerPos;
@@ -47,6 +47,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     private GradientButton btnRecent, btnAll, btnMuffled;
     private TextFieldWidget searchBar, rangeBar;
     private MuffledSlider firstSoundButton, lastSoundButton;
+    private MufflerListButton firstMufflerListButton, lastMufflerListButton;
     private SortedSet<ResourceLocation> soundsList = new TreeSet<>();
     private Map<ResourceLocation, Float> muffledList = new HashMap<>();
 
@@ -74,6 +75,8 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     public void init() {
         minYButton = getY() + 37;
         maxYButton = getY() + 164;
+        minMufflerListY = getY() + 25;
+        maxMufflerListY = getY() + 160;
 
         //allows to hold a key to keep printing it. in this case i want it to easy erase text
         minecraft.keyboardHandler.setSendRepeatsToGui(true);
@@ -126,6 +129,14 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double direction) {
+        //getX(), getY() + 5, getX() - 102, getY() + 180
+        if (mouseX > getX() - 102 && mouseX < getX() && mouseY > getY() + 5 && mouseY < getY() + 180 && firstMufflerListButton != null) {
+            scrollMufflerListButtons((int) (direction * 15));
+            return true;
+        }
+        if (firstSoundButton == null) {
+            return false;
+        }
         if (direction > 0 && firstSoundButton.y == minYButton || (direction < 0 && lastSoundButton.y <= maxYButton)) {
             return false;
         }
@@ -342,9 +353,9 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
                 .visible = mufflerPos != null;
         //Muffler List button; shows / hides the list of mufflers
         addWidget(btnMufflerList = new Button(getX() + 41, getY() + 183, 10, 12, ITextComponent.nullToEmpty("Show Muffler list"), b ->
-                hideMufflerButtons(!showMufflerList)));
+                hideMufflerButtons()));
         //List of mufflers
-        addMufflersButtons(mufflerPos);
+        addMufflerListButtons();
         //toggle muffling sounds on/off
         addWidget(btnToggle = new Button(getX() + 229, getY() + 179, 17, 17, ITextComponent.nullToEmpty("Stop muffing"), b -> {
             if (mufflerPos != null) {
@@ -362,30 +373,63 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         addWidget(new Button(getX() + 10, getY() + 182, 10, 13, ITextComponent.nullToEmpty("Previous sounds"), b -> mouseScrolled(0D, 0D, 1D)));
         //forward list of sounds
         addWidget(new Button(getX() + 22, getY() + 182, 10, 13, ITextComponent.nullToEmpty("Next sounds"), b -> mouseScrolled(0D, 0D, -1D)));
+        //backwards list of mufflers
+        addWidget(new Button(getX() - 11, getY() + 78, 9, 12, emptyText, b -> scrollMufflerListButtons(15)));
+        //forward list of mufflers
+        addWidget(new Button(getX() - 11, getY() + 93, 9, 12, emptyText, b -> scrollMufflerListButtons(-15)));
     }
 
-    private void addMufflersButtons(BlockPos pos) {
+    private void addMufflerListButtons() {
         if (!mufflerList.isEmpty()) {
-            int buttonH = getY() + 25;
+            int buttonH = minMufflerListY;
+            MufflerListButton mlb = null;
             for (MufflerEntity muffler : mufflerList) {
                 if (muffler.getBlockPos().compareTo(mufflerPos) != 0) {
-                    addButton(new MufflerListButton(getX() - 90, buttonH, muffler.getTitle(), b -> {
+                    mlb = new MufflerListButton(getX() - 95, buttonH, muffler.getTitle(), b -> {
                         this.onClose();
                         open(muffler.getCurrentMuffledSounds(), muffler.getBlockPos(), muffler.getRadius(), muffler.isMuffling(), muffler.getTitle());
-                    })).visible = false;
+                    });
+                    addButton(mlb).visible = false;
+                    if (mlb.y == minMufflerListY) {
+                        firstMufflerListButton = mlb;
+                    }
                     buttonH += 15;
+                }
+            }
+            if (mlb != null) {
+                lastMufflerListButton = mlb;
+            }
+        }
+    }
+
+    private void scrollMufflerListButtons(int i) {
+        if (!mufflerList.isEmpty() && mufflerList.size() > 11) {
+            if ((i == -15 || firstMufflerListButton.y != minMufflerListY) && (i == 15 || lastMufflerListButton.y > maxMufflerListY)) {
+                for (Widget button : buttons) {
+                    if (button instanceof MufflerListButton) {
+                        button.y += i;
+                        if (button.y >= minMufflerListY && button.y <= maxMufflerListY) {
+                            button.visible = showMufflerList;
+                        } else {
+                            button.visible = false;
+                        }
+                    }
                 }
             }
         }
     }
 
-    private void hideMufflerButtons(boolean hide) {
+    private void hideMufflerButtons() {
         String s = showMufflerList ? "Show" : "Hide";
         btnMufflerList.setMessage(ITextComponent.nullToEmpty(s + " Muffler list"));
         if (!mufflerList.isEmpty()) {
             for (Widget button : buttons) {
                 if (button instanceof MufflerListButton) {
-                    button.visible = hide;
+                    if (button.y >= minMufflerListY && button.y <= maxMufflerListY) {
+                        button.visible = !showMufflerList;
+                    } else {
+                        button.visible = false;
+                    }
                 }
             }
         }
@@ -402,13 +446,6 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
             bindTexture();
             blit(ms, btnToggle.x, btnToggle.y + 1, 22F, 203F, 17, 17, xSize, xSize);
         }
-        //Muffler list pannel
-        if (showMufflerList) {
-            String m = mufflerList.size() > 1 ? "Mufflers:" : "No more Mufflers to show";
-            fill(ms, getX(), getY() + 5, getX() - 100, getY() + 180, darkBG);
-            font.drawWordWrap(ITextProperties.of(m), getX() - 71, getY() + 10, 65, whiteText);
-        }
-
         //searchbar prompt text
         if (!this.searchBar.isFocused() && this.searchBar.getValue().isEmpty()) {
             drawString(ms, font, searchHint, searchBar.x, searchBar.y, grayText);
@@ -431,6 +468,23 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
                 fill(ms, rangeBar.x - 18, rangeBar.y + 14, rangeBar.x + 56, rangeBar.y + 26, darkBG);
                 font.draw(ms, "Range: 1 - " + Config.getMufflersMaxRadius(), rangeBar.x - 15, rangeBar.y + 16, whiteText);
             }
+        }
+        //Muffler list pannel
+        if (showMufflerList) {
+            //muffler list screen title
+            if (mufflerList.size() > 1) {
+                fill(ms, getX(), getY() + 5, getX() - 102, getY() + 180, darkBG);
+                drawCenteredString(ms, font, "Mufflers:", getX() - 71, getY() + 10, whiteText);
+                //up and down buttons for muffler list
+                bindTexture();
+                blit(ms, getX() - 11, getY() + 78, 119F, 216F, 9, 12, xSize, xSize);
+                blit(ms, getX() - 11, getY() + 93, 128F, 216F, 9, 12, xSize, xSize);
+            } else {
+                fill(ms, getX(), getY() + 5, getX() - 102, getY() + 35, darkBG);
+                drawCenteredString(ms, font, "No more Mufflers", getX() - 50, getY() + 10, whiteText);
+                drawCenteredString(ms, font, "to show", getX() - 50, getY() + 22, whiteText);
+            }
+
         }
         //tips
         //TODO
