@@ -17,6 +17,9 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
@@ -27,7 +30,10 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
+@SuppressWarnings("deprecation")
 public class MufflerBlock extends Block implements IWaterLoggable {
+
+    private static final VoxelShape SHAPE = VoxelShapes.box(.2, .2, .2, .8, .8, .8);
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     private MufflerEntity entity;
 
@@ -72,18 +78,19 @@ public class MufflerBlock extends Block implements IWaterLoggable {
 
     @ParametersAreNonnullByDefault
     @Nonnull
-    @SuppressWarnings("deprecation")
     @Override
     public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
         TileEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof MufflerEntity) {
             ItemStack item = player.getItemInHand(hand);
-            if (!item.isEmpty() && item.getItem() instanceof BlockItem && ((BlockItem) item.getItem()).getBlock() != Blocks.AIR) {
-
-                return ActionResultType.SUCCESS;
-            }
             if (world.isClientSide()) {
                 return ActionResultType.SUCCESS;
+            } else if (!item.isEmpty() && item.getItem() instanceof BlockItem) {
+                if (((BlockItem) item.getItem()).getBlock() != Blocks.AIR && ((BlockItem) item.getItem()).getBlock() != this ) {
+                    BlockState mimicState = ((BlockItem) item.getItem()).getBlock().defaultBlockState();
+                    ((MufflerEntity) blockEntity).setMimic(mimicState);
+                    return ActionResultType.SUCCESS;
+                }
             } else {
                 Network.sendToClient(new PacketMufflers(
                                 ((MufflerEntity) blockEntity).getCurrentMuffledSounds(),
@@ -93,6 +100,7 @@ public class MufflerBlock extends Block implements IWaterLoggable {
                                 ((MufflerEntity) blockEntity).getTitle(),
                                 true),
                         (ServerPlayerEntity) player);
+                return ActionResultType.SUCCESS;
             }
         }
         return super.use(state, world, pos, player, hand, result);

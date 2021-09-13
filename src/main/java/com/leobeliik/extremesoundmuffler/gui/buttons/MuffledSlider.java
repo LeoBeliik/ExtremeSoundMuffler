@@ -47,8 +47,8 @@ public class MuffledSlider extends Widget implements IColorsGui {
         //row highlight
         fill(ms, x, y - 1, x + width + 4, y + height - 2, bg);
         drawGradient(ms);
-        float v = getFGColor() == whiteText ? 214F : 203F;
-        blit(ms, btnToggleSound.x, btnToggleSound.y, 11F, v, 11, 11, 256, 256); //muffle button bg
+        float v = getFGColor() == whiteText ? 11F : 22F;
+        blit(ms, btnToggleSound.x, btnToggleSound.y, v, 203, 11, 11, 256, 256); //muffle button bg
         blit(ms, btnPlaySound.x, btnPlaySound.y, 0F, 203F, 11, 11, 256, 256); //play button bg
         drawMessage(ms);
     }
@@ -71,9 +71,9 @@ public class MuffledSlider extends Widget implements IColorsGui {
 
     private void drawGradient(MatrixStack ms) {
         if (getFGColor() == cyanText) {
-            blit(ms, x, y - 1, 39, 203, (int) (sliderValue * (width - 6)) + 5, height + 1, 256, 256); //draw bg
+            blit(ms, x, y - 1, 17F, 215F, (int) (sliderValue * (width - 6)) + 5, height, 256, 256); //draw bg
             if (isHovered) {
-                blit(ms, x + (int) (sliderValue * (width - 6)) + 1, y, 0F, 214F, 5, 11, 256, 256); //Slider
+                blit(ms, x + (int) (sliderValue * (width - 6)) + 1, y + 1, 33F, 203F, 5, 12, 256, 256); //Slider
             }
         }
     }

@@ -70,7 +70,7 @@ public class Config {
         ISoundLists.forbiddenSounds.addAll(forbiddenSounds.get());
     }
 
-    static boolean getDisableInventoryButton() {
+    public static boolean getDisableInventoryButton() {
         return disableInventoryButton.get();
     }
 
@@ -94,7 +94,7 @@ public class Config {
         Config.showTip.set(showTip);
     }
 
-    static boolean useDarkTheme() {
+    public static boolean useDarkTheme() {
         return useDarkTheme.get();
     }
 

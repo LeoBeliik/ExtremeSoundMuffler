@@ -25,7 +25,6 @@ public class MufflingLogic implements ISoundLists {
             return cir;
         }
 
-
         if (mufflerClientList.isEmpty()) {
             return cir;
         }
@@ -33,6 +32,10 @@ public class MufflingLogic implements ISoundLists {
         BlockPos soundPos = new BlockPos(sound.getX(), sound.getY(), sound.getZ());
         try {
             for (MufflerEntity muffler : mufflerClientList) {
+                if (sound.getLocation().toString().contains("grass")) {
+                    System.out.println(mufflerClientList.size());
+                    System.out.println(muffler.getCurrentMuffledSounds());
+                }
                 if (Minecraft.getInstance().level != null && muffler.getLevel() != null && !Minecraft.getInstance().level.dimension().equals(muffler.getLevel().dimension())) {
                     return cir;
                 }

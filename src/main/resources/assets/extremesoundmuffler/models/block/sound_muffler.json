@@ -1,6 +1,3 @@
 {
-  "parent": "block/cube_all",
-  "textures": {
-    "all": "extremesoundmuffler:block/sound_muffler"
-  }
+  "loader": "extremesoundmuffler:muffler_loader"
 }

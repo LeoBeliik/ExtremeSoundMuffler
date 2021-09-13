@@ -184,6 +184,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
                 ((MufflerEntity) Objects.requireNonNull(minecraft.level.getBlockEntity(mufflerPos))).updateMuffler(muffledList, radius, isMuffling, title);
             }
             Network.sendToServer(new PacketMufflers(muffledList, mufflerPos, radius, isMuffling, title, false));
+            System.out.println(muffledList);
             clearMufflerData();
         }
         super.onClose();
@@ -446,7 +447,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         //Render red diagonal on toggle muffling button
         if (showMuffled) {
             bindTexture();
-            blit(ms, btnToggle.x, btnToggle.y + 1, 22F, 203F, 17, 17, xSize, xSize);
+            blit(ms, btnToggle.x, btnToggle.y, 0F, 214F, 17, 17, xSize, xSize);
         }
         //searchbar prompt text
         if (!this.searchBar.isFocused() && this.searchBar.getValue().isEmpty()) {
@@ -479,8 +480,8 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
                 drawCenteredString(ms, font, "Mufflers:", getX() - 50, getY() + 10, whiteText);
                 //up and down buttons for muffler list
                 bindTexture();
-                blit(ms, getX() - 11, getY() + 78, 119F, 216F, 9, 12, xSize, xSize);
-                blit(ms, getX() - 11, getY() + 93, 128F, 216F, 9, 12, xSize, xSize);
+                blit(ms, getX() - 11, getY() + 78, 118F, 203F, 9, 12, xSize, xSize);
+                blit(ms, getX() - 11, getY() + 93, 127F, 203F, 9, 12, xSize, xSize);
             } else {
                 fill(ms, getX(), getY() + 5, getX() - 102, getY() + 35, darkBG);
                 drawCenteredString(ms, font, "No more Mufflers", getX() - 50, getY() + 10, whiteText);

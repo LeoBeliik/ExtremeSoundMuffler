@@ -22,7 +22,7 @@ public class MufflerListButton extends Button implements IColorsGui {
     public void renderButton(MatrixStack ms, int mouseX, int mouseY, float delta) {
         String message = font.substrByWidth(getMessage(), 76).getString();
         minecraft.getTextureManager().bind(SoundMuffler.getGui());
-        blit(ms, x, y, 39F, 216F, getWidth(), getHeight(), 256, 256);
+        blit(ms, x, y, 38F, 203F, getWidth(), getHeight(), 256, 256);
         String msgTruncated;
         msgTruncated = font.width(getMessage()) > 76 ? font.substrByWidth(getMessage(), 70).getString() + ".." : getMessage().getString();
         drawCenteredString(ms, font, msgTruncated, x + (getWidth() / 2), y + 2, getFGColor());

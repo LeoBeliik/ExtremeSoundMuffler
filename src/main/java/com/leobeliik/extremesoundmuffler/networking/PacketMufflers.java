@@ -26,6 +26,7 @@ public class PacketMufflers {
     private static boolean openGUI;
 
     public PacketMufflers(Map<ResourceLocation, Float> ms, BlockPos pos, int rad, boolean muffling, ITextComponent name, boolean gui) {
+        muffledSounds.clear();
         muffledSounds.putAll(ms);
         mufflerPos = pos;
         radius = rad;
@@ -82,14 +83,13 @@ public class PacketMufflers {
         } else {
             TileEntity muffler = Objects.requireNonNull(ctx.get().getSender()).level.getBlockEntity(mufflerPos);
             if (muffler instanceof MufflerEntity) {
-                ((MufflerEntity) muffler).clearCurrentMuffledSounds();
+                System.out.println(muffledSounds);
                 ((MufflerEntity) muffler).setCurrentMuffledSounds(muffledSounds);
                 ((MufflerEntity) muffler).setRadius(radius);
                 ((MufflerEntity) muffler).setMuffling(isMuffling);
                 muffler.setChanged();
             }
         }
-        muffledSounds.clear();
         return true;
     }
 
