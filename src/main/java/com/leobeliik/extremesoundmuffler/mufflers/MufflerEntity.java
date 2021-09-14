@@ -60,8 +60,6 @@ public class MufflerEntity extends TileEntity implements ISoundLists {
         if (level != null) {
             if (!level.isClientSide()) {
                 mufflerList.add(this);
-            } else {
-                mufflerClientList.add(this);
             }
         }
     }

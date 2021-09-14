@@ -3,6 +3,7 @@ package com.leobeliik.extremesoundmuffler.mufflers;
 import com.leobeliik.extremesoundmuffler.SoundMuffler;
 import com.leobeliik.extremesoundmuffler.mufflers.model.MufflerModelLoader;
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -20,7 +21,7 @@ import net.minecraftforge.registries.ObjectHolder;
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class MufflerRegistry {
     @ObjectHolder("extremesoundmuffler:sound_muffler")
-    public static MufflerBlock MUFFLER_BLOCK;
+    private static MufflerBlock MUFFLER_BLOCK;
 
     @ObjectHolder("extremesoundmuffler:sound_muffler")
     static TileEntityType<MufflerEntity> MUFFLER_ENTITY;
@@ -44,7 +45,8 @@ public class MufflerRegistry {
 
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
-    public static void registerModelLoaders(ModelRegistryEvent event) {
+    public static void onModelRegistry(ModelRegistryEvent event) {
+        RenderTypeLookup.setRenderLayer(MufflerRegistry.MUFFLER_BLOCK, (RenderType) -> true);
         ModelLoaderRegistry.registerLoader(new ResourceLocation(SoundMuffler.MODID, "muffler_loader"), new MufflerModelLoader());
     }
 }

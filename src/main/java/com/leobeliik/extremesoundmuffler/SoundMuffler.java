@@ -52,6 +52,7 @@ public class SoundMuffler implements ISoundLists {
 
 
     public SoundMuffler() {
+        MinecraftForge.EVENT_BUS.register(this);
         ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.DISPLAYTEST, () ->
                 Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
         Config.loadConfig(Config.CLIENT_CONFIG, FMLPaths.CONFIGDIR.get().resolve(MODID + "-client.toml"));
@@ -74,7 +75,6 @@ public class SoundMuffler implements ISoundLists {
                 InputMappings.UNKNOWN,
                 "key.categories.misc");
         ClientRegistry.registerKeyBinding(openMufflerScreen);
-        RenderTypeLookup.setRenderLayer(MufflerRegistry.MUFFLER_BLOCK, (RenderType) -> true);
     }
 
     //load client list of mufflers

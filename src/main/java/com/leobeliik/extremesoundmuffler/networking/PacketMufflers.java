@@ -83,7 +83,6 @@ public class PacketMufflers {
         } else {
             TileEntity muffler = Objects.requireNonNull(ctx.get().getSender()).level.getBlockEntity(mufflerPos);
             if (muffler instanceof MufflerEntity) {
-                System.out.println(muffledSounds);
                 ((MufflerEntity) muffler).setCurrentMuffledSounds(muffledSounds);
                 ((MufflerEntity) muffler).setRadius(radius);
                 ((MufflerEntity) muffler).setMuffling(isMuffling);

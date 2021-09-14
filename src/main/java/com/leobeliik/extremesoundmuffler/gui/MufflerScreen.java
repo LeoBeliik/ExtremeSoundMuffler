@@ -179,12 +179,8 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     public void onClose() {
         if (mufflerPos == null) {
             DataManager.saveData(muffledList);
-        } else {
-            if (minecraft.level != null) {
-                ((MufflerEntity) Objects.requireNonNull(minecraft.level.getBlockEntity(mufflerPos))).updateMuffler(muffledList, radius, isMuffling, title);
-            }
+        } else { //TODO this doesn't work on client for some reason
             Network.sendToServer(new PacketMufflers(muffledList, mufflerPos, radius, isMuffling, title, false));
-            System.out.println(muffledList);
             clearMufflerData();
         }
         super.onClose();
@@ -383,7 +379,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     }
 
     private void addMufflerListButtons() {
-        if (!mufflerList.isEmpty()) {
+        if (!mufflerList.isEmpty() && mufflerPos != null) {
             int buttonH = minMufflerListY;
             MufflerListButton mlb = null;
             for (MufflerEntity muffler : mufflerList) {
