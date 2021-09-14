@@ -10,6 +10,7 @@ import com.leobeliik.extremesoundmuffler.interfaces.IAnchorList;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import com.leobeliik.extremesoundmuffler.network.Network;
 import com.leobeliik.extremesoundmuffler.network.PacketDataServer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.util.ResourceLocation;
@@ -34,10 +35,10 @@ public class DataManager implements IAnchorList, ISoundLists {
             return;
         }
 
-        if (loadAnchors() == null || Objects.requireNonNull(loadAnchors()).isEmpty()) {
-            setAnchors();
-        } else {
+        if (loadAnchors() != null && !loadAnchors().isEmpty()) {
             anchorList.addAll(Objects.requireNonNull(loadAnchors()));
+        } else {
+            setAnchors();
         }
     }
 
