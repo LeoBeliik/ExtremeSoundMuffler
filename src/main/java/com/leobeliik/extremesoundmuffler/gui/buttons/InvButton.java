@@ -5,6 +5,7 @@ import com.leobeliik.extremesoundmuffler.gui.MainScreen;
 import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.network.chat.TextComponent;
@@ -35,7 +36,7 @@ public class InvButton extends AbstractButton implements IColorsGui {
     public void render(PoseStack matrix, int mouseX, int mouseY, float partialTicks) {
         if (this.visible) {
             x = buttonX + parent.getGuiLeft() + 11;
-            minecraft.getTextureManager().bind(SoundMuffler.getGui());
+            SoundMuffler.renderGui();
             blit(matrix, x, y, 43f, 202f, 11, 11, 256, 256);
             if (this.isHovered(mouseX, mouseY)) {
                 drawCenteredString(matrix, minecraft.font, "Muffler", x + 5, this.y + this.height + 1, whiteText);
@@ -46,4 +47,8 @@ public class InvButton extends AbstractButton implements IColorsGui {
     private boolean isHovered(int mouseX, int mouseY) {
         return mouseX >= x && mouseY >= this.y && mouseX < x + this.width && mouseY < this.y + this.height;
     }
+
+    @ParametersAreNonnullByDefault
+    @Override
+    public void updateNarration(NarrationElementOutput elementOutput) {}
 }

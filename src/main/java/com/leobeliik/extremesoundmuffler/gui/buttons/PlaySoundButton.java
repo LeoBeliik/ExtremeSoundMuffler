@@ -1,11 +1,11 @@
 package com.leobeliik.extremesoundmuffler.gui.buttons;
 
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.AbstractButton;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
-import net.minecraft.client.gui.components.AbstractButton;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -14,7 +14,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @OnlyIn(Dist.CLIENT)
 public class PlaySoundButton extends AbstractButton {
 
-    private final Minecraft minecraft = Minecraft.getInstance();
     private final SoundEvent sound;
     private static boolean isFromPSB = false;
 
@@ -39,4 +38,7 @@ public class PlaySoundButton extends AbstractButton {
     public static boolean isFromPSB() {
         return isFromPSB;
     }
+
+    @Override
+    public void updateNarration(NarrationElementOutput p_169152_) {}
 }

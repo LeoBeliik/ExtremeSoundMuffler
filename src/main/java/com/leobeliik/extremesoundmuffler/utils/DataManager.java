@@ -8,8 +8,6 @@ import com.google.gson.stream.JsonReader;
 import com.leobeliik.extremesoundmuffler.Config;
 import com.leobeliik.extremesoundmuffler.interfaces.IAnchorList;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
-import com.leobeliik.extremesoundmuffler.network.Network;
-import com.leobeliik.extremesoundmuffler.network.PacketDataServer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
@@ -25,6 +23,15 @@ public class DataManager implements IAnchorList, ISoundLists {
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private static final String soundsMuffledFile = "ESM/soundsMuffled.dat";
     private static final String anchorFile = "ESM/ServerWorld/Anchors.dat";
+
+    private static String getWorldName() {
+        if (Minecraft.getInstance().getCurrentServer() != null)
+            return Minecraft.getInstance().getCurrentServer().name;
+        else if (Minecraft.getInstance().getSingleplayerServer() != null)
+            return Minecraft.getInstance().getSingleplayerServer().getWorldData().getLevelName();
+        else
+            return "ServerWorld";
+    }
 
     public static void loadData() {
         if (muffledSounds.isEmpty()) {
@@ -50,7 +57,7 @@ public class DataManager implements IAnchorList, ISoundLists {
         } else {
             CompoundTag anchorNBT = new CompoundTag();
             IntStream.rangeClosed(0, 9).forEach(i -> anchorNBT.put("anchor" + i, DataManager.serializeNBT(anchorList.get(i))));
-            Network.sendToServer(new PacketDataServer(anchorNBT));
+            //Network.sendToServer(new PacketDataServer(anchorNBT));
         }
     }
 

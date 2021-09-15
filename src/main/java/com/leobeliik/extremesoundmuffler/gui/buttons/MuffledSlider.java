@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
@@ -42,7 +43,7 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
     @Override
     public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         Minecraft minecraft = Minecraft.getInstance();
-        minecraft.getTextureManager().bind(SoundMuffler.getGui());
+        SoundMuffler.renderGui();
         drawGradient(matrixStack);
         float v = this.getFGColor() == whiteText ? 213F : 202F;
         blit(matrixStack, btnToggleSound.x, btnToggleSound.y, 43F, v, 11, 11, 256, 256); //muffle button bg
@@ -176,4 +177,9 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
     private void func_230979_b_() {}
 
     private void func_230972_a_() {}
+
+    @Override
+    public void updateNarration(NarrationElementOutput p_169152_) {
+
+    }
 }
