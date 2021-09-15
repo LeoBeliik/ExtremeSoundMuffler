@@ -4,13 +4,13 @@ import com.leobeliik.extremesoundmuffler.gui.MainScreen;
 import com.leobeliik.extremesoundmuffler.gui.buttons.InvButton;
 import com.leobeliik.extremesoundmuffler.network.Network;
 import com.leobeliik.extremesoundmuffler.utils.DataManager;
-import net.minecraft.client.gui.DisplayEffectsScreen;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.gui.screen.inventory.CreativeScreen;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.client.util.InputMappings;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
+import net.minecraft.client.KeyMapping;
+import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.GuiScreenEvent;
@@ -34,7 +34,7 @@ import org.apache.commons.lang3.tuple.Pair;
 public class SoundMuffler {
 
     public static final String MODID = "extremesoundmuffler";
-    private static KeyBinding openMufflerScreen;
+    private static KeyMapping openMufflerScreen;
 
     public SoundMuffler() {
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.CLIENT_CONFIG);
@@ -55,10 +55,10 @@ public class SoundMuffler {
     }
 
     private void clientInit(final FMLClientSetupEvent event) {
-        openMufflerScreen = new KeyBinding(
+        openMufflerScreen = new KeyMapping(
                 "Open sound muffler screen",
                 KeyConflictContext.IN_GAME,
-                InputMappings.UNKNOWN,
+                InputConstants.UNKNOWN,
                 "key.categories.misc");
         ClientRegistry.registerKeyBinding(openMufflerScreen);
     }
@@ -67,12 +67,12 @@ public class SoundMuffler {
     @OnlyIn(Dist.CLIENT)
     public void onGuiInit(GuiScreenEvent.InitGuiEvent.Post event) {
         Screen screen = event.getGui();
-        if (Config.getDisableInventoryButton() || screen instanceof CreativeScreen || event.getWidgetList() == null) {
+        if (Config.getDisableInventoryButton() || screen instanceof CreativeModeInventoryScreen || event.getWidgetList() == null) {
             return;
         }
         try {
-            if (screen instanceof DisplayEffectsScreen) {
-                event.addWidget(new InvButton((ContainerScreen) screen, 64, 9));
+            if (screen instanceof EffectRenderingInventoryScreen) {
+                event.addWidget(new InvButton((AbstractContainerScreen) screen, 64, 9));
             }
         } catch (NullPointerException ignored) {}
     }

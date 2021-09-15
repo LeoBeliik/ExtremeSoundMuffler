@@ -1,11 +1,11 @@
 package com.leobeliik.extremesoundmuffler.gui.buttons;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.SimpleSound;
-import net.minecraft.client.audio.SoundHandler;
-import net.minecraft.client.gui.widget.button.AbstractButton;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.client.sounds.SoundManager;
+import net.minecraft.client.gui.components.AbstractButton;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -19,7 +19,7 @@ public class PlaySoundButton extends AbstractButton {
     private static boolean isFromPSB = false;
 
     PlaySoundButton(int x, int y, SoundEvent sound) {
-        super(x, y, 10, 10, StringTextComponent.EMPTY);
+        super(x, y, 10, 10, TextComponent.EMPTY);
         this.setAlpha(0);
         this.sound = sound;
     }
@@ -29,9 +29,9 @@ public class PlaySoundButton extends AbstractButton {
 
     @ParametersAreNonnullByDefault
     @Override
-    public void playDownSound(SoundHandler soundHandler) {
+    public void playDownSound(SoundManager soundHandler) {
         isFromPSB = true;
-        soundHandler.play(SimpleSound.forUI(this.sound, 1.0F));
+        soundHandler.play(SimpleSoundInstance.forUI(this.sound, 1.0F));
         isFromPSB = false;
         //it maybe a mess but it does prevent to sounds to get muted when they're player from this button
     }

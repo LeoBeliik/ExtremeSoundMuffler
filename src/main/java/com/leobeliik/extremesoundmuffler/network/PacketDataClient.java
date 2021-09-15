@@ -3,25 +3,25 @@ package com.leobeliik.extremesoundmuffler.network;
 import com.leobeliik.extremesoundmuffler.interfaces.IAnchorList;
 import com.leobeliik.extremesoundmuffler.utils.Anchor;
 import com.leobeliik.extremesoundmuffler.utils.DataManager;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.fml.network.NetworkEvent;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 public class PacketDataClient implements IAnchorList {
 
-    private final CompoundNBT data;
+    private final CompoundTag data;
 
-    PacketDataClient(PacketBuffer buf) {
+    PacketDataClient(FriendlyByteBuf buf) {
         data = buf.readNbt();
     }
 
-    public PacketDataClient(CompoundNBT data) {
+    public PacketDataClient(CompoundTag data) {
         this.data = data;
     }
 
-    void toBytes(PacketBuffer buf) {
+    void toBytes(FriendlyByteBuf buf) {
         buf.writeNbt(data);
     }
 

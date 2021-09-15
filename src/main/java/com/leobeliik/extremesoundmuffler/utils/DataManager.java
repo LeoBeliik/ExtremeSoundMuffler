@@ -11,9 +11,9 @@ import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import com.leobeliik.extremesoundmuffler.network.Network;
 import com.leobeliik.extremesoundmuffler.network.PacketDataServer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.NBTUtil;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.resources.ResourceLocation;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -48,7 +48,7 @@ public class DataManager implements IAnchorList, ISoundLists {
         if (Config.isClientSide()) {
             saveAnchors();
         } else {
-            CompoundNBT anchorNBT = new CompoundNBT();
+            CompoundTag anchorNBT = new CompoundTag();
             IntStream.rangeClosed(0, 9).forEach(i -> anchorNBT.put("anchor" + i, DataManager.serializeNBT(anchorList.get(i))));
             Network.sendToServer(new PacketDataServer(anchorNBT));
         }
@@ -59,10 +59,10 @@ public class DataManager implements IAnchorList, ISoundLists {
     }
 
 
-    private static CompoundNBT serializeNBT(Anchor anchor) {
+    private static CompoundTag serializeNBT(Anchor anchor) {
 
-        CompoundNBT anchorNBT = new CompoundNBT();
-        CompoundNBT muffledNBT = new CompoundNBT();
+        CompoundTag anchorNBT = new CompoundTag();
+        CompoundTag muffledNBT = new CompoundTag();
 
         anchorNBT.putInt("ID", anchor.getAnchorId());
         anchorNBT.putString("NAME", anchor.getName());
@@ -71,7 +71,7 @@ public class DataManager implements IAnchorList, ISoundLists {
             return anchorNBT;
         }
 
-        anchorNBT.put("POS", NBTUtil.writeBlockPos(anchor.getAnchorPos()));
+        anchorNBT.put("POS", NbtUtils.writeBlockPos(anchor.getAnchorPos()));
         anchorNBT.putString("DIM", anchor.getDimension().toString());
         anchorNBT.putInt("RAD", anchor.getRadius());
         anchor.getMuffledSounds().forEach((R, F) -> muffledNBT.putFloat(R.toString(), F));
@@ -80,9 +80,9 @@ public class DataManager implements IAnchorList, ISoundLists {
         return anchorNBT;
     }
 
-    public static Anchor deserializeNBT(CompoundNBT nbt) {
+    public static Anchor deserializeNBT(CompoundTag nbt) {
         SortedMap<String, Float> muffledSounds = new TreeMap<>();
-        CompoundNBT muffledNBT = nbt.getCompound("MUFFLED");
+        CompoundTag muffledNBT = nbt.getCompound("MUFFLED");
 
         for (String key : muffledNBT.getAllKeys()) {
             muffledSounds.put(key, muffledNBT.getFloat(key));
@@ -93,7 +93,7 @@ public class DataManager implements IAnchorList, ISoundLists {
         } else {
             return new Anchor(nbt.getInt("ID"),
                     nbt.getString("NAME"),
-                    NBTUtil.readBlockPos(nbt.getCompound("POS")),
+                    NbtUtils.readBlockPos(nbt.getCompound("POS")),
                     new ResourceLocation(nbt.getString("DIM")),
                     nbt.getInt("RAD"),
                     muffledSounds);

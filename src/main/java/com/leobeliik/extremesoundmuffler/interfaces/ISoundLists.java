@@ -1,6 +1,6 @@
 package com.leobeliik.extremesoundmuffler.interfaces;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import java.util.*;
 
 public interface ISoundLists {

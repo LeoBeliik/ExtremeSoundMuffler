@@ -5,8 +5,8 @@ import com.leobeliik.extremesoundmuffler.gui.MainScreen;
 import com.leobeliik.extremesoundmuffler.gui.buttons.PlaySoundButton;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import com.leobeliik.extremesoundmuffler.utils.Anchor;
-import net.minecraft.client.audio.ISound;
-import net.minecraft.client.audio.SoundEngine;
+import net.minecraft.client.resources.sounds.SoundInstance;
+import net.minecraft.client.sounds.SoundEngine;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class SoundMixin implements ISoundLists {
 
     @Inject(method = "calculateVolume", at = @At("RETURN"), cancellable = true)
-    private void calculateSoundVolume(ISound sound, CallbackInfoReturnable<Float> cir) {
+    private void calculateSoundVolume(SoundInstance sound, CallbackInfoReturnable<Float> cir) {
         if (isForbidden(sound) || PlaySoundButton.isFromPSB()) {
             return;
         }
@@ -40,7 +40,7 @@ public abstract class SoundMixin implements ISoundLists {
         }
     }
 
-    private static boolean isForbidden(ISound sound) {
+    private static boolean isForbidden(SoundInstance sound) {
         for (String fs : forbiddenSounds) {
             if (sound.getLocation().toString().contains(fs)) {
                 return true;
