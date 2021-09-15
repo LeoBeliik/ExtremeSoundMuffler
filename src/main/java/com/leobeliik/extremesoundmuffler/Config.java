@@ -1,32 +1,33 @@
 package com.leobeliik.extremesoundmuffler;
 
-import com.electronwill.nightconfig.core.file.CommentedFileConfig;
-import com.electronwill.nightconfig.core.io.WritingMode;
-import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import java.nio.file.Path;
+import net.minecraftforge.fml.config.ModConfig;
 import java.util.Arrays;
 import java.util.List;
 
-@SuppressWarnings("CanBeFinal")
 @Mod.EventBusSubscriber
 public class Config {
 
-    static final ForgeConfigSpec CLIENT_CONFIG;
-    private static final String CATEGORY_GENERAL = "general";
-    private static final ForgeConfigSpec.Builder CLIENT_BUILDER = new ForgeConfigSpec.Builder();
-    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> forbiddenSounds;
-    private static final ForgeConfigSpec.BooleanValue disableInventoryButton;
-    private static final ForgeConfigSpec.BooleanValue disableAnchors;
-    private static final ForgeConfigSpec.BooleanValue leftButtons;
-    private static final ForgeConfigSpec.DoubleValue defaultMuteVolume;
+    private static ForgeConfigSpec CLIENT_CONFIG;
+    private static ForgeConfigSpec.Builder CLIENT_BUILDER = new ForgeConfigSpec.Builder();
+    private static ForgeConfigSpec.ConfigValue<List<? extends String>> forbiddenSounds;
+    private static ForgeConfigSpec.BooleanValue disableInventoryButton;
+    private static ForgeConfigSpec.BooleanValue disableAnchors;
+    private static ForgeConfigSpec.BooleanValue leftButtons;
+    private static ForgeConfigSpec.DoubleValue defaultMuteVolume;
     private static ForgeConfigSpec.BooleanValue showTip;
     private static ForgeConfigSpec.BooleanValue useDarkTheme;
-    private static ForgeConfigSpec.BooleanValue isClientSide;
+
+    static void init() {
+        buildConfig();
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.CLIENT_CONFIG);
+    }
 
 
-    static {
+    private static void buildConfig() {
+        String CATEGORY_GENERAL = "general";
         CLIENT_BUILDER.comment("general settings").push(CATEGORY_GENERAL);
 
         forbiddenSounds = CLIENT_BUILDER.comment("Blacklisted Sounds - add the name of the sounds to blacklist, separated with comma")
@@ -50,28 +51,20 @@ public class Config {
         useDarkTheme = CLIENT_BUILDER.comment("Whether or not use the dark theme")
                 .define("useDarkTheme", false);
 
-        isClientSide = CLIENT_BUILDER.comment("Set to true if this mod wont be present in the server; it will load and save the Anchors in ESM -> ServerWorld")
-                .define("isClientSide", false);
-
         CLIENT_BUILDER.pop();
         CLIENT_CONFIG = CLIENT_BUILDER.build();
     }
 
-    @SuppressWarnings("SameParameterValue")
-    static void loadConfig(ForgeConfigSpec spec, Path path) {
-        final CommentedFileConfig configData = CommentedFileConfig.builder(path)
-                .sync()
-                .autosave()
-                .writingMode(WritingMode.REPLACE)
-                .build();
-
-        configData.load();
-        spec.setConfig(configData);
-        ISoundLists.forbiddenSounds.addAll(forbiddenSounds.get());
-    }
-
     static boolean getDisableInventoryButton() {
         return disableInventoryButton.get();
+    }
+
+    static boolean useDarkTheme() {
+        return useDarkTheme.get();
+    }
+
+    static List<? extends String> getForbiddenSounds() {
+        return forbiddenSounds.get();
     }
 
     public static boolean getDisableAchors() {
@@ -93,13 +86,4 @@ public class Config {
     public static void setShowTip(boolean showTip) {
         Config.showTip.set(showTip);
     }
-
-    static boolean useDarkTheme() {
-        return useDarkTheme.get();
-    }
-
-    public static boolean isClientSide() {
-        return isClientSide.get();
-    }
-
 }

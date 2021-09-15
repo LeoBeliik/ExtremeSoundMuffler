@@ -38,10 +38,6 @@ public class DataManager implements IAnchorList, ISoundLists {
             loadMuffledMap().forEach((R, F) -> ISoundLists.muffledSounds.put(new ResourceLocation(R), F));
         }
 
-        if (!Config.isClientSide()) {
-            return;
-        }
-
         if (loadAnchors() != null && !loadAnchors().isEmpty()) {
             anchorList.addAll(Objects.requireNonNull(loadAnchors()));
         } else {
@@ -52,13 +48,13 @@ public class DataManager implements IAnchorList, ISoundLists {
     public static void saveData() {
         saveMuffledMap();
 
+        saveAnchors();/*
         if (Config.isClientSide()) {
-            saveAnchors();
         } else {
             CompoundTag anchorNBT = new CompoundTag();
             IntStream.rangeClosed(0, 9).forEach(i -> anchorNBT.put("anchor" + i, DataManager.serializeNBT(anchorList.get(i))));
             //Network.sendToServer(new PacketDataServer(anchorNBT));
-        }
+        }*/
     }
 
     public static void setAnchors() {
