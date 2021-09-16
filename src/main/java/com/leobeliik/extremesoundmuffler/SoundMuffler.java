@@ -32,7 +32,7 @@ import org.apache.logging.log4j.Logger;
 @Mod("extremesoundmuffler")
 public class SoundMuffler {
 
-    public static final String MODID = "extremesoundmuffler";
+    static final String MODID = "extremesoundmuffler";
     private static KeyMapping openMufflerScreen;
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -74,7 +74,7 @@ public class SoundMuffler {
                 event.addWidget(new InvButton((AbstractContainerScreen) screen, 64, 9));
             }
         } catch (NullPointerException e) {
-            LOGGER.error("Error trying to add the muffler button in the player's inventory. \n" + e);
+            LOGGER.error("Extreme sound muffler: Error trying to add the muffler button in the player's inventory. \n" + e);
         }
     }
 
