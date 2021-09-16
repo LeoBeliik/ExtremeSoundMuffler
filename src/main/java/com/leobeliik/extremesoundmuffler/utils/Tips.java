@@ -5,7 +5,7 @@ import java.util.Random;
 public enum Tips {
     disable("You can disable this tips in the config"),
     change_volume("You can change the volume of muffled sounds by dragging the slider"),
-    inv_button("You can move the inventory button by pressing [WIP] while your inventory is open"),
+    inv_button("You can move the inventory button by holding the RMB over the button and draging it around"),
     inv_button_disable("You can disable and enable the muffler button on your inventory screen in the config"),
     play_sound("You can play any sound by pressing the corresponding Play sound button"),
     unmuffle("You can stop muffling all the selected sounds by pressing the Stop muffling sounds button, press it again to resume the muffling"),

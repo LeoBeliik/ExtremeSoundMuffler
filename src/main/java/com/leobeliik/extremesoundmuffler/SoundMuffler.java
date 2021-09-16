@@ -71,7 +71,7 @@ public class SoundMuffler {
         }
         try {
             if (screen instanceof EffectRenderingInventoryScreen) {
-                event.addWidget(new InvButton((AbstractContainerScreen) screen, 64, 9));
+                event.addWidget(new InvButton((AbstractContainerScreen) screen, Config.getInvButtonHorizontal(), Config.getInvButtonVertical()));
             }
         } catch (NullPointerException e) {
             LOGGER.error("Extreme sound muffler: Error trying to add the muffler button in the player's inventory. \n" + e);
