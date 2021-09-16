@@ -7,6 +7,7 @@ import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import com.leobeliik.extremesoundmuffler.utils.Anchor;
 import com.leobeliik.extremesoundmuffler.utils.DataManager;
+import com.leobeliik.extremesoundmuffler.utils.Tips;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -22,11 +23,13 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fmlclient.gui.GuiUtils;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -46,7 +49,7 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
     private final boolean isAnchorsDisabled = Config.getDisableAchors();
     private final Component emptyText = TextComponent.EMPTY;
     private final String mainTitle = "ESM - Main Screen";
-
+    private Component tip = Component.nullToEmpty(Tips.randomTip());
     private int minYButton, maxYButton, index;
     private Button btnToggleMuffled, btnDelete, btnToggleSoundsList, btnSetAnchor, btnEditAnchor, btnNextSounds, btnPrevSounds, btnAccept, btnCancel;
     private EditBox searchBar, editAnchorTitleBar, editAnchorRadiusBar;
@@ -479,20 +482,6 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
             drawCenteredString(matrix, font, message, x, y - 11, whiteText);
         }
 
-        //Show a tip the first time a sound is muffled
-        x = this.getX();
-        y = getY() + ySize;
-        FormattedText tipMessage = FormattedText.of("TIP: you can set the volume for muffled sounds by dragging the slider around");
-
-        if (muffledSounds.size() == 1 && Config.getShowTip()) {
-            if (mouseX > x + 3 && mouseX < x + xSize - 3 && mouseY > y - 30 && mouseY < y - 3) {
-                return;
-            }
-
-            fill(matrix, x + 3, y, x + xSize - 2, y + 22, darkBG);
-            font.drawWordWrap(tipMessage, x + 7, y + 2, xSize, whiteText);
-        }
-
         //highlight every other row
         for (int i = 0; i < renderables.size(); i++) {
             AbstractWidget button = (AbstractWidget) renderables.get(i);
@@ -506,6 +495,14 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
                 }
             }
         }
+
+        //Show a tip
+        renderTips(matrix, Collections.singletonList(tip));
+    }
+
+    private void renderTips(PoseStack ms, List<? extends Component> tips) {
+        int h = height < 334 ? 334 : height;
+        GuiUtils.drawHoveringText(ms, tips, getX() - 5, getY() + 223, width, h, 245, font);
     }
 
     private void editTitle(Anchor anchor) {
