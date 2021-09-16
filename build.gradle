@@ -82,6 +82,7 @@ minecraft {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${mcversion}-${forgeversion}"
+    annotationProcessor 'org.spongepowered:mixin:0.8.4:processor'
 }
 
 mixin {
