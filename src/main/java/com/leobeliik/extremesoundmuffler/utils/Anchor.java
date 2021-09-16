@@ -1,6 +1,6 @@
 package com.leobeliik.extremesoundmuffler.utils;
 
-import com.leobeliik.extremesoundmuffler.interfaces.IAnchorList;
+import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.player.LocalPlayer;
@@ -127,7 +127,7 @@ public class Anchor {
 
     public static Anchor getAnchor(SoundInstance sound) {
         BlockPos soundPos = new BlockPos(sound.getX(), sound.getY(), sound.getZ());
-        for (Anchor anchor : IAnchorList.anchorList) {
+        for (Anchor anchor : ISoundLists.anchorList) {
             ClientLevel world = Minecraft.getInstance().level;
             if (anchor.getAnchorPos() != null
                     && world != null

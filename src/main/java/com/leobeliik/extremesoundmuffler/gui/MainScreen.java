@@ -3,7 +3,6 @@ package com.leobeliik.extremesoundmuffler.gui;
 import com.leobeliik.extremesoundmuffler.Config;
 import com.leobeliik.extremesoundmuffler.SoundMuffler;
 import com.leobeliik.extremesoundmuffler.gui.buttons.MuffledSlider;
-import com.leobeliik.extremesoundmuffler.interfaces.IAnchorList;
 import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import com.leobeliik.extremesoundmuffler.utils.Anchor;
@@ -24,15 +23,17 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.ForgeRegistries;
+
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
 import static com.leobeliik.extremesoundmuffler.SoundMuffler.renderGui;
 
 @OnlyIn(Dist.CLIENT)
-public class MainScreen extends Screen implements ISoundLists, IAnchorList, IColorsGui {
+public class MainScreen extends Screen implements ISoundLists, IColorsGui {
 
     private static final Minecraft minecraft = Minecraft.getInstance();
     private final List<Widget> filteredButtons = new ArrayList<>();
@@ -135,12 +136,11 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
                         muffledSounds.clear();
                         open(mainTitle, btnToggleSoundsList.getMessage(), searchBar.getValue());
                     } else {
-                        if (anchor == null) {
-                            return;
+                        if (anchor != null) {
+                            anchor.deleteAnchor();
+                            renderables.clear();
+                            open(anchor.getName(), btnToggleSoundsList.getMessage(), searchBar.getValue());
                         }
-                        anchor.deleteAnchor();
-                        renderables.clear();
-                        open(anchor.getName(), btnToggleSoundsList.getMessage(), searchBar.getValue());
                     }
                 })
         ).setAlpha(0);
@@ -270,9 +270,9 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
 
     private void addEditAnchorButtons() {
 
-        addWidget(editAnchorTitleBar = new EditBox(font, getX() + 302, btnEditAnchor.y + 20, 84, 11, emptyText)).visible = false;
+        addRenderableWidget(editAnchorTitleBar = new EditBox(font, getX() + 302, btnEditAnchor.y + 20, 84, 11, emptyText)).visible = false;
 
-        addWidget(editAnchorRadiusBar = new EditBox(font, getX() + 302, editAnchorTitleBar.y + 15, 30, 11, emptyText)).visible = false;
+        addRenderableWidget(editAnchorRadiusBar = new EditBox(font, getX() + 302, editAnchorTitleBar.y + 15, 30, 11, emptyText)).visible = false;
 
         addRenderableWidget(btnAccept = new Button(getX() + 259, editAnchorRadiusBar.y + 15, 40, 20, Component.nullToEmpty("Accept"), b -> {
             anchor = getAnchorByName(screenTitle);
@@ -403,9 +403,6 @@ public class MainScreen extends Screen implements ISoundLists, IAnchorList, ICol
         }
 
         //draw anchor buttons tooltip
-        if (anchorList.isEmpty()) {
-            DataManager.setAnchors();
-        }
         for (int i = 0; i <= 9; i++) {
             AbstractWidget btn = (AbstractWidget) renderables.get(soundsList.size() + i);
             x = btn.x + 8;

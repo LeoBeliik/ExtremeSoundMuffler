@@ -1,5 +1,6 @@
 package com.leobeliik.extremesoundmuffler.interfaces;
 
+import com.leobeliik.extremesoundmuffler.utils.Anchor;
 import net.minecraft.resources.ResourceLocation;
 import java.util.*;
 
@@ -9,5 +10,5 @@ public interface ISoundLists {
     SortedSet<ResourceLocation> soundsList = new TreeSet<>();
     SortedSet<ResourceLocation> recentSoundsList = new TreeSet<>();
     Map<ResourceLocation, Float> muffledSounds = new HashMap<>();
-
+    List<Anchor> anchorList = new ArrayList<>();
 }

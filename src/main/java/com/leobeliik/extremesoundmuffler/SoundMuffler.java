@@ -3,6 +3,7 @@ package com.leobeliik.extremesoundmuffler;
 import com.leobeliik.extremesoundmuffler.gui.MainScreen;
 import com.leobeliik.extremesoundmuffler.gui.buttons.InvButton;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
+import com.leobeliik.extremesoundmuffler.utils.DataManager;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.KeyMapping;
@@ -13,16 +14,15 @@ import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.IExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fmlclient.registry.ClientRegistry;
@@ -32,9 +32,8 @@ import org.apache.logging.log4j.Logger;
 @Mod("extremesoundmuffler")
 public class SoundMuffler {
 
-    static final String MODID = "extremesoundmuffler";
+    public static final String MODID = "extremesoundmuffler";
     private static KeyMapping openMufflerScreen;
-    private static String worldName;
     private static final Logger LOGGER = LogManager.getLogger();
 
     public SoundMuffler() {
@@ -59,6 +58,12 @@ public class SoundMuffler {
 
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
+    public void onPlayerLoggin(ClientPlayerNetworkEvent.LoggedInEvent event) {
+        DataManager.loadData();
+    }
+
+    @SubscribeEvent
+    @OnlyIn(Dist.CLIENT)
     public void onGuiInit(GuiScreenEvent.InitGuiEvent.Post event) {
         Screen screen = event.getGui();
         if (Config.getDisableInventoryButton() || screen instanceof CreativeModeInventoryScreen || event.getWidgetList() == null) {
@@ -79,16 +84,6 @@ public class SoundMuffler {
         if (openMufflerScreen.consumeClick()) {
             MainScreen.open();
         }
-    }
-
-    @SubscribeEvent
-    public static void onPlayerLoggin(PlayerEvent.PlayerLoggedInEvent event) {
-
-    }
-
-    @SubscribeEvent
-    public static void onPlayerLoggout(PlayerEvent.PlayerLoggedOutEvent event) {
-
     }
 
     public static int getHotkey() {
