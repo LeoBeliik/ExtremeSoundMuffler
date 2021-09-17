@@ -314,7 +314,7 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
         message = screenTitle.equals(mainTitle) ? "Delete Muffled List" : "Delete Anchor";
         stringW = font.width(message) / 2;
         if (btnDelete.isMouseOver(mouseX, mouseY)) {
-            fill(matrix, x - stringW - 2, y + 18, x + stringW + 2, y + 22, darkBG);
+            fill(matrix, x - stringW - 2, y + 18, x + stringW + 2, y + 30, darkBG);
             drawCenteredString(matrix, font, message, x, y + 20, whiteText);
         }
 
@@ -330,7 +330,7 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
         message = isMuffling ? "Stop Muffling" : "Start Muffling";
         stringW = font.width(message) / 2;
         if (btnToggleMuffled.isMouseOver(mouseX, mouseY)) {
-            fill(matrix, x - stringW - 2, y + 18, x + stringW + 2, y + 22, darkBG);
+            fill(matrix, x - stringW - 2, y + 18, x + stringW + 2, y + 30, darkBG);
             drawCenteredString(matrix, font, message, x, y + 20, whiteText);
         }
 
