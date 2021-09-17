@@ -7,14 +7,14 @@ body:
     id: ESM_version
     attributes:
       label: version of Extreme sound muffler
-      placeholder: 3.15
+      placeholder: "3.15"
     validations:
       required: true
   - type: input
     id: forge-version
     attributes:
       label: version of Foge
-      placeholder: 1.17.1 - 37.0.60
+      placeholder: "1.17.1 - 37.0.60"
     validations:
       required: true
   - type: textarea
