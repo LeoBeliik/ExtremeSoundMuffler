@@ -95,10 +95,6 @@ public class Config {
         return showTip.get();
     }
 
-    public static void setShowTip(boolean showTip) {
-        Config.showTip.set(showTip);
-    }
-
     static int getInvButtonHorizontal() {
         return invButtonHorizontal.get();
     }
