@@ -28,8 +28,8 @@ body:
     id: reproduction
     attributes:
       label: Steps to reproduce
-      description: Steps to reproduce the behavior:
-      value: |
+      description: Step by step instructions on how to reproduce the observed behaviour
+      placeholder: |
         1. Go to '...'
         2. Click on '....'
         3. Scroll down to '....'
