@@ -1,5 +1,5 @@
 <img align="left" width="140" height="100" src="src/main/resources/esm_logo.png">
-<h1> Extreme sound muffler - Client side sound muffler</h1>
+<h1> Extreme sound muffler - Clientside Minecraft mod</h1>
 <br/>
 
 ---
