@@ -125,9 +125,6 @@ public class MuffledSlider extends Widget implements ISoundLists, IColorsGui {
 
     private void changeSliderValue(float mouseX) {
         this.setSliderValue((mouseX - (this.x + 4)) / (this.width - 8));
-        if (Config.getShowTip()) {
-            Config.setShowTip(false);
-        }
     }
 
     private void setSliderValue(float value) {

@@ -491,7 +491,9 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
         }
 
         //Show a tip
-        renderTips(matrix, Collections.singletonList(tip));
+        if (Config.getShowTip()) {
+            renderTips(matrix, Collections.singletonList(tip));
+        }
     }
 
     private void renderTips(MatrixStack ms, List<? extends ITextComponent> tips) {
