@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
@@ -126,9 +127,6 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
 
     private void changeSliderValue(float mouseX) {
         this.setSliderValue((mouseX - (this.x + 4)) / (this.width - 8));
-        if (Config.getShowTip()) {
-            Config.setShowTip(false);
-        }
     }
 
     private void setSliderValue(float value) {
@@ -179,7 +177,7 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
     private void func_230972_a_() {}
 
     @Override
-    public void updateNarration(NarrationElementOutput p_169152_) {
-
+    public void updateNarration(NarrationElementOutput elementOutput) {
+        elementOutput.add(NarratedElementType.TITLE, this.createNarrationMessage());
     }
 }

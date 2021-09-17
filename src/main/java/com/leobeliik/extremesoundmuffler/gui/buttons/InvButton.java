@@ -6,6 +6,7 @@ import com.leobeliik.extremesoundmuffler.gui.MainScreen;
 import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.components.AbstractButton;
@@ -74,5 +75,6 @@ public class InvButton extends AbstractButton implements IColorsGui {
     @ParametersAreNonnullByDefault
     @Override
     public void updateNarration(NarrationElementOutput elementOutput) {
+        elementOutput.add(NarratedElementType.TITLE, this.createNarrationMessage());
     }
 }

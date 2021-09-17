@@ -17,7 +17,6 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -25,7 +24,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fmlclient.gui.GuiUtils;
 import net.minecraftforge.registries.ForgeRegistries;
-
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
@@ -317,9 +315,9 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
         y = btnDelete.y;
         message = screenTitle.equals(mainTitle) ? "Delete Muffled List" : "Delete Anchor";
         stringW = font.width(message) / 2;
-        if (btnDelete.isHovered()) {
-            fill(matrix, x - stringW - 2, y + 20, x + stringW + 2, y + 31, darkBG);
-            drawCenteredString(matrix, font, message, x, y + 22, whiteText);
+        if (btnDelete.isMouseOver(mouseX, mouseY)) {
+            fill(matrix, x - stringW - 2, y + 18, x + stringW + 2, y + 30, darkBG);
+            drawCenteredString(matrix, font, message, x, y + 20, whiteText);
         }
 
         //toggle muffled button
@@ -333,9 +331,9 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
 
         message = isMuffling ? "Stop Muffling" : "Start Muffling";
         stringW = font.width(message) / 2;
-        if (btnToggleMuffled.isHovered()) {
-            fill(matrix, x - stringW - 2, y + 20, x + stringW + 2, y + 31, darkBG);
-            drawCenteredString(matrix, font, message, x, y + 22, whiteText);
+        if (btnToggleMuffled.isMouseOver(mouseX, mouseY)) {
+            fill(matrix, x - stringW - 2, y + 18, x + stringW + 2, y + 30, darkBG);
+            drawCenteredString(matrix, font, message, x, y + 20, whiteText);
         }
 
         //Anchor coordinates and set coord button
@@ -430,8 +428,8 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
         int textX = x + (btnToggleSoundsList.getWidth() / 2) - (textW / 2) + 6;
 
         if (btnToggleSoundsList.isMouseOver(mouseX, mouseY)) {
-            fill(matrix, textX - 2, y + 20, textX + textW + 2, y + 22 + font.lineHeight, darkBG);
-            font.draw(matrix, text, textX, y + 22, whiteText);
+            fill(matrix, textX - 2, y + 14, textX + textW + 2, y + 18 + font.lineHeight, darkBG);
+            font.draw(matrix, text, textX, y + 16, whiteText);
         }
 
         //Show Radius and Title text when editing Anchor and bg
@@ -497,7 +495,9 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
         }
 
         //Show a tip
-        renderTips(matrix, Collections.singletonList(tip));
+        if (Config.getShowTip()) {
+            renderTips(matrix, Collections.singletonList(tip));
+        }
     }
 
     private void renderTips(PoseStack ms, List<? extends Component> tips) {

@@ -1,6 +1,7 @@
 package com.leobeliik.extremesoundmuffler.gui.buttons;
 
 import net.minecraft.client.gui.components.AbstractButton;
+import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
@@ -40,5 +41,7 @@ public class PlaySoundButton extends AbstractButton {
     }
 
     @Override
-    public void updateNarration(NarrationElementOutput p_169152_) {}
+    public void updateNarration(NarrationElementOutput elementOutput) {
+        elementOutput.add(NarratedElementType.TITLE, this.createNarrationMessage());
+    }
 }
