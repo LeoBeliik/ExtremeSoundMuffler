@@ -6,14 +6,14 @@ body:
   - type: input
     id: ESM_version
     attributes:
-      label: Extreme sound muffler version:
+      label: Extreme sound muffler version
       placeholder: "3.15"
     validations:
       required: true
   - type: input
     id: forge-version
     attributes:
-      label: Forge version:
+      label: Forge version
       placeholder: "1.17.1 - 37.0.60"
     validations:
       required: true
