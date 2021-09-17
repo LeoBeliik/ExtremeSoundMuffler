@@ -12,7 +12,11 @@ public enum Tips {
     no_anchors("You can dissable the Anchors in the config"),
     sound_blacklist("You can blacklist sounds in the config"),
     left_buttons("You can change the side of the Muffler and Play buttons to the left in the config"),
-    dark_theme("You can set the dark theme in the config");
+    dark_theme("You can set the dark theme in the config"),
+    use_anchors("Anchors (the top 10 buttons) are used to muffle sounds in a selected area"),
+    set_anchors("Click any of the Anchor buttons (the numbered ones) and then click the marker like button (in the right) to set the Anchor position"),
+    modify_anchors("Once setted the Anchors, you can click the marker button to move the position at any time."),
+    modify_anchors_2("You can change the name and range of the Anchors once you setted the position");
 
     private String tip;
 
