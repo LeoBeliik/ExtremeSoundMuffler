@@ -29,7 +29,7 @@
 
 ## HOW IT WORKS:
 
-    1. Click on the button in your inventory or asign a key to open the gui.
+    1. Click on the button in your inventory or assign a key to open the gui.
 
     2. Click on the button next to the sound you want to muffle.
 
@@ -44,7 +44,7 @@
 
     1. Open your ESM Screen
 
-    2. Select one of the 10 numered buttons
+    2. Select one of the 10 numbered buttons
 
     3. Press the marker like button on the right panel to set the Anchor position
 
@@ -54,7 +54,7 @@
 
 #### You can change the Anchor position whenever you want by pressing the marker button.
 
-## inventory button
+## Inventory button
 
 #### if you don't like the ESM muffler in the inventory, you can disable it in the config. 
 #### if you don't like the position of the button, you can hold right mouse button over the muffler button and drag it wherever you want.
