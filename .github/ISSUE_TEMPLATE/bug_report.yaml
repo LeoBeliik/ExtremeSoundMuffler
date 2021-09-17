@@ -34,6 +34,8 @@ body:
         2. Click on '....'
         3. Scroll down to '....'
         4. See error
+      validations:
+        required: false
   - type: input
     id: crashlog
     attributes:
