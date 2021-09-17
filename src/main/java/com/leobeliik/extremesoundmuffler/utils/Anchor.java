@@ -2,11 +2,12 @@ package com.leobeliik.extremesoundmuffler.utils;
 
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.sounds.SoundInstance;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.core.BlockPos;
+import net.minecraft.client.audio.ISound;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+
 import java.util.Objects;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -106,7 +107,7 @@ public class Anchor {
     }
 
     public void setAnchor() {
-        LocalPlayer player = Objects.requireNonNull(Minecraft.getInstance().player);
+        ClientPlayerEntity player = Objects.requireNonNull(Minecraft.getInstance().player);
         setAnchorPos(player.blockPosition());
         setDimension(player.clientLevel.dimension().location());
         setRadius(this.getRadius() == 0 ? 32 : this.getRadius());
@@ -125,10 +126,10 @@ public class Anchor {
         setRadius(Radius);
     }
 
-    public static Anchor getAnchor(SoundInstance sound) {
+    public static Anchor getAnchor(ISound sound) {
         BlockPos soundPos = new BlockPos(sound.getX(), sound.getY(), sound.getZ());
         for (Anchor anchor : ISoundLists.anchorList) {
-            ClientLevel world = Minecraft.getInstance().level;
+            ClientWorld world = Minecraft.getInstance().level;
             if (anchor.getAnchorPos() != null
                     && world != null
                     && world.dimension().location().equals(anchor.getDimension())

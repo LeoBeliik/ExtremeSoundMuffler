@@ -4,13 +4,12 @@ import com.leobeliik.extremesoundmuffler.Config;
 import com.leobeliik.extremesoundmuffler.SoundMuffler;
 import com.leobeliik.extremesoundmuffler.gui.MainScreen;
 import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.gui.components.AbstractButton;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.client.gui.widget.button.AbstractButton;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -20,11 +19,11 @@ public class InvButton extends AbstractButton implements IColorsGui {
 
     private static final ResourceLocation CREATIVE_TABS_LOCATION = new ResourceLocation("textures/gui/container/creative_inventory/tabs.png");
     private final Minecraft minecraft = Minecraft.getInstance();
-    private final AbstractContainerScreen<?> parent;
+    private final ContainerScreen<?> parent;
     private boolean hold = false;
 
-    public InvButton(AbstractContainerScreen parentGui, int x, int y) {
-        super(parentGui.getGuiLeft() + x, parentGui.getGuiTop() + y, 11, 11, TextComponent.EMPTY);
+    public InvButton(ContainerScreen parentGui, int x, int y) {
+        super(parentGui.getGuiLeft() + x, parentGui.getGuiTop() + y, 11, 11, StringTextComponent.EMPTY);
         parent = parentGui;
     }
 
@@ -35,9 +34,9 @@ public class InvButton extends AbstractButton implements IColorsGui {
 
     @ParametersAreNonnullByDefault
     @Override
-    public void render(PoseStack matrix, int mouseX, int mouseY, float partialTicks) {
+    public void render(MatrixStack matrix, int mouseX, int mouseY, float partialTicks) {
         if (this.visible) {
-            SoundMuffler.renderGui();
+            minecraft.getTextureManager().bind(SoundMuffler.getGui());
             blit(matrix, x, y, 43f, 202f, 11, 11, 256, 256);
             if (isMouseOver(mouseX, mouseY) && !hold) {
                 drawCenteredString(matrix, minecraft.font, "Muffler", x + 5, this.y + this.height + 1, whiteText);
@@ -69,10 +68,5 @@ public class InvButton extends AbstractButton implements IColorsGui {
     private void drag(int mouseX, int mouseY) {
         x = mouseX - (this.width / 2);
         y = mouseY - (this.height / 2);
-    }
-
-    @ParametersAreNonnullByDefault
-    @Override
-    public void updateNarration(NarrationElementOutput elementOutput) {
     }
 }

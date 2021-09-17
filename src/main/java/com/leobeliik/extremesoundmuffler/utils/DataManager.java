@@ -8,9 +8,9 @@ import com.google.gson.stream.JsonReader;
 import com.leobeliik.extremesoundmuffler.Config;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import net.minecraft.client.Minecraft;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.NBTUtil;
+import net.minecraft.util.ResourceLocation;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -50,10 +50,10 @@ public class DataManager implements ISoundLists {
         }
     }
 
-    private static CompoundTag serializeAnchor(Anchor anchor) {
+    private static CompoundNBT serializeAnchor(Anchor anchor) {
 
-        CompoundTag anchorNBT = new CompoundTag();
-        CompoundTag muffledNBT = new CompoundTag();
+        CompoundNBT anchorNBT = new CompoundNBT();
+        CompoundNBT muffledNBT = new CompoundNBT();
 
         anchorNBT.putInt("ID", anchor.getAnchorId());
         anchorNBT.putString("NAME", anchor.getName());
@@ -62,7 +62,7 @@ public class DataManager implements ISoundLists {
             return anchorNBT;
         }
 
-        anchorNBT.put("POS", NbtUtils.writeBlockPos(anchor.getAnchorPos()));
+        anchorNBT.put("POS", NBTUtil.writeBlockPos(anchor.getAnchorPos()));
         anchorNBT.putString("DIM", anchor.getDimension().toString());
         anchorNBT.putInt("RAD", anchor.getRadius());
         anchor.getMuffledSounds().forEach((R, F) -> muffledNBT.putFloat(R.toString(), F));
@@ -71,9 +71,9 @@ public class DataManager implements ISoundLists {
         return anchorNBT;
     }
 
-    public static Anchor deserializeAnchor(CompoundTag nbt) {
+    public static Anchor deserializeAnchor(CompoundNBT nbt) {
         SortedMap<String, Float> muffledSounds = new TreeMap<>();
-        CompoundTag muffledNBT = nbt.getCompound("MUFFLED");
+        CompoundNBT muffledNBT = nbt.getCompound("MUFFLED");
 
         for (String key : muffledNBT.getAllKeys()) {
             muffledSounds.put(key, muffledNBT.getFloat(key));
@@ -84,13 +84,13 @@ public class DataManager implements ISoundLists {
         } else {
             return new Anchor(nbt.getInt("ID"),
                     nbt.getString("NAME"),
-                    NbtUtils.readBlockPos(nbt.getCompound("POS")),
+                    NBTUtil.readBlockPos(nbt.getCompound("POS")),
                     new ResourceLocation(nbt.getString("DIM")),
                     nbt.getInt("RAD"),
                     muffledSounds);
         }
     }
-//TODO anchors are creating more than 9
+
     private static void saveMuffledMap() {
         new File("ESM/").mkdir();
         try (Writer writer = new OutputStreamWriter(new FileOutputStream("ESM/soundsMuffled.dat"), StandardCharsets.UTF_8)) {
