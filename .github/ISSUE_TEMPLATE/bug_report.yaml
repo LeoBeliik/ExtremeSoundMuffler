@@ -29,11 +29,6 @@ body:
     attributes:
       label: Steps to reproduce
       description: Step by step instructions on how to reproduce the observed behaviour
-      placeholder: |
-        1. 
-        2. 
-        3. 
-        4. 
     validations:
       required: false
   - type: input
