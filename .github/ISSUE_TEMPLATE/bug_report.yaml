@@ -29,11 +29,11 @@ body:
     attributes:
       label: Steps to reproduce
       description: Step by step instructions on how to reproduce the observed behaviour
-    placeholder: |
-        1. Go to '...'
-        2. Click on '....'
-        3. Scroll down to '....'
-        4. See error
+      placeholder: |
+          1. Go to '...'
+          2. Click on '....'
+          3. Scroll down to '....'
+          4. See error
   - type: input
     id: crashlog
     attributes:
