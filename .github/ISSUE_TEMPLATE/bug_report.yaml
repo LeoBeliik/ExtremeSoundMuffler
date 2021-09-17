@@ -30,12 +30,12 @@ body:
       label: Steps to reproduce
       description: Step by step instructions on how to reproduce the observed behaviour
       placeholder: |
-        1. Go to '...'
-        2. Click on '....'
-        3. Scroll down to '....'
-        4. See error
-      validations:
-        required: false
+        1. 
+        2. 
+        3. 
+        4. 
+    validations:
+      required: false
   - type: input
     id: crashlog
     attributes:
