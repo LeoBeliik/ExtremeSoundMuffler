@@ -40,7 +40,7 @@ public class Config {
                 .defineInRange("defaultMuteVolume", 0, 0, 0.9);
         leftButtons = CLIENT_BUILDER.comment("Set to true to move the muffle and play buttons to the left side of the GUI")
                 .define("leftButtons", false);
-        showTip = CLIENT_BUILDER.comment("Show a message the first time a sound is muffled indicating that you can change the volume")
+        showTip = CLIENT_BUILDER.comment("Show tips in the Muffler screen?")
                 .define("showTip", true);
         useDarkTheme = CLIENT_BUILDER.comment("Whether or not use the dark theme")
                 .define("useDarkTheme", false);
