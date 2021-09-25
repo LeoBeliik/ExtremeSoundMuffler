@@ -108,7 +108,7 @@ public class DataManager implements ISoundLists {
     }
 
     private static void saveAnchors() {
-        new File("ESM/" + getWorldName()).mkdir();
+        new File("ESM/", getWorldName()).mkdirs();
         try (Writer writer = new OutputStreamWriter(new FileOutputStream("ESM/" + getWorldName() + "/anchors.dat"), StandardCharsets.UTF_8)) {
             writer.write(gson.toJson(anchorList));
         } catch (IOException ignored) {}
