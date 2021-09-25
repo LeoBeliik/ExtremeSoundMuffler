@@ -90,7 +90,7 @@ public class DataManager implements ISoundLists {
                     muffledSounds);
         }
     }
-//TODO anchors are creating more than 9
+
     private static void saveMuffledMap() {
         new File("ESM/").mkdir();
         try (Writer writer = new OutputStreamWriter(new FileOutputStream("ESM/soundsMuffled.dat"), StandardCharsets.UTF_8)) {
@@ -108,7 +108,7 @@ public class DataManager implements ISoundLists {
     }
 
     private static void saveAnchors() {
-        new File("ESM/" + getWorldName()).mkdir();
+        new File("ESM/", getWorldName()).mkdirs();
         try (Writer writer = new OutputStreamWriter(new FileOutputStream("ESM/" + getWorldName() + "/anchors.dat"), StandardCharsets.UTF_8)) {
             writer.write(gson.toJson(anchorList));
         } catch (IOException ignored) {}
