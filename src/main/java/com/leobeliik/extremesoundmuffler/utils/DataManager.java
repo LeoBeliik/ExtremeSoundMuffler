@@ -11,7 +11,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.resources.ResourceLocation;
-
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -32,10 +31,9 @@ public class DataManager implements ISoundLists {
     }
 
     public static void saveData() {
-        if (!muffledSounds.isEmpty()) {
-            saveMuffledMap();
-        }
-        if (!Config.getDisableAchors() && anchorList.stream().anyMatch(A -> A.getAnchorPos() != null)) {
+        saveMuffledMap();
+
+        if (!Config.getDisableAchors()) {
             saveAnchors();
         }
     }
