@@ -24,6 +24,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fmlclient.gui.GuiUtils;
 import net.minecraftforge.registries.ForgeRegistries;
+
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
@@ -133,6 +134,14 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
 
         addWidget(btnDelete = new Button(getX() + 205, getY() + 179, 17, 17, emptyText, b -> {
                     anchor = getAnchorByName(screenTitle);
+                    if (clearRecentSounds()) {
+                        recentSoundsList.clear();
+                        if (screenTitle.equals(mainTitle)) {
+                            open(mainTitle, btnToggleSoundsList.getMessage(), searchBar.getValue());
+                        } else if (anchor != null) {
+                            open(anchor.getName(), btnToggleSoundsList.getMessage(), searchBar.getValue());
+                        }
+                    }
                     if (screenTitle.equals(mainTitle)) {
                         muffledSounds.clear();
                         open(mainTitle, btnToggleSoundsList.getMessage(), searchBar.getValue());
@@ -191,7 +200,9 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
         } else if (btnToggleSoundsList.getMessage().equals(Component.nullToEmpty("All"))) {
             soundsList.clear();
             soundsList.addAll(ForgeRegistries.SOUND_EVENTS.getKeys());
-            forbiddenSounds.forEach(fs -> soundsList.removeIf(sl -> sl.toString().contains(fs)));
+            if (Config.getLawfulAllList()) {
+                forbiddenSounds.forEach(fs -> soundsList.removeIf(sl -> sl.toString().contains(fs)));
+            }
         } else {
             soundsList.clear();
             if (screenTitle.equals(mainTitle) && !muffledSounds.isEmpty()) {
@@ -218,7 +229,7 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
                 volume = maxVolume;
             }
 
-            int x = Config.getLeftButtons() ? getX() + 36 :  getX() + 11;
+            int x = Config.getLeftButtons() ? getX() + 36 : getX() + 11;
 
             MuffledSlider volumeSlider = new MuffledSlider(x, buttonH, 205, 11, volume, sound, screenTitle, anchor);
 
@@ -316,8 +327,20 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
         message = screenTitle.equals(mainTitle) ? "Delete Muffled List" : "Delete Anchor";
         stringW = font.width(message) / 2;
         if (btnDelete.isMouseOver(mouseX, mouseY)) {
-            fill(matrix, x - stringW - 2, y + 18, x + stringW + 2, y + 30, darkBG);
-            drawCenteredString(matrix, font, message, x, y + 20, whiteText);
+            fill(matrix, x - stringW - 2, y + 17, x + stringW + 2, y + 30, darkBG);
+            drawCenteredString(matrix, font, message, x, y + 19, whiteText);
+        }
+
+        //reset recent sounds
+        if (clearRecentSounds()) {
+            renderGui();
+            blit(matrix, x - 6, y + 2, 54F, 217F, 13, 13, xSize, xSize);
+            message = "Clear recent sounds list";
+            stringW = font.width(message) / 2;
+            if (btnDelete.isMouseOver(mouseX, mouseY)) {
+                fill(matrix, x - stringW - 2, y + 17, x + stringW + 2, y + 30, darkBG);
+                drawCenteredString(matrix, font, message, x, y + 19, whiteText);
+            }
         }
 
         //toggle muffled button
@@ -326,7 +349,7 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
         renderGui();
 
         if (isMuffling) {
-            blit(matrix, x - 8, y, 54F, 202F, 17, 17, xSize, xSize); //muffle button
+            blit(matrix, x - 7, y + 1, 54F, 202F, 15, 15, xSize, xSize); //muffle button
         }
 
         message = isMuffling ? "Stop Muffling" : "Start Muffling";
@@ -498,6 +521,10 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
         if (Config.getShowTip()) {
             renderTips(matrix, Collections.singletonList(tip));
         }
+    }
+
+    private boolean clearRecentSounds() {
+        return btnToggleSoundsList.getMessage().equals(Component.nullToEmpty("Recent")) && Screen.hasShiftDown();
     }
 
     private void renderTips(PoseStack ms, List<? extends Component> tips) {

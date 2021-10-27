@@ -16,7 +16,8 @@ public enum Tips {
     use_anchors("Anchors (the top 10 buttons) are used to muffle sounds in a selected area"),
     set_anchors("Click any of the Anchor buttons (the numbered ones) and then click the marker like button (in the right) to set the Anchor position"),
     modify_anchors("Once setted the Anchors, you can click the marker button to move the position at any time."),
-    modify_anchors_2("You can change the name and range of the Anchors once you setted the position");
+    modify_anchors_2("You can change the name and range of the Anchors once you setted the position"),
+    reset_recent_sounds("Hold Shift on the \"Recent\" sounds screen and click the trash button to clear the recent sounds list");
 
     private String tip;
 
