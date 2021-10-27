@@ -13,6 +13,7 @@ public class Config {
     private static ForgeConfigSpec CLIENT_CONFIG;
     private static ForgeConfigSpec.Builder CLIENT_BUILDER = new ForgeConfigSpec.Builder();
     private static ForgeConfigSpec.ConfigValue<List<? extends String>> forbiddenSounds;
+    private static ForgeConfigSpec.BooleanValue lawfulAllList;
     private static ForgeConfigSpec.BooleanValue disableInventoryButton;
     private static ForgeConfigSpec.BooleanValue disableAnchors;
     private static ForgeConfigSpec.BooleanValue leftButtons;
@@ -36,6 +37,8 @@ public class Config {
         CLIENT_BUILDER.comment("general settings").push(CATEGORY_GENERAL);
         forbiddenSounds = CLIENT_BUILDER.comment("Blacklisted Sounds - add the name of the sounds to blacklist, separated with comma")
                 .defineList("forbiddenSounds", Arrays.asList("ui.", "music.", "ambient."), o -> o instanceof String);
+        lawfulAllList = CLIENT_BUILDER.comment("Allow the \"ALL\" sounds list to include the blacklisted sounds?")
+                .define("lawfulAllList", false);
         defaultMuteVolume = CLIENT_BUILDER.comment("Volume set when pressed the mute button by default")
                 .defineInRange("defaultMuteVolume", 0, 0, 0.9);
         leftButtons = CLIENT_BUILDER.comment("Set to true to move the muffle and play buttons to the left side of the GUI")
@@ -77,6 +80,10 @@ public class Config {
 
     static List<? extends String> getForbiddenSounds() {
         return forbiddenSounds.get();
+    }
+
+    public static boolean getLawfulAllList() {
+        return lawfulAllList.get();
     }
 
     public static boolean getDisableAchors() {
