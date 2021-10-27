@@ -142,6 +142,7 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
                         } else if (anchor != null) {
                             open(anchor.getName(), btnToggleSoundsList.getMessage(), searchBar.getValue());
                         }
+                        return;
                     }
                     if (screenTitle.equals(mainTitle)) {
                         muffledSounds.clear();
