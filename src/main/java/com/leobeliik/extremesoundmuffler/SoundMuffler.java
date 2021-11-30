@@ -15,8 +15,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
-import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.InputEvent;
+import net.minecraftforge.client.event.ScreenEvent;
+import net.minecraftforge.client.ClientRegistry;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -25,11 +26,8 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fmlclient.registry.ClientRegistry;
-import net.minecraftforge.fmllegacy.network.FMLNetworkConstants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.commons.lang3.tuple.Pair;
 
 @Mod("extremesoundmuffler")
 public class SoundMuffler {
@@ -66,14 +64,14 @@ public class SoundMuffler {
 
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
-    public void onGuiInit(GuiScreenEvent.InitGuiEvent.Post event) {
-        Screen screen = event.getGui();
-        if (Config.getDisableInventoryButton() || screen instanceof CreativeModeInventoryScreen || event.getWidgetList() == null) {
+    public void onGuiInit(ScreenEvent.InitScreenEvent.Post event) {
+        Screen screen = event.getScreen();
+        if (Config.getDisableInventoryButton() || screen instanceof CreativeModeInventoryScreen || event.getListenerList() == null) {
             return;
         }
         try {
             if (screen instanceof EffectRenderingInventoryScreen) {
-                event.addWidget(new InvButton((AbstractContainerScreen) screen, Config.getInvButtonHorizontal(), Config.getInvButtonVertical()));
+                event.addListener(new InvButton((AbstractContainerScreen) screen, Config.getInvButtonHorizontal(), Config.getInvButtonVertical()));
             }
         } catch (NullPointerException e) {
             LOGGER.error("Extreme sound muffler: Error trying to add the muffler button in the player's inventory. \n" + e);

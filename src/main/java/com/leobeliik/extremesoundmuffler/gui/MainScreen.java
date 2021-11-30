@@ -17,18 +17,17 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fmlclient.gui.GuiUtils;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -48,7 +47,7 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
     private final boolean isAnchorsDisabled = Config.getDisableAchors();
     private final Component emptyText = TextComponent.EMPTY;
     private final String mainTitle = "ESM - Main Screen";
-    private Component tip = Component.nullToEmpty(Tips.randomTip());
+    private String tip = Tips.randomTip();
     private int minYButton, maxYButton, index;
     private Button btnToggleMuffled, btnDelete, btnToggleSoundsList, btnSetAnchor, btnEditAnchor, btnNextSounds, btnPrevSounds, btnAccept, btnCancel;
     private EditBox searchBar, editAnchorTitleBar, editAnchorRadiusBar;
@@ -414,7 +413,7 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
         stringW = font.width(message) + 2;
 
         //Set Anchor tooltip
-        if (btnSetAnchor.isHovered() && !editAnchorTitleBar.visible) {
+        if (btnSetAnchor.isHoveredOrFocused() && !editAnchorTitleBar.visible) {
             fill(matrix, x - 5, y + 16, x + stringW, y + 29, darkBG);
             font.draw(matrix, message, x, y + 18, whiteText);
         }
@@ -422,7 +421,7 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
         message = "Edit Anchor";
         stringW = font.width(message) + 2;
 
-        if (btnEditAnchor.visible && !editAnchorTitleBar.visible && btnEditAnchor.isHovered()) {
+        if (btnEditAnchor.visible && !editAnchorTitleBar.visible && btnEditAnchor.isHoveredOrFocused()) {
             fill(matrix, x - 5, y + 16, x + stringW + 2, y + 29, darkBG);
             font.draw(matrix, message, x, y + 18, whiteText);
         }
@@ -435,7 +434,7 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
             message = isAnchorsDisabled ? "Anchors are disabled" : anchorList.get(i).getName();
             stringW = font.width(message) / 2;
 
-            if (btn.isHovered()) {
+            if (btn.isHoveredOrFocused()) {
                 fill(matrix, x - stringW - 2, y - 2, x + stringW + 2, y - 13, darkBG);
                 drawCenteredString(matrix, font, message, x, y - 11, whiteText);
             }
@@ -468,7 +467,7 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
             y = editAnchorRadiusBar.y;
             message = "Range: 1 - 32";
             stringW = font.width(message);
-            if (editAnchorRadiusBar.isHovered()) {
+            if (editAnchorRadiusBar.isHoveredOrFocused()) {
                 fill(matrix, x + 3, y, x + stringW + 6, y + 12, darkBG);
                 font.draw(matrix, message, x + 5, y + 2, whiteText);
             }
@@ -520,7 +519,7 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
 
         //Show a tip
         if (Config.getShowTip()) {
-            renderTips(matrix, Collections.singletonList(tip));
+            renderTips(matrix, tip);
         }
     }
 
@@ -528,9 +527,10 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
         return btnToggleSoundsList.getMessage().equals(Component.nullToEmpty("Recent")) && Screen.hasShiftDown();
     }
 
-    private void renderTips(PoseStack ms, List<? extends Component> tips) {
-        int h = height < 334 ? 334 : height;
-        GuiUtils.drawHoveringText(ms, tips, getX() - 5, getY() + 223, width, h, 245, font);
+    private void renderTips(PoseStack ms, String tips) {
+        int h = font.lineHeight * ((font.width(tips) / 245) + 1) + 215;
+        fill(ms, getX(), getY() + 210, getX() + 255, getY() + h, darkBG);
+        font.drawWordWrap(FormattedText.of(tips), getX() + 5, getY() + 213, 245, whiteText);
     }
 
     private void editTitle(Anchor anchor) {
@@ -678,7 +678,7 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
                 editAnchorTitleBar.setValue("");
                 return true;
             }
-            if (editAnchorRadiusBar.isHovered()) {
+            if (editAnchorRadiusBar.isHoveredOrFocused()) {
                 editAnchorRadiusBar.setValue("");
                 return true;
             }
