@@ -64,22 +64,6 @@ public class SoundMuffler {
 
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
-    public void onGuiInit(ScreenEvent.InitScreenEvent.Post event) {
-        Screen screen = event.getScreen();
-        if (Config.getDisableInventoryButton() || screen instanceof CreativeModeInventoryScreen || event.getListenerList() == null) {
-            return;
-        }
-        try {
-            if (screen instanceof EffectRenderingInventoryScreen) {
-                event.addListener(new InvButton((AbstractContainerScreen) screen, Config.getInvButtonHorizontal(), Config.getInvButtonVertical()));
-            }
-        } catch (NullPointerException e) {
-            LOGGER.error("Extreme sound muffler: Error trying to add the muffler button in the player's inventory. \n" + e);
-        }
-    }
-
-    @SubscribeEvent
-    @OnlyIn(Dist.CLIENT)
     public void onKeyInput(InputEvent.KeyInputEvent event) {
         if (openMufflerScreen.consumeClick()) {
             MainScreen.open();

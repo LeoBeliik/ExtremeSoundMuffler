@@ -102,7 +102,7 @@ public class Config {
         return showTip.get();
     }
 
-    static int getInvButtonHorizontal() {
+    public static int getInvButtonHorizontal() {
         return invButtonHorizontal.get();
     }
 
@@ -110,7 +110,7 @@ public class Config {
         Config.invButtonHorizontal.set(invButtonHorizontal);
     }
 
-    static int getInvButtonVertical() {
+    public static int getInvButtonVertical() {
         return invButtonVertical.get();
     }
 

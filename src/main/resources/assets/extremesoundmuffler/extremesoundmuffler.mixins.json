@@ -5,7 +5,8 @@
   "refmap": "extremesoundmuffler.refmap.json",
   "minVersion": "0.8",
   "client": [
-    "SoundMixin"
+    "SoundMixin",
+    "InventoryScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

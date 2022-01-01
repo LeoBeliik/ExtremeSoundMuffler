@@ -57,7 +57,7 @@ minecraft {
             }
         }
 
-        data {
+        /*data {
             workingDirectory project.file('run')
 
             // Recommended logging data for a userdev environment
@@ -73,7 +73,7 @@ minecraft {
                     source sourceSets.main
                 }
             }
-        }
+        }*/
     }
 }
 
