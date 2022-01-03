@@ -1,5 +1,6 @@
 package com.leobeliik.extremesoundmuffler.mixins;
 
+import com.leobeliik.extremesoundmuffler.CommonConfig;
 import com.leobeliik.extremesoundmuffler.gui.MainScreen;
 import com.leobeliik.extremesoundmuffler.gui.buttons.PlaySoundButton;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
@@ -15,19 +16,22 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class SoundMixin implements ISoundLists {
     @Inject(method = "calculateVolume", at = @At("RETURN"), cancellable = true, remap = false)
     private void calculateSoundVolume(SoundInstance sound, CallbackInfoReturnable<Float> cir) {
+        //don't care about forbidden sounds or from the psb
         if (isForbidden(sound) || PlaySoundButton.isFromPSB()) {
             return;
         }
 
+        //add sound to recent sounds list
         recentSoundsList.add(sound.getLocation());
 
-        if (MainScreen.isMuffled()) {
+        if (MainScreen.isMuffling()) {
             if (muffledSounds.containsKey(sound.getLocation())) {
                 cir.setReturnValue(cir.getReturnValue() * muffledSounds.get(sound.getLocation()));
                 return;
             }
 
-            if (/*Config.getDisableAchors()*/false) {
+            //don't continue if the anchors are disabled
+            if (CommonConfig.get().disableAnchors().get()) {
                 return;
             }
 
@@ -39,12 +43,7 @@ public abstract class SoundMixin implements ISoundLists {
     }
 
     private static boolean isForbidden(SoundInstance sound) {
-        for (String fs : forbiddenSounds) {
-            if (sound.getLocation().toString().contains(fs)) {
-                return true;
-            }
-        }
-        return false;
+        return forbiddenSounds.stream().anyMatch(fs -> sound.getLocation().toString().contains(fs));
     }
 
 }

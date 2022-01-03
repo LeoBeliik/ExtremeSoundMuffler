@@ -4,12 +4,11 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-
 import java.util.Arrays;
 import java.util.List;
 
 @Mod.EventBusSubscriber
-public class ForgeConfig {
+class ForgeConfig {
 
     private static ForgeConfigSpec CLIENT_CONFIG;
     private static ForgeConfigSpec.Builder CLIENT_BUILDER = new ForgeConfigSpec.Builder();
@@ -40,7 +39,6 @@ public class ForgeConfig {
                 invButtonVertical::get
         ));
     }
-
 
     private static void buildConfig() {
         String CATEGORY_GENERAL = "general";
@@ -83,44 +81,8 @@ public class ForgeConfig {
         CLIENT_CONFIG = CLIENT_BUILDER.build();
     }
 
-    static boolean getDisableInventoryButton() {
-        return disableInventoryButton.get();
-    }
-
-    static boolean useDarkTheme() {
-        return useDarkTheme.get();
-    }
-
     static List<? extends String> getForbiddenSounds() {
         return forbiddenSounds.get();
-    }
-
-    public static boolean getLawfulAllList() {
-        return lawfulAllList.get();
-    }
-
-    public static boolean getDisableAchors() {
-        return disableAnchors.get();
-    }
-
-    public static float getDefaultMuteVolume() {
-        return defaultMuteVolume.get().floatValue();
-    }
-
-    public static boolean getLeftButtons() {
-        return leftButtons.get();
-    }
-
-    public static boolean getShowTip() {
-        return showTip.get();
-    }
-
-    public static int getInvButtonHorizontal() {
-        return invButtonHorizontal.get();
-    }
-
-    public int getInvButtonVertical() {
-        return invButtonVertical.get();
     }
 
     static void setInvButtonHorizontal(int x) {

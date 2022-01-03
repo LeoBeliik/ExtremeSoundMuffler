@@ -4,9 +4,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.FastColor;
-
 import java.util.Locale;
-import java.util.Objects;
 
 public interface IColorsGui {
 

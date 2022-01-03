@@ -23,6 +23,7 @@ public class SoundMufflerFabric implements ClientModInitializer {
         ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> ScreenMouseEvents.afterMouseRelease(screen).register(SoundMufflerFabric::onMouseReleasePre));
         KeyBindingHelper.registerKeyBinding(openMufflerScreen);
 
+        //on mod keybind press
         ClientTickEvents.END_WORLD_TICK.register(level -> {
             while (openMufflerScreen.consumeClick()) {
                 SoundMufflerCommon.openMainScreen();
@@ -30,14 +31,12 @@ public class SoundMufflerFabric implements ClientModInitializer {
         });
     }
 
+    //save the new coordinates for the inv button
     private static void onMouseReleasePre(Screen screen, double pMouseX, double pMouseY, int pButton) {
         if (screen instanceof InventoryScreen && pButton == 1 && InvButton.notHolding()) {
             FabricConfig.setInvButtonHorizontal(InvButton.getButtonX());
             FabricConfig.setInvButtonVertical(InvButton.getButtonY());
-            JanksonValueSerializer serializer = new JanksonValueSerializer(false);
-            Path p = Paths.get("config", Constants.MOD_ID + ".json5");
-
-            FabricConfig.updateConfig(p, serializer);
+            FabricConfig.updateConfig();
         }
     }
 

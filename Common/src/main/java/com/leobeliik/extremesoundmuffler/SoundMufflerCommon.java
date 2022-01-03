@@ -8,6 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class SoundMufflerCommon {
 
+    //whether should use the dark or light textures
     public static void renderGui() {
         String texture = CommonConfig.get().useDarkTheme().get() ? "textures/gui/sm_gui_dark.png" : "textures/gui/sm_gui.png";
         RenderSystem.setShaderTexture(0, (new ResourceLocation(Constants.MOD_ID, texture)));

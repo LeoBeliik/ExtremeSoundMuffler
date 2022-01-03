@@ -61,7 +61,7 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
         open("ESM - Main Screen", Component.nullToEmpty("Recent"), "");
     }
 
-    public static boolean isMuffled() {
+    public static boolean isMuffling() {
         return isMuffling;
     }
 

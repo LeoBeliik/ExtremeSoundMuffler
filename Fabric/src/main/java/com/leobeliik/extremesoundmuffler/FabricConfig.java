@@ -19,7 +19,10 @@ import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.List;
 
-public class FabricConfig {
+class FabricConfig {
+
+    private static final JanksonValueSerializer serializer = new JanksonValueSerializer(false);
+    private static final Path path = Paths.get("config", Constants.MOD_ID + ".json5");
     private static PropertyMirror<List<String>> forbiddenSounds = PropertyMirror.create(ConfigTypes.makeList(ConfigTypes.STRING));
     private static PropertyMirror<Boolean> lawfulAllList = PropertyMirror.create(ConfigTypes.BOOLEAN);
     private static PropertyMirror<Boolean> disableInventoryButton = PropertyMirror.create(ConfigTypes.BOOLEAN);
@@ -44,17 +47,8 @@ public class FabricConfig {
                 invButtonHorizontal::getValue,
                 invButtonVertical::getValue
         ));
-
-        JanksonValueSerializer serializer = new JanksonValueSerializer(false);
-        Path p = Paths.get("config", Constants.MOD_ID + ".json5");
-
-        writeDefaultConfig(p, serializer);
-
-        try (InputStream s = new BufferedInputStream(Files.newInputStream(p, StandardOpenOption.READ, StandardOpenOption.CREATE))) {
-            FiberSerialization.deserialize(CONFIG, s, serializer);
-        } catch (IOException | ValueDeserializationException e) {
-            Constants.LOG.error("Error loading ESM config", e);
-        }
+        writeDefaultConfig();
+        readConfig();
     }
 
     private static final ConfigTree CONFIG = ConfigTree.builder()
@@ -116,7 +110,7 @@ public class FabricConfig {
 
             .build();
 
-    private static void writeDefaultConfig(Path path, JanksonValueSerializer serializer) {
+    private static void writeDefaultConfig() {
         try (OutputStream s = new BufferedOutputStream(Files.newOutputStream(path, StandardOpenOption.WRITE, StandardOpenOption.CREATE_NEW))) {
             FiberSerialization.serialize(CONFIG, s, serializer);
         } catch (IOException e) {
@@ -125,7 +119,15 @@ public class FabricConfig {
 
     }
 
-    static void updateConfig(Path path, JanksonValueSerializer serializer) {
+    private static void readConfig() {
+        try (InputStream s = new BufferedInputStream(Files.newInputStream(path, StandardOpenOption.READ, StandardOpenOption.CREATE))) {
+            FiberSerialization.deserialize(CONFIG, s, serializer);
+        } catch (IOException | ValueDeserializationException e) {
+            Constants.LOG.error("Error loading ESM config", e);
+        }
+    }
+
+    static void updateConfig() {
         try (OutputStream s = new BufferedOutputStream(Files.newOutputStream(path, StandardOpenOption.WRITE, StandardOpenOption.SYNC))) {
             FiberSerialization.serialize(CONFIG, s, serializer);
         } catch (IOException e) {

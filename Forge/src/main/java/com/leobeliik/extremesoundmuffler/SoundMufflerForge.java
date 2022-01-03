@@ -21,6 +21,7 @@ import static com.leobeliik.extremesoundmuffler.Constants.openMufflerScreen;
 public class SoundMufflerForge {
 
     public SoundMufflerForge() {
+        //prevent server complain when this mod is clientside only
         ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class,
                 () -> new IExtensionPoint.DisplayTest(() -> "", (a, b) -> true));
         ForgeConfig.init();
@@ -34,7 +35,7 @@ public class SoundMufflerForge {
     }
 
     @OnlyIn(Dist.CLIENT)
-    @SubscribeEvent
+    @SubscribeEvent //on mod keybind press
     public void onKeyInput(InputEvent.KeyInputEvent event) {
         if (openMufflerScreen.consumeClick()) {
             SoundMufflerCommon.openMainScreen();
@@ -42,7 +43,7 @@ public class SoundMufflerForge {
     }
 
     @OnlyIn(Dist.CLIENT)
-    @SubscribeEvent
+    @SubscribeEvent //save the new coordinates for the inv button
     public void onMouseRelease(ScreenEvent.MouseReleasedEvent event) {
         if (event.getButton() == 1 && InvButton.notHolding()) {
             ForgeConfig.setInvButtonHorizontal(InvButton.getButtonX());
