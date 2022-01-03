@@ -11,7 +11,6 @@ import io.github.fablabsmc.fablabs.api.fiber.v1.serialization.FiberSerialization
 import io.github.fablabsmc.fablabs.api.fiber.v1.serialization.JanksonValueSerializer;
 import io.github.fablabsmc.fablabs.api.fiber.v1.tree.ConfigTree;
 import io.github.fablabsmc.fablabs.api.fiber.v1.tree.PropertyMirror;
-
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -120,7 +119,8 @@ public class FabricConfig {
     private static void writeDefaultConfig(Path path, JanksonValueSerializer serializer) {
         try (OutputStream s = new BufferedOutputStream(Files.newOutputStream(path, StandardOpenOption.WRITE, StandardOpenOption.CREATE_NEW))) {
             FiberSerialization.serialize(CONFIG, s, serializer);
-        } catch (IOException ignored) {
+        } catch (IOException e) {
+            Constants.LOG.warn("error saving esm config!", e);
         }
 
     }
@@ -129,7 +129,7 @@ public class FabricConfig {
         try (OutputStream s = new BufferedOutputStream(Files.newOutputStream(path, StandardOpenOption.WRITE, StandardOpenOption.SYNC))) {
             FiberSerialization.serialize(CONFIG, s, serializer);
         } catch (IOException e) {
-            Constants.LOG.warn("esm config failed to update!");
+            Constants.LOG.warn("esm config failed to update!", e);
         }
 
     }

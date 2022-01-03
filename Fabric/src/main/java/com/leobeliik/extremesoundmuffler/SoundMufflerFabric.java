@@ -10,10 +10,8 @@ import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
 import static com.leobeliik.extremesoundmuffler.Constants.openMufflerScreen;
 
 public class SoundMufflerFabric implements ClientModInitializer {

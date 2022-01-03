@@ -1,7 +1,7 @@
 package com.leobeliik.extremesoundmuffler.gui.buttons;
 
+import com.leobeliik.extremesoundmuffler.CommonConfig;
 import com.leobeliik.extremesoundmuffler.SoundMufflerCommon;
-import com.leobeliik.extremesoundmuffler.gui.MainScreen;
 import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
@@ -16,8 +16,8 @@ import org.jetbrains.annotations.NotNull;
 public class InvButton extends AbstractButton implements IColorsGui {
 
     private static boolean hold = false;
-    private static int buttonX;
-    private static int buttonY;
+    private static int buttonX = CommonConfig.get().invButtonHorizontal().get();
+    private static int buttonY = CommonConfig.get().invButtonVertical().get();
     private final AbstractContainerScreen<?> parent;
 
     public InvButton(AbstractContainerScreen parent, int x, int y) {
@@ -27,7 +27,7 @@ public class InvButton extends AbstractButton implements IColorsGui {
 
     @Override
     public void onPress() {
-        MainScreen.open();
+        SoundMufflerCommon.openMainScreen();
     }
 
     @Override
@@ -63,13 +63,14 @@ public class InvButton extends AbstractButton implements IColorsGui {
     }
 
     private void drag(int mouseX, int mouseY) {
+        //puts the cursor in the middle of the button
         this.x = mouseX - (this.width / 2);
         this.y = mouseY - (this.height / 2);
     }
 
     @Override
     public void updateNarration(NarrationElementOutput elementOutput) {
-        elementOutput.add(NarratedElementType.TITLE, this.createNarrationMessage());
+        elementOutput.add(NarratedElementType.TITLE, "Muffler");
     }
 
     public void setX(int x) {
