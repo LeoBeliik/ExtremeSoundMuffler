@@ -2,6 +2,7 @@ package com.leobeliik.extremesoundmuffler;
 
 import com.leobeliik.extremesoundmuffler.gui.buttons.InvButton;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
+import io.github.fablabsmc.fablabs.api.fiber.v1.serialization.JanksonValueSerializer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -9,6 +10,9 @@ import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static com.leobeliik.extremesoundmuffler.Constants.openMufflerScreen;
 
@@ -32,6 +36,10 @@ public class SoundMufflerFabric implements ClientModInitializer {
         if (screen instanceof InventoryScreen && pButton == 1 && InvButton.notHolding()) {
             FabricConfig.setInvButtonHorizontal(InvButton.getButtonX());
             FabricConfig.setInvButtonVertical(InvButton.getButtonY());
+            JanksonValueSerializer serializer = new JanksonValueSerializer(false);
+            Path p = Paths.get("config", Constants.MOD_ID + ".json5");
+
+            FabricConfig.updateConfig(p, serializer);
         }
     }
 

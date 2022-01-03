@@ -1,6 +1,7 @@
 package com.leobeliik.extremesoundmuffler.gui;
 
 import com.leobeliik.extremesoundmuffler.CommonConfig;
+import com.leobeliik.extremesoundmuffler.Constants;
 import com.leobeliik.extremesoundmuffler.gui.buttons.MuffledSlider;
 import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.leobeliik.extremesoundmuffler.SoundMufflerCommon.renderGui;
+
 //TODO REWRITE THIS
 public class MainScreen extends Screen implements ISoundLists, IColorsGui {
 
@@ -648,7 +650,7 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
 
         //Close screen when press "E" or the mod hotkey outside the search bar or edit title bar
         if (!searchBar.isFocused() && !editAnchorTitleBar.isFocused() && !editAnchorRadiusBar.isFocused() &&
-                (minecraft.options.keyInventory.matches(keyCode, scanCode) /*|| keyCode == SoundMuffler.getHotkey()*/)) {
+                (minecraft.options.keyInventory.matches(keyCode, scanCode) || keyCode == Constants.openMufflerScreen.getDefaultKey().getValue())) {
             this.onClose();
             filteredButtons.clear();
             return true;

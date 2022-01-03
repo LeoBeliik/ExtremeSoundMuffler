@@ -32,7 +32,7 @@ public class FabricConfig {
     private static PropertyMirror<Integer> invButtonHorizontal = PropertyMirror.create(ConfigTypes.INTEGER);
     private static PropertyMirror<Integer> invButtonVertical = PropertyMirror.create(ConfigTypes.INTEGER);
 
-    public static void init() {
+    static void init() {
         CommonConfig.set(new CommonConfig.ConfigAccess(
                 forbiddenSounds::getValue,
                 lawfulAllList::getValue,
@@ -48,6 +48,7 @@ public class FabricConfig {
 
         JanksonValueSerializer serializer = new JanksonValueSerializer(false);
         Path p = Paths.get("config", Constants.MOD_ID + ".json5");
+
         writeDefaultConfig(p, serializer);
 
         try (InputStream s = new BufferedInputStream(Files.newInputStream(p, StandardOpenOption.READ, StandardOpenOption.CREATE))) {
@@ -58,6 +59,8 @@ public class FabricConfig {
     }
 
     private static final ConfigTree CONFIG = ConfigTree.builder()
+
+            .fork("General settings")
 
             .beginValue("forbiddenSounds", ConfigTypes.makeList(ConfigTypes.STRING), Arrays.asList("ui.", "music.", "ambient."))
             .withComment("General settings: ").withComment("") // general "category"
@@ -85,6 +88,9 @@ public class FabricConfig {
             .withComment("Whether or not use the dark theme")
             .finishValue(useDarkTheme::mirror)
 
+            .finishBranch()
+            .fork("Inventory button settings")
+
             .beginValue("disableInventoryButton", ConfigTypes.BOOLEAN, false)
             .withComment("").withComment("Inventory button settings").withComment("") //inv button "category"
             .withComment("Disable the Muffle button in the player inventory?")
@@ -100,9 +106,14 @@ public class FabricConfig {
                     "You can change this in game by holding the RMB over the button and draging it around")
             .finishValue(invButtonVertical::mirror)
 
+            .finishBranch()
+            .fork("Anchor settings")
+
             .beginValue("disableAnchors", ConfigTypes.BOOLEAN, false)
             .withComment("Disable the Anchors?")
             .finishValue(disableAnchors::mirror)
+
+            .finishBranch()
 
             .build();
 
@@ -114,7 +125,16 @@ public class FabricConfig {
 
     }
 
-    public static List<String> getForbiddenSounds() {
+    static void updateConfig(Path path, JanksonValueSerializer serializer) {
+        try (OutputStream s = new BufferedOutputStream(Files.newOutputStream(path, StandardOpenOption.WRITE, StandardOpenOption.SYNC))) {
+            FiberSerialization.serialize(CONFIG, s, serializer);
+        } catch (IOException e) {
+            Constants.LOG.warn("esm config failed to update!");
+        }
+
+    }
+
+    static List<String> getForbiddenSounds() {
         return forbiddenSounds.getValue();
     }
 
