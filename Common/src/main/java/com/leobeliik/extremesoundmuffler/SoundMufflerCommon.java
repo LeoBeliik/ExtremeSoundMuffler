@@ -1,6 +1,7 @@
 package com.leobeliik.extremesoundmuffler;
 
 import com.leobeliik.extremesoundmuffler.gui.MainScreen;
+import com.leobeliik.extremesoundmuffler.gui.MufflerScreen;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.KeyMapping;
@@ -15,7 +16,7 @@ public class SoundMufflerCommon {
     }
 
     public static void openMainScreen(){
-        MainScreen.open();
+        MufflerScreen.open();
     }
 
     //create empty keybind for the mod

@@ -69,7 +69,12 @@ minecraft {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
     compileOnly project(":Common")
+}
+
+mixin {
+    add sourceSets.main, "extremesoundmuffler.refmap.json"
 }
 
 tasks.withType(JavaCompile) {

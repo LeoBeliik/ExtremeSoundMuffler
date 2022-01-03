@@ -18,7 +18,6 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.*;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,7 +69,7 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
     }
 
     @Override
-    public void render(@NotNull PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(stack);
         renderGui();
         this.blit(stack, getX(), getY(), 0, 0, xSize, ySize); //Main screen bounds
@@ -691,7 +690,7 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
     }
 
     @Override
-    public void resize(@NotNull Minecraft minecraft, int width, int height) {
+    public void resize(Minecraft minecraft, int width, int height) {
         updateText();
         super.resize(minecraft, width, height);
     }

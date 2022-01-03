@@ -19,7 +19,6 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
@@ -44,7 +43,7 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
     }
 
     @Override
-    public void renderButton(@NotNull PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+    public void renderButton(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
         Minecraft minecraft = Minecraft.getInstance();
         SoundMufflerCommon.renderGui();
         drawGradient(stack);

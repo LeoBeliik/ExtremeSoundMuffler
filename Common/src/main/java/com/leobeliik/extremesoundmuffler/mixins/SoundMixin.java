@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(SoundEngine.class)
 public abstract class SoundMixin implements ISoundLists {
-    @Inject(method = "calculateVolume", at = @At("RETURN"), cancellable = true, remap = false)
+    @Inject(method = "calculateVolume", at = @At("RETURN"), cancellable = true)
     private void calculateSoundVolume(SoundInstance sound, CallbackInfoReturnable<Float> cir) {
         //don't care about forbidden sounds or from the psb
         if (isForbidden(sound) || PlaySoundButton.isFromPSB()) {

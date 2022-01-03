@@ -10,7 +10,6 @@ import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.TextComponent;
-import org.jetbrains.annotations.NotNull;
 
 
 public class InvButton extends AbstractButton implements IColorsGui {
@@ -31,7 +30,7 @@ public class InvButton extends AbstractButton implements IColorsGui {
     }
 
     @Override
-    public void renderBg(@NotNull PoseStack matrix, @NotNull Minecraft minecraft, int mouseX, int mouseY) {
+    public void renderBg(PoseStack matrix, Minecraft minecraft, int mouseX, int mouseY) {
         if (this.visible) {
             SoundMufflerCommon.renderGui();
             blit(matrix, this.x, this.y, 43f, 202f, 11, 11, 256, 256); //button texure

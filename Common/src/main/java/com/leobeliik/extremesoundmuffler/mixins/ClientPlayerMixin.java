@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(AbstractClientPlayer.class)
 public class ClientPlayerMixin {
 
-    @Inject(method = "Lnet/minecraft/client/player/AbstractClientPlayer;<init>(Lnet/minecraft/client/multiplayer/ClientLevel;Lcom/mojang/authlib/GameProfile;)V", at = @At("RETURN"), remap = false)
+    @Inject(method = "Lnet/minecraft/client/player/AbstractClientPlayer;<init>(Lnet/minecraft/client/multiplayer/ClientLevel;Lcom/mojang/authlib/GameProfile;)V", at = @At("RETURN"))
     private void test(ClientLevel level, GameProfile profile, CallbackInfo ci) {
         //load muffler data when client player joins the world
         DataManager.loadData();

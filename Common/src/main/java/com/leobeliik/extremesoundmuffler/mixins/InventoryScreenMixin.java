@@ -26,13 +26,13 @@ public abstract class InventoryScreenMixin extends EffectRenderingInventoryScree
     }
 
     //Adds the inventory button
-    @Inject(method = "init", at = @At("TAIL"), remap = false)
+    @Inject(method = "Lnet/minecraft/client/gui/screens/inventory/InventoryScreen;init()V", at = @At("TAIL"))
     private void InventoryScreenInit(CallbackInfo CI) {
         this.addRenderableWidget(invButton);
     }
 
     //Move the button when the recipe book gui opens
-    @Inject(method = "renderBg", at = @At("TAIL"), remap = false)
+    @Inject(method = "renderBg", at = @At("TAIL"))
     private void InventoryScreenRender(PoseStack ps, float tick, int mouseX, int mouseY, CallbackInfo ci) {
         if (InvButton.notHolding()) {
             invButton.setX(getBX());
@@ -41,7 +41,7 @@ public abstract class InventoryScreenMixin extends EffectRenderingInventoryScree
     }
 
     //Fabric can't do shit by itself
-    @Inject(method = "mouseReleased", at = @At("TAIL"), remap = false)
+    @Inject(method = "mouseReleased", at = @At("TAIL"))
     private void onMouseReleased(double mouseX, double mouseY, int button, CallbackInfoReturnable cir) {
         if (!InvButton.notHolding() && button == 1) {
             invButton.mouseReleased(mouseX, mouseY, button);
