@@ -114,6 +114,10 @@ public class FabricConfig {
 
     }
 
+    public static List<String> getForbiddenSounds() {
+        return forbiddenSounds.getValue();
+    }
+
     static void setInvButtonHorizontal(int x) {
         invButtonHorizontal.setValue(x);
     }

@@ -15,13 +15,16 @@
   "icon": "esm_logo.png",
   "environment": "*",
   "entrypoints": {
-    "main": [
-      "com.leobeliik.extremesoundmuffler.SoundMuffler"
+    "client": [
+      "com.leobeliik.extremesoundmuffler.SoundMufflerFabric"
     ]
   },
   "mixins": [
     "extremesoundmuffler.mixins.json"
   ],
+  "custom": {
+    "modmenu:clientsideOnly": true
+  },
   "depends": {
     "fabricloader": ">=0.12",
     "fabric": "*",

@@ -15,10 +15,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FormattedText;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.*;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,7 +24,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.leobeliik.extremesoundmuffler.SoundMufflerCommon.renderGui;
-
+//TODO REWRITE THIS
 public class MainScreen extends Screen implements ISoundLists, IColorsGui {
 
     private static final Minecraft minecraft = Minecraft.getInstance();
@@ -229,7 +226,7 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
             boolean muffledScreen = screenTitle.equals(mainTitle) && !muffledSounds.isEmpty() && muffledSounds.containsKey(sound);
 
             if (muffledAnchor || muffledScreen) {
-                volumeSlider.setFGColore(cyanText);
+                volumeSlider.setMessage(setFGColor(volumeSlider.getMessage().copy(), "aqua"));
             }
 
             buttonH += volumeSlider.getHeight() + 2;
@@ -264,7 +261,9 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
                     open(screenTitle, btnToggleSoundsList.getMessage(), searchBar.getValue());
                 });
                 if (!anchorList.isEmpty()) {
-                    //btnAnchor.setFGColor(anchorList.get(Integer.parseInt(btnAnchor.getMessage().getString())).getAnchorPos() != null ? greenText : whiteText);
+                    MutableComponent message = btnAnchor.getMessage().copy();
+                    String color = anchorList.get(Integer.parseInt(message.getString())).getAnchorPos() != null ? "green" : "white";
+                    btnAnchor.setMessage(setFGColor(message, color));
                 }
             }
             addRenderableWidget(btnAnchor).setAlpha(0);
@@ -611,7 +610,7 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
 
         if (!editAnchorRadiusBar.getValue().isEmpty()) {
             int Radius = Integer.parseInt(editAnchorRadiusBar.getValue());
-            editAnchorRadiusBar.setTextColor(Radius > 32 || Radius < 1 ? cyanText : whiteText);
+            editAnchorRadiusBar.setTextColor(Radius > 32 || Radius < 1 ? aquaText : whiteText);
         } else {
             editAnchorRadiusBar.setTextColor(whiteText);
         }

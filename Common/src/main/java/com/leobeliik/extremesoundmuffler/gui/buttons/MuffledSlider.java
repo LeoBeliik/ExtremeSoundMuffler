@@ -14,6 +14,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
@@ -32,8 +33,6 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
     private final ResourceLocation sound;
     public static ResourceLocation tickSound;
     public static boolean showSlider = false;
-    private static final int UNSET_FG_COLOR = -1;
-    private int packedFGColor = UNSET_FG_COLOR;
 
 
     public MuffledSlider(int x, int y, int width, int height, float sliderValue, ResourceLocation sound, String screenTitle, Anchor anchor) {
@@ -49,7 +48,7 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
         Minecraft minecraft = Minecraft.getInstance();
         SoundMufflerCommon.renderGui();
         drawGradient(stack);
-        float v = getFGColore() == whiteText ? 213F : 202F;
+        float v = getFGColor(getText()).equals("white") ? 213F : 202F;
         blit(stack, btnToggleSound.x, btnToggleSound.y, 43F, v, 11, 11, 256, 256); //muffle button bg
         blit(stack, btnPlaySound.x, btnPlaySound.y, 32F, 202F, 11, 11, 256, 256); //play button bg
         this.drawMessage(stack, minecraft);
@@ -68,12 +67,12 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
             } else {
                 msgTruncated = font.substrByWidth(getMessage(), 205).getString();
             }
-            font.drawShadow(stack, msgTruncated, this.x + 2, this.y + 2, getFGColore()); //title
+            font.drawShadow(stack, msgTruncated, this.x + 2, this.y + 2, getFGColor(getText()).equals("aqua") ? aquaText : whiteText); //title
         }
     }
 
     private void drawGradient(PoseStack stack) {
-        if (getFGColore() == cyanText) {
+        if (getFGColor(getText()).equals("aqua")) {
             blit(stack, this.x, this.y - 1, 0, 234, (int) (sliderValue * (width - 6)) + 5, height + 1, 256, 256); //draw bg
             if (this.isHovered) {
                 blit(stack, this.x + (int) (sliderValue * (width - 6)) + 1, this.y + 1, 32F, 224F, 5, 9, 256, 256); //Slider
@@ -84,13 +83,13 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
     private void setBtnToggleSound(String screenTitle, ResourceLocation sound, Anchor anchor) {
         int x = CommonConfig.get().leftButtons().get() ? this.x - 24 : this.x + width + 5;
         btnToggleSound = new Button(x, this.y, 11, 11, TextComponent.EMPTY, b -> {
-            if (getFGColore() == cyanText) {
+            if (getFGColor(getText()).equals("aqua")) {
                 if (screenTitle.equals(mainTitle)) {
                     muffledSounds.remove(sound);
                 } else {
                     anchor.removeSound(sound);
                 }
-                setFGColore(whiteText);
+                setMessage(setFGColor(getText(), "white"));
             } else {
                 if (screenTitle.equals(mainTitle)) {
                     setSliderValue(CommonConfig.get().defaultMuteVolume().get().floatValue());
@@ -101,7 +100,7 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
                 } else {
                     return;
                 }
-                setFGColore(cyanText);
+                setMessage(setFGColor(getText(), "aqua"));
             }
         });
     }
@@ -150,7 +149,7 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (this.isHovered && getFGColore() == cyanText) {
+        if (this.isHovered && getFGColor(getText()).equals("aqua")) {
             this.changeSliderValue((float) mouseX);
             showSlider = true;
             this.setFocused(true);
@@ -186,15 +185,7 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
         elementOutput.add(NarratedElementType.TITLE, this.createNarrationMessage());
     }
 
-    //Remnants of forge
-    private int getFGColore() {
-        if (packedFGColor != UNSET_FG_COLOR) return packedFGColor;
-        return this.active ? 16777215 : 10526880; // White : Light Grey
-    }
-    public void setFGColore(int color) {
-        this.packedFGColor = color;
-    }
-    private void clearFGColore() {
-        this.packedFGColor = UNSET_FG_COLOR;
+    private MutableComponent getText() {
+        return this.getMessage().copy();
     }
 }

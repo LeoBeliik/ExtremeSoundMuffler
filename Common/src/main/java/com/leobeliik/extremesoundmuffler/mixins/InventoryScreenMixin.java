@@ -13,6 +13,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(InventoryScreen.class)
 public abstract class InventoryScreenMixin extends EffectRenderingInventoryScreen<InventoryMenu> {
@@ -24,11 +25,13 @@ public abstract class InventoryScreenMixin extends EffectRenderingInventoryScree
         super(inventoryMenu, inventory, component);
     }
 
+    //Adds the inventory button
     @Inject(method = "init", at = @At("TAIL"), remap = false)
     private void InventoryScreenInit(CallbackInfo CI) {
         this.addRenderableWidget(button);
     }
 
+    //Move the button when the recipe book gui opens
     @Inject(method = "renderBg", at = @At("TAIL"), remap = false)
     private void InventoryScreenRender(PoseStack ps, float tick, int mouseX, int mouseY, CallbackInfo ci) {
         if (InvButton.notHolding()) {
@@ -37,10 +40,19 @@ public abstract class InventoryScreenMixin extends EffectRenderingInventoryScree
         }
     }
 
+    //Fabric can't do shit by itself
+    @Inject(method = "mouseReleased", at = @At("TAIL"), remap = false)
+    private void onMouseReleased(double mouseX, double mouseY, int b, CallbackInfoReturnable cir) {
+        if (!InvButton.notHolding())
+            button.mouseReleased(mouseX, mouseY, b);
+    }
+
+    //equivalent of AbstractContainerScreen#getGuiLeft() in forge
     private int getBX() {
         return leftPos + CommonConfig.get().invButtonHorizontal().get();
     }
 
+    //equivalent of AbstractContainerScreen#getGuiTop() in forge
     private int getBY() {
         return topPos + CommonConfig.get().invButtonVertical().get();
     }

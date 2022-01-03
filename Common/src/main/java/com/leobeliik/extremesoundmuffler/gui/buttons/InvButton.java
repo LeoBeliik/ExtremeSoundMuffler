@@ -30,12 +30,11 @@ public class InvButton extends AbstractButton implements IColorsGui {
         MainScreen.open();
     }
 
-
     @Override
     public void renderBg(@NotNull PoseStack matrix, @NotNull Minecraft minecraft, int mouseX, int mouseY) {
         if (this.visible) {
             SoundMufflerCommon.renderGui();
-            blit(matrix, this.x, this.y, 43f, 202f, 11, 11, 256, 256);
+            blit(matrix, this.x, this.y, 43f, 202f, 11, 11, 256, 256); //button texure
             if (isMouseOver(mouseX, mouseY) && !hold) {
                 drawCenteredString(matrix, minecraft.font, "Muffler", this.x + 5, this.y + this.height + 1, whiteText);
             }
@@ -57,8 +56,8 @@ public class InvButton extends AbstractButton implements IColorsGui {
     public boolean mouseReleased(double pMouseX, double pMouseY, int pButton) {
         if (pButton == 1 && isMouseOver(pMouseX, pMouseY)) {
             hold = false;
-            buttonX = x - ((parent.width - 176) / 2);
-            buttonY = y - ((parent.height - 166) / 2);
+            buttonX = x - ((parent.width - 176) / 2); //forge's getLeft()
+            buttonY = y - ((parent.height - 166) / 2); //forge's getTop()
         }
         return super.mouseReleased(pMouseX, pMouseY, pButton);
     }
