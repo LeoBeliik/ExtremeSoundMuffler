@@ -4,11 +4,12 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+
 import java.util.Arrays;
 import java.util.List;
 
 @Mod.EventBusSubscriber
-public class Config {
+public class ForgeConfig {
 
     private static ForgeConfigSpec CLIENT_CONFIG;
     private static ForgeConfigSpec.Builder CLIENT_BUILDER = new ForgeConfigSpec.Builder();
@@ -17,15 +18,27 @@ public class Config {
     private static ForgeConfigSpec.BooleanValue disableInventoryButton;
     private static ForgeConfigSpec.BooleanValue disableAnchors;
     private static ForgeConfigSpec.BooleanValue leftButtons;
-    private static ForgeConfigSpec.DoubleValue defaultMuteVolume;
     private static ForgeConfigSpec.BooleanValue showTip;
     private static ForgeConfigSpec.BooleanValue useDarkTheme;
+    private static ForgeConfigSpec.DoubleValue defaultMuteVolume;
     private static ForgeConfigSpec.IntValue invButtonHorizontal;
     private static ForgeConfigSpec.IntValue invButtonVertical;
 
     static void init() {
         buildConfig();
-        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.CLIENT_CONFIG);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ForgeConfig.CLIENT_CONFIG);
+        CommonConfig.set(new CommonConfig.ConfigAccess(
+                forbiddenSounds::get,
+                lawfulAllList::get,
+                disableInventoryButton::get,
+                disableAnchors::get,
+                leftButtons::get,
+                showTip::get,
+                useDarkTheme::get,
+                defaultMuteVolume::get,
+                invButtonHorizontal::get,
+                invButtonVertical::get
+        ));
     }
 
 
@@ -34,7 +47,7 @@ public class Config {
         String CATEGORY_INVENTORY_BUTTON = "inventory_button";
         String CATEGORY_ANCHORS = "Anchors";
 
-        CLIENT_BUILDER.comment("general settings").push(CATEGORY_GENERAL);
+        CLIENT_BUILDER.comment("General settings").push(CATEGORY_GENERAL);
         forbiddenSounds = CLIENT_BUILDER.comment("Blacklisted Sounds - add the name of the sounds to blacklist, separated with comma")
                 .defineList("forbiddenSounds", Arrays.asList("ui.", "music.", "ambient."), o -> o instanceof String);
         lawfulAllList = CLIENT_BUILDER.comment("Allow the \"ALL\" sounds list to include the blacklisted sounds?")
@@ -106,15 +119,15 @@ public class Config {
         return invButtonHorizontal.get();
     }
 
-    public static void setInvButtonHorizontal(int invButtonHorizontal) {
-        Config.invButtonHorizontal.set(invButtonHorizontal);
-    }
-
-    public static int getInvButtonVertical() {
+    public int getInvButtonVertical() {
         return invButtonVertical.get();
     }
 
-    public static void setInvButtonVertical(int invButtonVertical) {
-        Config.invButtonVertical.set(invButtonVertical);
+    static void setInvButtonHorizontal(int x) {
+        invButtonHorizontal.set(x);
+    }
+
+    static void setInvButtonVertical(int y) {
+        invButtonVertical.set(y);
     }
 }

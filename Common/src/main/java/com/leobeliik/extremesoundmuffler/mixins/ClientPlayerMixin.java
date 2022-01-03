@@ -12,9 +12,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(AbstractClientPlayer.class)
 public class ClientPlayerMixin {
 
-    @Inject(method = "Lnet/minecraft/client/player/AbstractClientPlayer;<init>(Lnet/minecraft/client/multiplayer/ClientLevel;Lcom/mojang/authlib/GameProfile;)V", at = @At("RETURN"))
+    @Inject(method = "Lnet/minecraft/client/player/AbstractClientPlayer;<init>(Lnet/minecraft/client/multiplayer/ClientLevel;Lcom/mojang/authlib/GameProfile;)V", at = @At("RETURN"), remap = false)
     private void test(ClientLevel level, GameProfile profile, CallbackInfo ci) {
-        System.out.println("AAAAAAAAAAAAAA");
         DataManager.loadData();
     }
 }

@@ -6,12 +6,19 @@ plugins {
 
 archivesBaseName = "${mod_name}-3.${modversion}-forge-${minecraft_version}"
 
+repositories {
+    maven { url "https://maven.shedaniel.me/" }
+}
+
 dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
     mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
     implementation project(":Common")
+    modImplementation "me.zeroeightsix:fiber:${fiber_version}"
+    include "me.zeroeightsix:fiber:${fiber_version}"
+    //modCompileOnly("me.shedaniel.cloth:cloth-config-fabric:${cloth_version}") { transitive = false }
 }
 
 loom {

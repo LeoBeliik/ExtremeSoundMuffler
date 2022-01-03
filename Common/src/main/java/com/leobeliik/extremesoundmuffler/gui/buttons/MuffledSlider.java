@@ -1,6 +1,7 @@
 package com.leobeliik.extremesoundmuffler.gui.buttons;
 
-import com.leobeliik.extremesoundmuffler.CommonClass;
+import com.leobeliik.extremesoundmuffler.CommonConfig;
+import com.leobeliik.extremesoundmuffler.SoundMufflerCommon;
 import com.leobeliik.extremesoundmuffler.gui.MainScreen;
 import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
@@ -17,6 +18,8 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Objects;
 
 @SuppressWarnings("EmptyMethod")
@@ -42,44 +45,44 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
     }
 
     @Override
-    public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void renderButton(@NotNull PoseStack stack, int mouseX, int mouseY, float partialTicks) {
         Minecraft minecraft = Minecraft.getInstance();
-        CommonClass.renderGui();
-        drawGradient(matrixStack);
+        SoundMufflerCommon.renderGui();
+        drawGradient(stack);
         float v = getFGColore() == whiteText ? 213F : 202F;
-        blit(matrixStack, btnToggleSound.x, btnToggleSound.y, 43F, v, 11, 11, 256, 256); //muffle button bg
-        blit(matrixStack, btnPlaySound.x, btnPlaySound.y, 32F, 202F, 11, 11, 256, 256); //play button bg
-        this.drawMessage(matrixStack, minecraft);
+        blit(stack, btnToggleSound.x, btnToggleSound.y, 43F, v, 11, 11, 256, 256); //muffle button bg
+        blit(stack, btnPlaySound.x, btnPlaySound.y, 32F, 202F, 11, 11, 256, 256); //play button bg
+        this.drawMessage(stack, minecraft);
     }
 
-    private void drawMessage(PoseStack matrixStack, Minecraft minecraft) {
+    private void drawMessage(PoseStack stack, Minecraft minecraft) {
         Font font = minecraft.font;
         int v = Math.max(this.width, font.width(getMessage().getString()));
         if (showSlider && this.isFocused() && this.isHovered) {
-            drawCenteredString(matrixStack, font, "Volume: " + (int) (sliderValue * 100), this.x + (this.width / 2), this.y + 2, whiteText); //title
+            drawCenteredString(stack, font, "Volume: " + (int) (sliderValue * 100), this.x + (this.width / 2), this.y + 2, whiteText); //title
         } else {
             String msgTruncated;
             if (this.isHovered) {
                 msgTruncated = getMessage().getString();
-                fill(matrixStack, this.x + this.width + 3, this.y, this.x + v + 3, this.y + font.lineHeight + 2, darkBG);
+                fill(stack, this.x + this.width + 3, this.y, this.x + v + 3, this.y + font.lineHeight + 2, darkBG);
             } else {
                 msgTruncated = font.substrByWidth(getMessage(), 205).getString();
             }
-            font.drawShadow(matrixStack, msgTruncated, this.x + 2, this.y + 2, getFGColore()); //title
+            font.drawShadow(stack, msgTruncated, this.x + 2, this.y + 2, getFGColore()); //title
         }
     }
 
-    private void drawGradient(PoseStack matrixStack) {
+    private void drawGradient(PoseStack stack) {
         if (getFGColore() == cyanText) {
-            blit(matrixStack, this.x, this.y - 1, 0, 234, (int) (sliderValue * (width - 6)) + 5, height + 1, 256, 256); //draw bg
+            blit(stack, this.x, this.y - 1, 0, 234, (int) (sliderValue * (width - 6)) + 5, height + 1, 256, 256); //draw bg
             if (this.isHovered) {
-                blit(matrixStack, this.x + (int) (sliderValue * (width - 6)) + 1, this.y + 1, 32F, 224F, 5, 9, 256, 256); //Slider
+                blit(stack, this.x + (int) (sliderValue * (width - 6)) + 1, this.y + 1, 32F, 224F, 5, 9, 256, 256); //Slider
             }
         }
     }
 
     private void setBtnToggleSound(String screenTitle, ResourceLocation sound, Anchor anchor) {
-        int x = /*Config.getLeftButtons()*/false ? this.x - 24 : this.x + width + 5;
+        int x = CommonConfig.get().leftButtons().get() ? this.x - 24 : this.x + width + 5;
         btnToggleSound = new Button(x, this.y, 11, 11, TextComponent.EMPTY, b -> {
             if (getFGColore() == cyanText) {
                 if (screenTitle.equals(mainTitle)) {
@@ -90,10 +93,10 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
                 setFGColore(whiteText);
             } else {
                 if (screenTitle.equals(mainTitle)) {
-                    setSliderValue(/*Config.getDefaultMuteVolume()*/0);
+                    setSliderValue(CommonConfig.get().defaultMuteVolume().get().floatValue());
                     muffledSounds.put(sound, sliderValue);
                 } else if (anchor.getAnchorPos() != null) {
-                    setSliderValue(/*Config.getDefaultMuteVolume()*/0);
+                    setSliderValue(CommonConfig.get().defaultMuteVolume().get().floatValue());
                     anchor.addSound(sound, sliderValue);
                 } else {
                     return;

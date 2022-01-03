@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
+import com.leobeliik.extremesoundmuffler.CommonConfig;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
@@ -23,7 +24,7 @@ public class DataManager implements ISoundLists {
 
     public static void loadData() {
         loadMuffledMap().forEach((R, F) -> muffledSounds.put(new ResourceLocation(R), F));
-        if (/*!Config.getDisableAchors()*/true) {
+        if (!CommonConfig.get().disableAnchors().get()) {
             anchorList.clear();
             anchorList.addAll(loadAnchors());
         }
@@ -32,7 +33,7 @@ public class DataManager implements ISoundLists {
     public static void saveData() {
         saveMuffledMap();
 
-        if (/*!Config.getDisableAchors()*/true) {
+        if (!CommonConfig.get().disableAnchors().get()) {
             saveAnchors();
         }
     }

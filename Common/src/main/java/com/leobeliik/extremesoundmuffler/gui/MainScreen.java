@@ -1,5 +1,6 @@
 package com.leobeliik.extremesoundmuffler.gui;
 
+import com.leobeliik.extremesoundmuffler.CommonConfig;
 import com.leobeliik.extremesoundmuffler.gui.buttons.MuffledSlider;
 import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
@@ -19,12 +20,13 @@ import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static com.leobeliik.extremesoundmuffler.CommonClass.renderGui;
+import static com.leobeliik.extremesoundmuffler.SoundMufflerCommon.renderGui;
 
 public class MainScreen extends Screen implements ISoundLists, IColorsGui {
 
@@ -36,7 +38,7 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
     private static Component toggleSoundsListMessage;
     private final int xSize = 256;
     private final int ySize = 202;
-    private final boolean isAnchorsDisabled = false/*Config.getDisableAchors()*/;
+    private final boolean isAnchorsDisabled = CommonConfig.get().disableAnchors().get();
     private final Component emptyText = TextComponent.EMPTY;
     private final String mainTitle = "ESM - Main Screen";
     private String tip = Tips.randomTip();
@@ -69,13 +71,13 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
     }
 
     @Override
-    public void render(PoseStack matrix, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(matrix);
+    public void render(@NotNull PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+        this.renderBackground(stack);
         renderGui();
-        this.blit(matrix, getX(), getY(), 0, 0, xSize, ySize); //Main screen bounds
-        drawCenteredString(matrix, font, screenTitle, getX() + 128, getY() + 8, whiteText); //Screen title
-        renderButtonsTextures(matrix, mouseX, mouseY, partialTicks);
-        super.render(matrix, mouseX, mouseY, partialTicks);
+        this.blit(stack, getX(), getY(), 0, 0, xSize, ySize); //Main screen bounds
+        drawCenteredString(stack, font, screenTitle, getX() + 128, getY() + 8, whiteText); //Screen title
+        renderButtonsTextures(stack, mouseX, mouseY, partialTicks);
+        super.render(stack, mouseX, mouseY, partialTicks);
     }
 
     @Override
@@ -190,7 +192,7 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
         } else if (btnToggleSoundsList.getMessage().equals(Component.nullToEmpty("All"))) {
             soundsList.clear();
             //soundsList.addAll(ForgeRegistries.SOUND_EVENTS.getKeys());
-            if (/*Config.getLawfulAllList()*/false) {
+            if (CommonConfig.get().lawfulAllList().get()) {
                 forbiddenSounds.forEach(fs -> soundsList.removeIf(sl -> sl.toString().contains(fs)));
             }
         } else {
@@ -219,7 +221,7 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
                 volume = maxVolume;
             }
 
-            int x = /*Config.getLeftButtons()*/false ? getX() + 36 : getX() + 11;
+            int x = CommonConfig.get().leftButtons().get() ? getX() + 36 : getX() + 11;
 
             MuffledSlider volumeSlider = new MuffledSlider(x, buttonH, 205, 11, volume, sound, screenTitle, anchor);
 
@@ -389,7 +391,7 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
                         font.draw(matrix, "Anchor first", x, y + 29, whiteText);
                     }
                 } else {
-                    //renderGui();
+                    renderGui();
                     if (btn.getMessage().getString().equals(String.valueOf(anchor.getAnchorId()))) {
                         blit(matrix, btn.x - 5, btn.y - 2, 71F, 202F, 27, 22, xSize, xSize); //fancy selected Anchor indicator
                         break;
@@ -497,9 +499,9 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
         for (int i = 0; i < children().size(); i++) {
             AbstractWidget button = (AbstractWidget) children().get(i);
             if (button instanceof MuffledSlider) {
-                x = /*Config.getLeftButtons()*/false ? button.x - 3 : button.x + 1;
+                x = CommonConfig.get().leftButtons().get() ? button.x - 3 : button.x + 1;
                 y = button.y;
-                int bW = /*Config.getLeftButtons()*/false ? x + button.getWidth() + 5 : x + button.getWidth() + 28;
+                int bW = CommonConfig.get().leftButtons().get() ? x + button.getWidth() + 5 : x + button.getWidth() + 28;
 
                 if (i % 2 == 0 && button.visible) {
                     fill(matrix, x, y, bW, y + button.getHeight(), brightBG);
@@ -508,7 +510,7 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
         }
 
         //Show a tip
-        if (/*Config.getShowTip()*/true) {
+        if (CommonConfig.get().showTip().get()) {
             renderTips(matrix, tip);
         }
     }
@@ -688,7 +690,7 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
     }
 
     @Override
-    public void resize(Minecraft minecraft, int width, int height) {
+    public void resize(@NotNull Minecraft minecraft, int width, int height) {
         updateText();
         super.resize(minecraft, width, height);
     }

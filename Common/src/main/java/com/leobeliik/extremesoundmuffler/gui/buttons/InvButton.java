@@ -1,6 +1,6 @@
 package com.leobeliik.extremesoundmuffler.gui.buttons;
 
-import com.leobeliik.extremesoundmuffler.CommonClass;
+import com.leobeliik.extremesoundmuffler.SoundMufflerCommon;
 import com.leobeliik.extremesoundmuffler.gui.MainScreen;
 import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -10,16 +10,19 @@ import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.TextComponent;
+import org.jetbrains.annotations.NotNull;
+
 
 public class InvButton extends AbstractButton implements IColorsGui {
 
-    private final Minecraft minecraft = Minecraft.getInstance();
+    private static boolean hold = false;
+    private static int buttonX;
+    private static int buttonY;
     private final AbstractContainerScreen<?> parent;
-    private boolean hold = false;
 
-    public InvButton(AbstractContainerScreen parentGui, int x, int y) {
-        super(parentGui.width + x, parentGui.height + y, 11, 11, TextComponent.EMPTY);
-        parent = parentGui;
+    public InvButton(AbstractContainerScreen parent, int x, int y) {
+        super(x, y, 11, 11, TextComponent.EMPTY);
+        this.parent = parent;
     }
 
     @Override
@@ -27,13 +30,14 @@ public class InvButton extends AbstractButton implements IColorsGui {
         MainScreen.open();
     }
 
+
     @Override
-    public void render(PoseStack matrix, int mouseX, int mouseY, float partialTicks) {
+    public void renderBg(@NotNull PoseStack matrix, @NotNull Minecraft minecraft, int mouseX, int mouseY) {
         if (this.visible) {
-            CommonClass.renderGui();
-            blit(matrix, x, y, 43f, 202f, 11, 11, 256, 256);
+            SoundMufflerCommon.renderGui();
+            blit(matrix, this.x, this.y, 43f, 202f, 11, 11, 256, 256);
             if (isMouseOver(mouseX, mouseY) && !hold) {
-                drawCenteredString(matrix, minecraft.font, "Muffler", x + 5, this.y + this.height + 1, whiteText);
+                drawCenteredString(matrix, minecraft.font, "Muffler", this.x + 5, this.y + this.height + 1, whiteText);
             }
             if (hold) {
                 drag(mouseX, mouseY);
@@ -53,20 +57,39 @@ public class InvButton extends AbstractButton implements IColorsGui {
     public boolean mouseReleased(double pMouseX, double pMouseY, int pButton) {
         if (pButton == 1 && isMouseOver(pMouseX, pMouseY)) {
             hold = false;
-            //Config.setInvButtonHorizontal(x - parent.getGuiLeft());
-            //Config.setInvButtonVertical(y - parent.getGuiTop());
+            buttonX = x - ((parent.width - 176) / 2);
+            buttonY = y - ((parent.height - 166) / 2);
         }
         return super.mouseReleased(pMouseX, pMouseY, pButton);
     }
 
     private void drag(int mouseX, int mouseY) {
-        x = mouseX - (this.width / 2);
-        y = mouseY - (this.height / 2);
+        this.x = mouseX - (this.width / 2);
+        this.y = mouseY - (this.height / 2);
     }
-
 
     @Override
     public void updateNarration(NarrationElementOutput elementOutput) {
         elementOutput.add(NarratedElementType.TITLE, this.createNarrationMessage());
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public static boolean notHolding() {
+        return !hold;
+    }
+
+    public static int getButtonX() {
+        return buttonX;
+    }
+
+    public static int getButtonY() {
+        return buttonY;
     }
 }

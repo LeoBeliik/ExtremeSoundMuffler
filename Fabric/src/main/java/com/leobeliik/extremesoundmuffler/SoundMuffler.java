@@ -1,18 +1,25 @@
 package com.leobeliik.extremesoundmuffler;
 
+import com.leobeliik.extremesoundmuffler.gui.buttons.InvButton;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
+import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
+import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 
 public class SoundMuffler implements ModInitializer {
-    
     @Override
     public void onInitialize() {
-        
-        // This method is invoked by the Fabric mod loader when it is ready
-        // to load your mod. You can access Fabric and Common code in this
-        // project.
-
-        // Use Fabric to bootstrap the Common mod.
-        CommonClass.init();
+        FabricConfig.init();
+        ScreenEvents.BEFORE_INIT.register((client, screen, scaledWidth, scaledHeight) -> ScreenMouseEvents.afterMouseRelease(screen).register(SoundMuffler::onMouseReleasePre));
     }
+
+    private static void onMouseReleasePre(Screen screen, double pMouseX, double pMouseY, int pButton) {
+        if (screen instanceof InventoryScreen && pButton == 1 && InvButton.notHolding()) {
+            FabricConfig.setInvButtonHorizontal(InvButton.getButtonX());
+            FabricConfig.setInvButtonVertical(InvButton.getButtonY());
+        }
+    }
+
+
 }
