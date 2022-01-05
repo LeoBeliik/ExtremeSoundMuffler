@@ -649,7 +649,7 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
 
         //Close screen when press "E" or the mod hotkey outside the search bar or edit title bar
         if (!searchBar.isFocused() && !editAnchorTitleBar.isFocused() && !editAnchorRadiusBar.isFocused() &&
-                (minecraft.options.keyInventory.matches(keyCode, scanCode) || keyCode == Constants.openMufflerScreen.getDefaultKey().getValue())) {
+                (minecraft.options.keyInventory.matches(keyCode, scanCode) || keyCode == Constants.soundMufflerKey.getDefaultKey().getValue())) {
             this.onClose();
             filteredButtons.clear();
             return true;

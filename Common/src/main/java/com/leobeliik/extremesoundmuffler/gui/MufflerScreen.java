@@ -1,10 +1,12 @@
 package com.leobeliik.extremesoundmuffler.gui;
 
 import com.leobeliik.extremesoundmuffler.CommonConfig;
+import com.leobeliik.extremesoundmuffler.Constants;
 import com.leobeliik.extremesoundmuffler.gui.buttons.MuffledSlider;
 import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import com.leobeliik.extremesoundmuffler.utils.Anchor;
+import com.leobeliik.extremesoundmuffler.utils.DataManager;
 import com.leobeliik.extremesoundmuffler.utils.Tips;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
@@ -17,6 +19,8 @@ import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -54,8 +58,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         //allows to hold a key to keep printing it. in this case i want it to easy erase text
         minecraft.keyboardHandler.setSendRepeatsToGui(true);
 
-        //addButtons();
-        //btnToggleSoundsList.setMessage(Component.nullToEmpty("Recent"));
+        addButtons();
         addSoundListButtons();
     }
 
@@ -69,9 +72,88 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         super.render(stack, mouseX, mouseY, partialTicks);
     }
 
+    @Override
+    public boolean isPauseScreen() {
+        return false;
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        //Radius only accepts numbers
+        //editAnchorRadiusBar.setFilter(s -> s.matches("[0-9]*(?:[0-9]*)?"));
+
+        //Search bar, Edit title bar & Edit Anchor Radius bar looses focus when pressed "Enter" or "Intro"
+        if (keyCode == 257 || keyCode == 335) {
+            searchBar.setFocus(false);
+            return true;
+        }
+
+        //Close screen when press "E" or the mod hotkey outside the search bar or edit title bar
+        if (!searchBar.isFocused() /*&& !editAnchorTitleBar.isFocused() && !editAnchorRadiusBar.isFocused()*/ &&
+                (minecraft.options.keyInventory.matches(keyCode, scanCode) || keyCode == Constants.soundMufflerKey.getDefaultKey().getValue())) {
+            this.onClose();
+            return true;
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+        if (searchBar.isFocused()) {
+            updateButtons();
+        }
+        return super.keyReleased(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double direction) {
+        if (firstSoundButton == null) {
+            return false;
+        }
+
+        if ((direction > 0 && firstSoundButton.y == minYButton) || (direction < 0 && lastSoundButton.y <= maxYButton)) {
+            return false;
+        }
+        children().stream().filter(b -> b instanceof MuffledSlider).map(b -> (MuffledSlider) b).forEach(b -> {
+            //only increase / decrease from 10 to 10 to prevent the sliders going further than they should
+            b.setY((int) (b.y + (b.getHeight() * 10) * Mth.clamp(direction, -1, 1)));
+            b.isVisible(b.y >= minYButton && b.y <= maxYButton);
+        });
+
+        return super.mouseScrolled(mouseX, mouseY, direction);
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        //right click
+        if (button == 1) {
+            //clear searchbar with rmb
+            if (!searchBar.getValue().isEmpty() && searchBar.isMouseOver(mouseX, mouseY)) {
+                searchBar.setValue("");
+                searchBar.setFocus(true);
+                updateButtons();
+                return true;
+            }
+        }
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public void onClose() {
+        DataManager.saveData();
+        super.onClose();
+    }
+
+    //-----------------------------------My functions-----------------------------------//
+
+    private static void open(Component title) {
+        screenTitle = title.getString();
+        minecraft.setScreen(new MufflerScreen(title));
+    }
+
     private void addButtons() {
 
-        addWidget(btnToggleSoundsList = new Button(getX() + 13, getY() + 181, 52, 13, toggleSoundsListMessage, b -> {
+        addWidget(btnToggleSoundsList = new Button(getX() + 13, getY() + 181, 52, 13, Component.nullToEmpty("Recent"), b -> {
             boolean isAnchorMuffling = false;
 
             if (!screenTitle.equals(mainTitle)) {
@@ -89,25 +171,24 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
             } else {
                 toggleSoundsListMessage = Component.nullToEmpty("Recent");
             }
-
-            btnToggleSoundsList.setMessage(toggleSoundsListMessage);
-            clearWidgets();
+            b.setMessage(toggleSoundsListMessage);
+            updateButtons();
         }));
         //Searchbar
-        addWidget(searchBar = new EditBox(font, getX() + 63, getY() + 185, 134, 11, emptyText)).setBordered(false);
+        addRenderableWidget(searchBar = new EditBox(font, getX() + 74, getY() + 183, 119, 13, emptyText)).setBordered(false);
         //toggle muffling sounds on/off
-        addRenderableWidget(btnToggleMuffled = new Button(getX() + 229, getY() + 180, 17, 17, Component.nullToEmpty("Stop muffing"), b -> {
-            isMuffling = !isMuffling;
-        }));
+        addWidget(btnToggleMuffled = new Button(getX() + 229, getY() + 180, 17, 17, Component.nullToEmpty("Stop muffing"), b -> isMuffling = !isMuffling));
         //deletes current muffled list
-        addRenderableWidget(new Button(getX() + 205, getY() + 180, 17, 17, Component.nullToEmpty("Delete muffled sounds"), b -> {
+        addWidget(new Button(getX() + 205, getY() + 180, 17, 17, Component.nullToEmpty("Delete muffled sounds"), b -> {
             muffledSounds.clear();
             updateButtons();
         }));
         //backwards list of sounds
-        addRenderableWidget(new Button(getX() + 10, getY() + 182, 10, 13, Component.nullToEmpty("Previous sounds"), b -> mouseScrolled(0D, 0D, 1D)));
+/*
+        addWidget(new Button(getX() + 10, getY() + 182, 10, 13, Component.nullToEmpty("Previous sounds"), b -> mouseScrolled(0D, 0D, 1D)));
         //forward list of sounds
-        addRenderableWidget(new Button(getX() + 22, getY() + 182, 10, 13, Component.nullToEmpty("Next sounds"), b -> mouseScrolled(0D, 0D, -1D)));
+        addWidget(new Button(getX() + 22, getY() + 182, 10, 13, Component.nullToEmpty("Next sounds"), b -> mouseScrolled(0D, 0D, -1D)));
+*/
     }
 
     private void addSoundListButtons() {
@@ -115,14 +196,15 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         //set x depending of config
         int bx = CommonConfig.get().leftButtons().get() ? getX() + 36 : getX() + 11;
         anchor = getAnchorByName(screenTitle);
+        //easiest way to assure this is the first one
+        firstSoundButton = null;
         soundsList.clear();
 
-        /*switch (btnToggleMuffled.getMessage().getString()) {
+        switch (btnToggleSoundsList.getMessage().getString()) {
             case "Recent" -> soundsList.addAll(recentSoundsList);
             case "All" -> soundsList.addAll(Registry.SOUND_EVENT.keySet());
             default -> soundsList.addAll(muffledSounds.keySet());
-        }*/
-        soundsList.addAll(Registry.SOUND_EVENT.keySet());
+        }
         //removes blacklisted sounds
         forbiddenSounds.forEach(fs -> soundsList.removeIf(sl -> sl.toString().contains(fs)));
 
@@ -132,9 +214,9 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
         for (ResourceLocation sound : soundsList) {
             //Remove sound that are not being search, show all if searchbar is empty
-            /*if (!sound.toString().contains(searchBar.getValue())) {
+            if (!sound.toString().contains(searchBar.getValue())) {
                 continue;
-            }*/
+            }
             //set volume to muffled sounds if any
             double volume = muffledSounds.get(sound) == null ? 1F : muffledSounds.get(sound);
             //row highlight
@@ -151,12 +233,12 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
             by += btnSound.getHeight();
             btnSound.isVisible(btnSound.y < maxYButton);
 
-            if (soundsList.first().equals(sound)) {
+            if (firstSoundButton == null) {
                 firstSoundButton = btnSound;
             }
 
+            lastSoundButton = btnSound;
             if (soundsList.last().equals(sound)) {
-                lastSoundButton = btnSound;
             }
         }
 
@@ -172,6 +254,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         }
         addSoundListButtons();
     }
+
     public void removeSoundMuffled(ResourceLocation sound) {
         muffledSounds.remove(sound);
     }
@@ -189,13 +272,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     }
 
     public static void open() {
-        open(Component.nullToEmpty("ESM - Main Screen"), Component.nullToEmpty("Recent"));
-    }
-
-    private static void open(Component title, Component message) {
-        toggleSoundsListMessage = message;
-        screenTitle = title.getString();
-        minecraft.setScreen(new MufflerScreen(title));
+        open(Component.nullToEmpty("ESM - Main Screen"));
     }
 
     private void renderButtonsTextures(PoseStack stack, int mouseX, int mouseY, float partialTicks) {

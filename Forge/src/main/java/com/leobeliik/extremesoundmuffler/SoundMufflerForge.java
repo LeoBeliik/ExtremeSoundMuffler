@@ -15,7 +15,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
-import static com.leobeliik.extremesoundmuffler.Constants.openMufflerScreen;
+import static com.leobeliik.extremesoundmuffler.Constants.soundMufflerKey;
 
 @Mod(Constants.MOD_ID)
 public class SoundMufflerForge {
@@ -31,13 +31,13 @@ public class SoundMufflerForge {
     }
 
     private void clientInit(final FMLClientSetupEvent event) {
-        ClientRegistry.registerKeyBinding(openMufflerScreen);
+        ClientRegistry.registerKeyBinding(soundMufflerKey);
     }
 
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent //on mod keybind press
     public void onKeyInput(InputEvent.KeyInputEvent event) {
-        if (openMufflerScreen.consumeClick()) {
+        if (soundMufflerKey.consumeClick()) {
             SoundMufflerCommon.openMainScreen();
         }
     }
