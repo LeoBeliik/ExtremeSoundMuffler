@@ -19,14 +19,14 @@ public class Anchor {
     private String name;
     private ResourceLocation dimension;
     private int Radius;
-    private SortedMap<String, Float> muffledSounds = new TreeMap<>();
+    private SortedMap<String, Double> muffledSounds = new TreeMap<>();
 
     public Anchor(int id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public Anchor(int id, String name, BlockPos anchorPos, ResourceLocation dimension, int Radius, SortedMap<String, Float> muffledSounds) {
+    public Anchor(int id, String name, BlockPos anchorPos, ResourceLocation dimension, int Radius, SortedMap<String, Double> muffledSounds) {
         this.id = id;
         this.name = name;
         this.anchorPos = anchorPos;
@@ -63,21 +63,21 @@ public class Anchor {
         this.name = name;
     }
 
-    public SortedMap<ResourceLocation, Float> getMuffledSounds() {
-        SortedMap<ResourceLocation, Float> temp = new TreeMap<>();
-        this.muffledSounds.forEach((R, F) -> temp.put(new ResourceLocation(R), F));
+    public SortedMap<ResourceLocation, Double> getMuffledSounds() {
+        SortedMap<ResourceLocation, Double> temp = new TreeMap<>();
+        this.muffledSounds.forEach((R, D) -> temp.put(new ResourceLocation(R), D));
         return temp;
     }
 
-    public void setMuffledSounds(SortedMap<ResourceLocation, Float> muffledSounds) {
-        muffledSounds.forEach((R, F) -> this.muffledSounds.put(R.toString(), F));
+    public void setMuffledSounds(SortedMap<ResourceLocation, Double> muffledSounds) {
+        muffledSounds.forEach((R, D) -> this.muffledSounds.put(R.toString(), D));
     }
 
-    public void addSound(ResourceLocation sound, float volume) {
+    public void addSound(ResourceLocation sound, double volume) {
         muffledSounds.put(sound.toString(), volume);
     }
 
-    public void replaceSound(ResourceLocation sound, float volume) {
+    public void replaceSound(ResourceLocation sound, double volume) {
         muffledSounds.replace(sound.toString(), volume);
     }
 

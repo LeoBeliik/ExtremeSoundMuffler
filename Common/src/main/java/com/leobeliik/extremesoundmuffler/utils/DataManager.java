@@ -23,7 +23,7 @@ public class DataManager implements ISoundLists {
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     public static void loadData() {
-        loadMuffledMap().forEach((R, F) -> muffledSounds.put(new ResourceLocation(R), F));
+        loadMuffledMap().forEach((R, D) -> muffledSounds.put(new ResourceLocation(R), D));
         if (!CommonConfig.get().disableAnchors().get()) {
             anchorList.clear();
             anchorList.addAll(loadAnchors());
@@ -63,18 +63,18 @@ public class DataManager implements ISoundLists {
         anchorNBT.put("POS", NbtUtils.writeBlockPos(anchor.getAnchorPos()));
         anchorNBT.putString("DIM", anchor.getDimension().toString());
         anchorNBT.putInt("RAD", anchor.getRadius());
-        anchor.getMuffledSounds().forEach((R, F) -> muffledNBT.putFloat(R.toString(), F));
+        anchor.getMuffledSounds().forEach((R, D) -> muffledNBT.putDouble(R.toString(), D));
         anchorNBT.put("MUFFLED", muffledNBT);
 
         return anchorNBT;
     }
 
     public static Anchor deserializeAnchor(CompoundTag nbt) {
-        SortedMap<String, Float> muffledSounds = new TreeMap<>();
+        SortedMap<String, Double> muffledSounds = new TreeMap<>();
         CompoundTag muffledNBT = nbt.getCompound("MUFFLED");
 
         for (String key : muffledNBT.getAllKeys()) {
-            muffledSounds.put(key, muffledNBT.getFloat(key));
+            muffledSounds.put(key, muffledNBT.getDouble(key));
         }
 
         if (!nbt.contains("POS")) {
@@ -96,9 +96,9 @@ public class DataManager implements ISoundLists {
         } catch (IOException ignored) {}
     }
 
-    private static Map<String, Float> loadMuffledMap() {
+    private static Map<String, Double> loadMuffledMap() {
         try (InputStreamReader reader = new InputStreamReader(new FileInputStream("ESM/soundsMuffled.dat"), StandardCharsets.UTF_8)) {
-            return gson.fromJson(new JsonReader(reader), new TypeToken<Map<String, Float>>() {
+            return gson.fromJson(new JsonReader(reader), new TypeToken<Map<String, Double>>() {
             }.getType());
         } catch (JsonSyntaxException | IOException e) {
             return new HashMap<>();

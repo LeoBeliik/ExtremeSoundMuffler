@@ -208,8 +208,8 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
 
         for (ResourceLocation sound : soundsList) {
 
-            float volume;
-            float maxVolume = 1F;
+            double volume;
+            double maxVolume = 1D;
 
             if (screenTitle.equals(mainTitle)) {
                 volume = muffledSounds.get(sound) == null ? maxVolume : muffledSounds.get(sound);
@@ -221,7 +221,7 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
 
             int x = CommonConfig.get().leftButtons().get() ? getX() + 36 : getX() + 11;
 
-            MuffledSlider volumeSlider = new MuffledSlider(x, buttonH, 205, 11, volume, sound, screenTitle, anchor);
+           /* MuffledSlider volumeSlider = new MuffledSlider(x, buttonH, 0, sound, volume, screenTitle, anchor);
 
             boolean muffledAnchor = anchor != null && screenTitle.equals(anchor.getName()) && !anchor.getMuffledSounds().isEmpty() && anchor.getMuffledSounds().containsKey(sound);
             boolean muffledScreen = screenTitle.equals(mainTitle) && !muffledSounds.isEmpty() && muffledSounds.containsKey(sound);
@@ -234,7 +234,7 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
             addRenderableWidget(volumeSlider);
             volumeSlider.visible = children().indexOf(volumeSlider) < index + 10;
             addWidget(volumeSlider.getBtnToggleSound());
-            addWidget(volumeSlider.getBtnPlaySound());
+            addWidget(volumeSlider.getBtnPlaySound());*/
 
         }
     }
@@ -264,7 +264,7 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
                 if (!anchorList.isEmpty()) {
                     MutableComponent message = btnAnchor.getMessage().copy();
                     String color = anchorList.get(Integer.parseInt(message.getString())).getAnchorPos() != null ? "green" : "white";
-                    btnAnchor.setMessage(setFGColor(message, color));
+                    setFGColor(btnAnchor, color);
                 }
             }
             addRenderableWidget(btnAnchor).setAlpha(0);
@@ -385,11 +385,11 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
             for (GuiEventListener button : children()) {
                 AbstractWidget btn = (AbstractWidget) button;
                 if (btn instanceof MuffledSlider) {
-                    if (((MuffledSlider) btn).getBtnToggleSound().isMouseOver(mouseX, mouseY) && anchor.getAnchorPos() == null) {
+                    /*if (((MuffledSlider) btn).getBtnToggleSound().isMouseOver(mouseX, mouseY) && anchor.getAnchorPos() == null) {
                         fill(matrix, x - 5, y + 16, x + 65, y + 40, darkBG);
                         font.draw(matrix, "Set the", x, y + 18, whiteText);
                         font.draw(matrix, "Anchor first", x, y + 29, whiteText);
-                    }
+                    }*/
                 } else {
                     renderGui();
                     if (btn.getMessage().getString().equals(String.valueOf(anchor.getAnchorId()))) {
@@ -567,10 +567,10 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
                     buttonH += btn.getHeight() + 2;
                 }
 
-                ((MuffledSlider) btn).getBtnToggleSound().y = btn.y;
+                /*((MuffledSlider) btn).getBtnToggleSound().y = btn.y;
                 ((MuffledSlider) btn).getBtnToggleSound().active = btn.visible;
                 ((MuffledSlider) btn).getBtnPlaySound().y = btn.y;
-                ((MuffledSlider) btn).getBtnPlaySound().active = btn.visible;
+                ((MuffledSlider) btn).getBtnPlaySound().active = btn.visible;*/
             }
         }
 
@@ -597,10 +597,10 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
                     btn.visible = false;
                 }
 
-                btn.getBtnToggleSound().y = btn.y;
+                /*btn.getBtnToggleSound().y = btn.y;
                 btn.getBtnToggleSound().active = btn.visible;
                 btn.getBtnPlaySound().y = btn.y;
-                btn.getBtnPlaySound().active = btn.visible;
+                btn.getBtnPlaySound().active = btn.visible;*/
 
             }
         }
@@ -684,8 +684,8 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        MuffledSlider.showSlider = false;
-        MuffledSlider.tickSound = null;
+        /*MuffledSlider.showSlider = false;
+        MuffledSlider.tickSound = null;*/
         return super.mouseReleased(mouseX, mouseY, button);
     }
 

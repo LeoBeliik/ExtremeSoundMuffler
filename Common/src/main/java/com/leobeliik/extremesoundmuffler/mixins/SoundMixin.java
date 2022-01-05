@@ -26,7 +26,7 @@ public abstract class SoundMixin implements ISoundLists {
 
         if (MainScreen.isMuffling()) {
             if (muffledSounds.containsKey(sound.getLocation())) {
-                cir.setReturnValue(cir.getReturnValue() * muffledSounds.get(sound.getLocation()));
+                cir.setReturnValue((float) (cir.getReturnValue() * muffledSounds.get(sound.getLocation())));
                 return;
             }
 
@@ -37,7 +37,7 @@ public abstract class SoundMixin implements ISoundLists {
 
             Anchor anchor = Anchor.getAnchor(sound);
             if (anchor != null) {
-                cir.setReturnValue(cir.getReturnValue() * anchor.getMuffledSounds().get(sound.getLocation()));
+                cir.setReturnValue((float) (cir.getReturnValue() * anchor.getMuffledSounds().get(sound.getLocation())));
             }
         }
     }
