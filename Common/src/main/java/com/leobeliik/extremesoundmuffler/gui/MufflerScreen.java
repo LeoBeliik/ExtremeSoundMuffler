@@ -22,7 +22,7 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
-import java.util.*;
+import java.util.Iterator;
 
 import static com.leobeliik.extremesoundmuffler.SoundMufflerCommon.renderGui;
 
@@ -30,13 +30,10 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
     private static final Minecraft minecraft = Minecraft.getInstance();
     private static final String mainTitle = "ESM - Main Screen";
-    private static final Component cAll = Component.nullToEmpty("All");
-    private static final Component cRecent = Component.nullToEmpty("Recent");
-    private static final Component cMuffled = Component.nullToEmpty("Muffled");
     private static boolean isMuffling = true;
     private static String searchBarText = "";
     private static String screenTitle = "";
-    private static Component toggleSoundsListMessage;
+    private static String toggleSoundsListMessage;
     private final int xSize = 256;
     private final int ySize = 202;
     private final boolean isAnchorsDisabled = CommonConfig.get().disableAnchors().get();
@@ -164,21 +161,16 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
     private void addButtons() {
 
-        addWidget(btnToggleSoundsList = new Button(getX() + 13, getY() + 181, 52, 13, cRecent, b -> {
+        addWidget(btnToggleSoundsList = new Button(getX() + 13, getY() + 181, 52, 13, Component.nullToEmpty("Recent"), b -> {
             boolean isAnchorMuffling = anchor != null && !anchor.getMuffledSounds().isEmpty();
 
-            if (btnToggleSoundsList.getMessage().equals(cRecent)) {
-                toggleSoundsListMessage = cAll;
-            } else if (btnToggleSoundsList.getMessage().equals(cAll)) {
-                if (!muffledSounds.isEmpty() || isAnchorMuffling) {
-                    toggleSoundsListMessage = cMuffled;
-                } else {
-                    toggleSoundsListMessage = cRecent;
-                }
-            } else {
-                toggleSoundsListMessage = cRecent;
+            switch (btnToggleSoundsList.getMessage().getString()) {
+                case "Recent" -> toggleSoundsListMessage = "All";
+                case "All" -> toggleSoundsListMessage = "Muffled";
+                default -> toggleSoundsListMessage = "Recent";
             }
-            b.setMessage(toggleSoundsListMessage);
+
+            b.setMessage(Component.nullToEmpty(toggleSoundsListMessage));
             updateButtons();
         }));
         //Searchbar
@@ -187,8 +179,19 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         addWidget(btnToggleMuffled = new Button(getX() + 229, getY() + 180, 17, 17, Component.nullToEmpty("Stop muffing"), b -> isMuffling = !isMuffling));
         //deletes current muffled list
         addWidget(new Button(getX() + 205, getY() + 180, 17, 17, Component.nullToEmpty("Delete muffled sounds"), b -> {
-            muffledSounds.clear();
+
+            if (clearRecentSounds()) {
+                recentSoundsList.clear();
+            } else if (anchor == null) {
+                muffledSounds.clear();
+            } else {
+                anchor.deleteAnchor();
+            }
             updateButtons();
+
+
+            //muffledSounds.clear();
+            //updateButtons();
         }));
         //backwards list of sounds
         addWidget(btnPrevSounds = new Button(getX() + 10, getY() + 22, 13, 20, emptyText, b -> mouseScrolled(0D, 0D, 1D)));
@@ -239,18 +242,15 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         soundsList.clear();
 
         switch (btnToggleSoundsList.getMessage().getString()) {
-            case "Recent" -> {
-                soundsList.addAll(this.anchor == null ? muffledSounds.keySet() : this.anchor.getMuffledSounds().keySet());
-                soundsList.addAll(recentSoundsList);
-            }
+            case "Recent" -> soundsList.addAll(recentSoundsList);
             case "All" -> soundsList.addAll(Registry.SOUND_EVENT.keySet());
             default -> soundsList.addAll(this.anchor == null ? muffledSounds.keySet() : this.anchor.getMuffledSounds().keySet());
         }
 
         //removes blacklisted sounds when necessary
-        if (CommonConfig.get().lawfulAllList().get() && btnToggleSoundsList.getMessage().equals(cAll)) {
+        if (CommonConfig.get().lawfulAllList().get() && btnToggleSoundsList.getMessage().getString().equals("All")) {
             forbiddenSounds.forEach(fs -> soundsList.removeIf(sl -> sl.toString().contains(fs)));
-        } else {
+        } else if (btnToggleSoundsList.getMessage().getString().equals("Recent")) {
             forbiddenSounds.forEach(fs -> soundsList.removeIf(sl -> sl.toString().contains(fs)));
         }
 
@@ -275,10 +275,10 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
             btnSound = new MuffledSlider(bx, by, bg, sound, volume, this);
 
-            if (anchor != null && anchor.getMuffledSounds().containsKey(sound)) {
-                setFGColor(btnSound, "aqua");
-            } else if (!muffledSounds.isEmpty() && muffledSounds.containsKey(sound)) {
-                setFGColor(btnSound, "aqua");
+            if (anchor != null) {
+                setFGColor(btnSound, anchor.getMuffledSounds().containsKey(sound) ? "aqua" : "white");
+            } else if (!muffledSounds.isEmpty()) {
+                setFGColor(btnSound, muffledSounds.containsKey(sound) ? "aqua" : "white");
             } else {
                 setFGColor(btnSound, "white");
             }
@@ -306,6 +306,10 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
             }
         }
         addSoundListButtons();
+    }
+
+    private void renderButtonsTextures(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+        //TODO nothing to render yet
     }
 
     public boolean removeSoundMuffled(ResourceLocation sound) {
@@ -342,12 +346,8 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         }
     }
 
-    private void renderButtonsTextures(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
-
-    }
-
-    private static Anchor getAnchorByName(String name) {
-        return anchorList.stream().filter(a -> a.getName().equals(name)).findFirst().orElse(null);
+    private boolean clearRecentSounds() {
+        return btnToggleSoundsList.getMessage().equals(Component.nullToEmpty("Recent")) && Screen.hasShiftDown();
     }
 
     private int getX() {
