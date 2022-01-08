@@ -96,12 +96,14 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
         int x = CommonConfig.get().leftButtons().get() ? this.x - 26 : this.x + width + 4;
         btnToggleSound = new Button(x, y, 11, 11, TextComponent.EMPTY, b -> {
             if (getFGColor(getText(), "aqua")) {
-                screen.removeSoundMuffled(sound);
-                setFGColor(this, "white");
+                if (screen.removeSoundMuffled(sound)) {
+                    setFGColor(this, "white");
+                }
             } else {
                 setSliderValue(CommonConfig.get().defaultMuteVolume().get());
-                screen.addSoundMuffled(sound, sliderValue);
-                setFGColor(this, "aqua");
+                if (screen.addSoundMuffled(sound, sliderValue)) {
+                    setFGColor(this, "aqua");
+                }
             }
         });
     }
@@ -122,6 +124,7 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
         setSliderValue((mouseX - (x + 4)) / (width - 8));
     }
 
+    //from vanilla
     private void setSliderValue(double value) {
         double d0 = sliderValue;
         sliderValue = Mth.clamp(value, 0.0D, 0.9D);
@@ -169,6 +172,6 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
 
     @Override
     public void updateNarration(NarrationElementOutput elementOutput) {
-        elementOutput.add(NarratedElementType.TITLE, String.valueOf(this.sliderValue));
+        elementOutput.add(NarratedElementType.TITLE, "volume: " + this.sliderValue);
     }
 }

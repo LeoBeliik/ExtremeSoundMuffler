@@ -21,14 +21,14 @@ public class PlaySoundButton extends AbstractButton {
     }
 
     @Override
-    public void onPress() {}
+    public void onPress() {
+        isFromPSB = false;
+    }
 
     @Override
     public void playDownSound(SoundManager soundHandler) {
         isFromPSB = true;
         soundHandler.play(SimpleSoundInstance.forUI(this.sound, 1.0F));
-        isFromPSB = false;
-        //it maybe a mess but it does prevent to sounds to get muted when they're played from this button
     }
 
     public static boolean isFromPSB() {
