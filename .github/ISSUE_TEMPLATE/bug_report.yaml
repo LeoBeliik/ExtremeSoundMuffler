@@ -11,10 +11,9 @@ body:
     validations:
       required: true
   - type: input
-    id: forge-version
+    id: loader-version
     attributes:
-      label: Forge version
-      placeholder: "1.17.1 - 37.0.60"
+      label: Forge / Fabric version
     validations:
       required: true
   - type: textarea
