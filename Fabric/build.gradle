@@ -4,7 +4,7 @@ plugins {
     id 'idea'
 }
 
-archivesBaseName = "${mod_name}-3.${modversion}-forge-${minecraft_version}"
+archivesBaseName = "${mod_name}-3.${modversion}-fabric-${minecraft_version}"
 
 repositories {
     maven { url "https://maven.shedaniel.me/" }
