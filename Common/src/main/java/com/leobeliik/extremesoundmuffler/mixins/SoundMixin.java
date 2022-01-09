@@ -1,7 +1,7 @@
 package com.leobeliik.extremesoundmuffler.mixins;
 
 import com.leobeliik.extremesoundmuffler.CommonConfig;
-import com.leobeliik.extremesoundmuffler.gui.MainScreen;
+import com.leobeliik.extremesoundmuffler.gui.MufflerScreen;
 import com.leobeliik.extremesoundmuffler.gui.buttons.PlaySoundButton;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import com.leobeliik.extremesoundmuffler.utils.Anchor;
@@ -24,7 +24,7 @@ public abstract class SoundMixin implements ISoundLists {
         //add sound to recent sounds list
         recentSoundsList.add(sound.getLocation());
 
-        if (MainScreen.isMuffling()) {
+        if (MufflerScreen.isMuffling()) {
             if (muffledSounds.containsKey(sound.getLocation())) {
                 cir.setReturnValue((float) (cir.getReturnValue() * muffledSounds.get(sound.getLocation())));
                 return;

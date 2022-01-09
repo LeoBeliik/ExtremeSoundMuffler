@@ -11,15 +11,13 @@ import com.leobeliik.extremesoundmuffler.utils.Tips;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.components.Widget;
+import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.*;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import java.util.Iterator;
 import static com.leobeliik.extremesoundmuffler.SoundMufflerCommon.renderGui;
@@ -229,8 +227,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         //accept button
         addRenderableWidget(btnAccept = new Button(getX() + 259, editRadBar.y + 15, 40, 20, Component.nullToEmpty("Accept"), b -> {
             if (!editAnchorTitleBar.getValue().isEmpty() && !editRadBar.getValue().isEmpty() && anchor != null) {
-                int Radius = Mth.clamp(Integer.parseInt(editRadBar.getValue()), 32, 1);
-                anchor.editAnchor(editAnchorTitleBar.getValue(), Radius);
+                anchor.editAnchor(editAnchorTitleBar.getValue(), Mth.clamp(Integer.parseInt(editRadBar.getValue()), 1, 32));
                 screenTitle = editAnchorTitleBar.getValue();
                 editTitle();
             }
@@ -261,12 +258,6 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
                     }
                     updateButtons();
                 });
-
-                //Set color of the number in the button
-                if (!anchorList.isEmpty()) {
-                    String color = anchorList.get(Integer.parseInt(btnAnchor.getMessage().getString())).getAnchorPos() != null ? "green" : "white";
-                    setFGColor(btnAnchor, color);
-                }
             }
             addRenderableWidget(btnAnchor).setAlpha(0);
             buttonW += 20;
@@ -423,12 +414,21 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
         //render message for when Anchor pos is not setted
         for (GuiEventListener widget : children()) {
-            if (widget instanceof MuffledSlider) {
+            AbstractWidget btn = (AbstractWidget) widget;
+            if (btn instanceof MuffledSlider) {
                 if (anchor != null && anchor.getAnchorPos() == null && ((MuffledSlider) widget).getBtnToggleSound().isMouseOver(mouseX, mouseY)) {
                     renderButtonTooltip(stack, "Set the anchor first", ((MuffledSlider) widget).getBtnToggleSound());
                 }
+            } else if (btn.getMessage().getString().matches("[0-9]")) {
+                //Set color of the number in the button
+                if (!anchorList.isEmpty()) {
+                    String color = anchorList.get(Integer.parseInt(btn.getMessage().getString())).getAnchorPos() != null ? "green" : "white";
+                    setFGColor(btn, color);
+                }
             }
         }
+
+
 
         //--------------- Side screen buttons ---------------//
 
@@ -439,7 +439,6 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
             renderButtonTooltip(stack, "Change Anchor title", editAnchorTitleBar);
         }
         if (btnSetAnchor.isMouseOver(mouseX, mouseY)) {
-            System.out.println("AAAAAAAAAAAAA");
             renderButtonTooltip(stack, "Set Anchor", btnSetAnchor);
         }
         if (btnEditAnchor.isMouseOver(mouseX, mouseY)) {
@@ -463,7 +462,8 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
             stringW += font.width(anchor.getDimension().getPath());
             dimensionName = anchor.getDimension().getPath();
         }
-        fill(stack, x - 5, y - 56, x + stringW + 6, y + 16, darkBG); //set background
+        fill(stack, x - 5, y - 57, x + stringW + 7, y + 17, whiteBG); //light background border
+        fill(stack, x - 5, y - 56, x + stringW + 6, y + 16, darkBG); //dark background
         drawString(stack, font, "X: " + anchor.getX(), x + 1, y - 50, whiteText);
         drawString(stack, font, "Y: " + anchor.getY(), x + 1, y - 40, whiteText);
         drawString(stack, font, "Z: " + anchor.getZ(), x + 1, y - 30, whiteText);
@@ -479,31 +479,13 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
             btnEditAnchor.active = false;
         }
 
-        //Indicates the Anchor has to be set before muffling sounds
-        for (GuiEventListener button : children()) {
-            AbstractWidget btn = (AbstractWidget) button;
-            if (button instanceof MuffledSlider) {
-                if (((MuffledSlider) btn).getBtnToggleSound().isMouseOver(mouseX, mouseY) && anchor.getAnchorPos() == null) {
-                    //renderButtonTooltip(stack, "Set the \n Anchor first", (Button) btn);
-                    fill(stack, x - 5, y + 16, x + 65, y + 40, darkBG);
-                    font.draw(stack, "Set the", x, y + 18, whiteText);
-                    font.draw(stack, "Anchor first", x, y + 29, whiteText);
-                }
-            } else {
-                renderGui();
-                if (btn.getMessage().getString().equals(String.valueOf(anchor.getAnchorId()))) {
-                    setFGColor(btn, anchor.getAnchorPos() != null ? "green" : "White");
-                    blit(stack, btn.x - 5, btn.y - 2, 71F, 202F, 27, 22, xSize, xSize); //fancy selected Anchor indicator
-                    break;
-                }
-            }
-        }
-
         //Show Radius and Title text when editing Anchor and bg
         x = btnSetAnchor.x;
         y = editAnchorTitleBar.y;
         if (editRadBar.visible) {
-            fill(stack, x - 6, y - 4, editAnchorTitleBar.x + editAnchorTitleBar.getWidth() + 3, btnAccept.y + 23, darkBG);
+            fill(stack, x + stringW + 7, y - 5, editAnchorTitleBar.x + editAnchorTitleBar.getWidth() + 4, btnAccept.y + 23, whiteBG);//light top background border
+            fill(stack, x - 5, btnAccept.y + 23, editAnchorTitleBar.x + editAnchorTitleBar.getWidth() + 4, btnAccept.y + 24, whiteBG);//light bottom background border
+            fill(stack, x - 6, y - 4, editAnchorTitleBar.x + editAnchorTitleBar.getWidth() + 3, btnAccept.y + 23, darkBG);//dark background
             font.draw(stack, "Title: ", x - 2, y + 1, whiteText);
             font.draw(stack, "Radius: ", x - 2, editRadBar.y + 1, whiteText);
         }
@@ -587,6 +569,10 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         } else {
             muffledSounds.replace(sound, volume);
         }
+    }
+
+    public static boolean isMuffling() {
+        return isMuffling;
     }
 
     private int getX() {

@@ -16,6 +16,7 @@ public interface IColorsGui {
     int darkBG = FastColor.ARGB32.color(255, 0, 0, 0);
     int brightBG = FastColor.ARGB32.color(200, 50, 50, 50);
     int goldBG = FastColor.ARGB32.color(100, 255, 215, 0);
+    int whiteBG = FastColor.ARGB32.color(255, 255, 255, 255);
 
     default void setFGColor(AbstractWidget button, String color) {
         MutableComponent message = button.getMessage().copy();
