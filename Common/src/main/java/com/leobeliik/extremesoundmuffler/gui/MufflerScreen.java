@@ -17,7 +17,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.*;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import java.util.Iterator;
 import static com.leobeliik.extremesoundmuffler.SoundMufflerCommon.renderGui;
@@ -33,8 +32,8 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     private final boolean isAnchorsDisabled = CommonConfig.get().disableAnchors().get();
     private int minYButton, maxYButton, index;
     private Button btnTMS, btnDelete, btnCSL, btnSetAnchor, btnEditAnchor, btnNextSounds, btnPrevSounds, btnAccept, btnCancel, btnAnchor;
-    private MuffledSlider btnSound, firstSoundButton, lastSoundButton;
     private EditBox searchBar, editAnchorTitleBar, editRadBar;
+    private MuffledSlider firstSoundButton, lastSoundButton;
     private Anchor anchor;
     private String tip;
 
@@ -66,7 +65,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         this.renderBackground(stack);
         renderGui();
         this.blit(stack, getX(), getY(), 0, 0, xSize, ySize); //Main screen bounds
-        renderSideScreen(stack, mouseX, mouseY);
+        renderSideScreen(stack, mouseX, mouseY); //render side screen buttons, need to be rendered before all the other things
         super.render(stack, mouseX, mouseY, partialTicks);
         //--------------- My Renders ---------------//
         //Screen title
@@ -304,7 +303,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
             //row highlight
             int bg = children().size() % 2 == 0 ? darkBG : brightBG;
 
-            btnSound = new MuffledSlider(bx, by, bg, sound, volume, this);
+            MuffledSlider btnSound = new MuffledSlider(bx, by, bg, sound, volume, this);
 
             if (anchor != null) {
                 setFGColor(btnSound, anchor.getMuffledSounds().containsKey(sound) ? "aqua" : "white");
@@ -424,12 +423,13 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
                 if (!anchorList.isEmpty()) {
                     String color = anchorList.get(Integer.parseInt(btn.getMessage().getString())).getAnchorPos() != null ? "green" : "white";
                     setFGColor(btn, color);
+                    if (anchor != null && btn.getMessage().getString().equals(String.valueOf(anchor.getAnchorId()))) {
+                        renderGui();
+                        blit(stack, btn.x - 5, btn.y - 2, 71F, 202F, 27, 22, xSize, xSize); //fancy selected Anchor indicator
+                    }
                 }
             }
         }
-
-
-
         //--------------- Side screen buttons ---------------//
 
         if (editRadBar.isHoveredOrFocused()) {

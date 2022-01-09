@@ -160,11 +160,9 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
         return super.mouseReleased(mouseX, mouseY, button);
     }
 
-    private void func_230979_b_() {
-    }
+    private void func_230979_b_() {}
 
-    private void func_230972_a_() {
-    }
+    private void func_230972_a_() {}
 
     private MutableComponent getText() {
         return this.getMessage().copy();
@@ -172,6 +170,6 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
 
     @Override
     public void updateNarration(NarrationElementOutput elementOutput) {
-        elementOutput.add(NarratedElementType.TITLE, "volume: " + this.sliderValue);
+        elementOutput.add(NarratedElementType.TITLE, getFGColor(getText(), "white") ? this.sound.toString() : "Volume: " + (int) (sliderValue * 100));
     }
 }

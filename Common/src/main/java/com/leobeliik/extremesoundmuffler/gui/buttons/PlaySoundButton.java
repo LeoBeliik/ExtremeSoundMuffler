@@ -8,7 +8,6 @@ import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.sounds.SoundEvent;
 
-
 public class PlaySoundButton extends AbstractButton {
 
     private final SoundEvent sound;
