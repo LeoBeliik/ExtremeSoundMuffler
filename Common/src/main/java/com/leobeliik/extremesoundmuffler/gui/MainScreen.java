@@ -313,44 +313,6 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
             return;
         }
 
-        //Delete button
-        x = btnDelete.x + 8;
-        y = btnDelete.y;
-        message = screenTitle.equals(mainTitle) ? "Delete Muffled List" : "Delete Anchor";
-        stringW = font.width(message) / 2;
-        if (btnDelete.isMouseOver(mouseX, mouseY)) {
-            fill(matrix, x - stringW - 2, y + 17, x + stringW + 2, y + 30, darkBG);
-            drawCenteredString(matrix, font, message, x, y + 19, whiteText);
-        }
-
-        //reset recent sounds
-        if (clearRecentSounds()) {
-            renderGui();
-            blit(matrix, x - 6, y + 2, 54F, 217F, 13, 13, xSize, xSize);
-            message = "Clear recent sounds list";
-            stringW = font.width(message) / 2;
-            if (btnDelete.isMouseOver(mouseX, mouseY)) {
-                fill(matrix, x - stringW - 2, y + 17, x + stringW + 2, y + 30, darkBG);
-                drawCenteredString(matrix, font, message, x, y + 19, whiteText);
-            }
-        }
-
-        //toggle muffled button
-        x = btnToggleMuffled.x + 8;
-        y = btnToggleMuffled.y;
-        renderGui();
-
-        if (isMuffling) {
-            blit(matrix, x - 7, y + 1, 54F, 202F, 15, 15, xSize, xSize); //muffle button
-        }
-
-        message = isMuffling ? "Stop Muffling" : "Start Muffling";
-        stringW = font.width(message) / 2;
-        if (btnToggleMuffled.isMouseOver(mouseX, mouseY)) {
-            fill(matrix, x - stringW - 2, y + 18, x + stringW + 2, y + 30, darkBG);
-            drawCenteredString(matrix, font, message, x, y + 20, whiteText);
-        }
-
         //Anchor coordinates and set coord button
         Anchor anchor = getAnchorByName(screenTitle);
         String dimensionName = "";
@@ -419,33 +381,7 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
         }
 
         //draw anchor buttons tooltip
-        for (int i = 0; i <= 9; i++) {
-            AbstractWidget btn = (AbstractWidget) children().get(soundsList.size() + i);
-            x = btn.x + 8;
-            y = btn.y + 5;
-            message = isAnchorsDisabled ? "Anchors are disabled" : anchorList.get(i).getName();
-            stringW = font.width(message) / 2;
 
-            if (btn.isHoveredOrFocused()) {
-                fill(matrix, x - stringW - 2, y - 2, x + stringW + 2, y - 13, darkBG);
-                drawCenteredString(matrix, font, message, x, y - 11, whiteText);
-            }
-        }
-
-        //Toggle List button draw message
-        x = btnToggleSoundsList.x;
-        y = btnToggleSoundsList.y;
-        message = btnToggleSoundsList.getMessage().getString();
-        int centerText = x + (btnToggleSoundsList.getWidth() / 2) - (font.width(message) / 2);
-        font.draw(matrix, message, centerText, y + 3, 0);
-        String text = "Showing " + message + " sounds";
-        int textW = font.width(text);
-        int textX = x + (btnToggleSoundsList.getWidth() / 2) - (textW / 2) + 6;
-
-        if (btnToggleSoundsList.isMouseOver(mouseX, mouseY)) {
-            fill(matrix, textX - 2, y + 14, textX + textW + 2, y + 18 + font.lineHeight, darkBG);
-            font.draw(matrix, text, textX, y + 16, whiteText);
-        }
 
         //Show Radius and Title text when editing Anchor and bg
         x = btnSetAnchor.x;
@@ -463,55 +399,6 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
                 fill(matrix, x + 3, y, x + stringW + 6, y + 12, darkBG);
                 font.draw(matrix, message, x + 5, y + 2, whiteText);
             }
-        }
-
-        //Draw Searchbar prompt text
-        x = searchBar.x;
-        y = searchBar.y;
-        Component searchHint = (new TranslatableComponent("gui.recipebook.search_hint")).withStyle(ChatFormatting.ITALIC).withStyle(ChatFormatting.GRAY); //from Vanilla recipebook GUI
-        if (!this.searchBar.isFocused() && this.searchBar.getValue().isEmpty()) {
-            drawString(matrix, font, searchHint, x + 1, y + 1, -1);
-        }
-
-        //next sounds button tooltip
-        x = btnNextSounds.x;
-        y = btnNextSounds.y;
-        message = "Next Sounds";
-        stringW = font.width(message) / 2;
-
-        if (btnNextSounds.isMouseOver(mouseX, mouseY)) {
-            fill(matrix, x - stringW - 2, y - 2, x + stringW + 2, y - 13, darkBG);
-            drawCenteredString(matrix, font, message, x, y - 11, whiteText);
-        }
-
-        //previous sounds button tooltip
-        x = btnPrevSounds.x;
-        y = btnPrevSounds.y;
-        message = "Previous Sounds";
-        stringW = font.width(message) / 2;
-
-        if (btnPrevSounds.isMouseOver(mouseX, mouseY)) {
-            fill(matrix, x - stringW - 2, y - 2, x + stringW + 2, y - 13, darkBG);
-            drawCenteredString(matrix, font, message, x, y - 11, whiteText);
-        }
-
-        //highlight every other row
-        for (int i = 0; i < children().size(); i++) {
-            AbstractWidget button = (AbstractWidget) children().get(i);
-            if (button instanceof MuffledSlider) {
-                x = CommonConfig.get().leftButtons().get() ? button.x - 3 : button.x + 1;
-                y = button.y;
-                int bW = CommonConfig.get().leftButtons().get() ? x + button.getWidth() + 5 : x + button.getWidth() + 28;
-
-                if (i % 2 == 0 && button.visible) {
-                    fill(matrix, x, y, bW, y + button.getHeight(), brightBG);
-                }
-            }
-        }
-
-        //Show a tip
-        if (CommonConfig.get().showTip().get()) {
-            renderTips(matrix, tip);
         }
     }
 
