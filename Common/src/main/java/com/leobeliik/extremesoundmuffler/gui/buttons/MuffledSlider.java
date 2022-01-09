@@ -108,7 +108,7 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
         });
     }
 
-    private Button getBtnToggleSound() {
+    public Button getBtnToggleSound() {
         return btnToggleSound;
     }
 

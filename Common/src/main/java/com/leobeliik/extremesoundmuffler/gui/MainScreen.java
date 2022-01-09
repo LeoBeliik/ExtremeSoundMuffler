@@ -347,11 +347,11 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
             for (GuiEventListener button : children()) {
                 AbstractWidget btn = (AbstractWidget) button;
                 if (btn instanceof MuffledSlider) {
-                    /*if (((MuffledSlider) btn).getBtnToggleSound().isMouseOver(mouseX, mouseY) && anchor.getAnchorPos() == null) {
+                    if (((MuffledSlider) btn).getBtnToggleSound().isMouseOver(mouseX, mouseY) && anchor.getAnchorPos() == null) {
                         fill(matrix, x - 5, y + 16, x + 65, y + 40, darkBG);
                         font.draw(matrix, "Set the", x, y + 18, whiteText);
                         font.draw(matrix, "Anchor first", x, y + 29, whiteText);
-                    }*/
+                    }
                 } else {
                     renderGui();
                     if (btn.getMessage().getString().equals(String.valueOf(anchor.getAnchorId()))) {
@@ -379,9 +379,6 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
             fill(matrix, x - 5, y + 16, x + stringW + 2, y + 29, darkBG);
             font.draw(matrix, message, x, y + 18, whiteText);
         }
-
-        //draw anchor buttons tooltip
-
 
         //Show Radius and Title text when editing Anchor and bg
         x = btnSetAnchor.x;

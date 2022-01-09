@@ -11,6 +11,7 @@ import com.leobeliik.extremesoundmuffler.utils.Tips;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Widget;
@@ -19,11 +20,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.*;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
-
 import java.util.Iterator;
-
 import static com.leobeliik.extremesoundmuffler.SoundMufflerCommon.renderGui;
 
 public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
@@ -37,10 +35,10 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     private final boolean isAnchorsDisabled = CommonConfig.get().disableAnchors().get();
     private int minYButton, maxYButton, index;
     private Button btnTMS, btnDelete, btnCSL, btnSetAnchor, btnEditAnchor, btnNextSounds, btnPrevSounds, btnAccept, btnCancel, btnAnchor;
-    private EditBox searchBar, editAnchorTitleBar, editAnchorRadiusBar;
+    private MuffledSlider btnSound, firstSoundButton, lastSoundButton;
+    private EditBox searchBar, editAnchorTitleBar, editRadBar;
     private Anchor anchor;
     private String tip;
-    private MuffledSlider btnSound, firstSoundButton, lastSoundButton;
 
     private MufflerScreen(Component title, Anchor anchor) {
         super(title);
@@ -60,6 +58,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         minecraft.keyboardHandler.setSendRepeatsToGui(true);
 
         addButtons();
+        addSideButtons();
         addAnchorButtons();
         addSoundListButtons();
     }
@@ -69,6 +68,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         this.renderBackground(stack);
         renderGui();
         this.blit(stack, getX(), getY(), 0, 0, xSize, ySize); //Main screen bounds
+        renderSideScreen(stack, mouseX, mouseY);
         super.render(stack, mouseX, mouseY, partialTicks);
         //--------------- My Renders ---------------//
         //Screen title
@@ -87,17 +87,18 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         //Radius only accepts numbers
-        //editAnchorRadiusBar.setFilter(s -> s.matches("[0-9]*(?:[0-9]*)?"));
+        editRadBar.setFilter(s -> s.matches("[0-9]*(?:[0-9]*)?"));
 
         //Search bar, Edit title bar & Edit Anchor Radius bar looses focus when pressed "Enter" or "Intro"
         if (keyCode == 257 || keyCode == 335) {
             searchBar.setFocus(false);
+            editAnchorTitleBar.setFocus(false);
+            editRadBar.setFocus(false);
             return true;
         }
-
         //Close screen when press "E" or the mod hotkey outside the search bar or edit title bar
-        if (!searchBar.isFocused() /*&& !editAnchorTitleBar.isFocused() && !editAnchorRadiusBar.isFocused()*/ &&
-                (minecraft.options.keyInventory.matches(keyCode, scanCode) || keyCode == Constants.soundMufflerKey.getDefaultKey().getValue())) {
+        if (!searchBar.isFocused() && !editAnchorTitleBar.isFocused() && !editRadBar.isFocused() &&
+                (minecraft.options.keyInventory.matches(keyCode, scanCode) || Constants.soundMufflerKey.matches(keyCode, scanCode))) {
             this.onClose();
             return true;
         }
@@ -108,6 +109,12 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
         if (searchBar.isFocused()) {
             updateButtons();
+        }
+        if (!editRadBar.getValue().isEmpty()) {
+            int Radius = Integer.parseInt(editRadBar.getValue());
+            editRadBar.setTextColor(Radius > 32 || Radius < 1 ? aquaText : whiteText);
+        } else {
+            editRadBar.setTextColor(whiteText);
         }
         return super.keyReleased(keyCode, scanCode, modifiers);
     }
@@ -134,14 +141,25 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         //right click
         if (button == 1) {
-            //clear searchbar with rmb
-            if (!searchBar.getValue().isEmpty() && searchBar.isMouseOver(mouseX, mouseY)) {
+            if (searchBar.isFocused()) {
                 searchBar.setValue("");
-                searchBar.setFocus(true);
                 updateButtons();
                 return true;
             }
+            if (editAnchorTitleBar.isFocused()) {
+                editAnchorTitleBar.setValue("");
+                return true;
+            }
+            if (editRadBar.isHoveredOrFocused()) {
+                editRadBar.setValue("");
+                return true;
+            }
+        } else {
+            searchBar.setFocus(searchBar.isMouseOver(mouseX, mouseY));
+            editAnchorTitleBar.setFocus(editAnchorTitleBar.isMouseOver(mouseX, mouseY));
+            editRadBar.setFocus(editRadBar.isMouseOver(mouseX, mouseY));
         }
+
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
@@ -161,8 +179,9 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         new MufflerScreen(Component.nullToEmpty("ESM - Main Screen"), null);
     }
 
-    private void addButtons() {
+    //----------------------------------- Buttons init -----------------------------------//
 
+    private void addButtons() {
         //Change Sounds List
         addWidget(btnCSL = new Button(getX() + 13, getY() + 181, 52, 13, Component.nullToEmpty("Recent"), b -> {
             boolean isAnchorMuffling = anchor != null && !anchor.getMuffledSounds().isEmpty();
@@ -198,6 +217,28 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
     }
 
+    private void addSideButtons() {
+        //set anchor's position button
+        addWidget(btnSetAnchor = new Button(getX() + 261, getY() + 62, 11, 11, TextComponent.EMPTY, b -> anchor.setAnchor())).active = false;
+        //edit Anchor parameters button
+        addWidget(btnEditAnchor = new Button(getX() + 275, getY() + 62, 11, 11, TextComponent.EMPTY, b -> editTitle())).active = false;
+        //edit anchor name bar
+        addRenderableWidget(editAnchorTitleBar = new EditBox(font, getX() + 302, btnEditAnchor.y + 20, 84, 11, TextComponent.EMPTY)).visible = false;
+        //edit anchor radius bar
+        addRenderableWidget(editRadBar = new EditBox(font, getX() + 302, editAnchorTitleBar.y + 15, 30, 11, TextComponent.EMPTY)).visible = false;
+        //accept button
+        addRenderableWidget(btnAccept = new Button(getX() + 259, editRadBar.y + 15, 40, 20, Component.nullToEmpty("Accept"), b -> {
+            if (!editAnchorTitleBar.getValue().isEmpty() && !editRadBar.getValue().isEmpty() && anchor != null) {
+                int Radius = Mth.clamp(Integer.parseInt(editRadBar.getValue()), 32, 1);
+                anchor.editAnchor(editAnchorTitleBar.getValue(), Radius);
+                screenTitle = editAnchorTitleBar.getValue();
+                editTitle();
+            }
+        })).visible = false;
+        //cancel button
+        addRenderableWidget(btnCancel = new Button(getX() + 300, editRadBar.y + 15, 40, 20, Component.nullToEmpty("Cancel"), b -> editTitle())).visible = false;
+    }
+
     private void addAnchorButtons() {
         int buttonW = getX() + 30;
         for (int i = 0; i <= 9; i++) {
@@ -210,11 +251,13 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
                 int finalI = i;
                 btnAnchor = new Button(buttonW, getY() + 24, 16, 16, Component.nullToEmpty(String.valueOf(i)), b -> {
                     anchor = anchorList.get(finalI);
+                    hideSideButtons();
                     if (screenTitle.equals(anchor.getName())) {
                         anchor = null;
                         screenTitle = "ESM - Main Screen";
                     } else {
                         screenTitle = anchor.getName();
+                        btnSetAnchor.active = true;
                     }
                     updateButtons();
                 });
@@ -305,6 +348,8 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         addSoundListButtons();
     }
 
+    //----------------------------------- Rendering -----------------------------------//
+
     private void renderButtons(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
         String message; //Tooltip message
 
@@ -375,9 +420,96 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
             //render tooltip for disabled anchors
             renderTooltip(stack, Component.nullToEmpty("Anchors are disabled!"), getX() + 60, getY() + 40);
         }
+
+        //render message for when Anchor pos is not setted
+        for (GuiEventListener widget : children()) {
+            if (widget instanceof MuffledSlider) {
+                if (anchor != null && anchor.getAnchorPos() == null && ((MuffledSlider) widget).getBtnToggleSound().isMouseOver(mouseX, mouseY)) {
+                    renderButtonTooltip(stack, "Set the anchor first", ((MuffledSlider) widget).getBtnToggleSound());
+                }
+            }
+        }
+
+        //--------------- Side screen buttons ---------------//
+
+        if (editRadBar.isHoveredOrFocused()) {
+            renderButtonTooltip(stack, "Range: 1 - 32", editRadBar);
+        }
+        if (editAnchorTitleBar.isHoveredOrFocused()) {
+            renderButtonTooltip(stack, "Change Anchor title", editAnchorTitleBar);
+        }
+        if (btnSetAnchor.isMouseOver(mouseX, mouseY)) {
+            System.out.println("AAAAAAAAAAAAA");
+            renderButtonTooltip(stack, "Set Anchor", btnSetAnchor);
+        }
+        if (btnEditAnchor.isMouseOver(mouseX, mouseY)) {
+            renderButtonTooltip(stack, "Edit Anchor", btnEditAnchor);
+        }
     }
 
-    private void renderButtonTooltip(PoseStack stack, String message, Button button) {
+    private void renderSideScreen(PoseStack stack, int mouseX, int mouseY) {
+        if (anchor == null) return; //everything here depends of the Anchor
+        //Anchor coordinates and set coord button
+        String dimensionName = "";
+        String Radius;
+        int x = btnSetAnchor.x;
+        int y = btnSetAnchor.y;
+        int stringW;
+        String message;
+
+        stringW = font.width("Dimension: ");
+        Radius = anchor.getRadius() == 0 ? "" : String.valueOf(anchor.getRadius());
+        if (anchor.getDimension() != null) {
+            stringW += font.width(anchor.getDimension().getPath());
+            dimensionName = anchor.getDimension().getPath();
+        }
+        fill(stack, x - 5, y - 56, x + stringW + 6, y + 16, darkBG); //set background
+        drawString(stack, font, "X: " + anchor.getX(), x + 1, y - 50, whiteText);
+        drawString(stack, font, "Y: " + anchor.getY(), x + 1, y - 40, whiteText);
+        drawString(stack, font, "Z: " + anchor.getZ(), x + 1, y - 30, whiteText);
+        drawString(stack, font, "Radius: " + Radius, x + 1, y - 20, whiteText);
+        drawString(stack, font, "Dimension: " + dimensionName, x + 1, y - 10, whiteText);
+        renderGui();
+        blit(stack, x, y, 0, 69.45F, 11, 11, 88, 88); //set coordinates button
+
+        if (anchor.getAnchorPos() != null) {
+            btnEditAnchor.active = true;
+            blit(stack, btnEditAnchor.x, btnEditAnchor.y, 32F, 213F, 11, 11, xSize, xSize); //set edit anchor button texture
+        } else {
+            btnEditAnchor.active = false;
+        }
+
+        //Indicates the Anchor has to be set before muffling sounds
+        for (GuiEventListener button : children()) {
+            AbstractWidget btn = (AbstractWidget) button;
+            if (button instanceof MuffledSlider) {
+                if (((MuffledSlider) btn).getBtnToggleSound().isMouseOver(mouseX, mouseY) && anchor.getAnchorPos() == null) {
+                    //renderButtonTooltip(stack, "Set the \n Anchor first", (Button) btn);
+                    fill(stack, x - 5, y + 16, x + 65, y + 40, darkBG);
+                    font.draw(stack, "Set the", x, y + 18, whiteText);
+                    font.draw(stack, "Anchor first", x, y + 29, whiteText);
+                }
+            } else {
+                renderGui();
+                if (btn.getMessage().getString().equals(String.valueOf(anchor.getAnchorId()))) {
+                    setFGColor(btn, anchor.getAnchorPos() != null ? "green" : "White");
+                    blit(stack, btn.x - 5, btn.y - 2, 71F, 202F, 27, 22, xSize, xSize); //fancy selected Anchor indicator
+                    break;
+                }
+            }
+        }
+
+        //Show Radius and Title text when editing Anchor and bg
+        x = btnSetAnchor.x;
+        y = editAnchorTitleBar.y;
+        if (editRadBar.visible) {
+            fill(stack, x - 6, y - 4, editAnchorTitleBar.x + editAnchorTitleBar.getWidth() + 3, btnAccept.y + 23, darkBG);
+            font.draw(stack, "Title: ", x - 2, y + 1, whiteText);
+            font.draw(stack, "Radius: ", x - 2, editRadBar.y + 1, whiteText);
+        }
+    }
+
+    private void renderButtonTooltip(PoseStack stack, String message, AbstractWidget button) {
         int centeredMessageX = button.x - (font.width(message) / 2);
         int centeredMessageY = button.equals(btnPrevSounds) || button.equals(btnNextSounds) ? button.y - 1 : button.y + button.getHeight() + 16;
         renderTooltip(stack, Component.nullToEmpty(message), centeredMessageX, centeredMessageY);
@@ -396,6 +528,31 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
             font.drawWordWrap(FormattedText.of(tip), getX() + 5, getY() + 213, 245, whiteText);
             index++;
         }
+    }
+
+    //----------------------------------- Other functions -----------------------------------//
+
+    private void hideSideButtons() {
+        //hide buttons when no anchor
+        btnSetAnchor.active = false;
+        btnEditAnchor.active = false;
+        editAnchorTitleBar.visible = false;
+        editRadBar.visible = false;
+        btnAccept.visible = false;
+        btnCancel.visible = false;
+    }
+
+    private void editTitle() {
+        editAnchorTitleBar.setValue(anchor.getName());
+        editAnchorTitleBar.visible = !editAnchorTitleBar.visible;
+
+        editRadBar.setValue(String.valueOf(anchor.getRadius()));
+        editRadBar.visible = !editRadBar.visible;
+
+        btnAccept.visible = !btnAccept.visible;
+        btnCancel.visible = !btnCancel.visible;
+
+        editRadBar.setTextColor(whiteText);
     }
 
     public boolean removeSoundMuffled(ResourceLocation sound) {
