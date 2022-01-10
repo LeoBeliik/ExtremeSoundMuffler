@@ -5,12 +5,21 @@
 ---
 <h3 align="center"> Extreme sound muffler is a client side mod that allows you to muffle sounds selectively. </h3> 
 <br/>
+<p align="center"> <b> Forge: </b> </p>
 <p align="center">
   <a href="https://www.curseforge.com/minecraft/mc-mods/extreme-sound-muffler" alt="Downloads">
         <img src="http://cf.way2muchnoise.eu/363363.svg" /> </a>
   <a href="https://www.curseforge.com/minecraft/mc-mods/extreme-sound-muffler" alt="Versions">
         <img src="http://cf.way2muchnoise.eu/versions/363363.svg" /> </a>  
 </p>
+<p align="center"> <b> Fabric: </b> </p>
+<p align="center">
+  <a href="https://www.curseforge.com/minecraft/mc-mods/extreme-sound-muffler" alt="Downloads">
+        <img src="http://cf.way2muchnoise.eu/566140.svg" /> </a>
+  <a href="https://www.curseforge.com/minecraft/mc-mods/extreme-sound-muffler" alt="Versions">
+        <img src="http://cf.way2muchnoise.eu/versions/566140.svg" /> </a>  
+</p>
+<p align="center"> <b> Github: </b> </p>
 <p align="center">
   <a href="https://github.com/LeoBeliik/ExtremeSoundMuffler/issues" alt="Issues">
         <img src="https://img.shields.io/github/issues/LeoBeliik/ExtremeSoundMuffler.svg?style=for-the-badge" /> </a>
@@ -22,7 +31,7 @@
         <img src="https://img.shields.io/badge/Donate-PayPal-green.svg" /> </a>
 </p>
   
-  <h5 align="center"><b>This Mod needs <a href= https://files.minecraftforge.net/net/minecraftforge/forge alt="FORGE"> FORGE</a> to work.</b></h5>
+  <h5 align="center"><b>This Mod works on <a href= https://files.minecraftforge.net/net/minecraftforge/forge alt="FORGE"> FORGE</a> and <a href= https://fabricmc.net/use/installer/ alt="FABRIC"> FABRIC</a>.</b></h5>
 
 <h6 align="center"><b>Now with Dark mode!! check the configs to enable it!</b></h6>
 
