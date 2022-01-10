@@ -1,0 +1,175 @@
+package com.leobeliik.extremesoundmuffler.gui.buttons;
+
+import com.leobeliik.extremesoundmuffler.CommonConfig;
+import com.leobeliik.extremesoundmuffler.SoundMufflerCommon;
+import com.leobeliik.extremesoundmuffler.gui.MufflerScreen;
+import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
+import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.narration.NarratedElementType;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.Mth;
+
+@SuppressWarnings("EmptyMethod")
+public class MuffledSlider extends AbstractWidget implements ISoundLists, IColorsGui {
+
+    private static final Minecraft minecraft = Minecraft.getInstance();
+    private final Font font = minecraft.font;
+    private static boolean showSlider = false;
+    private final ResourceLocation sound;
+    private double sliderValue;
+    private int bg;
+    private Button btnToggleSound;
+    private PlaySoundButton btnPlaySound;
+    private MufflerScreen screen;
+
+    public MuffledSlider(int x, int y, int bg, ResourceLocation sound, double sliderValue, MufflerScreen screen) {
+        super(x, y, 205, 14, Component.nullToEmpty(sound.getPath() + ":" + sound.getNamespace()));
+        this.bg = bg;
+        this.sound = sound;
+        this.sliderValue = sliderValue;
+        this.screen = screen;
+        setBtnToggleSound(sound);
+        setBtnPlaySound(sound);
+    }
+
+    @Override
+    public void renderButton(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+        SoundMufflerCommon.renderGui();
+        //row highlight
+        fill(stack, x, y - 1, x + width + 4, y + height - 2, bg);
+        drawGradient(stack);
+        float v = getFGColor(getText(), "white") ? 213F : 202F;
+        blit(stack, btnToggleSound.x, btnToggleSound.y, 43F, v, 11, 11, 256, 256); //muffle button bg
+        blit(stack, btnPlaySound.x, btnPlaySound.y, 32F, 202F, 11, 11, 256, 256); //play button bg
+        this.drawMessage(stack);
+    }
+
+    private void drawMessage(PoseStack stack) {
+        int v = Math.max(width, font.width(getMessage().getString()));
+        if (showSlider && isFocused() && isHovered) {
+            drawCenteredString(stack, font, "Volume: " + (int) (sliderValue * 100), x + (width / 2), y + 2, aquaText); //title
+        } else {
+            String msgTruncated;
+            if (this.isHovered) {
+                msgTruncated = getMessage().getString();
+                fill(stack, this.x + this.width + 3, this.y, this.x + v + 3, this.y + font.lineHeight + 2, darkBG);
+            } else {
+                msgTruncated = font.substrByWidth(getMessage(), 205).getString();
+            }
+            font.drawShadow(stack, msgTruncated, this.x + 2, this.y + 2, getFGColor(getText(), "aqua") ? aquaText : whiteText); //title
+        }
+    }
+
+    //draws the "rainbow" gradient in the background
+    private void drawGradient(PoseStack stack) {
+        if (getFGColor(getText(), "aqua")) {
+            blit(stack, this.x, this.y - 1, 0, 234, (int) (sliderValue * (width - 6)) + 5, height + 1, 256, 256); //draw bg
+            if (this.isHovered) {
+                blit(stack, this.x + (int) (sliderValue * (width - 6)) + 1, this.y + 1, 32F, 224F, 5, 9, 256, 256); //Slider
+            }
+        }
+    }
+
+    public void isVisible(boolean b) {
+        this.visible = b;
+        this.getBtnToggleSound().visible = b;
+        this.getBtnPlaySound().visible = b;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+        this.getBtnToggleSound().y = y;
+        this.getBtnPlaySound().y = y;
+    }
+
+    private void setBtnToggleSound(ResourceLocation sound) {
+        int x = CommonConfig.get().leftButtons().get() ? this.x - 26 : this.x + width + 4;
+        btnToggleSound = new Button(x, y, 11, 11, TextComponent.EMPTY, b -> {
+            if (getFGColor(getText(), "aqua")) {
+                if (screen.removeSoundMuffled(sound)) {
+                    setFGColor(this, "white");
+                }
+            } else {
+                setSliderValue(CommonConfig.get().defaultMuteVolume().get());
+                if (screen.addSoundMuffled(sound, sliderValue)) {
+                    setFGColor(this, "aqua");
+                }
+            }
+        });
+    }
+
+    public Button getBtnToggleSound() {
+        return btnToggleSound;
+    }
+
+    private void setBtnPlaySound(ResourceLocation sound) {
+        btnPlaySound = new PlaySoundButton(btnToggleSound.x + 13, y, new SoundEvent(sound));
+    }
+
+    private PlaySoundButton getBtnPlaySound() {
+        return btnPlaySound;
+    }
+
+    private void changeSliderValue(double mouseX) {
+        setSliderValue((mouseX - (x + 4)) / (width - 8));
+    }
+
+    //from vanilla
+    private void setSliderValue(double value) {
+        double d0 = sliderValue;
+        sliderValue = Mth.clamp(value, 0.0D, 0.9D);
+        if (d0 != sliderValue) {
+            func_230972_a_();
+        }
+        func_230979_b_();
+        screen.replaceVolume(sound, sliderValue);
+    }
+
+    @Override
+    protected void onDrag(double mouseX, double mouseY, double dragX, double dragY) {
+        changeSliderValue((float) mouseX);
+        super.onDrag(mouseX, mouseY, dragX, dragY);
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        this.btnToggleSound.mouseClicked(mouseX, mouseY, button);
+        this.btnPlaySound.mouseClicked(mouseX, mouseY, button);
+
+        if (isHovered && getFGColor(getText(), "aqua")) {
+            changeSliderValue((float) mouseX);
+            showSlider = true;
+            setFocused(true);
+        }
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        setFocused(false);
+        return super.mouseReleased(mouseX, mouseY, button);
+    }
+
+    private void func_230979_b_() {}
+
+    private void func_230972_a_() {}
+
+    private MutableComponent getText() {
+        return this.getMessage().copy();
+    }
+
+    @Override
+    public void updateNarration(NarrationElementOutput elementOutput) {
+        elementOutput.add(NarratedElementType.TITLE, getFGColor(getText(), "white") ? this.sound.toString() : "Volume: " + (int) (sliderValue * 100));
+    }
+}

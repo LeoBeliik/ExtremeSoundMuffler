@@ -1,110 +1,57 @@
-buildscript {
+subprojects {
+
+    apply plugin: 'java'
+
+    java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+    java.withSourcesJar()
+    java.withJavadocJar()
+    archivesBaseName = project.mod_id
+
+    jar {
+        manifest {
+            attributes([
+                    'Specification-Title'     : mod_name,
+                    'Specification-Vendor'    : mod_author,
+                    'Specification-Version'   : project.jar.archiveVersion,
+                    'Implementation-Title'    : project.name,
+                    'Implementation-Version'  : project.jar.archiveVersion,
+                    'Implementation-Vendor'   : mod_author,
+                    'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                    'Timestampe'              : System.currentTimeMillis(),
+                    'Built-On-Java'           : "${System.getProperty('java.vm.version')} (${System.getProperty('java.vm.vendor')})",
+                    'Build-On-Minecraft'      : minecraft_version,
+                    "MixinConnector"          : "com.leobeliik.extremesoundmuffler.MixinConnector"
+            ])
+        }
+    }
+
     repositories {
-        maven { url = 'https://maven.minecraftforge.net' }
-        maven { url = 'https://repo.spongepowered.org/maven' }
+
         mavenCentral()
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
-        classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7.32'
-    }
-}
-apply plugin: 'net.minecraftforge.gradle'
-// Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
-apply plugin: 'eclipse'
-apply plugin: 'maven-publish'
-apply plugin: 'org.spongepowered.mixin'
 
-version = "3.${modversion}_${mcversion}"
-group = 'com.LeoBeliik.extremeSoundMuffler' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'extremeSoundMuffler'
-// Mojang ships Java 16 to end users in 1.17+ instead of Java 8 in 1.16 or lower, so your mod should target Java 16.
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
-minecraft {
-    mappings channel: "official", version: "${mapversion}"
-
-    runs {
-        client {
-
-            workingDirectory project.file('run')
-
-            // Recommended logging data for a userdev environment
-            //property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-
-            // Recommended logging level for the console
-            //property 'forge.logging.console.level', 'debug'
-
-            mods {
-                extremeSoundMuffler {
-                    source sourceSets.main
-                }
-            }
+        maven {
+            name = 'Sponge / Mixin'
+            url = 'https://repo.spongepowered.org/repository/maven-public/'
         }
 
-        server {
-            workingDirectory project.file('run')
-
-            // Recommended logging data for a userdev environment
-            //property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-
-            // Recommended logging level for the console
-            //property 'forge.logging.console.level', 'debug'
-
-            mods {
-                extremeSoundMuffler {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        data {
-            workingDirectory project.file('run')
-
-            // Recommended logging data for a userdev environment
-            //property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-
-            // Recommended logging level for the console
-            // property 'forge.logging.console.level', 'debug'
-
-            args '--mod', 'extremeSoundMuffler', '--all', '--output', file('src/generated/resources/')
-
-            mods {
-                extremeSoundMuffler {
-                    source sourceSets.main
-                }
-            }
+        maven {
+            name = 'BlameJared Maven (CrT / Bookshelf)'
+            url = 'https://maven.blamejared.com'
         }
     }
-}
 
-dependencies {
-    minecraft "net.minecraftforge:forge:${mcversion}-${forgeversion}"
-    annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
-}
 
-mixin {
-    add sourceSets.main, "extremesoundmuffler.refmap.json"
-}
+    tasks.withType(JavaCompile).configureEach {
 
-tasks.register("version_up") {
-    doLast {
-        def gp = file("gradle.properties")
-        gp.setText(gp.getText().replace("modversion = " + "${modversion}", "modversion = " + ("${modversion}".toInteger()  + 1).toString()))
+        it.options.encoding = 'UTF-8'
+        it.options.release = 17
     }
-}
 
-// Example for how to get properties into the manifest for reading by the runtime..
-jar {
-    manifest {
-        attributes([
-                "Specification-Title"     : "Extreme sound muffler",
-                "Specification-Vendor"    : "Leobeliik",
-                "Specification-Version"   : "3.${modversion}_forge-${mcversion}",
-                "Implementation-Title"    : "Extreme sound muffler",
-                "Implementation-Version"  : "3.${modversion}_forge-${mcversion}",
-                "Implementation-Vendor"   : "LeoBeliik",
-                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-                "MixinConnector"          : "com.leobeliik.extremesoundmuffler.MixinConnector"
-        ])
+    // Disables Gradle's custom module metadata from being published to maven. The
+    // metadata includes mapped dependencies which are not reasonably consumable by
+    // other mod developers.
+    tasks.withType(GenerateModuleMetadata) {
+
+        enabled = false
     }
 }
