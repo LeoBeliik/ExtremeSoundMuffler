@@ -4,7 +4,7 @@ plugins {
     id 'idea'
 }
 
-archivesBaseName = "${mod_name}-3.${modversion}-fabric-${minecraft_version}"
+version = "3.${modversion}_fabric-${minecraft_version}"
 
 repositories {
     maven { url "https://maven.shedaniel.me/" }
@@ -44,6 +44,12 @@ processResources {
 
     filesMatching("fabric.mod.json") {
         expand "version": project.version
+    }
+
+    filesMatching("*.mixins.json") {
+        // In Fabric, all refmaps are merged together and the refmap name is pre-set by Loom
+        // Make sure everyone uses that name
+        expand "refmap_target": archivesBaseName + "-"
     }
 }
 

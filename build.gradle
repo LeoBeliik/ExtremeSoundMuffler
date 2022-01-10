@@ -5,6 +5,7 @@ subprojects {
     java.toolchain.languageVersion = JavaLanguageVersion.of(17)
     java.withSourcesJar()
     java.withJavadocJar()
+    archivesBaseName = project.mod_id
 
     jar {
         manifest {

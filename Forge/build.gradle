@@ -15,7 +15,7 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 apply plugin: 'org.spongepowered.mixin'
 
-archivesBaseName = "${mod_name}-3.${modversion}-forge-${minecraft_version}"
+version = "3.${modversion}_forge-${minecraft_version}"
 
 minecraft {
     mappings channel: "official", version: "1.18"
