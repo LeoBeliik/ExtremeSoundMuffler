@@ -12,7 +12,8 @@ import net.minecraft.network.chat.TextComponent;
 
 public class InvButton extends AbstractButton implements IColorsGui {
 
-    public static boolean hold = false;
+    public boolean hold = false;
+    private boolean drag = false;
 
     public InvButton(int x, int y) {
         super(x, y, 11, 11, TextComponent.EMPTY);
@@ -31,6 +32,7 @@ public class InvButton extends AbstractButton implements IColorsGui {
             if (isMouseOver(mouseX, mouseY) && !hold) {
                 drawCenteredString(matrix, minecraft.font, "Muffler", this.x + 5, this.y + this.height + 1, whiteText);
             }
+            drag = isMouseOver(mouseX, mouseY);
         }
     }
 
@@ -45,6 +47,10 @@ public class InvButton extends AbstractButton implements IColorsGui {
     @Override
     public void updateNarration(NarrationElementOutput elementOutput) {
         elementOutput.add(NarratedElementType.TITLE, "Muffler");
+    }
+
+    public boolean isDrag() {
+        return drag;
     }
 
 }

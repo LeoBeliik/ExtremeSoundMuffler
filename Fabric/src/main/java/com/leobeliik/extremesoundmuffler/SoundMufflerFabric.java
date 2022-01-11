@@ -31,9 +31,9 @@ public class SoundMufflerFabric implements ClientModInitializer {
 
     //save the new coordinates for the inv button
     private static void onMouseReleasePre(Screen screen, double pMouseX, double pMouseY, int pButton) {
-        if (screen instanceof InventoryScreen && pButton == 1 && !InvButton.hold) {
+        if (screen instanceof InventoryScreen && pButton == 1) {
             for (GuiEventListener widget : screen.children()) {
-                if (widget instanceof InvButton) {
+                if (widget instanceof InvButton && ((InvButton) widget).isDrag()) {
                     FabricConfig.setInvButtonHorizontal(((InvButton) widget).x);
                     FabricConfig.setInvButtonVertical(((InvButton) widget).y);
                     FabricConfig.updateConfig();

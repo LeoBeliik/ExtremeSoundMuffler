@@ -35,7 +35,7 @@ public abstract class InventoryScreenMixin extends EffectRenderingInventoryScree
     //Move the button when the recipe book gui opens
     @Inject(method = "render", at = @At("HEAD"))
     private void esm_inventoryScreenRender(PoseStack ps, int mouseX, int mouseY, float tick, CallbackInfo ci) {
-        if (!InvButton.hold) {
+        if (!esm_invButton.hold) {
             esm_invButton.x = esm_getBX();
             esm_invButton.y = esm_getBY();
         } else {
@@ -45,12 +45,12 @@ public abstract class InventoryScreenMixin extends EffectRenderingInventoryScree
     }
 
     //Fabric can't do shit by itself
-    @Inject(method = "mouseReleased", at = @At("TAIL"))
+    @Inject(method = "mouseReleased", at = @At("HEAD"))
     private void esm_onMouseReleased(double mouseX, double mouseY, int button, CallbackInfoReturnable cir) {
-        if (InvButton.hold && button == 1) {
-            InvButton.hold = false;
+        if (esm_invButton.hold && button == 1) {
             esm_invButton.x -= leftPos;
             esm_invButton.y -= topPos;
+            esm_invButton.hold = false;
         }
     }
 

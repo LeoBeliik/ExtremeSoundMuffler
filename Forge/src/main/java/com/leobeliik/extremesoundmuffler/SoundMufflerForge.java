@@ -45,9 +45,9 @@ public class SoundMufflerForge {
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent //save the new coordinates for the inv button
     public void onMouseRelease(ScreenEvent.MouseReleasedEvent event) {
-        if (event.getButton() == 1 && !InvButton.hold) {
+        if (event.getButton() == 1) {
             for (GuiEventListener widget : event.getScreen().children()) {
-                if (widget instanceof InvButton) {
+                if (widget instanceof InvButton && ((InvButton) widget).isDrag()) {
                     ForgeConfig.setInvButtonHorizontal(((InvButton) widget).x);
                     ForgeConfig.setInvButtonVertical(((InvButton) widget).y);
                     break;
