@@ -8,16 +8,18 @@ import com.leobeliik.extremesoundmuffler.utils.Anchor;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.SoundEngine;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(SoundEngine.class)
 public abstract class SoundMixin implements ISoundLists {
+
     @Inject(method = "calculateVolume", at = @At("RETURN"), cancellable = true)
-    private void calculateSoundVolume(SoundInstance sound, CallbackInfoReturnable<Float> cir) {
+    private void esm_calculateSoundVolume(SoundInstance sound, CallbackInfoReturnable<Float> cir) {
         //don't care about forbidden sounds or from the psb
-        if (isForbidden(sound) || PlaySoundButton.isFromPSB()) {
+        if (esm_isForbidden(sound) || PlaySoundButton.isFromPSB()) {
             return;
         }
 
@@ -31,7 +33,7 @@ public abstract class SoundMixin implements ISoundLists {
             }
 
             //don't continue if the anchors are disabled
-            if (CommonConfig.get().disableAnchors().get()) {
+            if (CommonConfig.get() != null && CommonConfig.get().disableAnchors().get()) {
                 return;
             }
 
@@ -42,7 +44,8 @@ public abstract class SoundMixin implements ISoundLists {
         }
     }
 
-    private static boolean isForbidden(SoundInstance sound) {
+    @Unique
+    private static boolean esm_isForbidden(SoundInstance sound) {
         return forbiddenSounds.stream().anyMatch(fs -> sound.getLocation().toString().contains(fs));
     }
 

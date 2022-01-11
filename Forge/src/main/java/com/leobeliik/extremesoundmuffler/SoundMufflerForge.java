@@ -2,6 +2,7 @@ package com.leobeliik.extremesoundmuffler;
 
 import com.leobeliik.extremesoundmuffler.gui.buttons.InvButton;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.ClientRegistry;
@@ -44,9 +45,14 @@ public class SoundMufflerForge {
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent //save the new coordinates for the inv button
     public void onMouseRelease(ScreenEvent.MouseReleasedEvent event) {
-        if (event.getButton() == 1 && InvButton.notHolding()) {
-            ForgeConfig.setInvButtonHorizontal(InvButton.getButtonX());
-            ForgeConfig.setInvButtonVertical(InvButton.getButtonY());
+        if (event.getButton() == 1 && !InvButton.hold) {
+            for (GuiEventListener widget : event.getScreen().children()) {
+                if (widget instanceof InvButton) {
+                    ForgeConfig.setInvButtonHorizontal(((InvButton) widget).x);
+                    ForgeConfig.setInvButtonVertical(((InvButton) widget).y);
+                    break;
+                }
+            }
         }
     }
 }
