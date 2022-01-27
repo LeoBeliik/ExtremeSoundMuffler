@@ -14,9 +14,9 @@
 </p>
 <p align="center"> <b> Fabric: </b> </p>
 <p align="center">
-  <a href="https://www.curseforge.com/minecraft/mc-mods/extreme-sound-muffler" alt="Downloads">
+  <a href="https://www.curseforge.com/minecraft/mc-mods/extreme-sound-muffler-fabric-official" alt="Downloads">
         <img src="http://cf.way2muchnoise.eu/566140.svg" /> </a>
-  <a href="https://www.curseforge.com/minecraft/mc-mods/extreme-sound-muffler" alt="Versions">
+  <a href="https://www.curseforge.com/minecraft/mc-mods/extreme-sound-muffler-fabric-official" alt="Versions">
         <img src="http://cf.way2muchnoise.eu/versions/566140.svg" /> </a>  
 </p>
 <p align="center"> <b> Github: </b> </p>
