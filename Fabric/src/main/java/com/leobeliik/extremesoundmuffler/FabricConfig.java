@@ -11,6 +11,8 @@ import io.github.fablabsmc.fablabs.api.fiber.v1.serialization.FiberSerialization
 import io.github.fablabsmc.fablabs.api.fiber.v1.serialization.JanksonValueSerializer;
 import io.github.fablabsmc.fablabs.api.fiber.v1.tree.ConfigTree;
 import io.github.fablabsmc.fablabs.api.fiber.v1.tree.PropertyMirror;
+import net.fabricmc.loader.api.FabricLoader;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,8 +23,7 @@ import java.util.List;
 
 class FabricConfig {
 
-    private static final JanksonValueSerializer serializer = new JanksonValueSerializer(false);
-    private static final Path path = Paths.get("config", Constants.MOD_ID + ".json5");
+    private static final Path path = FabricLoader.getInstance().getConfigDir().resolve(Constants.MOD_ID + ".json5");
     private static PropertyMirror<List<String>> forbiddenSounds = PropertyMirror.create(ConfigTypes.makeList(ConfigTypes.STRING));
     private static PropertyMirror<Boolean> lawfulAllList = PropertyMirror.create(ConfigTypes.BOOLEAN);
     private static PropertyMirror<Boolean> disableInventoryButton = PropertyMirror.create(ConfigTypes.BOOLEAN);
@@ -47,8 +48,9 @@ class FabricConfig {
                 invButtonHorizontal::getValue,
                 invButtonVertical::getValue
         ));
-        writeDefaultConfig();
-        readConfig();
+        JanksonValueSerializer serializer = new JanksonValueSerializer(false);
+        writeDefaultConfig(serializer);
+        readConfig(serializer);
     }
 
     private static final ConfigTree CONFIG = ConfigTree.builder()
@@ -110,16 +112,14 @@ class FabricConfig {
 
             .build();
 
-    private static void writeDefaultConfig() {
+    private static void writeDefaultConfig(JanksonValueSerializer serializer) {
         try (OutputStream s = new BufferedOutputStream(Files.newOutputStream(path, StandardOpenOption.WRITE, StandardOpenOption.CREATE_NEW))) {
             FiberSerialization.serialize(CONFIG, s, serializer);
-        } catch (IOException e) {
-            Constants.LOG.warn("error saving esm config!", e);
-        }
+        } catch (IOException ignored) {}
 
     }
 
-    private static void readConfig() {
+    private static void readConfig(JanksonValueSerializer serializer) {
         try (InputStream s = new BufferedInputStream(Files.newInputStream(path, StandardOpenOption.READ, StandardOpenOption.CREATE))) {
             FiberSerialization.deserialize(CONFIG, s, serializer);
         } catch (IOException | ValueDeserializationException e) {
@@ -127,12 +127,10 @@ class FabricConfig {
         }
     }
 
-    static void updateConfig() {
+    static void updateConfig(JanksonValueSerializer serializer) {
         try (OutputStream s = new BufferedOutputStream(Files.newOutputStream(path, StandardOpenOption.WRITE, StandardOpenOption.SYNC))) {
             FiberSerialization.serialize(CONFIG, s, serializer);
-        } catch (IOException e) {
-            Constants.LOG.warn("esm config failed to update!", e);
-        }
+        } catch (IOException ignored) {}
 
     }
 

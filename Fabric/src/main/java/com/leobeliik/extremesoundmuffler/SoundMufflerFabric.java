@@ -2,6 +2,7 @@ package com.leobeliik.extremesoundmuffler;
 
 import com.leobeliik.extremesoundmuffler.gui.buttons.InvButton;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
+import io.github.fablabsmc.fablabs.api.fiber.v1.serialization.JanksonValueSerializer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -36,7 +37,7 @@ public class SoundMufflerFabric implements ClientModInitializer {
                 if (widget instanceof InvButton && ((InvButton) widget).isDrag()) {
                     FabricConfig.setInvButtonHorizontal(((InvButton) widget).x);
                     FabricConfig.setInvButtonVertical(((InvButton) widget).y);
-                    FabricConfig.updateConfig();
+                    FabricConfig.updateConfig(new JanksonValueSerializer(false));
                     break;
                 }
             }
