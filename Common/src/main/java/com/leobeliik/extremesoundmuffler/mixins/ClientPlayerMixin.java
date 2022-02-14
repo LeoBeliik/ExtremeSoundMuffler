@@ -1,5 +1,6 @@
 package com.leobeliik.extremesoundmuffler.mixins;
 
+import com.leobeliik.extremesoundmuffler.Constants;
 import com.leobeliik.extremesoundmuffler.utils.DataManager;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -12,9 +13,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(AbstractClientPlayer.class)
 public class ClientPlayerMixin {
 
-    @Inject(method = "Lnet/minecraft/client/player/AbstractClientPlayer;<init>(Lnet/minecraft/client/multiplayer/ClientLevel;Lcom/mojang/authlib/GameProfile;)V", at = @At("RETURN"))
+    @Inject(method = "Lnet/minecraft/client/player/AbstractClientPlayer;<init>(Lnet/minecraft/client/multiplayer/ClientLevel;Lcom/mojang/authlib/GameProfile;)V", at = @At("TAIL"))
     private void esm_onClientPlayerJoin(ClientLevel level, GameProfile profile, CallbackInfo ci) {
         //load muffler data when client player joins the world
-        DataManager.loadData();
+        try {
+            DataManager.loadData();
+        } catch (NullPointerException e) {
+            Constants.LOG.error("Failed to load Extreme sound muffler data.\nError: " + e);
+        }
     }
 }
