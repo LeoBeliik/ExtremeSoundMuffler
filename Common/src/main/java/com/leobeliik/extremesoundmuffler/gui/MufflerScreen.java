@@ -378,7 +378,8 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
         //--------------- Change sounds list button ---------------//
         //show a message on the empty screen
-        if (muffledSounds.isEmpty() && btnCSL.getMessage().getString().equals("Muffled")) {
+        boolean notMuffling = this.anchor == null ? muffledSounds.isEmpty() : this.anchor.getMuffledSounds().isEmpty();
+        if (notMuffling && btnCSL.getMessage().getString().equals("Muffled")) {
             MutableComponent text = Component.nullToEmpty("Nothing to show here yet..").copy().withStyle(ChatFormatting.ITALIC).withStyle(ChatFormatting.GRAY);
             drawCenteredString(stack, font, text, getX() + 128, getY() + 101, whiteText);
         }
