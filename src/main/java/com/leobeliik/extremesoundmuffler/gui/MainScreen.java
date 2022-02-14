@@ -533,10 +533,10 @@ public class MainScreen extends Screen implements ISoundLists, IColorsGui {
     }
 
     private void editTitle(Anchor anchor) {
-        editAnchorTitleBar.insertText(anchor.getName());
+        editAnchorTitleBar.setValue(anchor.getName());
         editAnchorTitleBar.visible = !editAnchorTitleBar.visible;
 
-        editAnchorRadiusBar.insertText(String.valueOf(anchor.getRadius()));
+        editAnchorRadiusBar.setValue(String.valueOf(anchor.getRadius()));
         editAnchorRadiusBar.visible = !editAnchorRadiusBar.visible;
 
         btnAccept.visible = !btnAccept.visible;
