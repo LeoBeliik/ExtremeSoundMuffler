@@ -8,6 +8,7 @@ import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.narration.NarratedElementType;
@@ -31,6 +32,7 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
     private Button btnToggleSound;
     private PlaySoundButton btnPlaySound;
     private MufflerScreen screen;
+    private boolean isMuffling = false;
 
     public MuffledSlider(int x, int y, int bg, ResourceLocation sound, double sliderValue, MufflerScreen screen) {
         super(x, y, 205, 14, Component.nullToEmpty(sound.getPath() + ":" + sound.getNamespace()));
@@ -42,16 +44,46 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
         setBtnPlaySound(sound);
     }
 
+
     @Override
     public void renderButton(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+        isMuffling = getFGColor(getText(), "aqua");
         SoundMufflerCommon.renderGui();
         //row highlight
         fill(stack, x, y - 1, x + width + 4, y + height - 2, bg);
         drawGradient(stack);
-        float v = getFGColor(getText(), "white") ? 213F : 202F;
+        float v = isMuffling ? 202F : 213F;
+        //--------------- Render buttons BG ---------------//
         blit(stack, btnToggleSound.x, btnToggleSound.y, 43F, v, 11, 11, 256, 256); //muffle button bg
         blit(stack, btnPlaySound.x, btnPlaySound.y, 32F, 202F, 11, 11, 256, 256); //play button bg
+
+        //--------------- Render Tooltips ---------------//
+        if (btnToggleSound.isMouseOver(mouseX, mouseY)) {
+            String text = isMuffling ? "Unmuffle sound" : "Muffle sound";
+            renderButtonTooltip(stack, btnToggleSound, text, "");
+
+        }
+        if (btnPlaySound.isMouseOver(mouseX, mouseY)) {
+            renderButtonTooltip(stack, btnPlaySound, "LMB play sound", "RMB stop sound");
+        }
+
+        //--------------- Render Slider Text ---------------//
         this.drawMessage(stack);
+    }
+
+    private void renderButtonTooltip(PoseStack stack, AbstractButton btn, String text, String text2) {
+        int lengthierText = font.width(text) > font.width(text2) ? font.width(text) : font.width(text2);
+        int x1 = btn.x + (btn.getHeight() / 2) - (font.width(text) / 2);
+        int x2 = x1 + lengthierText + 2;
+        int y1 = btn.y - (text2.isEmpty() ? font.lineHeight : font.lineHeight * 2) - 2;
+        int y2 = btn.y - 1;
+
+        fill(stack, x1 - 3, y1 - 5, x2, y2 + 1, darkBG);
+        font.draw(stack, text, x1, y1 - 2, whiteText);
+        if (!text2.isEmpty()) {
+            font.draw(stack, text2, x1, y1 + font.lineHeight, whiteText);
+        }
+
     }
 
     private void drawMessage(PoseStack stack) {
@@ -66,13 +98,13 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
             } else {
                 msgTruncated = font.substrByWidth(getMessage(), 205).getString();
             }
-            font.drawShadow(stack, msgTruncated, this.x + 2, this.y + 2, getFGColor(getText(), "aqua") ? aquaText : whiteText); //title
+            font.drawShadow(stack, msgTruncated, this.x + 2, this.y + 2, isMuffling ? aquaText : whiteText); //title
         }
     }
 
     //draws the "rainbow" gradient in the background
     private void drawGradient(PoseStack stack) {
-        if (getFGColor(getText(), "aqua")) {
+        if (isMuffling) {
             blit(stack, this.x, this.y - 1, 0, 234, (int) (sliderValue * (width - 6)) + 5, height + 1, 256, 256); //draw bg
             if (this.isHovered) {
                 blit(stack, this.x + (int) (sliderValue * (width - 6)) + 1, this.y + 1, 32F, 224F, 5, 9, 256, 256); //Slider
@@ -95,7 +127,7 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
     private void setBtnToggleSound(ResourceLocation sound) {
         int x = CommonConfig.get().leftButtons().get() ? this.x - 26 : this.x + width + 4;
         btnToggleSound = new Button(x, y, 11, 11, TextComponent.EMPTY, b -> {
-            if (getFGColor(getText(), "aqua")) {
+            if (isMuffling) {
                 if (screen.removeSoundMuffled(sound)) {
                     setFGColor(this, "white");
                 }
@@ -144,9 +176,9 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         this.btnToggleSound.mouseClicked(mouseX, mouseY, button);
-        this.btnPlaySound.mouseClicked(mouseX, mouseY, button);
+        this.btnPlaySound.onCLick(mouseX, mouseY, button);
 
-        if (isHovered && getFGColor(getText(), "aqua")) {
+        if (isHovered && isMuffling) {
             changeSliderValue((float) mouseX);
             showSlider = true;
             setFocused(true);
@@ -160,9 +192,11 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
         return super.mouseReleased(mouseX, mouseY, button);
     }
 
-    private void func_230979_b_() {}
+    private void func_230979_b_() {
+    }
 
-    private void func_230972_a_() {}
+    private void func_230972_a_() {
+    }
 
     private MutableComponent getText() {
         return this.getMessage().copy();
@@ -170,6 +204,6 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
 
     @Override
     public void updateNarration(NarrationElementOutput elementOutput) {
-        elementOutput.add(NarratedElementType.TITLE, getFGColor(getText(), "white") ? this.sound.toString() : "Volume: " + (int) (sliderValue * 100));
+        elementOutput.add(NarratedElementType.TITLE, isMuffling ? "Volume: " + (int) (sliderValue * 100) : this.sound.toString());
     }
 }
