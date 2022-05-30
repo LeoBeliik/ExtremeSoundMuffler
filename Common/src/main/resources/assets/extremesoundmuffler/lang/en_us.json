@@ -27,17 +27,17 @@
   "main_screen.btn.anchors.set": "Set Anchor",
   "main_screen.btn.anchors.set_range": "Range: 1 - 32",
   "main_screen.btn.anchors.set_title": "Change Anchor title",
-  "main_scren.btn.anchors.edit": "Edit Anchor",
+  "main_screen.btn.anchors.edit": "Edit Anchor",
 
   "main_screen.main_title": "ESM - Main Screen",
   "main_screen.empty": "Nothing to show here yet..",
   "main_screen.tip": "Tip: %s",
 
-  "main_screen.side_screen.x": "X: ",
-  "main_screen.side_screen.y": "Y: ",
-  "main_screen.side_screen.z": "Z: ",
-  "main_screen.side_screen.radius": "Radius: ",
-  "main_screen.side_screen.dimension": "Dimension: ",
+  "main_screen.side_screen.x": "X: %s",
+  "main_screen.side_screen.y": "Y: %s",
+  "main_screen.side_screen.z": "Z: %s",
+  "main_screen.side_screen.radius": "Radius: %s",
+  "main_screen.side_screen.dimension": "Dimension: %s",
   "main_screen.side_screen.title": "Title: ",
 
   "tip.disable": "You can disable this tips in the config",

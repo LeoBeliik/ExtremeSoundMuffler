@@ -469,11 +469,11 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         }
         fill(stack, x - 5, y - 57, x + stringW + 7, y + 17, whiteBG); //light background border
         fill(stack, x - 5, y - 56, x + stringW + 6, y + 16, darkBG); //dark background
-        drawString(stack, font, new TranslatableComponent("main_screen.side_screen.x") + anchor.getX(), x + 1, y - 50, whiteText);
-        drawString(stack, font, new TranslatableComponent("main_screen.side_screen.y") + anchor.getY(), x + 1, y - 40, whiteText);
-        drawString(stack, font, new TranslatableComponent("main_screen.side_screen.z") + anchor.getZ(), x + 1, y - 30, whiteText);
-        drawString(stack, font, new TranslatableComponent("main_screen.side_screen.radius") + Radius, x + 1, y - 20, whiteText);
-        drawString(stack, font, new TranslatableComponent("main_screen.side_screen.dimension") + dimensionName, x + 1, y - 10, whiteText);
+        drawString(stack, font, new TranslatableComponent("main_screen.side_screen.x", anchor.getX()), x + 1, y - 50, whiteText);
+        drawString(stack, font, new TranslatableComponent("main_screen.side_screen.y", anchor.getY()), x + 1, y - 40, whiteText);
+        drawString(stack, font, new TranslatableComponent("main_screen.side_screen.z", anchor.getZ()), x + 1, y - 30, whiteText);
+        drawString(stack, font, new TranslatableComponent("main_screen.side_screen.radius", Radius), x + 1, y - 20, whiteText);
+        drawString(stack, font, new TranslatableComponent("main_screen.side_screen.dimension", dimensionName), x + 1, y - 10, whiteText);
         renderGui();
         blit(stack, x, y, 0, 69.45F, 11, 11, 88, 88); //set coordinates button
 

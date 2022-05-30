@@ -10,7 +10,6 @@ import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import org.jetbrains.annotations.NotNull;
 
 public class PlaySoundButton extends AbstractButton {
 
@@ -37,7 +36,7 @@ public class PlaySoundButton extends AbstractButton {
     }
 
     @Override
-    public void playDownSound(@NotNull SoundManager soundHandler) {
+    public void playDownSound(SoundManager soundHandler) {
         if (!isFromPSB) {
             isFromPSB = true;
             soundHandler.play(buttonSound);
