@@ -8,6 +8,7 @@ import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 
 
 public class InvButton extends AbstractButton implements IColorsGui {
@@ -30,7 +31,7 @@ public class InvButton extends AbstractButton implements IColorsGui {
             SoundMufflerCommon.renderGui();
             blit(matrix, this.x, this.y, 43f, 202f, 11, 11, 256, 256); //button texure
             if (isMouseOver(mouseX, mouseY) && !hold) {
-                drawCenteredString(matrix, minecraft.font, "Muffler", this.x + 5, this.y + this.height + 1, whiteText);
+                drawCenteredString(matrix, minecraft.font, new TranslatableComponent("inventory.btn"), this.x + 5, this.y + this.height + 1, whiteText);
             }
             drag = isMouseOver(mouseX, mouseY);
         }
@@ -46,7 +47,7 @@ public class InvButton extends AbstractButton implements IColorsGui {
 
     @Override
     public void updateNarration(NarrationElementOutput elementOutput) {
-        elementOutput.add(NarratedElementType.TITLE, "Muffler");
+        elementOutput.add(NarratedElementType.TITLE, new TranslatableComponent("inventory.btn"));
     }
 
     public boolean isDrag() {
