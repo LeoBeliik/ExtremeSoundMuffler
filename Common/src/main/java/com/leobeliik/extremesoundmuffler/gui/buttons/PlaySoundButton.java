@@ -23,16 +23,15 @@ public class PlaySoundButton extends AbstractButton {
     }
 
     void onCLick(double mouseX, double mouseY, int button) {
-        //if the button is clicked with the LMB (button = 0) set isFromPSB to true and play the buttonSound
-        //if not stop the current sound if playing
+        if (button != 0 && button != 1) return; //don't care if it's not rmb or lmb
         if (this.isMouseOver(mouseX, mouseY)) {
-            isFromPSB = button != 0;
             super.mouseClicked(mouseX, mouseY, 0);
         }
     }
 
     @Override
     public void onPress() {
+        isFromPSB = false;
     }
 
     @Override
