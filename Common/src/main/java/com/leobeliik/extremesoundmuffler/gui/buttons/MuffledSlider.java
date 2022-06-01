@@ -60,30 +60,26 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
 
         //--------------- Render Tooltips ---------------//
         if (btnToggleSound.isMouseOver(mouseX, mouseY)) {
-            renderButtonTooltip(stack, btnToggleSound, isMuffling ? new TranslatableComponent("slider.btn.muffler.unmuffle") : new TranslatableComponent("slider.btn.muffler.muffle"), TextComponent.EMPTY);
+            renderButtonTooltip(stack, btnToggleSound, isMuffling ? new TranslatableComponent("slider.btn.muffler.unmuffle") : new TranslatableComponent("slider.btn.muffler.muffle"));
 
         }
         if (btnPlaySound.isMouseOver(mouseX, mouseY)) {
-            renderButtonTooltip(stack, btnPlaySound, new TranslatableComponent("slider.btn.play.play_sound") , new TranslatableComponent("slider.btn.play.stop_sound"));
+            renderButtonTooltip(stack, btnPlaySound, new TranslatableComponent("slider.btn.play.play_sound"));
         }
 
         //--------------- Render Slider Text ---------------//
         this.drawMessage(stack);
     }
 
-    private void renderButtonTooltip(PoseStack stack, AbstractButton btn, Component text, Component text2) {
-        int lengthierText = font.width(text) > font.width(text2) ? font.width(text) : font.width(text2);
+    private void renderButtonTooltip(PoseStack stack, AbstractButton btn, Component text) {
+        int lengthierText = font.width(text);
         int x1 = btn.x + (btn.getHeight() / 2) - (font.width(text) / 2);
         int x2 = x1 + lengthierText + 2;
-        int y1 = btn.y - (text2.equals(TextComponent.EMPTY) ? font.lineHeight : font.lineHeight * 2) - 2;
+        int y1 = btn.y - font.lineHeight - 2;
         int y2 = btn.y - 1;
 
         fill(stack, x1 - 3, y1 - 5, x2, y2 + 1, darkBG);
         font.draw(stack, text, x1, y1 - 2, whiteText);
-        if (!text2.equals(TextComponent.EMPTY)) {
-            font.draw(stack, text2, x1, y1 + font.lineHeight, whiteText);
-        }
-
     }
 
     private void drawMessage(PoseStack stack) {
@@ -176,7 +172,7 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         this.btnToggleSound.mouseClicked(mouseX, mouseY, button);
-        this.btnPlaySound.onCLick(mouseX, mouseY, button);
+        this.btnPlaySound.mouseClicked(mouseX, mouseY, button);
 
         if (isHovered && isMuffling) {
             changeSliderValue((float) mouseX);

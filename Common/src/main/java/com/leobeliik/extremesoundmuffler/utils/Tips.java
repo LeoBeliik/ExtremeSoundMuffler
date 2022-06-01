@@ -17,8 +17,7 @@ public enum Tips {
     set_anchors("tip.set_anchors"),
     modify_anchors("tip.modify_anchors"),
     modify_anchors_2("tip.modify_anchors_2"),
-    reset_recent_sounds("tip.reset_recent_sounds"),
-    stop_sounds("tip.stop_sounds");
+    reset_recent_sounds("tip.reset_recent_sounds");
 
     private String tip;
 

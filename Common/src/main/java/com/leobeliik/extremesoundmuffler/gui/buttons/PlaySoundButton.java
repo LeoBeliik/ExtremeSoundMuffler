@@ -22,11 +22,9 @@ public class PlaySoundButton extends AbstractButton {
         buttonSound = SimpleSoundInstance.forUI(sound, 1.0F);
     }
 
-    void onCLick(double mouseX, double mouseY, int button) {
-        if (button != 0 && button != 1) return; //don't care if it's not rmb or lmb
-        if (this.isMouseOver(mouseX, mouseY)) {
-            super.mouseClicked(mouseX, mouseY, 0);
-        }
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        return this.isMouseOver(mouseX, mouseY) && super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
@@ -36,12 +34,11 @@ public class PlaySoundButton extends AbstractButton {
 
     @Override
     public void playDownSound(SoundManager soundHandler) {
-        if (!isFromPSB) {
-            isFromPSB = true;
+        isFromPSB = true;
+        if (!soundHandler.isActive(buttonSound)) {
             soundHandler.play(buttonSound);
-        } else if (soundHandler.isActive(buttonSound)) {
+        } else {
             soundHandler.stop(buttonSound);
-            soundHandler.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
         }
     }
 
