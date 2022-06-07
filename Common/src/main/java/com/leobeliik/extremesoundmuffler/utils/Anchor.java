@@ -113,7 +113,7 @@ public class Anchor {
     }
 
     public void deleteAnchor() {
-        setName("Anchor: " + this.getAnchorId());
+        setName("Anchor " + this.getAnchorId());
         setAnchorPos(null);
         setDimension(null);
         setRadius(0);

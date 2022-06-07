@@ -4,7 +4,7 @@ import com.leobeliik.extremesoundmuffler.gui.MufflerScreen;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceLocation;
 
 public class SoundMufflerCommon {
@@ -15,14 +15,12 @@ public class SoundMufflerCommon {
         RenderSystem.setShaderTexture(0, (new ResourceLocation(Constants.MOD_ID, texture)));
     }
 
-    public static void openMainScreen(){
-        MufflerScreen.open();
-    }
+    public static void openMainScreen() { MufflerScreen.open(); }
 
     //create empty keybind for the mod
     static KeyMapping mufflerKey() {
         return new KeyMapping(
-                new TranslatableComponent("key.open_muffler_gui").getKey(),
+                new TranslatableContents("key.open_muffler_gui").getKey(),
                 InputConstants.Type.KEYSYM,
                 InputConstants.UNKNOWN.getValue(),
                 "key.categories.misc");

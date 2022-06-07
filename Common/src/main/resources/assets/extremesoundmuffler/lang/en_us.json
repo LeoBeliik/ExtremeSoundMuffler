@@ -6,7 +6,7 @@
   "slider.btn.muffler.muffle": "Muffle sound",
   "slider.btn.muffler.unmuffle": "Unmuffle sound",
   "slider.btn.play.play_sound": "Play/Stop sound",
-  "slider.btn.volume": "Volume: ",
+  "slider.btn.volume": "Volume: %s",
 
   "main_screen.btn.csl.recent": "Recent",
   "main_screen.btn.csl.all": "All",

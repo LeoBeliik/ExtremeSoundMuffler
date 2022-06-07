@@ -15,8 +15,6 @@ import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
@@ -60,11 +58,11 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
 
         //--------------- Render Tooltips ---------------//
         if (btnToggleSound.isMouseOver(mouseX, mouseY)) {
-            renderButtonTooltip(stack, btnToggleSound, isMuffling ? new TranslatableComponent("slider.btn.muffler.unmuffle") : new TranslatableComponent("slider.btn.muffler.muffle"));
+            renderButtonTooltip(stack, btnToggleSound, isMuffling ? Component.translatable("slider.btn.muffler.unmuffle") : Component.translatable("slider.btn.muffler.muffle"));
 
         }
         if (btnPlaySound.isMouseOver(mouseX, mouseY)) {
-            renderButtonTooltip(stack, btnPlaySound, new TranslatableComponent("slider.btn.play.play_sound"));
+            renderButtonTooltip(stack, btnPlaySound, Component.translatable("slider.btn.play.play_sound"));
         }
 
         //--------------- Render Slider Text ---------------//
@@ -85,7 +83,7 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
     private void drawMessage(PoseStack stack) {
         int v = Math.max(width, font.width(getMessage().getString()));
         if (showSlider && isFocused() && isHovered) {
-            drawCenteredString(stack, font, new TranslatableComponent("slider.btn.volume").getKey() + (int) (sliderValue * 100), x + (width / 2), y + 2, aquaText); //title
+            drawCenteredString(stack, font, Component.translatable("slider.btn.volume", (int) (sliderValue * 100)), x + (width / 2), y + 2, aquaText); //title
         } else {
             String msgTruncated;
             if (this.isHovered) {
@@ -122,7 +120,7 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
 
     private void setBtnToggleSound(ResourceLocation sound) {
         int x = CommonConfig.get().leftButtons().get() ? this.x - 26 : this.x + width + 4;
-        btnToggleSound = new Button(x, y, 11, 11, TextComponent.EMPTY, b -> {
+        btnToggleSound = new Button(x, y, 11, 11, Component.empty(), b -> {
             if (isMuffling) {
                 if (screen.removeSoundMuffled(sound)) {
                     setFGColor(this, "white");
@@ -200,6 +198,6 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
 
     @Override
     public void updateNarration(NarrationElementOutput elementOutput) {
-        elementOutput.add(NarratedElementType.TITLE, isMuffling ? new TranslatableComponent("slider.btn.volume").getKey() + (int) (sliderValue * 100) : this.sound.toString());
+        elementOutput.add(NarratedElementType.TITLE, isMuffling ? Component.translatable("slider.btn.volume").toString() + (int) (sliderValue * 100) : this.sound.toString());
     }
 }

@@ -7,9 +7,10 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.SoundManager;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 
 public class PlaySoundButton extends AbstractButton {
 
@@ -17,7 +18,7 @@ public class PlaySoundButton extends AbstractButton {
     private SoundInstance buttonSound;
 
     PlaySoundButton(int x, int y, SoundEvent sound) {
-        super(x, y, 10, 10, TextComponent.EMPTY);
+        super(x, y, 10, 10, CommonComponents.EMPTY);
         this.setAlpha(0);
         buttonSound = SimpleSoundInstance.forUI(sound, 1.0F);
     }

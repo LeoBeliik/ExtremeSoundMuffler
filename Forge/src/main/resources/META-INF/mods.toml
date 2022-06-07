@@ -24,6 +24,6 @@ This mod also works Clientside only.
 [[dependencies.extremeSoundMuffler]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.18.1,)"
+    versionRange="[1.19,)"
     ordering="NONE"
     side="BOTH"
