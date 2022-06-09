@@ -34,13 +34,11 @@ public abstract class SoundMixin implements ISoundLists {
                 }
 
                 //don't continue if the anchors are disabled
-                if (CommonConfig.get() != null && CommonConfig.get().disableAnchors().get()) {
-                    return sound.getVolume();
-                }
-
-                Anchor anchor = Anchor.getAnchor(sound);
-                if (anchor != null) {
-                    return (float) (sound.getVolume() * anchor.getMuffledSounds().get(sound.getLocation()));
+                if (CommonConfig.get() == null || !CommonConfig.get().disableAnchors().get()) {
+                    Anchor anchor = Anchor.getAnchor(sound);
+                    if (anchor != null) {
+                        return (float) (sound.getVolume() * anchor.getMuffledSounds().get(sound.getLocation()));
+                    }
                 }
             }
         }
