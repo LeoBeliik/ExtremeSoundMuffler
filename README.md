@@ -77,7 +77,7 @@
 
  - You can put the muffle and play buttons on the left right of the screen for easier visuals.
  - You can disable the anchors.
- - You can blacklist sounds to prevent them to appear in the ESM screen.
+ - You can blacklist sounds to prevent them from appearing in the ESM screen.
  - You can choose the default muffle volume.
  - You can disable the Inventory button
 
