@@ -1,9 +1,12 @@
 package com.leobeliik.extremesoundmuffler;
 
+import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,16 +30,16 @@ class ForgeConfig {
         buildConfig();
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ForgeConfig.CLIENT_CONFIG);
         CommonConfig.set(new CommonConfig.ConfigAccess(
-                forbiddenSounds::get,
-                lawfulAllList::get,
-                disableInventoryButton::get,
-                disableAnchors::get,
-                leftButtons::get,
-                showTip::get,
-                useDarkTheme::get,
-                defaultMuteVolume::get,
-                invButtonHorizontal::get,
-                invButtonVertical::get
+                forbiddenSounds,
+                lawfulAllList,
+                disableInventoryButton,
+                disableAnchors,
+                leftButtons,
+                showTip,
+                useDarkTheme,
+                defaultMuteVolume,
+                invButtonHorizontal,
+                invButtonVertical
         ));
     }
 
@@ -81,8 +84,8 @@ class ForgeConfig {
         CLIENT_CONFIG = CLIENT_BUILDER.build();
     }
 
-    static List<? extends String> getForbiddenSounds() {
-        return forbiddenSounds.get();
+    static void onLoad(ModConfigEvent.Loading event) {
+        ISoundLists.forbiddenSounds.addAll(forbiddenSounds.get());
     }
 
     static void setInvButtonHorizontal(int x) {
