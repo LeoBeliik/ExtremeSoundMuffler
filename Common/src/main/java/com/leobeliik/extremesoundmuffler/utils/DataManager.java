@@ -40,13 +40,14 @@ public class DataManager implements ISoundLists {
     }
 
     private static String getWorldName() {
+        String name = "ServerWorld";
         if (Minecraft.getInstance().getCurrentServer() != null) {
-            return Minecraft.getInstance().getCurrentServer().name;
+            name = Minecraft.getInstance().getCurrentServer().name;
         } else if (Minecraft.getInstance().getSingleplayerServer() != null) {
-            return Minecraft.getInstance().getSingleplayerServer().getWorldData().getLevelName();
-        } else {
-            return "ServerWorld";
+            name = Minecraft.getInstance().getSingleplayerServer().getWorldData().getLevelName();
         }
+        //prevent to create a directory with reserved characters
+        return name.replaceAll("[^a-zA-Z0-9\s]", "_");
     }
 
     private static CompoundTag serializeAnchor(Anchor anchor) {
@@ -122,7 +123,7 @@ public class DataManager implements ISoundLists {
         try (InputStreamReader reader = new InputStreamReader(new FileInputStream("ESM/" + getWorldName() + "/anchors.dat"), StandardCharsets.UTF_8)) {
             return gson.fromJson(new JsonReader(reader), new TypeToken<List<Anchor>>() {}.getType());
         } catch (Exception e) {
-            Constants.LOG.error("ESM: Error loading Anchor list\n" + e);
+            Constants.LOG.error(e instanceof FileNotFoundException ? "ESM: Anchor list not found; Creating empty Anchor list" : "ESM: Error loading Anchor list\n" + e);
             return IntStream.range(0, 10).mapToObj(i -> new Anchor(i, "Anchor " + i)).collect(Collectors.toList());
         }
     }
