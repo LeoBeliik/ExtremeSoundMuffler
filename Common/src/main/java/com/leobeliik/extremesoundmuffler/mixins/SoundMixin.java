@@ -6,22 +6,35 @@ import com.leobeliik.extremesoundmuffler.gui.buttons.PlaySoundButton;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import com.leobeliik.extremesoundmuffler.utils.Anchor;
 import net.minecraft.client.resources.sounds.SoundInstance;
+import net.minecraft.client.resources.sounds.TickableSoundInstance;
 import net.minecraft.client.sounds.SoundEngine;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(SoundEngine.class)
 public abstract class SoundMixin implements ISoundLists {
 
-
     @Redirect(method = "Lnet/minecraft/client/sounds/SoundEngine;play(Lnet/minecraft/client/resources/sounds/SoundInstance;)V",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/resources/sounds/SoundInstance;getVolume()F"))
     private float esm_calculateSoundVolume(SoundInstance sound) {
+        //TickableSounds go to esm_calculateTickableSoundVolume
+        return sound instanceof TickableSoundInstance ? sound.getVolume() : esm_setVolume(sound);
+    }
+
+    @Inject(method = "calculateVolume", at = @At("RETURN"), cancellable = true)
+    private void esm_calculateTickableSoundVolume(SoundInstance sound, CallbackInfoReturnable<Float> cir) {
+        //Non TickableSounds go to esm_calculateSoundVolume
+        if (sound instanceof TickableSoundInstance) {
+            cir.setReturnValue(esm_setVolume(sound));
+        }
+    }
+
+    @Unique
+    private float esm_setVolume(SoundInstance sound) {
         //don't care about forbidden sounds or from the psb
         if (!esm_isForbidden(sound) && !PlaySoundButton.isFromPSB()) {
 
@@ -44,7 +57,6 @@ public abstract class SoundMixin implements ISoundLists {
         }
 
         return sound.getVolume();
-
     }
 
     @Unique
