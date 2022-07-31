@@ -276,7 +276,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         if (Component.translatable("main_screen.btn.csl.recent").equals(component)) {
             soundsList.addAll(recentSoundsList);
         } else if (Component.translatable("main_screen.btn.csl.all").equals(component)) {
-            soundsList.addAll(Registry.SOUND_EVENT.keySet());
+            Registry.SOUND_EVENT.forEach(k -> soundsList.add(k.getLocation()));
         } else {
             soundsList.addAll(this.anchor == null ? muffledSounds.keySet() : this.anchor.getMuffledSounds().keySet());
         }
