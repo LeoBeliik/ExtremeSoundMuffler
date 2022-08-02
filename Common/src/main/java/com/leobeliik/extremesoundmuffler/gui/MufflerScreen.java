@@ -19,6 +19,7 @@ import net.minecraft.network.chat.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import java.util.Iterator;
+import java.util.function.Predicate;
 import static com.leobeliik.extremesoundmuffler.SoundMufflerCommon.renderGui;
 
 public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
@@ -282,10 +283,8 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         }
 
         //removes blacklisted sounds when necessary
-        if (CommonConfig.get().lawfulAllList().get() && btnCSL.getMessage().equals(Component.translatable("main_screen.btn.csl.all"))) {
-            forbiddenSounds.forEach(fs -> soundsList.removeIf(sl -> sl.toString().contains(fs)));
-        } else if (btnCSL.getMessage().equals(Component.translatable("main_screen.btn.csl.recent"))) {
-            forbiddenSounds.forEach(fs -> soundsList.removeIf(sl -> sl.toString().contains(fs)));
+        if ((CommonConfig.get().lawfulAllList().get() && btnCSL.getMessage().equals(Component.translatable("main_screen.btn.csl.all"))) || btnCSL.getMessage().equals(Component.translatable("main_screen.btn.csl.recent"))) {
+            forbiddenSounds.stream().<Predicate<? super ResourceLocation>>map(fs -> sl -> sl.toString().contains(fs)).forEach(soundsList::removeIf);
         }
 
         if (soundsList.isEmpty()) {
@@ -298,12 +297,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
                 continue;
             }
             //set volume to muffled sounds if any
-            double volume;
-            if (anchor != null) {
-                volume = anchor.getMuffledSounds().get(sound) == null ? 1D : anchor.getMuffledSounds().get(sound);
-            } else {
-                volume = muffledSounds.get(sound) == null ? 1D : muffledSounds.get(sound);
-            }
+            double volume = anchor == null ? muffledSounds.get(sound) == null ? 1D : muffledSounds.get(sound) : anchor.getMuffledSounds().get(sound) == null ? 1D : anchor.getMuffledSounds().get(sound);
             //row highlight
             int bg = children().size() % 2 == 0 ? darkBG : brightBG;
 
