@@ -45,9 +45,9 @@ public class DataManager implements ISoundLists {
     private static String getWorldName() {
         String name = "ServerWorld";
         if (Minecraft.getInstance().getCurrentServer() != null) {
-            name = Minecraft.getInstance().getCurrentServer().name;
+            name = Minecraft.getInstance().getCurrentServer().name.strip();
         } else if (Minecraft.getInstance().getSingleplayerServer() != null) {
-            name = Minecraft.getInstance().getSingleplayerServer().getWorldData().getLevelName();
+            name = Minecraft.getInstance().getSingleplayerServer().getWorldData().getLevelName().strip();
         }
         //prevent to create a directory with reserved characters
         try {
