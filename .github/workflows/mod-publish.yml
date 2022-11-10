@@ -39,7 +39,7 @@ jobs:
       with:
           files-primary: Forge/build/libs/!(*-@(dev|sources|javadoc)).jar
           
-          modrinth-id: jIJyY7rq
+          modrinth-id: 5IIKsxiL
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
 
           curseforge-id: 363363
