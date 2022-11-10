@@ -56,9 +56,13 @@ subprojects {
     }
 
     tasks.register("version_up") {
-        doLast {
+        doFirst {
             def gp = file("..\\gradle.properties")
-            gp.setText(gp.getText().replace("modversion = " + "${modversion}", "modversion = " + ("${modversion}".toInteger() + 1).toString()))
+            def ch = file("..\\CHANGELOG.md")
+            def mv = "${modversion}".toInteger() + 1
+
+            gp.setText(gp.getText().replace("modversion = " + "${modversion}", "modversion = " + mv.toString()))
+            ch.setText("# 1." + mv.toString() + "\n" + ch.getText())
         }
     }
 }
