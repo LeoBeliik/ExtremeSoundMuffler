@@ -4,7 +4,7 @@ plugins {
     id 'idea'
 }
 
-version = "3.${modversion}_fabric-${minecraft_version}"
+version = "3.${modversion}-fabric-${minecraft_version}"
 
 repositories {
     maven { url "https://maven.shedaniel.me/" }

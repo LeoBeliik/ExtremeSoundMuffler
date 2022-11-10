@@ -15,7 +15,7 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 apply plugin: 'org.spongepowered.mixin'
 
-version = "3.${modversion}_forge-${minecraft_version}"
+version = "3.${modversion}-forge-${minecraft_version}"
 
 minecraft {
     mappings channel: "official", version: "${minecraft_version}"
