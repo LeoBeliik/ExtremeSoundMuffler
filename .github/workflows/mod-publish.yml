@@ -1,0 +1,79 @@
+name: Pubish mod
+
+on: workflow_dispatch
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+                
+    - name: Make Gradle wrapper executable
+      run: chmod +x ./gradlew
+    
+    - name: Version UP
+      run: ./gradlew version_up
+      
+    - name: Build with Gradle
+      run: ./gradlew --max-workers 1 build -x :Common:compileJava
+      
+    - name: Collect version information
+      run: |
+          set_var() {
+            echo $1="$2"
+            echo $1="$2" >> $GITHUB_ENV
+            declare -g $1="$2"
+          }
+          set_var JAR_FILE $(eval echo Forge/build/libs/extremesoundmuffler-*-*-*.jar)
+          set_var MOD_VERSION $(echo ${JAR_FILE%.*} | cut -d- -f2)
+          
+    - name: Publish Minecraft Mods Forge Edition
+      uses: Kir-Antipov/mc-publish@v3.2
+      with:
+          files-primary: Forge/build/libs/!(*-@(dev|sources|javadoc)).jar
+          
+          modrinth-id: jIJyY7rq
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+
+          curseforge-id: 363363
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+
+          name: Extreme sound muffler ${{env.MOD_VERSION}} - Forge ${{github.ref_name}}
+          loaders: forge
+          version: ${{env.MOD_VERSION}}-${{github.ref_name}}
+          java: Java 17
+          modrinth-featured: false
+          changelog-file: CHANGELOG.md
+          
+    - name: Publish Minecraft Mods Fabric Edition
+      uses: Kir-Antipov/mc-publish@v3.2
+      with:
+          files-primary: Fabric/build/libs/!(*-@(dev|sources|javadoc)).jar
+          
+          modrinth-id: 5IIKsxiL
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+
+          curseforge-id: 566140
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+
+          name: Extreme sound muffler ${{env.MOD_VERSION}} - Fabric ${{github.ref_name}}
+          loaders: fabric
+          version: ${{env.MOD_VERSION}}-${{github.ref_name}}
+          java: Java 17
+          modrinth-featured: false
+          changelog-file: CHANGELOG.md
+          
+    - name: Cleanup Gradle Cache
+      run: ./gradlew --stop |
+          rm -f ~/.gradle/caches/modules-2/modules-2.lock
+          rm -f ~/.gradle/caches/modules-2/gc.properties
