@@ -20,9 +20,6 @@ jobs:
                 
     - name: Make Gradle wrapper executable
       run: chmod +x ./gradlew
-    
-    - name: Version UP
-      run: ./gradlew version_up
       
     - name: Build with Gradle
       run: ./gradlew --max-workers 1 build -x :Common:compileJava
@@ -42,7 +39,7 @@ jobs:
       with:
           files-primary: Forge/build/libs/!(*-@(dev|sources|javadoc)).jar
           
-          modrinth-id: jIJyY7rq
+          modrinth-id: 5IIKsxiL
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
 
           curseforge-id: 363363
