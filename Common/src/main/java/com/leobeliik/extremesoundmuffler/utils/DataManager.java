@@ -9,6 +9,7 @@ import com.leobeliik.extremesoundmuffler.Constants;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import net.minecraft.FileUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
@@ -43,59 +44,15 @@ public class DataManager implements ISoundLists {
     }
 
     private static String getWorldName() {
-        String name = "ServerWorld";
-        if (Minecraft.getInstance().getCurrentServer() != null) {
-            name = Minecraft.getInstance().getCurrentServer().name.strip();
-        } else if (Minecraft.getInstance().getSingleplayerServer() != null) {
-            name = Minecraft.getInstance().getSingleplayerServer().getWorldData().getLevelName().strip();
-        }
+        IntegratedServer server = Minecraft.getInstance().getSingleplayerServer();
+        String name = server != null ? server.getWorldData().getLevelName().strip() : "ServerWorld";
+
         //prevent to create a directory with reserved characters
         try {
             return FileUtil.findAvailableName(Path.of(""), name, "");
         } catch (IOException e) {
             Constants.LOG.error("ESM: error trying to create a folder with the name of the world " + name, e);
             return "ServerWorld";
-        }
-    }
-
-    private static CompoundTag serializeAnchor(Anchor anchor) {
-
-        CompoundTag anchorNBT = new CompoundTag();
-        CompoundTag muffledNBT = new CompoundTag();
-
-        anchorNBT.putInt("ID", anchor.getAnchorId());
-        anchorNBT.putString("NAME", anchor.getName());
-
-        if (anchor.getAnchorPos() == null) {
-            return anchorNBT;
-        }
-
-        anchorNBT.put("POS", NbtUtils.writeBlockPos(anchor.getAnchorPos()));
-        anchorNBT.putString("DIM", anchor.getDimension().toString());
-        anchorNBT.putInt("RAD", anchor.getRadius());
-        anchor.getMuffledSounds().forEach((R, D) -> muffledNBT.putDouble(R.toString(), D));
-        anchorNBT.put("MUFFLED", muffledNBT);
-
-        return anchorNBT;
-    }
-
-    public static Anchor deserializeAnchor(CompoundTag nbt) {
-        SortedMap<String, Double> muffledSounds = new TreeMap<>();
-        CompoundTag muffledNBT = nbt.getCompound("MUFFLED");
-
-        for (String key : muffledNBT.getAllKeys()) {
-            muffledSounds.put(key, muffledNBT.getDouble(key));
-        }
-
-        if (!nbt.contains("POS")) {
-            return new Anchor(nbt.getInt("ID"), nbt.getString("NAME"));
-        } else {
-            return new Anchor(nbt.getInt("ID"),
-                    nbt.getString("NAME"),
-                    NbtUtils.readBlockPos(nbt.getCompound("POS")),
-                    new ResourceLocation(nbt.getString("DIM")),
-                    nbt.getInt("RAD"),
-                    muffledSounds);
         }
     }
 

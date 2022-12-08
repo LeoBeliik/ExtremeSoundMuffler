@@ -1,6 +1,5 @@
 package com.leobeliik.extremesoundmuffler.gui.buttons;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -8,8 +7,6 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.CommonComponents;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.sounds.SoundEvent;
 
 public class PlaySoundButton extends AbstractButton {
@@ -49,7 +46,7 @@ public class PlaySoundButton extends AbstractButton {
     }
 
     @Override
-    public void updateNarration(NarrationElementOutput elementOutput) {
+    public void updateWidgetNarration(NarrationElementOutput elementOutput) {
         elementOutput.add(NarratedElementType.TITLE, this.createNarrationMessage());
     }
 }

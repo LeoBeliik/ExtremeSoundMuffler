@@ -15,9 +15,12 @@ import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import org.jetbrains.annotations.NotNull;
 import java.util.Iterator;
 import java.util.function.Predicate;
 import static com.leobeliik.extremesoundmuffler.SoundMufflerCommon.renderGui;
@@ -50,8 +53,8 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         minYButton = getY() + 46;
         maxYButton = getY() + 164;
 
-        //allows to hold a key to keep printing it. in this case i want it to easy erase text
-        minecraft.keyboardHandler.setSendRepeatsToGui(true);
+        //allows to hold a key to keep printing it. in this case I want it to easy erase text
+        //minecraft.keyboardHandler.setSendRepeatsToGui(true);
 
         addButtons();
         addSideButtons();
@@ -60,11 +63,11 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+    public void render(@NotNull PoseStack stack, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(stack);
         renderGui();
         this.blit(stack, getX(), getY(), 0, 0, xSize, ySize); //Main screen bounds
-        renderSideScreen(stack, mouseX, mouseY); //render side screen buttons, need to be rendered before all the other things
+        renderSideScreen(stack); //render side screen buttons, need to be rendered before all the other things
         super.render(stack, mouseX, mouseY, partialTicks);
         //--------------- My Renders ---------------//
         //Screen title
@@ -72,7 +75,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         //render the tips on the bottom of the screen
         renderTips(stack);
         //render buttons tips and other textures
-        renderButtons(stack, mouseX, mouseY, partialTicks);
+        renderButtons(stack, mouseX, mouseY);
     }
 
     @Override
@@ -121,13 +124,13 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
             return false;
         }
 
-        if ((direction > 0 && firstSoundButton.y == minYButton) || (direction < 0 && lastSoundButton.y <= maxYButton)) {
+        if ((direction > 0 && firstSoundButton.getY() == minYButton) || (direction < 0 && lastSoundButton.getY() <= maxYButton)) {
             return false;
         }
         children().stream().filter(b -> b instanceof MuffledSlider).map(b -> (MuffledSlider) b).forEach(b -> {
             //only increase / decrease from 10 to 10 to prevent the sliders going further than they should
-            b.setY((int) (b.y + (b.getHeight() * 10) * Mth.clamp(direction, -1, 1)));
-            b.isVisible(b.y >= minYButton && b.y <= maxYButton);
+            b.setY((int) (b.getY() + (b.getHeight() * 10) * Mth.clamp(direction, -1, 1)));
+            b.isVisible(b.getY() >= minYButton && b.getY() <= maxYButton);
         });
 
         return super.mouseScrolled(mouseX, mouseY, direction);
@@ -179,7 +182,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
     private void addButtons() {
         //Change Sounds List
-        addWidget(btnCSL = new Button(getX() + 13, getY() + 181, 52, 13, Component.translatable("main_screen.btn.csl.recent"), b -> {
+        addWidget(btnCSL = Button.builder(Component.translatable("main_screen.btn.csl.recent"), b -> {
             boolean isAnchorMuffling = anchor != null && !anchor.getMuffledSounds().isEmpty();
 
             Component component = btnCSL.getMessage();
@@ -193,13 +196,13 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
             b.setMessage(toggleSoundsListMessage);
             updateButtons();
-        }));
+        }).bounds(getX() + 13, getY() + 181, 52, 13).build());
         //Searchbar
         addRenderableWidget(searchBar = new EditBox(font, getX() + 74, getY() + 183, 119, 13, Component.empty())).setBordered(false);
         //toggle muffling sounds on/off
-        addWidget(btnTMS = new Button(getX() + 229, getY() + 180, 17, 17, Component.translatable("main_screen.btn.tms.stop"), b -> isMuffling = !isMuffling));
+        addWidget(btnTMS = Button.builder(Component.translatable("main_screen.btn.tms.stop"), b -> isMuffling = !isMuffling).bounds(getX() + 229, getY() + 180, 17, 17).build());
         //deletes current muffled list or the recent list if shifting
-        addWidget(btnDelete = new Button(getX() + 205, getY() + 180, 17, 17, Component.translatable("main_screen.btn.delete.sounds"), b -> {
+        addWidget(btnDelete = Button.builder(Component.translatable("main_screen.btn.delete.sounds"), b -> {
             if (hasShiftDown()) {
                 recentSoundsList.clear();
             } else if (anchor == null) {
@@ -208,33 +211,33 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
                 anchor.deleteAnchor();
             }
             updateButtons();
-        }));
+        }).bounds(getX() + 205, getY() + 180, 17, 17).build());
         //backwards list of sounds
-        addWidget(btnPrevSounds = new Button(getX() + 10, getY() + 22, 13, 20, Component.empty(), b -> mouseScrolled(0D, 0D, 1D)));
+        addWidget(btnPrevSounds = Button.builder(Component.empty(), b -> mouseScrolled(0D, 0D, 1D)).bounds(getX() + 10, getY() + 22, 13, 20).build());
         //forward list of sounds
-        addWidget(btnNextSounds = new Button(getX() + 233, getY() + 22, 13, 20, Component.empty(), b -> mouseScrolled(0D, 0D, -1D)));
+        addWidget(btnNextSounds = Button.builder(Component.empty(), b -> mouseScrolled(0D, 0D, -1D)).bounds(getX() + 233, getY() + 22, 13, 20).build());
 
     }
 
     private void addSideButtons() {
         //set anchor's position button
-        addWidget(btnSetAnchor = new Button(getX() + 261, getY() + 62, 11, 11, Component.empty(), b -> anchor.setAnchor())).active = false;
+        addWidget(btnSetAnchor = Button.builder(Component.empty(), b -> anchor.setAnchor()).bounds(getX() + 261, getY() + 62, 11, 11).build()).active = false;
         //edit Anchor parameters button
-        addWidget(btnEditAnchor = new Button(getX() + 275, getY() + 62, 11, 11, Component.empty(), b -> editTitle())).active = false;
+        addWidget(btnEditAnchor = Button.builder(Component.empty(), b -> editTitle()).bounds(getX() + 275, getY() + 62, 11, 11).build()).active = false;
         //edit anchor name bar
-        addRenderableWidget(editAnchorTitleBar = new EditBox(font, getX() + 302, btnEditAnchor.y + 20, 84, 11, Component.empty())).visible = false;
+        addRenderableWidget(editAnchorTitleBar = new EditBox(font, getX() + 302, btnEditAnchor.getY() + 20, 84, 11, Component.empty())).visible = false;
         //edit anchor radius bar
-        addRenderableWidget(editRadBar = new EditBox(font, getX() + 302, editAnchorTitleBar.y + 15, 30, 11, Component.empty())).visible = false;
+        addRenderableWidget(editRadBar = new EditBox(font, getX() + 302, editAnchorTitleBar.getY() + 15, 30, 11, Component.empty())).visible = false;
         //accept button
-        addRenderableWidget(btnAccept = new Button(getX() + 259, editRadBar.y + 15, 40, 20, Component.translatable("main_screen.btn.accept"), b -> {
+        addRenderableWidget(btnAccept = Button.builder(Component.translatable("main_screen.btn.accept"), b -> {
             if (!editAnchorTitleBar.getValue().isEmpty() && !editRadBar.getValue().isEmpty() && anchor != null) {
                 anchor.editAnchor(editAnchorTitleBar.getValue(), Mth.clamp(Integer.parseInt(editRadBar.getValue()), 1, 32));
                 screenTitle = Component.nullToEmpty(editAnchorTitleBar.getValue());
                 editTitle();
             }
-        })).visible = false;
+        }).bounds(getX() + 259, editRadBar.getY() + 15, 40, 20).build()).visible = false;
         //cancel button
-        addRenderableWidget(btnCancel = new Button(getX() + 300, editRadBar.y + 15, 40, 20, Component.translatable("main_screen.btn.cancel"), b -> editTitle())).visible = false;
+        addRenderableWidget(btnCancel = Button.builder(Component.translatable("main_screen.btn.cancel"), b -> editTitle()).bounds(getX() + 300, editRadBar.getY() + 15, 40, 20).build()).visible = false;
     }
 
     private void addAnchorButtons() {
@@ -242,12 +245,12 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         for (int i = 0; i <= 9; i++) {
             if (isAnchorsDisabled) {
                 String[] disabledMsg = {"-", "D", "i", "s", "a", "b", "l", "e", "d", "-"};
-                btnAnchor = new Button(buttonW, getY() + 24, 16, 16, Component.nullToEmpty(disabledMsg[i]), b -> {
-                });
+                btnAnchor = Button.builder(Component.nullToEmpty(disabledMsg[i]), b -> {
+                }).bounds(buttonW, getY() + 24, 16, 16).build();
                 btnAnchor.active = false;
             } else {
                 int finalI = i;
-                btnAnchor = new Button(buttonW, getY() + 24, 16, 16, Component.nullToEmpty(String.valueOf(i)), b -> {
+                btnAnchor = Button.builder(Component.nullToEmpty(String.valueOf(i)), b -> {
                     anchor = anchorList.get(finalI);
                     hideSideButtons();
                     if (screenTitle.getString().equals(anchor.getName())) {
@@ -258,7 +261,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
                         btnSetAnchor.active = true;
                     }
                     updateButtons();
-                });
+                }).bounds(buttonW, getY() + 24, 16, 16).build();
             }
             addRenderableWidget(btnAnchor).setAlpha(0);
             buttonW += 20;
@@ -277,7 +280,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         if (Component.translatable("main_screen.btn.csl.recent").equals(component)) {
             soundsList.addAll(recentSoundsList);
         } else if (Component.translatable("main_screen.btn.csl.all").equals(component)) {
-            Registry.SOUND_EVENT.forEach(k -> soundsList.add(k.getLocation()));
+            BuiltInRegistries.SOUND_EVENT.forEach(k -> soundsList.add(k.getLocation()));
         } else {
             soundsList.addAll(this.anchor == null ? muffledSounds.keySet() : this.anchor.getMuffledSounds().keySet());
         }
@@ -314,7 +317,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
             addRenderableWidget(btnSound);
 
             by += btnSound.getHeight();
-            btnSound.isVisible(btnSound.y < maxYButton);
+            btnSound.isVisible(btnSound.getY() < maxYButton);
 
             if (firstSoundButton == null) {
                 firstSoundButton = btnSound;
@@ -327,7 +330,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
     private void updateButtons() {
         for (Iterator<? extends GuiEventListener> iterator = children().iterator(); iterator.hasNext(); ) {
-            Widget button = (Widget) iterator.next();
+            AbstractWidget button = (AbstractWidget) iterator.next();
             if (button instanceof MuffledSlider) {
                 ((MuffledSlider) button).isVisible(false);
                 iterator.remove();
@@ -338,14 +341,14 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
     //----------------------------------- Rendering -----------------------------------//
 
-    private void renderButtons(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+    private void renderButtons(PoseStack stack, int mouseX, int mouseY) {
         Component message; //Tooltip message
 
         //--------------- Toggle Muffle sounds button ---------------//
         renderGui();
         //draws a "/" over the muffle button texture if muffling
         if (isMuffling) {
-            blit(stack, btnTMS.x + 1, btnTMS.y + 1, 54F, 202F, 15, 15, xSize, xSize);
+            blit(stack, btnTMS.getX() + 1, btnTMS.getY() + 1, 54F, 202F, 15, 15, xSize, xSize);
         }
 
         message = isMuffling ? Component.translatable("main_screen.btn.tms.stop") : Component.translatable("main_screen.btn.tms.start");
@@ -354,12 +357,12 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         }
 
         //--------------- Delete button ---------------//
-        message = anchor == null ? Component.translatable("main_screen.btn.delete.list") : Component.translatable("main_screen.btn.delete.anchor");
+        message = anchor == null ? Component.translatable("main_screen.btn.delete.sounds") : Component.translatable("main_screen.btn.delete.anchor");
 
         //show texture for the deletion of the recent sounds list
         if (hasShiftDown()) {
             renderGui();
-            blit(stack, btnDelete.x + 2, btnDelete.y + 1, 54F, 217F, 13, 13, xSize, xSize);
+            blit(stack, btnDelete.getX() + 2, btnDelete.getY() + 1, 54F, 217F, 13, 13, xSize, xSize);
             message = Component.translatable("main_screen.btn.delete.list");
         }
         //draw tooltip
@@ -371,7 +374,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         //render searchbar hint
         Component searchHint = Component.translatable("gui.recipebook.search_hint").withStyle(ChatFormatting.ITALIC).withStyle(ChatFormatting.GRAY);
         if (!this.searchBar.isFocused() && this.searchBar.getValue().isEmpty()) {
-            drawString(stack, font, searchHint, searchBar.x + 1, searchBar.y + 1, -1);
+            drawString(stack, font, searchHint, searchBar.getX() + 1, searchBar.getY() + 1, -1);
         }
 
         //--------------- Change sounds list button ---------------//
@@ -382,8 +385,8 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
             drawCenteredString(stack, font, text, getX() + 128, getY() + 101, whiteText);
         }
         //render btnCSL text because I don't like how the default text looks like
-        float centerX = btnCSL.x + btnCSL.getWidth() / 2F - font.width(btnCSL.getMessage().getString()) / 2F;
-        font.draw(stack, btnCSL.getMessage().getString(), centerX, btnCSL.y + 3, 0);
+        float centerX = btnCSL.getX() + btnCSL.getWidth() / 2F - font.width(btnCSL.getMessage().getString()) / 2F;
+        font.draw(stack, btnCSL.getMessage().getString(), centerX, btnCSL.getY() + 3, 0);
         message = Component.translatable("main_screen.btn.csl.tooltip", btnCSL.getMessage().getString());
         if (btnCSL.isMouseOver(mouseX, mouseY)) {
             renderButtonTooltip(stack, message, btnCSL);
@@ -403,8 +406,8 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
         //--------------- Anchor buttons ---------------//
 
-        if (mouseX > getX() + 30 && mouseX < btnAnchor.x + btnAnchor.getWidth()
-                && mouseY > btnAnchor.y && mouseY < btnAnchor.y + btnAnchor.getHeight()
+        if (mouseX > getX() + 30 && mouseX < btnAnchor.getX() + btnAnchor.getWidth()
+                && mouseY > btnAnchor.getY() && mouseY < btnAnchor.getY() + btnAnchor.getHeight()
                 && CommonConfig.get().disableAnchors().get()) {
             //render tooltip for disabled anchors
             renderTooltip(stack, Component.translatable("main_screen.btn.anchors.disabled"), getX() + 60, getY() + 40);
@@ -424,7 +427,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
                     setFGColor(btn, color);
                     if (anchor != null && btn.getMessage().getString().equals(String.valueOf(anchor.getAnchorId()))) {
                         renderGui();
-                        blit(stack, btn.x - 5, btn.y - 2, 71F, 202F, 27, 22, xSize, xSize); //fancy selected Anchor indicator
+                        blit(stack, btn.getX() - 5, btn.getY() - 2, 71F, 202F, 27, 22, xSize, xSize); //fancy selected Anchor indicator
                     }
                 }
             }
@@ -445,13 +448,13 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         }
     }
 
-    private void renderSideScreen(PoseStack stack, int mouseX, int mouseY) {
+    private void renderSideScreen(PoseStack stack) {
         if (anchor == null) return; //everything here depends of the Anchor
         //Anchor coordinates and set coord button
         String dimensionName = "";
         String Radius;
-        int x = btnSetAnchor.x;
-        int y = btnSetAnchor.y;
+        int x = btnSetAnchor.getX();
+        int y = btnSetAnchor.getY();
         int stringW;
         String message;
 
@@ -473,26 +476,26 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
         if (anchor.getAnchorPos() != null) {
             btnEditAnchor.active = true;
-            blit(stack, btnEditAnchor.x, btnEditAnchor.y, 32F, 213F, 11, 11, xSize, xSize); //set edit anchor button texture
+            blit(stack, btnEditAnchor.getX(), btnEditAnchor.getY(), 32F, 213F, 11, 11, xSize, xSize); //set edit anchor button texture
         } else {
             btnEditAnchor.active = false;
         }
 
         //Show Radius and Title text when editing Anchor and bg
-        x = btnSetAnchor.x;
-        y = editAnchorTitleBar.y;
+        x = btnSetAnchor.getX();
+        y = editAnchorTitleBar.getY();
         if (editRadBar.visible) {
-            fill(stack, x + stringW + 7, y - 5, editAnchorTitleBar.x + editAnchorTitleBar.getWidth() + 4, btnAccept.y + 23, whiteBG);//light top background border
-            fill(stack, x - 5, btnAccept.y + 23, editAnchorTitleBar.x + editAnchorTitleBar.getWidth() + 4, btnAccept.y + 24, whiteBG);//light bottom background border
-            fill(stack, x - 6, y - 4, editAnchorTitleBar.x + editAnchorTitleBar.getWidth() + 3, btnAccept.y + 23, darkBG);//dark background
+            fill(stack, x + stringW + 7, y - 5, editAnchorTitleBar.getX() + editAnchorTitleBar.getWidth() + 4, btnAccept.getY() + 23, whiteBG);//light top background border
+            fill(stack, x - 5, btnAccept.getY() + 23, editAnchorTitleBar.getX() + editAnchorTitleBar.getWidth() + 4, btnAccept.getY() + 24, whiteBG);//light bottom background border
+            fill(stack, x - 6, y - 4, editAnchorTitleBar.getX() + editAnchorTitleBar.getWidth() + 3, btnAccept.getY() + 23, darkBG);//dark background
             font.draw(stack, Component.translatable("main_screen.side_screen.title"), x - 2, y + 1, whiteText);
-            font.draw(stack, Component.translatable("main_screen.side_screen.radius"), x - 2, editRadBar.y + 1, whiteText);
+            font.draw(stack, Component.translatable("main_screen.side_screen.radius"), x - 2, editRadBar.getY() + 1, whiteText);
         }
     }
 
     private void renderButtonTooltip(PoseStack stack, Component message, AbstractWidget button) {
-        int centeredMessageX = button.x - (font.width(message) / 2);
-        int centeredMessageY = button.equals(btnPrevSounds) || button.equals(btnNextSounds) ? button.y - 1 : button.y + button.getHeight() + 16;
+        int centeredMessageX = button.getX() - (font.width(message) / 2);
+        int centeredMessageY = button.equals(btnPrevSounds) || button.equals(btnNextSounds) ? button.getY() - 1 : button.getY() + button.getHeight() + 16;
         renderTooltip(stack, message, centeredMessageX, centeredMessageY);
     }
 
