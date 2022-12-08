@@ -62,7 +62,7 @@ subprojects {
             def mv = "${modversion}".toInteger() + 1
 
             gp.setText(gp.getText().replace("modversion = " + "${modversion}", "modversion = " + mv.toString()))
-            ch.setText("")
+            ch.setText()
         }
     }
 }
