@@ -75,7 +75,9 @@ public class DataManager implements ISoundLists {
             } else {
                 Constants.LOG.error(Component.translatable("log.error.loadMuffledList", e).getString());
             }
-            return new HashMap<>();
+            HashMap<String, Double> MuffledMap = new HashMap<>();
+            saveMuffledMap();
+            return MuffledMap;
         }
     }
 
@@ -97,7 +99,9 @@ public class DataManager implements ISoundLists {
             } else {
                 Constants.LOG.error(Component.translatable("log.error.loadAnchorList", e).getString());
             }
-            return IntStream.range(0, 10).mapToObj(i -> new Anchor(i, "Anchor " + i)).collect(Collectors.toList());
+            List<Anchor> anchors = IntStream.range(0, 10).mapToObj(i -> new Anchor(i, "Anchor " + i)).collect(Collectors.toList());
+            saveAnchors();
+            return anchors;
         }
     }
 }

@@ -1,1 +1,1 @@
-Updated to Minecraft 1.19.3
+Better handled debug messages for anchors and muffled list
