@@ -33,6 +33,7 @@ public class DataManager implements ISoundLists {
             anchorList.clear();
             anchorList.addAll(loadAnchors());
         }
+        saveData();
     }
 
     public static void saveData() {
@@ -75,9 +76,7 @@ public class DataManager implements ISoundLists {
             } else {
                 Constants.LOG.error(Component.translatable("log.error.loadMuffledList", e).getString());
             }
-            HashMap<String, Double> MuffledMap = new HashMap<>();
-            saveMuffledMap();
-            return MuffledMap;
+            return new HashMap<>();
         }
     }
 
@@ -99,9 +98,7 @@ public class DataManager implements ISoundLists {
             } else {
                 Constants.LOG.error(Component.translatable("log.error.loadAnchorList", e).getString());
             }
-            List<Anchor> anchors = IntStream.range(0, 10).mapToObj(i -> new Anchor(i, "Anchor " + i)).collect(Collectors.toList());
-            saveAnchors();
-            return anchors;
+            return IntStream.range(0, 10).mapToObj(i -> new Anchor(i, "Anchor " + i)).collect(Collectors.toList());
         }
     }
 }
