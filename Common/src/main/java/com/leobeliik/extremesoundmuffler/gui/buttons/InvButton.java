@@ -8,7 +8,6 @@ import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
-
 import javax.annotation.ParametersAreNonnullByDefault;
 
 public class InvButton extends AbstractButton implements IColorsGui {
@@ -30,9 +29,9 @@ public class InvButton extends AbstractButton implements IColorsGui {
     public void renderBg(PoseStack matrix, Minecraft minecraft, int mouseX, int mouseY) {
         if (this.visible) {
             SoundMufflerCommon.renderGui();
-            blit(matrix, getX(), getY(), 43f, 202f, 11, 11, 256, 256); //button texure
+            blit(matrix, x, y, 43f, 202f, 11, 11, 256, 256); //button texure
             if (isMouseOver(mouseX, mouseY) && !hold) {
-                drawCenteredString(matrix, minecraft.font, Component.translatable("inventory.btn"), getX() + 5, getY() + this.height + 1, whiteText);
+                drawCenteredString(matrix, minecraft.font, Component.translatable("inventory.btn"), x + 5, y + this.height + 1, whiteText);
             }
             drag = isMouseOver(mouseX, mouseY);
         }
@@ -47,8 +46,8 @@ public class InvButton extends AbstractButton implements IColorsGui {
     }
 
     @Override
-    public void updateWidgetNarration(NarrationElementOutput elementOutput) {
-        elementOutput.add(NarratedElementType.TITLE, Component.translatable("inventory.btn"));
+    public void updateNarration(NarrationElementOutput narrationElementOutput) {
+        narrationElementOutput.add(NarratedElementType.TITLE, Component.translatable("inventory.btn"));
     }
 
     public boolean isDrag() {

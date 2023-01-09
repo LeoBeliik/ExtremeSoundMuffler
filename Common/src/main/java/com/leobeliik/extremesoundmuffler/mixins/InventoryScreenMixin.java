@@ -37,11 +37,11 @@ public abstract class InventoryScreenMixin extends EffectRenderingInventoryScree
     @Inject(method = "render", at = @At("HEAD"))
     private void esm_inventoryScreenRender(PoseStack ps, int mouseX, int mouseY, float tick, CallbackInfo ci) {
         if (!esm_invButton.hold) {
-            esm_invButton.setX(esm_getIBX());
-            esm_invButton.setY(esm_getIBY());
+            esm_invButton.x = esm_getIBX();
+            esm_invButton.y = esm_getIBY();
         } else {
-            esm_invButton.setX(mouseX - 6);
-            esm_invButton.setY(mouseY - 6);
+            esm_invButton.x = mouseX - 6;
+            esm_invButton.y = mouseY - 6;
         }
     }
 
@@ -49,8 +49,8 @@ public abstract class InventoryScreenMixin extends EffectRenderingInventoryScree
     @Inject(method = "mouseReleased", at = @At("HEAD"))
     private void esm_onMouseReleased(double mouseX, double mouseY, int button, CallbackInfoReturnable cir) {
         if (esm_invButton.hold && button == 1) {
-            esm_invButton.setX(esm_invButton.getX() - leftPos);
-            esm_invButton.setY(esm_invButton.getY() - topPos);
+            esm_invButton.x = esm_invButton.x - leftPos;
+            esm_invButton.y = esm_invButton.y - topPos;
             esm_invButton.hold = false;
         }
     }

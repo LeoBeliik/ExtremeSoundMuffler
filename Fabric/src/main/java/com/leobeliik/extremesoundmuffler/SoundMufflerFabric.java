@@ -36,12 +36,12 @@ public class SoundMufflerFabric implements ClientModInitializer {
             for (GuiEventListener widget : screen.children()) {
                 if (widget instanceof InvButton && ((InvButton) widget).isDrag()) {
                     if (screen instanceof CreativeModeInventoryScreen) {
-                        FabricConfig.setCreativeInvButtonHorizontal(((InvButton) widget).getX());
-                        FabricConfig.setCreativeInvButtonVertical(((InvButton) widget).getY());
+                        FabricConfig.setCreativeInvButtonHorizontal(((InvButton) widget).x);
+                        FabricConfig.setCreativeInvButtonVertical(((InvButton) widget).y);
                         FabricConfig.updateConfig(new JanksonValueSerializer(false));
                     } else {
-                        FabricConfig.setInvButtonHorizontal(((InvButton) widget).getX());
-                        FabricConfig.setInvButtonVertical(((InvButton) widget).getY());
+                        FabricConfig.setInvButtonHorizontal(((InvButton) widget).x);
+                        FabricConfig.setInvButtonVertical(((InvButton) widget).y);
                         FabricConfig.updateConfig(new JanksonValueSerializer(false));
                     }
                     break;

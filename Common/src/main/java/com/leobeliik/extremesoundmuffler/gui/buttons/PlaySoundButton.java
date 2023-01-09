@@ -46,7 +46,7 @@ public class PlaySoundButton extends AbstractButton {
     }
 
     @Override
-    public void updateWidgetNarration(NarrationElementOutput elementOutput) {
+    public void updateNarration(NarrationElementOutput elementOutput) {
         elementOutput.add(NarratedElementType.TITLE, this.createNarrationMessage());
     }
 }

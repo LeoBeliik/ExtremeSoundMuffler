@@ -12,11 +12,9 @@ import io.github.fablabsmc.fablabs.api.fiber.v1.serialization.JanksonValueSerial
 import io.github.fablabsmc.fablabs.api.fiber.v1.tree.ConfigTree;
 import io.github.fablabsmc.fablabs.api.fiber.v1.tree.PropertyMirror;
 import net.fabricmc.loader.api.FabricLoader;
-
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.List;

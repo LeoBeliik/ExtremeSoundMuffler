@@ -7,7 +7,6 @@ import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.CreativeModeTab;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -21,11 +20,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class CreativeInventoryScreenMixin extends EffectRenderingInventoryScreen<CreativeModeInventoryScreen.ItemPickerMenu> {
 
     @Shadow
-    private static CreativeModeTab selectedTab;
+    private static int selectedTab;
     @Unique
     private InvButton esm_creativeInvButton = new InvButton(esm_getCIBX(), esm_getCIBY());
 
-    public CreativeInventoryScreenMixin(Player player, FeatureFlagSet flagSet, boolean b) {
+    public CreativeInventoryScreenMixin(Player player) {
         super(new CreativeModeInventoryScreen.ItemPickerMenu(player), player.getInventory(), CommonComponents.EMPTY);
     }
 
@@ -40,15 +39,15 @@ public abstract class CreativeInventoryScreenMixin extends EffectRenderingInvent
     //Move the button when the recipe book gui opens
     @Inject(method = "render", at = @At("HEAD"))
     private void esm_creativeInventoryScreenRender(PoseStack ps, int mouseX, int mouseY, float tick, CallbackInfo ci) {
-        esm_creativeInvButton.visible = selectedTab.getType() == CreativeModeTab.Type.INVENTORY;
+        esm_creativeInvButton.visible = selectedTab == CreativeModeTab.TAB_INVENTORY.getId();
 
         if (esm_creativeInvButton.visible) {
             if (!esm_creativeInvButton.hold) {
-                esm_creativeInvButton.setX(esm_getCIBX());
-                esm_creativeInvButton.setY(esm_getCIBY());
+                esm_creativeInvButton.x = esm_getCIBX();
+                esm_creativeInvButton.y = esm_getCIBY();
             } else {
-                esm_creativeInvButton.setX(mouseX - 6);
-                esm_creativeInvButton.setY(mouseY - 6);
+                esm_creativeInvButton.x = mouseX - 6;
+                esm_creativeInvButton.y = mouseY - 6;
             }
         }
     }
@@ -57,8 +56,8 @@ public abstract class CreativeInventoryScreenMixin extends EffectRenderingInvent
     @Inject(method = "mouseReleased", at = @At("HEAD"))
     private void esm_onMouseReleased(double mouseX, double mouseY, int button, CallbackInfoReturnable cir) {
         if (esm_creativeInvButton.visible && esm_creativeInvButton.hold && button == 1) {
-            esm_creativeInvButton.setX(esm_creativeInvButton.getX() - leftPos);
-            esm_creativeInvButton.setY(esm_creativeInvButton.getY() - topPos);
+            esm_creativeInvButton.x = esm_creativeInvButton.x - leftPos;
+            esm_creativeInvButton.y = esm_creativeInvButton.y - topPos;
             esm_creativeInvButton.hold = false;
         }
     }

@@ -50,12 +50,12 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
         isMuffling = getFGColor(getText(), "aqua");
         SoundMufflerCommon.renderGui();
         //row highlight
-        fill(stack, getX(), getY() - 1, getX() + width + 4, getY() + height - 2, bg);
+        fill(stack, x, y - 1, x + width + 4, y + height - 2, bg);
         drawGradient(stack);
         float v = isMuffling ? 202F : 213F;
         //--------------- Render buttons BG ---------------//
-        blit(stack, btnToggleSound.getX(), btnToggleSound.getY(), 43F, v, 11, 11, 256, 256); //muffle button bg
-        blit(stack, btnPlaySound.getX(), btnPlaySound.getY(), 32F, 202F, 11, 11, 256, 256); //play button bg
+        blit(stack, btnToggleSound.x, btnToggleSound.y, 43F, v, 11, 11, 256, 256); //muffle button bg
+        blit(stack, btnPlaySound.x, btnPlaySound.y, 32F, 202F, 11, 11, 256, 256); //play button bg
 
         //--------------- Render Tooltips ---------------//
         if (btnToggleSound.isMouseOver(mouseX, mouseY)) {
@@ -72,10 +72,10 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
 
     private void renderButtonTooltip(PoseStack stack, AbstractButton btn, Component text) {
         int lengthierText = font.width(text);
-        int x1 = btn.getX() + (btn.getHeight() / 2) - (font.width(text) / 2);
+        int x1 = btn.x + (btn.getHeight() / 2) - (font.width(text) / 2);
         int x2 = x1 + lengthierText + 2;
-        int y1 = btn.getY() - font.lineHeight - 2;
-        int y2 = btn.getY() - 1;
+        int y1 = btn.y - font.lineHeight - 2;
+        int y2 = btn.y - 1;
 
         fill(stack, x1 - 3, y1 - 5, x2, y2 + 1, darkBG);
         font.draw(stack, text, x1, y1 - 2, whiteText);
@@ -84,25 +84,25 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
     private void drawMessage(PoseStack stack) {
         int v = Math.max(width, font.width(getMessage().getString()));
         if (showSlider && isFocused() && isHovered) {
-            drawCenteredString(stack, font, Component.translatable("slider.btn.volume", (int) (sliderValue * 100)), getX() + (width / 2), getY() + 2, aquaText); //title
+            drawCenteredString(stack, font, Component.translatable("slider.btn.volume", (int) (sliderValue * 100)), x + (width / 2), y + 2, aquaText); //title
         } else {
             String msgTruncated;
             if (this.isHovered) {
                 msgTruncated = getMessage().getString();
-                fill(stack, getX() + this.width + 3, getY(), getX() + v + 3, getY() + font.lineHeight + 2, darkBG);
+                fill(stack, x + this.width + 3, y, x + v + 3, y + font.lineHeight + 2, darkBG);
             } else {
                 msgTruncated = font.substrByWidth(getMessage(), 205).getString();
             }
-            font.drawShadow(stack, msgTruncated, getX() + 2, getY() + 2, isMuffling ? aquaText : whiteText); //title
+            font.drawShadow(stack, msgTruncated, x + 2, y + 2, isMuffling ? aquaText : whiteText); //title
         }
     }
 
     //draws the "rainbow" gradient in the background
     private void drawGradient(PoseStack stack) {
         if (isMuffling) {
-            blit(stack, getX(), getY() - 1, 0, 234, (int) (sliderValue * (width - 6)) + 5, height + 1, 256, 256); //draw bg
+            blit(stack, x, y - 1, 0, 234, (int) (sliderValue * (width - 6)) + 5, height + 1, 256, 256); //draw bg
             if (this.isHovered) {
-                blit(stack, getX() + (int) (sliderValue * (width - 6)) + 1, getY() + 1, 32F, 224F, 5, 9, 256, 256); //Slider
+                blit(stack, x + (int) (sliderValue * (width - 6)) + 1, y + 1, 32F, 224F, 5, 9, 256, 256); //Slider
             }
         }
     }
@@ -114,14 +114,14 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
     }
 
     public void setY(int y) {
-        super.setY(y);
-        this.getBtnToggleSound().setY(y);
-        this.getBtnPlaySound().setY(y);
+        super.y = y;
+        this.getBtnToggleSound().y = y;
+        this.getBtnPlaySound().y = y;
     }
 
     private void setBtnToggleSound(ResourceLocation sound) {
-        int x = CommonConfig.get().leftButtons().get() ? getX() - 26 : getX() + width + 4;
-        btnToggleSound = Button.builder(Component.empty(), b -> {
+        int x = CommonConfig.get().leftButtons().get() ? this.x - 26 : this.x + width + 4;
+        btnToggleSound = new Button(x, y, 11, 11, Component.empty(), b -> {
             if (isMuffling) {
                 if (screen.removeSoundMuffled(sound)) {
                     setFGColor(this, "white");
@@ -132,7 +132,7 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
                     setFGColor(this, "aqua");
                 }
             }
-        }).bounds(x, getY(), 11, 11).build();
+        });
     }
 
     public Button getBtnToggleSound() {
@@ -140,7 +140,7 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
     }
 
     private void setBtnPlaySound(ResourceLocation sound) {
-        btnPlaySound = new PlaySoundButton(btnToggleSound.getX() + 13, getY(), SoundEvent.createVariableRangeEvent(sound));
+        btnPlaySound = new PlaySoundButton(btnToggleSound.x + 13, y, new SoundEvent(sound));
     }
 
     private PlaySoundButton getBtnPlaySound() {
@@ -148,7 +148,7 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
     }
 
     private void changeSliderValue(double mouseX) {
-        setSliderValue((mouseX - (getX() + 4)) / (width - 8));
+        setSliderValue((mouseX - (x + 4)) / (width - 8));
     }
 
     //from vanilla
@@ -198,7 +198,7 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
     }
 
     @Override
-    public void updateWidgetNarration(NarrationElementOutput elementOutput) {
+    public void updateNarration(NarrationElementOutput elementOutput) {
         elementOutput.add(NarratedElementType.TITLE, isMuffling ? Component.translatable("slider.btn.volume").toString() + (int) (sliderValue * 100) : this.sound.toString());
     }
 }

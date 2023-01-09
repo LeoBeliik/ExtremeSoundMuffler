@@ -26,9 +26,9 @@
     "modmenu:clientsideOnly": true
   },
   "depends": {
-    "fabricloader": ">=0.12",
-    "fabric": ">=0.44",
-    "minecraft": "1.19.3",
+    "fabricloader": ">=0.14",
+    "fabric": ">=0.72",
+    "minecraft": "1.19.2",
     "java": ">=17"
   }
 }
