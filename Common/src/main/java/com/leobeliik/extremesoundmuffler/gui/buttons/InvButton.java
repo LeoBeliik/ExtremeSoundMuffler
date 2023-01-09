@@ -8,7 +8,6 @@ import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
-
 import javax.annotation.ParametersAreNonnullByDefault;
 
 public class InvButton extends AbstractButton implements IColorsGui {
