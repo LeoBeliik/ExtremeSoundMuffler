@@ -27,6 +27,7 @@ class FabricConfig {
     private static PropertyMirror<List<String>> forbiddenSounds = PropertyMirror.create(ConfigTypes.makeList(ConfigTypes.STRING));
     private static PropertyMirror<Boolean> lawfulAllList = PropertyMirror.create(ConfigTypes.BOOLEAN);
     private static PropertyMirror<Boolean> disableInventoryButton = PropertyMirror.create(ConfigTypes.BOOLEAN);
+    private static PropertyMirror<Boolean> disableCreativeInventoryButton = PropertyMirror.create(ConfigTypes.BOOLEAN);
     private static PropertyMirror<Boolean> disableAnchors = PropertyMirror.create(ConfigTypes.BOOLEAN);
     private static PropertyMirror<Boolean> leftButtons = PropertyMirror.create(ConfigTypes.BOOLEAN);
     private static PropertyMirror<Boolean> showTip = PropertyMirror.create(ConfigTypes.BOOLEAN);
@@ -34,19 +35,24 @@ class FabricConfig {
     private static PropertyMirror<Double> defaultMuteVolume = PropertyMirror.create(ConfigTypes.DOUBLE);
     private static PropertyMirror<Integer> invButtonHorizontal = PropertyMirror.create(ConfigTypes.INTEGER);
     private static PropertyMirror<Integer> invButtonVertical = PropertyMirror.create(ConfigTypes.INTEGER);
+    private static PropertyMirror<Integer> creativeInvButtonHorizontal = PropertyMirror.create(ConfigTypes.INTEGER);
+    private static PropertyMirror<Integer> creativeInvButtonVertical = PropertyMirror.create(ConfigTypes.INTEGER);
 
     static void init() {
         CommonConfig.set(new CommonConfig.ConfigAccess(
                 forbiddenSounds::getValue,
                 lawfulAllList::getValue,
                 disableInventoryButton::getValue,
+                disableCreativeInventoryButton::getValue,
                 disableAnchors::getValue,
                 leftButtons::getValue,
                 showTip::getValue,
                 useDarkTheme::getValue,
                 defaultMuteVolume::getValue,
                 invButtonHorizontal::getValue,
-                invButtonVertical::getValue
+                invButtonVertical::getValue,
+                creativeInvButtonHorizontal::getValue,
+                creativeInvButtonVertical::getValue
         ));
         JanksonValueSerializer serializer = new JanksonValueSerializer(false);
         writeDefaultConfig(serializer);
@@ -101,6 +107,20 @@ class FabricConfig {
                     "You can change this in game by holding the RMB over the button and draging it around")
             .finishValue(invButtonVertical::mirror)
 
+            .beginValue("disableCreativeInventoryButton", ConfigTypes.BOOLEAN, false)
+            .withComment("Disable the Muffle button in the creative player inventory?")
+            .finishValue(disableCreativeInventoryButton::mirror)
+
+            .beginValue("creativeInvButtonHorizontal", ConfigTypes.INTEGER, 181)
+            .withComment("Coordinates for the Muffler button in the creative player inventory. \n" +
+                    "You can change this in game by holding the RMB over the button and draging it around")
+            .finishValue(creativeInvButtonHorizontal::mirror)
+
+            .beginValue("creativeInvButtonVertical", ConfigTypes.INTEGER, 3)
+            .withComment("Coordinates for the Muffler button in the creative player inventory. \n" +
+                    "You can change this in game by holding the RMB over the button and draging it around")
+            .finishValue(creativeInvButtonVertical::mirror)
+
             .finishBranch()
             .fork("Anchor settings")
 
@@ -142,7 +162,9 @@ class FabricConfig {
         invButtonHorizontal.setValue(x);
     }
 
-    static void setInvButtonVertical(int y) {
-        invButtonVertical.setValue(y);
-    }
+    static void setInvButtonVertical(int y) { invButtonVertical.setValue(y); }
+
+    static void setCreativeInvButtonHorizontal(int x) { creativeInvButtonHorizontal.setValue(x); }
+
+    static void setCreativeInvButtonVertical(int y) { creativeInvButtonVertical.setValue(y); }
 }

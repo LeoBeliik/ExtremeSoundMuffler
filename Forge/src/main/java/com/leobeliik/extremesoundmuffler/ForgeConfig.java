@@ -18,6 +18,7 @@ class ForgeConfig {
     private static ForgeConfigSpec.ConfigValue<List<? extends String>> forbiddenSounds;
     private static ForgeConfigSpec.BooleanValue lawfulAllList;
     private static ForgeConfigSpec.BooleanValue disableInventoryButton;
+    private static ForgeConfigSpec.BooleanValue disableCreativeInventoryButton;
     private static ForgeConfigSpec.BooleanValue disableAnchors;
     private static ForgeConfigSpec.BooleanValue leftButtons;
     private static ForgeConfigSpec.BooleanValue showTip;
@@ -25,6 +26,8 @@ class ForgeConfig {
     private static ForgeConfigSpec.DoubleValue defaultMuteVolume;
     private static ForgeConfigSpec.IntValue invButtonHorizontal;
     private static ForgeConfigSpec.IntValue invButtonVertical;
+    private static ForgeConfigSpec.IntValue creativeInvButtonHorizontal;
+    private static ForgeConfigSpec.IntValue creativeInvButtonVertical;
 
     static void init() {
         buildConfig();
@@ -33,13 +36,16 @@ class ForgeConfig {
                 forbiddenSounds,
                 lawfulAllList,
                 disableInventoryButton,
+                disableCreativeInventoryButton,
                 disableAnchors,
                 leftButtons,
                 showTip,
                 useDarkTheme,
                 defaultMuteVolume,
                 invButtonHorizontal,
-                invButtonVertical
+                invButtonVertical,
+                creativeInvButtonHorizontal,
+                creativeInvButtonVertical
         ));
     }
 
@@ -73,6 +79,14 @@ class ForgeConfig {
         invButtonVertical = CLIENT_BUILDER.comment("Coordinates for the Muffler button in the player inventory. \n" +
                         "You can change this in game by holding the RMB over the button and draging it around")
                 .defineInRange("invButtonY", 7, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        disableCreativeInventoryButton = CLIENT_BUILDER.comment("Disable the Muffle button in the creative player inventory?")
+                .define("disableCreativeInventoryButton", false);
+        creativeInvButtonHorizontal = CLIENT_BUILDER.comment("Coordinates for the Muffler button in the creative player inventory.\n " +
+                        "You can change this in game by holding the RMB over the button and draging it around")
+                .defineInRange("creativeInvButtonX", 181, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        creativeInvButtonVertical = CLIENT_BUILDER.comment("Coordinates for the Muffler button in the creative player inventory. \n" +
+                        "You can change this in game by holding the RMB over the button and draging it around")
+                .defineInRange("creativeInvButtonY", 3, Integer.MIN_VALUE, Integer.MAX_VALUE);
         CLIENT_BUILDER.pop();
 
         CLIENT_BUILDER.comment("Anchor settings").push(CATEGORY_ANCHORS);
@@ -94,5 +108,13 @@ class ForgeConfig {
 
     static void setInvButtonVertical(int y) {
         invButtonVertical.set(y);
+    }
+
+    static void setCreativeInvButtonHorizontal(int x) {
+        creativeInvButtonHorizontal.set(x);
+    }
+
+    static void setCreativeInvButtonVertical(int y) {
+        creativeInvButtonVertical.set(y);
     }
 }

@@ -11,7 +11,7 @@
     "homepage": "https://www.curseforge.com/minecraft/mc-mods/extreme-sound-muffler",
     "sources": "https://github.com/LeoBeliik/ExtremeSoundMuffler"
   },
-  "license": "CC0-1.0",
+  "license": "LGPL-3.0",
   "icon": "esm_logo.png",
   "environment": "*",
   "entrypoints": {
@@ -28,7 +28,7 @@
   "depends": {
     "fabricloader": ">=0.12",
     "fabric": ">=0.44",
-    "minecraft": "1.19.x",
+    "minecraft": "1.19.3",
     "java": ">=17"
   }
 }

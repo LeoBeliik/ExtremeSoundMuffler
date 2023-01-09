@@ -3,6 +3,8 @@ package com.leobeliik.extremesoundmuffler;
 import com.leobeliik.extremesoundmuffler.gui.buttons.InvButton;
 import com.leobeliik.extremesoundmuffler.utils.DataManager;
 import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.telemetry.events.WorldLoadEvent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -54,10 +56,16 @@ public class SoundMufflerForge {
     @SubscribeEvent //save the new coordinates for the inv button
     public void onMouseRelease(ScreenEvent.MouseButtonReleased event) {
         if (event.getButton() == 1) {
-            for (GuiEventListener widget : event.getScreen().children()) {
+            Screen screen = event.getScreen();
+            for (GuiEventListener widget : screen.children()) {
                 if (widget instanceof InvButton && ((InvButton) widget).isDrag()) {
-                    ForgeConfig.setInvButtonHorizontal(((InvButton) widget).getX());
-                    ForgeConfig.setInvButtonVertical(((InvButton) widget).getY());
+                    if (screen instanceof CreativeModeInventoryScreen) {
+                        ForgeConfig.setCreativeInvButtonHorizontal(((InvButton) widget).getX());
+                        ForgeConfig.setCreativeInvButtonVertical(((InvButton) widget).getY());
+                    } else {
+                        ForgeConfig.setInvButtonHorizontal(((InvButton) widget).getX());
+                        ForgeConfig.setInvButtonVertical(((InvButton) widget).getY());
+                    }
                     break;
                 }
             }

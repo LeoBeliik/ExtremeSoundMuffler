@@ -19,25 +19,26 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class InventoryScreenMixin extends EffectRenderingInventoryScreen<InventoryMenu> {
 
     @Unique
-    private InvButton esm_invButton;
+    private InvButton esm_invButton = new InvButton(esm_getIBX(), esm_getIBY());
 
     public InventoryScreenMixin(InventoryMenu inventoryMenu, Inventory inventory, Component component) {
         super(inventoryMenu, inventory, component);
     }
 
-    //Adds the inventory button
+    //Renders the inventory button if enabled in config
     @Inject(method = "Lnet/minecraft/client/gui/screens/inventory/InventoryScreen;init()V", at = @At("TAIL"))
     private void esm_inventoryScreenInit(CallbackInfo CI) {
-        esm_invButton = new InvButton(esm_getBX(), esm_getBY());
-        this.addRenderableWidget(esm_invButton);
+        if (!CommonConfig.get().disableInventoryButton().get()) {
+            this.addRenderableWidget(esm_invButton);
+        }
     }
 
     //Move the button when the recipe book gui opens
     @Inject(method = "render", at = @At("HEAD"))
     private void esm_inventoryScreenRender(PoseStack ps, int mouseX, int mouseY, float tick, CallbackInfo ci) {
         if (!esm_invButton.hold) {
-            esm_invButton.setX(esm_getBX());
-            esm_invButton.setY(esm_getBY());
+            esm_invButton.setX(esm_getIBX());
+            esm_invButton.setY(esm_getIBY());
         } else {
             esm_invButton.setX(mouseX - 6);
             esm_invButton.setY(mouseY - 6);
@@ -56,13 +57,13 @@ public abstract class InventoryScreenMixin extends EffectRenderingInventoryScree
 
     //equivalent of AbstractContainerScreen#getGuiLeft() in forge
     @Unique
-    private int esm_getBX() {
+    private int esm_getIBX() {
         return leftPos + CommonConfig.get().invButtonHorizontal().get();
     }
 
     //equivalent of AbstractContainerScreen#getGuiTop() in forge
     @Unique
-    private int esm_getBY() {
+    private int esm_getIBY() {
         return topPos + CommonConfig.get().invButtonVertical().get();
     }
 

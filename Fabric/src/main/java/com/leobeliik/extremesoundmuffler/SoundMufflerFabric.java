@@ -10,7 +10,7 @@ import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import static com.leobeliik.extremesoundmuffler.Constants.soundMufflerKey;
 
 public class SoundMufflerFabric implements ClientModInitializer {
@@ -32,12 +32,18 @@ public class SoundMufflerFabric implements ClientModInitializer {
 
     //save the new coordinates for the inv button
     private static void onMouseReleasePre(Screen screen, double pMouseX, double pMouseY, int pButton) {
-        if (screen instanceof InventoryScreen && pButton == 1) {
+        if (pButton == 1) {
             for (GuiEventListener widget : screen.children()) {
                 if (widget instanceof InvButton && ((InvButton) widget).isDrag()) {
-                    FabricConfig.setInvButtonHorizontal(((InvButton) widget).getX());
-                    FabricConfig.setInvButtonVertical(((InvButton) widget).getY());
-                    FabricConfig.updateConfig(new JanksonValueSerializer(false));
+                    if (screen instanceof CreativeModeInventoryScreen) {
+                        FabricConfig.setCreativeInvButtonHorizontal(((InvButton) widget).getX());
+                        FabricConfig.setCreativeInvButtonVertical(((InvButton) widget).getY());
+                        FabricConfig.updateConfig(new JanksonValueSerializer(false));
+                    } else {
+                        FabricConfig.setInvButtonHorizontal(((InvButton) widget).getX());
+                        FabricConfig.setInvButtonVertical(((InvButton) widget).getY());
+                        FabricConfig.updateConfig(new JanksonValueSerializer(false));
+                    }
                     break;
                 }
             }

@@ -14,13 +14,17 @@ public class CommonConfig {
             Supplier<List<? extends String>> forbiddenSounds,
             Supplier<Boolean> lawfulAllList,
             Supplier<Boolean> disableInventoryButton,
+            Supplier<Boolean> disableCreativeInventoryButton,
             Supplier<Boolean> disableAnchors,
             Supplier<Boolean> leftButtons,
             Supplier<Boolean> showTip,
             Supplier<Boolean> useDarkTheme,
             Supplier<Double> defaultMuteVolume,
             Supplier<Integer> invButtonHorizontal,
-            Supplier<Integer> invButtonVertical) {
+            Supplier<Integer> invButtonVertical,
+            Supplier<Integer> creativeInvButtonHorizontal,
+            Supplier<Integer> creativeInvButtonVertical
+            ) {
     }
 
     public static ConfigAccess get() {

@@ -6,6 +6,7 @@
   "client": [
     "ClientPlayerMixin",
     "InventoryScreenMixin",
+    "CreativeInventoryScreenMixin",
     "SoundMixin"
   ],
   "injectors": {
