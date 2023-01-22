@@ -25,7 +25,9 @@
 <p align="center"> <b> 🔧 Modrinth:   </b> </p>
 <p align="center">
   <a href=https://modrinth.com/mod/extreme_sound_muffler alt="Downloads">
-  <img src="https://img.shields.io/modrinth/dt/extreme_sound_muffler?color=00AF5C&label=modrinth&style=flat&logo=modrinth" /> </a>
+  <img src="https://img.shields.io/modrinth/dt/extreme_sound_muffler?color=00AF5C&label=Downloads&style=flat&logo=modrinth" /> </a>
+  <a href=https://modrinth.com/mod/extreme_sound_muffler alt="Versions">
+  <img src="https://img.shields.io/modrinth/game-versions/extreme_sound_muffler?color=00AF5C&label=Version&style=flat&logo=modrinth" /> </a>
 </p>
 
 <p align="center"> <b> Github: </b> </p>
