@@ -21,13 +21,13 @@ public abstract class SoundMixin implements ISoundLists {
     @Redirect(method = "Lnet/minecraft/client/sounds/SoundEngine;play(Lnet/minecraft/client/resources/sounds/SoundInstance;)V",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/resources/sounds/SoundInstance;getVolume()F"))
     private float esm_calculateSoundVolume(SoundInstance sound) {
-        //TickableSounds go to esm_calculateTickableSoundVolume
+        //Non TickableSounds go to esm_calculateTickableSoundVolume
         return sound instanceof TickableSoundInstance ? sound.getVolume() : esm_setVolume(sound);
     }
 
     @Inject(method = "calculateVolume", at = @At("RETURN"), cancellable = true)
     private void esm_calculateTickableSoundVolume(SoundInstance sound, CallbackInfoReturnable<Float> cir) {
-        //Non TickableSounds go to esm_calculateSoundVolume
+        //TickableSounds go to esm_calculateSoundVolume
         if (sound instanceof TickableSoundInstance) {
             cir.setReturnValue(esm_setVolume(sound));
         }

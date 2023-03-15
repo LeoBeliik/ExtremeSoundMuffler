@@ -3,7 +3,7 @@ package com.leobeliik.extremesoundmuffler.gui.buttons;
 import com.leobeliik.extremesoundmuffler.SoundMufflerCommon;
 import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -26,12 +26,12 @@ public class InvButton extends AbstractButton implements IColorsGui {
 
     @ParametersAreNonnullByDefault
     @Override
-    public void renderBg(PoseStack matrix, Minecraft minecraft, int mouseX, int mouseY) {
+    public void renderScrollingString(PoseStack matrix, Font font, int mouseX, int mouseY) {
         if (this.visible) {
             SoundMufflerCommon.renderGui();
             blit(matrix, getX(), getY(), 43f, 202f, 11, 11, 256, 256); //button texure
             if (isMouseOver(mouseX, mouseY) && !hold) {
-                drawCenteredString(matrix, minecraft.font, Component.translatable("inventory.btn"), getX() + 5, getY() + this.height + 1, whiteText);
+                drawCenteredString(matrix, font, Component.translatable("inventory.btn"), getX() + 5, getY() + this.height + 1, whiteText);
             }
             drag = isMouseOver(mouseX, mouseY);
         }

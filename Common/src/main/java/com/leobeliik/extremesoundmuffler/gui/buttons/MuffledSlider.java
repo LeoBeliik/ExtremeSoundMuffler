@@ -46,7 +46,7 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
 
 
     @Override
-    public void renderButton(@NotNull PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(@NotNull PoseStack stack, int mouseX, int mouseY, float partialTicks) {
         isMuffling = getFGColor(getText(), "aqua");
         SoundMufflerCommon.renderGui();
         //row highlight

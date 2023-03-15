@@ -35,7 +35,7 @@
   "main_screen.side_screen.x": "X: %s",
   "main_screen.side_screen.y": "Y: %s",
   "main_screen.side_screen.z": "Z: %s",
-  "main_screen.side_screen.radius": "Radius: %s",
+  "main_screen.side_screen.radius": "Radius:",
   "main_screen.side_screen.dimension": "Dimension: %s",
   "main_screen.side_screen.title": "Title: ",
 

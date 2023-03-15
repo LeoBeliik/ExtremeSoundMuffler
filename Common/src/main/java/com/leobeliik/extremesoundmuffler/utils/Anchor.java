@@ -2,11 +2,11 @@ package com.leobeliik.extremesoundmuffler.utils;
 
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.sounds.SoundInstance;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import java.util.Objects;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -126,7 +126,7 @@ public class Anchor {
     }
 
     public static Anchor getAnchor(SoundInstance sound) {
-        BlockPos soundPos = new BlockPos(sound.getX(), sound.getY(), sound.getZ());
+        BlockPos soundPos = new BlockPos((int) sound.getX(), (int) sound.getY(), (int) sound.getZ());
         for (Anchor anchor : ISoundLists.anchorList) {
             ClientLevel world = Minecraft.getInstance().level;
             if (anchor.getAnchorPos() != null

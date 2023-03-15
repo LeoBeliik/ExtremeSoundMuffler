@@ -15,12 +15,14 @@ public class SoundMufflerCommon {
         RenderSystem.setShaderTexture(0, (new ResourceLocation(Constants.MOD_ID, texture)));
     }
 
-    public static void openMainScreen() { MufflerScreen.open(); }
+    public static void openMainScreen() {
+        MufflerScreen.open();
+    }
 
     //create empty keybind for the mod
     static KeyMapping mufflerKey() {
         return new KeyMapping(
-                new TranslatableContents("key.open_muffler_gui").getKey(),
+                new TranslatableContents("key.open_muffler_gui", "Open Muffler GUI", TranslatableContents.NO_ARGS).getKey(),
                 InputConstants.Type.KEYSYM,
                 InputConstants.UNKNOWN.getValue(),
                 "key.categories.misc");

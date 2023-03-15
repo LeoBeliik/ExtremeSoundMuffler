@@ -11,11 +11,14 @@ import com.leobeliik.extremesoundmuffler.utils.Tips;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.*;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.chat.*;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
@@ -64,7 +67,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     public void render(@NotNull PoseStack stack, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(stack);
         renderGui();
-        this.blit(stack, getX(), getY(), 0, 0, xSize, ySize); //Main screen bounds
+        blit(stack, getX(), getY(), 0, 0, xSize, ySize); //Main screen bounds
         renderSideScreen(stack); //render side screen buttons, need to be rendered before all the other things
         super.render(stack, mouseX, mouseY, partialTicks);
         //--------------- My Renders ---------------//
@@ -88,9 +91,9 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
         //Search bar, Edit title bar & Edit Anchor Radius bar looses focus when pressed "Enter" or "Intro"
         if (keyCode == 257 || keyCode == 335) {
-            searchBar.setFocus(false);
-            editAnchorTitleBar.setFocus(false);
-            editRadBar.setFocus(false);
+            searchBar.setFocused(false);
+            editAnchorTitleBar.setFocused(false);
+            editRadBar.setFocused(false);
             return true;
         }
         //Close screen when press "E" or the mod hotkey outside the search bar or edit title bar
@@ -152,9 +155,9 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
                 return true;
             }
         } else {
-            searchBar.setFocus(searchBar.isMouseOver(mouseX, mouseY));
-            editAnchorTitleBar.setFocus(editAnchorTitleBar.isMouseOver(mouseX, mouseY));
-            editRadBar.setFocus(editRadBar.isMouseOver(mouseX, mouseY));
+            searchBar.setFocused(searchBar.isMouseOver(mouseX, mouseY));
+            editAnchorTitleBar.setFocused(editAnchorTitleBar.isMouseOver(mouseX, mouseY));
+            editRadBar.setFocused(editRadBar.isMouseOver(mouseX, mouseY));
         }
 
         return super.mouseClicked(mouseX, mouseY, button);
@@ -397,7 +400,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         }
 
         //--------------- Previous sounds in list button ---------------//
-        message =  Component.translatable("main_screen.btn.previous_sounds");
+        message = Component.translatable("main_screen.btn.previous_sounds");
         if (btnPrevSounds.isMouseOver(mouseX, mouseY)) {
             renderButtonTooltip(stack, message, btnPrevSounds);
         }
@@ -507,7 +510,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
             fill(stack, getX() - 2, getY() + 208, getX() + 257, getY() + h + 2, darkBG); //outer dark bg
             fill(stack, getX() - 1, getY() + 209, getX() + 256, getY() + h + 1, goldBG); //middle gold bg
             fill(stack, getX(), getY() + 210, getX() + 255, getY() + h, darkBG); //inner dark bg
-            font.drawWordWrap(Component.translatable("main_screen.tip", tip), getX() + 5, getY() + 213, 245, whiteText);
+            font.drawWordWrap(stack, Component.translatable("main_screen.tip", tip), getX() + 5, getY() + 213, 245, whiteText);
             index++;
         }
     }
