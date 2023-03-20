@@ -1,1 +1,1 @@
-Port to 1.19.4
+Fixed badly casting buttons making ESM crash other mods.
