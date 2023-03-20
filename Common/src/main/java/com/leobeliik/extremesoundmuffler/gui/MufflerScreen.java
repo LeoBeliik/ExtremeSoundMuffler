@@ -328,9 +328,8 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
     private void updateButtons() {
         for (Iterator<? extends GuiEventListener> iterator = children().iterator(); iterator.hasNext(); ) {
-            AbstractWidget button = (AbstractWidget) iterator.next();
-            if (button instanceof MuffledSlider) {
-                ((MuffledSlider) button).isVisible(false);
+            if (iterator.next() instanceof MuffledSlider button) {
+                button.isVisible(false);
                 iterator.remove();
             }
         }
@@ -413,19 +412,20 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
         //render message for when Anchor pos is not setted
         for (GuiEventListener widget : children()) {
-            AbstractWidget btn = (AbstractWidget) widget;
-            if (btn instanceof MuffledSlider) {
-                if (anchor != null && anchor.getAnchorPos() == null && ((MuffledSlider) widget).getBtnToggleSound().isMouseOver(mouseX, mouseY)) {
-                    renderButtonTooltip(stack, Component.translatable("main_screen.btn.anchors.set_message"), ((MuffledSlider) widget).getBtnToggleSound());
-                }
-            } else if (btn.getMessage().getString().matches("[0-9]")) {
-                //Set color of the number in the button
-                if (!anchorList.isEmpty()) {
-                    String color = anchorList.get(Integer.parseInt(btn.getMessage().getString())).getAnchorPos() != null ? "green" : "white";
-                    setFGColor(btn, color);
-                    if (anchor != null && btn.getMessage().getString().equals(String.valueOf(anchor.getAnchorId()))) {
-                        renderGui();
-                        blit(stack, btn.getX() - 5, btn.getY() - 2, 71F, 202F, 27, 22, xSize, xSize); //fancy selected Anchor indicator
+            if (widget instanceof AbstractWidget btn) {
+                if (btn instanceof MuffledSlider) {
+                    if (anchor != null && anchor.getAnchorPos() == null && ((MuffledSlider) widget).getBtnToggleSound().isMouseOver(mouseX, mouseY)) {
+                        renderButtonTooltip(stack, Component.translatable("main_screen.btn.anchors.set_message"), ((MuffledSlider) widget).getBtnToggleSound());
+                    }
+                } else if (btn.getMessage().getString().matches("[0-9]")) {
+                    //Set color of the number in the button
+                    if (!anchorList.isEmpty()) {
+                        String color = anchorList.get(Integer.parseInt(btn.getMessage().getString())).getAnchorPos() != null ? "green" : "white";
+                        setFGColor(btn, color);
+                        if (anchor != null && btn.getMessage().getString().equals(String.valueOf(anchor.getAnchorId()))) {
+                            renderGui();
+                            blit(stack, btn.getX() - 5, btn.getY() - 2, 71F, 202F, 27, 22, xSize, xSize); //fancy selected Anchor indicator
+                        }
                     }
                 }
             }
