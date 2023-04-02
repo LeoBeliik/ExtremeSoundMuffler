@@ -11,23 +11,18 @@
 <p align="center">
   <a href="https://www.curseforge.com/minecraft/mc-mods/extreme-sound-muffler" alt="Downloads">
         <img src="http://cf.way2muchnoise.eu/363363.svg" /> </a>
-  <a href="https://www.curseforge.com/minecraft/mc-mods/extreme-sound-muffler" alt="Versions">
-        <img src="http://cf.way2muchnoise.eu/versions/363363.svg" /> </a>
 </p>
 <p align="center"> <b> Fabric: </b> </p>
 <p align="center">
   <a href="https://www.curseforge.com/minecraft/mc-mods/extreme-sound-muffler-fabric-official" alt="Downloads">
         <img src="http://cf.way2muchnoise.eu/566140.svg" /> </a>
-  <a href="https://www.curseforge.com/minecraft/mc-mods/extreme-sound-muffler-fabric-official" alt="Versions">
-        <img src="http://cf.way2muchnoise.eu/versions/566140.svg" /> </a>
 </p>
+
 
 <p align="center"> <b> 🔧 Modrinth:   </b> </p>
 <p align="center">
   <a href=https://modrinth.com/mod/extreme_sound_muffler alt="Downloads">
   <img src="https://img.shields.io/modrinth/dt/extreme_sound_muffler?color=00AF5C&label=Downloads&style=flat&logo=modrinth" /> </a>
-  <a href=https://modrinth.com/mod/extreme_sound_muffler alt="Versions">
-  <img src="https://img.shields.io/modrinth/game-versions/extreme_sound_muffler?color=00AF5C&label=Version&style=flat&logo=modrinth" /> </a>
 </p>
 
 <p align="center"> <b> Github: </b> </p>
