@@ -1,1 +1,1 @@
-Fixed badly casting buttons making ESM crash other mods.
+Fixed sound engine crash.
