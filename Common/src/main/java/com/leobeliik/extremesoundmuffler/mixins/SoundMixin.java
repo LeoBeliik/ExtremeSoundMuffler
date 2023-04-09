@@ -6,57 +6,73 @@ import com.leobeliik.extremesoundmuffler.gui.buttons.PlaySoundButton;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import com.leobeliik.extremesoundmuffler.utils.Anchor;
 import net.minecraft.client.resources.sounds.SoundInstance;
-import net.minecraft.client.resources.sounds.TickableSoundInstance;
 import net.minecraft.client.sounds.SoundEngine;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(SoundEngine.class)
 public abstract class SoundMixin implements ISoundLists {
 
-    @Redirect(method = "Lnet/minecraft/client/sounds/SoundEngine;play(Lnet/minecraft/client/resources/sounds/SoundInstance;)V",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/resources/sounds/SoundInstance;getVolume()F"))
-    private float esm_calculateSoundVolume(SoundInstance sound) {
-        //TickableSounds go to esm_calculateTickableSoundVolume
-        return sound instanceof TickableSoundInstance ? sound.getVolume() : esm_setVolume(sound);
-    }
-
-    @Inject(method = "calculateVolume", at = @At("RETURN"), cancellable = true)
-    private void esm_calculateTickableSoundVolume(SoundInstance sound, CallbackInfoReturnable<Float> cir) {
-        //Non TickableSounds go to esm_calculateSoundVolume
-        if (sound instanceof TickableSoundInstance) {
-            cir.setReturnValue(esm_setVolume(sound));
-        }
-    }
+    /* CREDITS to botania:
+     https://github.com/VazkiiMods/Botania/blob/3c14a69486d58ab6da860998ddd4ce7558481286/Xplat/src/main/java/vazkii/botania/mixin/client/SoundEngineMixin.java
+    */
 
     @Unique
-    private float esm_setVolume(SoundInstance sound) {
+    @Nullable
+    private SoundInstance esmSound;
+
+    @Inject(at = @At("HEAD"), method = "calculateVolume(Lnet/minecraft/client/resources/sounds/SoundInstance;)F")
+    private void esm_captureSoundVolume(SoundInstance sound, CallbackInfoReturnable<Float> cir) {
+        esmSound = sound;
+    }
+
+    //Capture non tickable sounds
+    @Inject(at = @At("HEAD"), method = "play")
+    private void esm_captureTickableSoundVolume(SoundInstance sound, CallbackInfo ci) {
+        esmSound = sound;
+    }
+
+    @ModifyArg(index = 0, at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;clamp(FFF)F"),
+            method = "calculateVolume(FLnet/minecraft/sounds/SoundSource;)F")
+    private float esm_setVolume(float volume) {
         //don't care about forbidden sounds or from the psb
-        if (!esm_isForbidden(sound) && !PlaySoundButton.isFromPSB()) {
+        if (esmSound != null && !esm_isForbidden(esmSound) && !PlaySoundButton.isFromPSB()) {
 
             //add sound to recent sounds list
-            recentSoundsList.add(sound.getLocation());
+            recentSoundsList.add(esmSound.getLocation());
 
             if (MufflerScreen.isMuffling()) {
-                if (muffledSounds.containsKey(sound.getLocation())) {
-                    return (float) (sound.getVolume() * muffledSounds.get(sound.getLocation()));
+                if (muffledSounds.containsKey(esmSound.getLocation())) {
+                    return (float) (esmSound.getVolume() * muffledSounds.get(esmSound.getLocation()));
                 }
 
                 //don't continue if the anchors are disabled
                 if (CommonConfig.get() == null || !CommonConfig.get().disableAnchors().get()) {
-                    Anchor anchor = Anchor.getAnchor(sound);
+                    Anchor anchor = Anchor.getAnchor(esmSound);
                     if (anchor != null) {
-                        return (float) (sound.getVolume() * anchor.getMuffledSounds().get(sound.getLocation()));
+                        return (float) (esmSound.getVolume() * anchor.getMuffledSounds().get(esmSound.getLocation()));
                     }
                 }
             }
         }
 
-        return sound.getVolume();
+        return volume;
+    }
+
+    @Inject(at = @At("RETURN"), method = "calculateVolume(Lnet/minecraft/client/resources/sounds/SoundInstance;)F")
+    private void esm_clearTickableSound(SoundInstance sound, CallbackInfoReturnable<Float> cir) {
+        esmSound = null;
+    }
+
+    @Inject(at = @At("RETURN"), method = "play")
+    private void esm_clearSound(SoundInstance sound, CallbackInfo ci) {
+        esmSound = null;
     }
 
     @Unique
