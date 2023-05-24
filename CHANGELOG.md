@@ -1,1 +1,1 @@
-Fixed sound engine crash.
+Added fr_fr (Calvineries)
