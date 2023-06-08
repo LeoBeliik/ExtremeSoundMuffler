@@ -2,7 +2,7 @@ package com.leobeliik.extremesoundmuffler.mixins;
 
 import com.leobeliik.extremesoundmuffler.CommonConfig;
 import com.leobeliik.extremesoundmuffler.gui.buttons.InvButton;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
@@ -35,17 +35,16 @@ public abstract class InventoryScreenMixin extends EffectRenderingInventoryScree
 
     //Move the button when the recipe book gui opens
     @Inject(method = "render", at = @At("HEAD"))
-    private void esm_inventoryScreenRender(PoseStack ps, int mouseX, int mouseY, float tick, CallbackInfo ci) {
-        if (!esm_invButton.hold) {
-            esm_invButton.setX(esm_getIBX());
-            esm_invButton.setY(esm_getIBY());
-        } else {
+    private void esm_inventoryScreenRender(GuiGraphics render, int mouseX, int mouseY, float tick, CallbackInfo ci) {
+        if (esm_invButton.hold) {
             esm_invButton.setX(mouseX - 6);
             esm_invButton.setY(mouseY - 6);
+        } else {
+            esm_invButton.setX(esm_getIBX());
+            esm_invButton.setY(esm_getIBY());
         }
     }
 
-    //Fabric can't do shit by itself
     @Inject(method = "mouseReleased", at = @At("HEAD"))
     private void esm_onMouseReleased(double mouseX, double mouseY, int button, CallbackInfoReturnable cir) {
         if (esm_invButton.hold && button == 1) {

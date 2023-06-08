@@ -2,7 +2,7 @@ package com.leobeliik.extremesoundmuffler.mixins;
 
 import com.leobeliik.extremesoundmuffler.CommonConfig;
 import com.leobeliik.extremesoundmuffler.gui.buttons.InvButton;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
 import net.minecraft.network.chat.CommonComponents;
@@ -39,7 +39,7 @@ public abstract class CreativeInventoryScreenMixin extends EffectRenderingInvent
 
     //Move the button when the recipe book gui opens
     @Inject(method = "render", at = @At("HEAD"))
-    private void esm_creativeInventoryScreenRender(PoseStack ps, int mouseX, int mouseY, float tick, CallbackInfo ci) {
+    private void esm_creativeInventoryScreenRender(GuiGraphics render, int mouseX, int mouseY, float tick, CallbackInfo ci) {
         esm_creativeInvButton.visible = selectedTab.getType() == CreativeModeTab.Type.INVENTORY;
 
         if (esm_creativeInvButton.visible) {

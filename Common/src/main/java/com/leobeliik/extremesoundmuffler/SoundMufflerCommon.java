@@ -11,8 +11,12 @@ public class SoundMufflerCommon {
 
     //whether should use the dark or light textures
     public static void renderGui() {
+        RenderSystem.setShaderTexture(0, getTextureRL());
+    }
+
+    public static ResourceLocation getTextureRL() {
         String texture = CommonConfig.get().useDarkTheme().get() ? "textures/gui/sm_gui_dark.png" : "textures/gui/sm_gui.png";
-        RenderSystem.setShaderTexture(0, (new ResourceLocation(Constants.MOD_ID, texture)));
+        return new ResourceLocation(Constants.MOD_ID, texture);
     }
 
     public static void openMainScreen() {
@@ -27,4 +31,6 @@ public class SoundMufflerCommon {
                 InputConstants.UNKNOWN.getValue(),
                 "key.categories.misc");
     }
+
+
 }

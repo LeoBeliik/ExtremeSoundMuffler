@@ -2,13 +2,15 @@ package com.leobeliik.extremesoundmuffler.gui.buttons;
 
 import com.leobeliik.extremesoundmuffler.SoundMufflerCommon;
 import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import javax.annotation.ParametersAreNonnullByDefault;
+
+import static com.leobeliik.extremesoundmuffler.SoundMufflerCommon.getTextureRL;
 
 public class InvButton extends AbstractButton implements IColorsGui {
 
@@ -26,12 +28,12 @@ public class InvButton extends AbstractButton implements IColorsGui {
 
     @ParametersAreNonnullByDefault
     @Override
-    public void renderScrollingString(PoseStack matrix, Font font, int mouseX, int mouseY) {
+    public void renderScrollingString(GuiGraphics render, Font font, int mouseX, int mouseY) {
         if (this.visible) {
             SoundMufflerCommon.renderGui();
-            blit(matrix, getX(), getY(), 43f, 202f, 11, 11, 256, 256); //button texure
+            render.blit(getTextureRL(), getX(), getY(), 43f, 202f, 11, 11, 256, 256); //button texure
             if (isMouseOver(mouseX, mouseY) && !hold) {
-                drawCenteredString(matrix, font, Component.translatable("inventory.btn"), getX() + 5, getY() + this.height + 1, whiteText);
+                render.drawCenteredString(font, Component.translatable("inventory.btn"), getX() + 5, getY() + this.height + 1, whiteText);
             }
             drag = isMouseOver(mouseX, mouseY);
         }

@@ -5,9 +5,9 @@ import com.leobeliik.extremesoundmuffler.SoundMufflerCommon;
 import com.leobeliik.extremesoundmuffler.gui.MufflerScreen;
 import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
@@ -19,6 +19,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
+
+import static com.leobeliik.extremesoundmuffler.SoundMufflerCommon.getTextureRL;
 
 @SuppressWarnings("EmptyMethod")
 public class MuffledSlider extends AbstractWidget implements ISoundLists, IColorsGui {
@@ -46,16 +48,16 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
 
 
     @Override
-    public void renderWidget(@NotNull PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(@NotNull GuiGraphics stack, int mouseX, int mouseY, float partialTicks) {
         isMuffling = getFGColor(getText(), "aqua");
         SoundMufflerCommon.renderGui();
         //row highlight
-        fill(stack, getX(), getY() - 1, getX() + width + 4, getY() + height - 2, bg);
+        stack.fill(getX(), getY() - 1, getX() + width + 4, getY() + height - 2, bg);
         drawGradient(stack);
         float v = isMuffling ? 202F : 213F;
         //--------------- Render buttons BG ---------------//
-        blit(stack, btnToggleSound.getX(), btnToggleSound.getY(), 43F, v, 11, 11, 256, 256); //muffle button bg
-        blit(stack, btnPlaySound.getX(), btnPlaySound.getY(), 32F, 202F, 11, 11, 256, 256); //play button bg
+        stack.blit(getTextureRL(), btnToggleSound.getX(), btnToggleSound.getY(), 43F, v, 11, 11, 256, 256); //muffle button bg
+        stack.blit(getTextureRL(), btnPlaySound.getX(), btnPlaySound.getY(), 32F, 202F, 11, 11, 256, 256); //play button bg
 
         //--------------- Render Tooltips ---------------//
         if (btnToggleSound.isMouseOver(mouseX, mouseY)) {
@@ -70,39 +72,39 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
         this.drawMessage(stack);
     }
 
-    private void renderButtonTooltip(PoseStack stack, AbstractButton btn, Component text) {
+    private void renderButtonTooltip(GuiGraphics stack, AbstractButton btn, Component text) {
         int lengthierText = font.width(text);
         int x1 = btn.getX() + (btn.getHeight() / 2) - (font.width(text) / 2);
         int x2 = x1 + lengthierText + 2;
         int y1 = btn.getY() - font.lineHeight - 2;
         int y2 = btn.getY() - 1;
 
-        fill(stack, x1 - 3, y1 - 5, x2, y2 + 1, darkBG);
-        font.draw(stack, text, x1, y1 - 2, whiteText);
+        stack.fill(x1 - 3, y1 - 5, x2, y2 + 1, darkBG);
+        stack.drawString(font, text, x1, y1 - 2, whiteText);
     }
 
-    private void drawMessage(PoseStack stack) {
+    private void drawMessage(GuiGraphics stack) {
         int v = Math.max(width, font.width(getMessage().getString()));
         if (showSlider && isFocused() && isHovered) {
-            drawCenteredString(stack, font, Component.translatable("slider.btn.volume", (int) (sliderValue * 100)), getX() + (width / 2), getY() + 2, aquaText); //title
+            stack.drawCenteredString(font, Component.translatable("slider.btn.volume", (int) (sliderValue * 100)), getX() + (width / 2), getY() + 2, aquaText); //title
         } else {
             String msgTruncated;
             if (this.isHovered) {
                 msgTruncated = getMessage().getString();
-                fill(stack, getX() + this.width + 3, getY(), getX() + v + 3, getY() + font.lineHeight + 2, darkBG);
+                stack.fill(getX() + this.width + 3, getY(), getX() + v + 3, getY() + font.lineHeight + 2, darkBG);
             } else {
                 msgTruncated = font.substrByWidth(getMessage(), 205).getString();
             }
-            font.drawShadow(stack, msgTruncated, getX() + 2, getY() + 2, isMuffling ? aquaText : whiteText); //title
+            stack.drawString(font, msgTruncated, getX() + 2, getY() + 2, isMuffling ? aquaText : whiteText, true); //title
         }
     }
 
     //draws the "rainbow" gradient in the background
-    private void drawGradient(PoseStack stack) {
+    private void drawGradient(GuiGraphics stack) {
         if (isMuffling) {
-            blit(stack, getX(), getY() - 1, 0, 234, (int) (sliderValue * (width - 6)) + 5, height + 1, 256, 256); //draw bg
+            stack.blit(getTextureRL(), getX(), getY() - 1, 0, 234, (int) (sliderValue * (width - 6)) + 5, height + 1, 256, 256); //draw bg
             if (this.isHovered) {
-                blit(stack, getX() + (int) (sliderValue * (width - 6)) + 1, getY() + 1, 32F, 224F, 5, 9, 256, 256); //Slider
+                stack.blit(getTextureRL(), getX() + (int) (sliderValue * (width - 6)) + 1, getY() + 1, 32F, 224F, 5, 9, 256, 256); //Slider
             }
         }
     }

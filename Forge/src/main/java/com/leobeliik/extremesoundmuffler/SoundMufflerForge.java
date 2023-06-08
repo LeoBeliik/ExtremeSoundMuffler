@@ -53,13 +53,13 @@ public class SoundMufflerForge {
         if (event.getButton() == 1) {
             Screen screen = event.getScreen();
             for (GuiEventListener widget : screen.children()) {
-                if (widget instanceof InvButton && ((InvButton) widget).isDrag()) {
+                if (widget instanceof InvButton btn && !btn.hold) {
                     if (screen instanceof CreativeModeInventoryScreen) {
-                        ForgeConfig.setCreativeInvButtonHorizontal(((InvButton) widget).getX());
-                        ForgeConfig.setCreativeInvButtonVertical(((InvButton) widget).getY());
+                        ForgeConfig.setCreativeInvButtonHorizontal(btn.getX());
+                        ForgeConfig.setCreativeInvButtonVertical(btn.getY());
                     } else {
-                        ForgeConfig.setInvButtonHorizontal(((InvButton) widget).getX());
-                        ForgeConfig.setInvButtonVertical(((InvButton) widget).getY());
+                        ForgeConfig.setInvButtonHorizontal(btn.getX());
+                        ForgeConfig.setInvButtonVertical(btn.getY());
                     }
                     break;
                 }

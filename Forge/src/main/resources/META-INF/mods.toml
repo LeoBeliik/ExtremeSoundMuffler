@@ -15,15 +15,15 @@ This mod allows you to muffle (almost) any sound selectively,
 allowing you to choose the volume of the sound you want between mute and 90%.
 This mod also works Clientside only.
 '''
-[[dependencies.extremeSoundMuffler]]
+[[dependencies.extremesoundmuffler]]
     modId="forge"
     mandatory=true
-    versionRange="[45,)"
+    versionRange="[46,)"
     ordering="NONE"
     side="BOTH"
-[[dependencies.extremeSoundMuffler]]
+[[dependencies.extremesoundmuffler]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.19.4)"
+    versionRange="[1.20,)"
     ordering="NONE"
     side="BOTH"

@@ -8,9 +8,9 @@ import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import com.leobeliik.extremesoundmuffler.utils.Anchor;
 import com.leobeliik.extremesoundmuffler.utils.DataManager;
 import com.leobeliik.extremesoundmuffler.utils.Tips;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -22,8 +22,11 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
+
 import java.util.Iterator;
 import java.util.function.Predicate;
+
+import static com.leobeliik.extremesoundmuffler.SoundMufflerCommon.getTextureRL;
 import static com.leobeliik.extremesoundmuffler.SoundMufflerCommon.renderGui;
 
 public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
@@ -64,15 +67,15 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     }
 
     @Override
-    public void render(@NotNull PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+    public void render(@NotNull GuiGraphics stack, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(stack);
         renderGui();
-        blit(stack, getX(), getY(), 0, 0, xSize, ySize); //Main screen bounds
+        stack.blit(getTextureRL(), getX(), getY(), 0, 0, xSize, ySize); //Main screen bounds
         renderSideScreen(stack); //render side screen buttons, need to be rendered before all the other things
         super.render(stack, mouseX, mouseY, partialTicks);
         //--------------- My Renders ---------------//
         //Screen title
-        drawCenteredString(stack, font, screenTitle, getX() + 128, getY() + 8, whiteText);
+        stack.drawCenteredString(font, screenTitle, getX() + 128, getY() + 8, whiteText);
         //render the tips on the bottom of the screen
         renderTips(stack);
         //render buttons tips and other textures
@@ -341,14 +344,14 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
     //----------------------------------- Rendering -----------------------------------//
 
-    private void renderButtons(PoseStack stack, int mouseX, int mouseY) {
+    private void renderButtons(GuiGraphics stack, int mouseX, int mouseY) {
         Component message; //Tooltip message
 
         //--------------- Toggle Muffle sounds button ---------------//
         renderGui();
         //draws a "/" over the muffle button texture if muffling
         if (isMuffling) {
-            blit(stack, btnTMS.getX() + 1, btnTMS.getY() + 1, 54F, 202F, 15, 15, xSize, xSize);
+            stack.blit(getTextureRL(), btnTMS.getX() + 1, btnTMS.getY(), 54F, 202F, 15, 15, xSize, xSize);
         }
 
         message = isMuffling ? Component.translatable("main_screen.btn.tms.stop") : Component.translatable("main_screen.btn.tms.start");
@@ -362,7 +365,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         //show texture for the deletion of the recent sounds list
         if (hasShiftDown()) {
             renderGui();
-            blit(stack, btnDelete.getX() + 2, btnDelete.getY() + 1, 54F, 217F, 13, 13, xSize, xSize);
+            stack.blit(getTextureRL(), btnDelete.getX() + 2, btnDelete.getY() + 1, 54F, 217F, 13, 13, xSize, xSize);
             message = Component.translatable("main_screen.btn.delete.list");
         }
         //draw tooltip
@@ -374,7 +377,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         //render searchbar hint
         Component searchHint = Component.translatable("gui.recipebook.search_hint").withStyle(ChatFormatting.ITALIC).withStyle(ChatFormatting.GRAY);
         if (!this.searchBar.isFocused() && this.searchBar.getValue().isEmpty()) {
-            drawString(stack, font, searchHint, searchBar.getX() + 1, searchBar.getY() + 1, -1);
+            stack.drawString(font, searchHint, searchBar.getX() + 1, searchBar.getY() + 1, -1);
         }
 
         //--------------- Change sounds list button ---------------//
@@ -382,11 +385,11 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         boolean notMuffling = this.anchor == null ? muffledSounds.isEmpty() : this.anchor.getMuffledSounds().isEmpty();
         if (notMuffling && btnCSL.getMessage().equals(Component.translatable("main_screen.btn.csl.muffled"))) {
             MutableComponent text = Component.translatable("main_screen.empty").copy().withStyle(ChatFormatting.ITALIC).withStyle(ChatFormatting.GRAY);
-            drawCenteredString(stack, font, text, getX() + 128, getY() + 101, whiteText);
+            stack.drawCenteredString(font, text, getX() + 128, getY() + 101, whiteText);
         }
         //render btnCSL text because I don't like how the default text looks like
         float centerX = btnCSL.getX() + btnCSL.getWidth() / 2F - font.width(btnCSL.getMessage().getString()) / 2F;
-        font.draw(stack, btnCSL.getMessage().getString(), centerX, btnCSL.getY() + 3, 0);
+        stack.drawString(font, btnCSL.getMessage().getString(), (int) centerX, btnCSL.getY() + 3, 0, false);
         message = Component.translatable("main_screen.btn.csl.tooltip", btnCSL.getMessage().getString());
         if (btnCSL.isMouseOver(mouseX, mouseY)) {
             renderButtonTooltip(stack, message, btnCSL);
@@ -410,7 +413,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
                 && mouseY > btnAnchor.getY() && mouseY < btnAnchor.getY() + btnAnchor.getHeight()
                 && CommonConfig.get().disableAnchors().get()) {
             //render tooltip for disabled anchors
-            renderTooltip(stack, Component.translatable("main_screen.btn.anchors.disabled"), getX() + 60, getY() + 40);
+            stack.renderTooltip(font, Component.translatable("main_screen.btn.anchors.disabled"), getX() + 60, getY() + 40);
         }
 
         //render message for when Anchor pos is not setted
@@ -427,7 +430,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
                         setFGColor(btn, color);
                         if (anchor != null && btn.getMessage().getString().equals(String.valueOf(anchor.getAnchorId()))) {
                             renderGui();
-                            blit(stack, btn.getX() - 5, btn.getY() - 2, 71F, 202F, 27, 22, xSize, xSize); //fancy selected Anchor indicator
+                            stack.blit(getTextureRL(), btn.getX() - 5, btn.getY() - 2, 71F, 202F, 27, 22, xSize, xSize); //fancy selected Anchor indicator
                         }
                     }
                 }
@@ -449,7 +452,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         }
     }
 
-    private void renderSideScreen(PoseStack stack) {
+    private void renderSideScreen(GuiGraphics stack) {
         if (anchor == null) return; //everything here depends of the Anchor
         //Anchor coordinates and set coord button
         String dimensionName = "";
@@ -465,19 +468,19 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
             stringW += font.width(anchor.getDimension().getPath());
             dimensionName = anchor.getDimension().getPath();
         }
-        fill(stack, x - 5, y - 57, x + stringW + 7, y + 17, whiteBG); //light background border
-        fill(stack, x - 5, y - 56, x + stringW + 6, y + 16, darkBG); //dark background
-        drawString(stack, font, Component.translatable("main_screen.side_screen.x", anchor.getX()), x + 1, y - 50, whiteText);
-        drawString(stack, font, Component.translatable("main_screen.side_screen.y", anchor.getY()), x + 1, y - 40, whiteText);
-        drawString(stack, font, Component.translatable("main_screen.side_screen.z", anchor.getZ()), x + 1, y - 30, whiteText);
-        drawString(stack, font, Component.translatable("main_screen.side_screen.radius", Radius), x + 1, y - 20, whiteText);
-        drawString(stack, font, Component.translatable("main_screen.side_screen.dimension", dimensionName), x + 1, y - 10, whiteText);
+        stack.fill(x - 5, y - 57, x + stringW + 7, y + 17, whiteBG); //light background border
+        stack.fill(x - 5, y - 56, x + stringW + 6, y + 16, darkBG); //dark background
+        stack.drawString(font, Component.translatable("main_screen.side_screen.x", anchor.getX()), x + 1, y - 50, whiteText);
+        stack.drawString(font, Component.translatable("main_screen.side_screen.y", anchor.getY()), x + 1, y - 40, whiteText);
+        stack.drawString(font, Component.translatable("main_screen.side_screen.z", anchor.getZ()), x + 1, y - 30, whiteText);
+        stack.drawString(font, Component.translatable("main_screen.side_screen.radius", Radius), x + 1, y - 20, whiteText);
+        stack.drawString(font, Component.translatable("main_screen.side_screen.dimension", dimensionName), x + 1, y - 10, whiteText);
         renderGui();
-        blit(stack, x, y, 0, 69.45F, 11, 11, 88, 88); //set coordinates button
+        stack.blit(getTextureRL(), x, y, 0, 69.45F, 11, 11, 88, 88); //set coordinates button
 
         if (anchor.getAnchorPos() != null) {
             btnEditAnchor.active = true;
-            blit(stack, btnEditAnchor.getX(), btnEditAnchor.getY(), 32F, 213F, 11, 11, xSize, xSize); //set edit anchor button texture
+            stack.blit(getTextureRL(), btnEditAnchor.getX(), btnEditAnchor.getY(), 32F, 213F, 11, 11, xSize, xSize); //set edit anchor button texture
         } else {
             btnEditAnchor.active = false;
         }
@@ -486,31 +489,31 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         x = btnSetAnchor.getX();
         y = editAnchorTitleBar.getY();
         if (editRadBar.visible) {
-            fill(stack, x + stringW + 7, y - 5, editAnchorTitleBar.getX() + editAnchorTitleBar.getWidth() + 4, btnAccept.getY() + 23, whiteBG);//light top background border
-            fill(stack, x - 5, btnAccept.getY() + 23, editAnchorTitleBar.getX() + editAnchorTitleBar.getWidth() + 4, btnAccept.getY() + 24, whiteBG);//light bottom background border
-            fill(stack, x - 6, y - 4, editAnchorTitleBar.getX() + editAnchorTitleBar.getWidth() + 3, btnAccept.getY() + 23, darkBG);//dark background
-            font.draw(stack, Component.translatable("main_screen.side_screen.title"), x - 2, y + 1, whiteText);
-            font.draw(stack, Component.translatable("main_screen.side_screen.radius"), x - 2, editRadBar.getY() + 1, whiteText);
+            stack.fill(x + stringW + 7, y - 5, editAnchorTitleBar.getX() + editAnchorTitleBar.getWidth() + 4, btnAccept.getY() + 23, whiteBG);//light top background border
+            stack.fill(x - 5, btnAccept.getY() + 23, editAnchorTitleBar.getX() + editAnchorTitleBar.getWidth() + 4, btnAccept.getY() + 24, whiteBG);//light bottom background border
+            stack.fill(x - 6, y - 4, editAnchorTitleBar.getX() + editAnchorTitleBar.getWidth() + 3, btnAccept.getY() + 23, darkBG);//dark background
+            stack.drawString(font, Component.translatable("main_screen.side_screen.title"), x - 2, y + 1, whiteText);
+            stack.drawString(font, Component.translatable("main_screen.side_screen.radius"), x - 2, editRadBar.getY() + 1, whiteText);
         }
     }
 
-    private void renderButtonTooltip(PoseStack stack, Component message, AbstractWidget button) {
+    private void renderButtonTooltip(GuiGraphics stack, Component message, AbstractWidget button) {
         int centeredMessageX = button.getX() - (font.width(message) / 2);
         int centeredMessageY = button.equals(btnPrevSounds) || button.equals(btnNextSounds) ? button.getY() - 1 : button.getY() + button.getHeight() + 16;
-        renderTooltip(stack, message, centeredMessageX, centeredMessageY);
+        stack.renderTooltip(font, message, centeredMessageX, centeredMessageY);
     }
 
-    private void renderTips(PoseStack stack) {
+    private void renderTips(GuiGraphics stack) {
         if (CommonConfig.get().showTip().get()) {
             if (index % 500 == 0) {
                 tip = Component.translatable(Tips.randomTip());
                 index = 0;
             }
             int h = font.lineHeight * ((font.width(Component.translatable("main_screen.tip", tip)) / 240) + 1) + 215;
-            fill(stack, getX() - 2, getY() + 208, getX() + 257, getY() + h + 2, darkBG); //outer dark bg
-            fill(stack, getX() - 1, getY() + 209, getX() + 256, getY() + h + 1, goldBG); //middle gold bg
-            fill(stack, getX(), getY() + 210, getX() + 255, getY() + h, darkBG); //inner dark bg
-            font.drawWordWrap(stack, Component.translatable("main_screen.tip", tip), getX() + 5, getY() + 213, 245, whiteText);
+            stack.fill(getX() - 2, getY() + 208, getX() + 257, getY() + h + 2, darkBG); //outer dark bg
+            stack.fill(getX() - 1, getY() + 209, getX() + 256, getY() + h + 1, goldBG); //middle gold bg
+            stack.fill(getX(), getY() + 210, getX() + 255, getY() + h, darkBG); //inner dark bg
+            stack.drawWordWrap(font, Component.translatable("main_screen.tip", tip), getX() + 5, getY() + 213, 245, whiteText);
             index++;
         }
     }
