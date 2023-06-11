@@ -34,7 +34,7 @@ public class SoundMufflerFabric implements ClientModInitializer {
     private static void onMouseReleasePre(Screen screen, double pMouseX, double pMouseY, int pButton) {
         if (pButton == 1) {
             for (GuiEventListener widget : screen.children()) {
-                if (widget instanceof InvButton btn && !btn.hold) {
+                if (widget instanceof InvButton btn && btn.isHovered()) {
                     if (screen instanceof CreativeModeInventoryScreen) {
                         FabricConfig.setCreativeInvButtonHorizontal(btn.getX());
                         FabricConfig.setCreativeInvButtonVertical(btn.getY());

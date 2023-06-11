@@ -1,2 +1,1 @@
-Added fr_fr (Calvineries)  
-Updated to 1.20
+Fixed Inv button jumping all over the place.
