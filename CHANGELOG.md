@@ -1,1 +1,1 @@
-Fixed Inv button jumping all over the place.
+Made logo square and added the issues page for better compat with ModMenu

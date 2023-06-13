@@ -9,7 +9,8 @@
   ],
   "contact": {
     "homepage": "https://www.curseforge.com/minecraft/mc-mods/extreme-sound-muffler",
-    "sources": "https://github.com/LeoBeliik/ExtremeSoundMuffler"
+    "sources": "https://github.com/LeoBeliik/ExtremeSoundMuffler",
+    "issues": "https://github.com/LeoBeliik/ExtremeSoundMuffler/issues"
   },
   "license": "LGPL-3.0",
   "icon": "esm_logo.png",
