@@ -31,6 +31,7 @@ public class DataManager implements ISoundLists {
             anchorList.clear();
             anchorList.addAll(loadAnchors());
         }
+
         saveData();
     }
 
@@ -66,8 +67,8 @@ public class DataManager implements ISoundLists {
 
     private static Map<String, Double> loadMuffledMap() {
         try (InputStreamReader reader = new InputStreamReader(new FileInputStream("ESM/soundsMuffled.dat"), StandardCharsets.UTF_8)) {
-            return gson.fromJson(new JsonReader(reader), new TypeToken<Map<String, Double>>() {
-            }.getType());
+            return Objects.requireNonNullElseGet(gson.fromJson(new JsonReader(reader), new TypeToken<Map<String, Double>>() {
+            }.getType()), HashMap::new);
         } catch (Exception e) {
             if (e instanceof FileNotFoundException) {
                 Constants.LOG.warn(Component.translatable("log.warn.loadMuffledList").getString());
@@ -89,14 +90,19 @@ public class DataManager implements ISoundLists {
 
     private static List<Anchor> loadAnchors() {
         try (InputStreamReader reader = new InputStreamReader(new FileInputStream("ESM/" + getWorldName() + "/anchors.dat"), StandardCharsets.UTF_8)) {
-            return gson.fromJson(new JsonReader(reader), new TypeToken<List<Anchor>>() {}.getType());
+            return Objects.requireNonNullElseGet(gson.fromJson(new JsonReader(reader), new TypeToken<List<Anchor>>() {
+            }.getType()), DataManager::emptyAnchorList);
         } catch (Exception e) {
             if (e instanceof FileNotFoundException) {
                 Constants.LOG.warn(Component.translatable("log.warn.loadAnchorList").getString());
             } else {
                 Constants.LOG.error(Component.translatable("log.error.loadAnchorList", e).getString());
             }
-            return IntStream.range(0, 10).mapToObj(i -> new Anchor(i, "Anchor " + i)).collect(Collectors.toList());
+            return emptyAnchorList();
         }
+    }
+
+    private static List<Anchor> emptyAnchorList() {
+        return IntStream.range(0, 10).mapToObj(i -> new Anchor(i, "Anchor " + i)).collect(Collectors.toList());
     }
 }

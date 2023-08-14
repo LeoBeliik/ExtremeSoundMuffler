@@ -1,11 +1,13 @@
 package com.leobeliik.extremesoundmuffler;
 
 import com.leobeliik.extremesoundmuffler.gui.buttons.InvButton;
+import com.leobeliik.extremesoundmuffler.utils.DataManager;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.event.ScreenEvent;
@@ -45,6 +47,12 @@ public class SoundMufflerForge {
         if (soundMufflerKey.consumeClick()) {
             SoundMufflerCommon.openMainScreen();
         }
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @SubscribeEvent //load data when player joins the world
+    public void onPlayerJoin(ClientPlayerNetworkEvent.LoggingIn event) {
+        DataManager.loadData();
     }
 
     @OnlyIn(Dist.CLIENT)

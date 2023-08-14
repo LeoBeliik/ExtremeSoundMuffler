@@ -2,10 +2,12 @@ package com.leobeliik.extremesoundmuffler;
 
 import com.leobeliik.extremesoundmuffler.gui.buttons.InvButton;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
+import com.leobeliik.extremesoundmuffler.utils.DataManager;
 import io.github.fablabsmc.fablabs.api.fiber.v1.serialization.JanksonValueSerializer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -28,6 +30,9 @@ public class SoundMufflerFabric implements ClientModInitializer {
                 SoundMufflerCommon.openMainScreen();
             }
         });
+
+        //load data when player joins the world
+        ClientPlayConnectionEvents.JOIN.register((h, s, c) -> DataManager.loadData());
     }
 
     //save the new coordinates for the inv button
