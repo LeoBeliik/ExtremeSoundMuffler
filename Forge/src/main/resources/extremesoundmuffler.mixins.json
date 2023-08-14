@@ -4,7 +4,6 @@
   "package": "com.leobeliik.extremesoundmuffler.mixins",
   "compatibilityLevel": "JAVA_16",
   "client": [
-    "ClientPlayerMixin",
     "InventoryScreenMixin",
     "CreativeInventoryScreenMixin",
     "SoundMixin"

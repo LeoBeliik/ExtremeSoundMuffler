@@ -1,1 +1,1 @@
-Fixed sound engine crash.
+Fixed null crashes.
