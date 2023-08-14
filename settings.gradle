@@ -12,5 +12,5 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'extremesoundmuffler'
+rootProject.name = 'ExtremeSoundMuffler'
 include("Common", "Fabric", "Forge")
