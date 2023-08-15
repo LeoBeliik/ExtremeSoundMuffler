@@ -19,9 +19,9 @@ import net.minecraftforge.fml.IExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import static com.leobeliik.extremesoundmuffler.Constants.soundMufflerKey;
+import static com.leobeliik.extremesoundmuffler.Constants.*;
 
-@Mod(Constants.MOD_ID)
+@Mod(MOD_ID)
 public class SoundMufflerForge {
 
     public SoundMufflerForge() {
