@@ -18,10 +18,11 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.List;
+import static com.leobeliik.extremesoundmuffler.Constants.*;
 
 class FabricConfig {
 
-    private static final Path path = FabricLoader.getInstance().getConfigDir().resolve(Constants.MOD_ID + ".json5");
+    private static final Path path = FabricLoader.getInstance().getConfigDir().resolve(MOD_ID + ".json5");
     private static PropertyMirror<List<String>> forbiddenSounds = PropertyMirror.create(ConfigTypes.makeList(ConfigTypes.STRING));
     private static PropertyMirror<Boolean> lawfulAllList = PropertyMirror.create(ConfigTypes.BOOLEAN);
     private static PropertyMirror<Boolean> disableInventoryButton = PropertyMirror.create(ConfigTypes.BOOLEAN);
@@ -141,7 +142,7 @@ class FabricConfig {
         try (InputStream s = new BufferedInputStream(Files.newInputStream(path, StandardOpenOption.READ, StandardOpenOption.CREATE))) {
             FiberSerialization.deserialize(CONFIG, s, serializer);
         } catch (IOException | ValueDeserializationException e) {
-            Constants.LOG.error("Error loading ESM config", e);
+            LOG.error("Error loading ESM config", e);
         }
     }
 
