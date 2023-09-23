@@ -57,9 +57,6 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         minYButton = getY() + 46;
         maxYButton = getY() + 164;
 
-        //allows to hold a key to keep printing it. in this case I want it to easy erase text
-        //minecraft.keyboardHandler.setSendRepeatsToGui(true);
-
         addButtons();
         addSideButtons();
         addAnchorButtons();
@@ -68,11 +65,11 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
     @Override
     public void render(@NotNull GuiGraphics stack, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(stack);
         renderGui();
         stack.blit(getTextureRL(), getX(), getY(), 0, 0, xSize, ySize); //Main screen bounds
         renderSideScreen(stack); //render side screen buttons, need to be rendered before all the other things
         super.render(stack, mouseX, mouseY, partialTicks);
+        //super.renderBackground(stack, mouseX, mouseY, partialTicks);
         //--------------- My Renders ---------------//
         //Screen title
         stack.drawCenteredString(font, screenTitle, getX() + 128, getY() + 8, whiteText);
@@ -81,6 +78,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         //render buttons tips and other textures
         renderButtons(stack, mouseX, mouseY);
     }
+    public void renderBackground(@NotNull GuiGraphics stack, int mouseX, int mouseY, float partialTicks) {}
 
     @Override
     public boolean isPauseScreen() {
@@ -123,21 +121,21 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double direction) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double directionH, double directionV) {
+        double dir = directionH == 0 ? directionV : directionH;
         if (firstSoundButton == null) {
             return false;
         }
 
-        if ((direction > 0 && firstSoundButton.getY() == minYButton) || (direction < 0 && lastSoundButton.getY() <= maxYButton)) {
+        if ((dir > 0 && firstSoundButton.getY() == minYButton) || (dir < 0 && lastSoundButton.getY() <= maxYButton)) {
             return false;
         }
         children().stream().filter(b -> b instanceof MuffledSlider).map(b -> (MuffledSlider) b).forEach(b -> {
             //only increase / decrease from 10 to 10 to prevent the sliders going further than they should
-            b.setY((int) (b.getY() + (b.getHeight() * 10) * Mth.clamp(direction, -1, 1)));
+            b.setY((int) (b.getY() + (b.getHeight() * 10) * Mth.clamp(dir, -1, 1)));
             b.isVisible(b.getY() >= minYButton && b.getY() <= maxYButton);
         });
-
-        return super.mouseScrolled(mouseX, mouseY, direction);
+        return super.mouseScrolled(mouseX, mouseY, directionH, directionV);
     }
 
     @Override
@@ -217,9 +215,9 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
             updateButtons();
         }).bounds(getX() + 205, getY() + 180, 17, 17).build());
         //backwards list of sounds
-        addWidget(btnPrevSounds = Button.builder(Component.empty(), b -> mouseScrolled(0D, 0D, 1D)).bounds(getX() + 10, getY() + 22, 13, 20).build());
+        addWidget(btnPrevSounds = Button.builder(Component.empty(), b -> mouseScrolled(0D, 0D, 1D, 0D)).bounds(getX() + 10, getY() + 22, 13, 20).build());
         //forward list of sounds
-        addWidget(btnNextSounds = Button.builder(Component.empty(), b -> mouseScrolled(0D, 0D, -1D)).bounds(getX() + 233, getY() + 22, 13, 20).build());
+        addWidget(btnNextSounds = Button.builder(Component.empty(), b -> mouseScrolled(0D, 0D, -1D, 0D)).bounds(getX() + 233, getY() + 22, 13, 20).build());
 
     }
 
@@ -348,7 +346,6 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         Component message; //Tooltip message
 
         //--------------- Toggle Muffle sounds button ---------------//
-        renderGui();
         //draws a "/" over the muffle button texture if muffling
         if (isMuffling) {
             stack.blit(getTextureRL(), btnTMS.getX() + 1, btnTMS.getY(), 54F, 202F, 15, 15, xSize, xSize);
@@ -364,7 +361,6 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
         //show texture for the deletion of the recent sounds list
         if (hasShiftDown()) {
-            renderGui();
             stack.blit(getTextureRL(), btnDelete.getX() + 2, btnDelete.getY() + 1, 54F, 217F, 13, 13, xSize, xSize);
             message = Component.translatable("main_screen.btn.delete.list");
         }
@@ -429,7 +425,6 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
                         String color = anchorList.get(Integer.parseInt(btn.getMessage().getString())).getAnchorPos() != null ? "green" : "white";
                         setFGColor(btn, color);
                         if (anchor != null && btn.getMessage().getString().equals(String.valueOf(anchor.getAnchorId()))) {
-                            renderGui();
                             stack.blit(getTextureRL(), btn.getX() - 5, btn.getY() - 2, 71F, 202F, 27, 22, xSize, xSize); //fancy selected Anchor indicator
                         }
                     }
@@ -498,7 +493,9 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     }
 
     private void renderButtonTooltip(GuiGraphics stack, Component message, AbstractWidget button) {
-        int centeredMessageX = button.getX() - (font.width(message) / 2);
+        //to render CSL button tooltip more centered
+        int CSLShift = button.equals(btnCSL) ? 25 : 0;
+        int centeredMessageX = button.getX() - ((font.width(message) - CSLShift) / 2);
         int centeredMessageY = button.equals(btnPrevSounds) || button.equals(btnNextSounds) ? button.getY() - 1 : button.getY() + button.getHeight() + 16;
         stack.renderTooltip(font, message, centeredMessageX, centeredMessageY);
     }
