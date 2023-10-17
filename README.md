@@ -1,5 +1,5 @@
 <img align="left" width="140" height="100" src="Common/src/main/resources/esm_logo.png">
-<h1> Extreme sound muffler Minecraft mod</h1>
+<h1 align="center"> Extreme sound muffler Minecraft mod</h1>
 <br/>
 
 ---
@@ -81,3 +81,8 @@
 <a href= https://github.com/LeoBeliik/ExtremeSoundMuffler/blob/master/Default_Config_At_3.15%2BForge.toml> Forge Config file</a>
 <br/>
 <a href= https://github.com/LeoBeliik/ExtremeSoundMuffler/blob/master/Default_Config_At_3.20%2BFabric.json5> Fabric Config file</a>
+<br/>
+<br/>
+<p>
+<img align="center" width="24" height="24" src="https://resources.jetbrains.com/storage/products/company/brand/logos/IntelliJ_IDEA_icon.png" alt="IntelliJ IDEA logo."> Thanks to <b>JetBrains</b> and their <a href=(https://www.jetbrains.com/community/opensource/#support/)> Open Source Support </a>
+</p>
