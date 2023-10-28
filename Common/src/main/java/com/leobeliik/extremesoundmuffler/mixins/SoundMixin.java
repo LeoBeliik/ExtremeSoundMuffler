@@ -20,8 +20,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class SoundMixin implements ISoundLists {
 
     /* CREDITS to botania:
-     https://github.com/VazkiiMods/Botania/blob/3c14a69486d58ab6da860998ddd4ce7558481286/Xplat/src/main/java/vazkii/botania/mixin/client/SoundEngineMixin.java
-    */
+     * https://github.com/VazkiiMods/Botania/blob/3c14a69486d58ab6da860998ddd4ce7558481286/Xplat/src/main/java/vazkii/botania/mixin/client/SoundEngineMixin.java
+     */
 
     @Unique
     @Nullable
@@ -41,27 +41,27 @@ public abstract class SoundMixin implements ISoundLists {
     @ModifyArg(index = 0, at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;clamp(FFF)F"),
             method = "calculateVolume(FLnet/minecraft/sounds/SoundSource;)F")
     private float esm_setVolume(float volume) {
+        SoundInstance tempSound = esmSound;
         //don't care about forbidden sounds or from the psb
-        if (esmSound != null && !esm_isForbidden(esmSound) && !PlaySoundButton.isFromPSB()) {
+        if (tempSound != null && !esm_isForbidden(tempSound) && !PlaySoundButton.isFromPSB()) {
 
             //add sound to recent sounds list
-            recentSoundsList.add(esmSound.getLocation());
+            recentSoundsList.add(tempSound.getLocation());
 
             if (MufflerScreen.isMuffling()) {
-                if (muffledSounds.containsKey(esmSound.getLocation())) {
-                    return (float) (esmSound.getVolume() * muffledSounds.get(esmSound.getLocation()));
+                if (muffledSounds.containsKey(tempSound.getLocation())) {
+                    return (float) (tempSound.getVolume() * muffledSounds.get(tempSound.getLocation()));
                 }
 
                 //don't continue if the anchors are disabled
                 if (CommonConfig.get() == null || !CommonConfig.get().disableAnchors().get()) {
-                    Anchor anchor = Anchor.getAnchor(esmSound);
+                    Anchor anchor = Anchor.getAnchor(tempSound);
                     if (anchor != null) {
-                        return (float) (esmSound.getVolume() * anchor.getMuffledSounds().get(esmSound.getLocation()));
+                        return (float) (tempSound.getVolume() * anchor.getMuffledSounds().get(tempSound.getLocation()));
                     }
                 }
             }
         }
-
         return volume;
     }
 

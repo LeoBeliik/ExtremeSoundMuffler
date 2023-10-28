@@ -1,1 +1,1 @@
-Fixed null crashes.
+make sure sound is not cleared midway
