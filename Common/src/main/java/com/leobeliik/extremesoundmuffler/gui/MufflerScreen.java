@@ -57,9 +57,6 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         minYButton = getY() + 46;
         maxYButton = getY() + 164;
 
-        //allows to hold a key to keep printing it. in this case I want it to easy erase text
-        //minecraft.keyboardHandler.setSendRepeatsToGui(true);
-
         addButtons();
         addSideButtons();
         addAnchorButtons();
@@ -498,7 +495,9 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     }
 
     private void renderButtonTooltip(GuiGraphics stack, Component message, AbstractWidget button) {
-        int centeredMessageX = button.getX() - (font.width(message) / 2);
+        //to render CSL button tooltip more centered
+        int CSLShift = button.equals(btnCSL) ? 25 : 0;
+        int centeredMessageX = button.getX() - ((font.width(message) - CSLShift) / 2);
         int centeredMessageY = button.equals(btnPrevSounds) || button.equals(btnNextSounds) ? button.getY() - 1 : button.getY() + button.getHeight() + 16;
         stack.renderTooltip(font, message, centeredMessageX, centeredMessageY);
     }
