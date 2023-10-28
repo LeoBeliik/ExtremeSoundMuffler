@@ -60,7 +60,6 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
         //--------------- Render Tooltips ---------------//
         if (btnToggleSound.isMouseOver(mouseX, mouseY)) {
             renderButtonTooltip(stack, btnToggleSound, isMuffling ? Component.translatable("slider.btn.muffler.unmuffle") : Component.translatable("slider.btn.muffler.muffle"));
-
         }
         if (btnPlaySound.isMouseOver(mouseX, mouseY)) {
             renderButtonTooltip(stack, btnPlaySound, Component.translatable("slider.btn.play.play_sound"));
@@ -78,7 +77,7 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
         int y2 = btn.y - 1;
 
         fill(stack, x1 - 3, y1 - 5, x2, y2 + 1, darkBG);
-        font.draw(stack, text, x1, y1 - 2, whiteText);
+        font.drawShadow(stack, text, x1, y1 - 2, whiteText);
     }
 
     private void drawMessage(PoseStack stack) {
@@ -125,6 +124,7 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
             if (isMuffling) {
                 if (screen.removeSoundMuffled(sound)) {
                     setFGColor(this, "white");
+                    this.visible = false;
                 }
             } else {
                 setSliderValue(CommonConfig.get().defaultMuteVolume().get());
@@ -170,13 +170,15 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        this.btnToggleSound.mouseClicked(mouseX, mouseY, button);
-        this.btnPlaySound.mouseClicked(mouseX, mouseY, button);
+        if (this.visible) {
+            this.btnToggleSound.mouseClicked(mouseX, mouseY, button);
+            this.btnPlaySound.mouseClicked(mouseX, mouseY, button);
 
-        if (isHovered && isMuffling) {
-            changeSliderValue((float) mouseX);
-            showSlider = true;
-            setFocused(true);
+            if (isHovered && isMuffling) {
+                changeSliderValue((float) mouseX);
+                showSlider = true;
+                setFocused(true);
+            }
         }
         return super.mouseClicked(mouseX, mouseY, button);
     }

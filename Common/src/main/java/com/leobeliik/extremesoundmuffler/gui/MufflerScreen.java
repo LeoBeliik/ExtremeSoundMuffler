@@ -494,7 +494,9 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     }
 
     private void renderButtonTooltip(PoseStack stack, Component message, AbstractWidget button) {
-        int centeredMessageX = button.x - (font.width(message) / 2);
+        //to render CSL button tooltip more centered
+        int CSLShift = button.equals(btnCSL) ? 25 : 0;
+        int centeredMessageX = button.x - ((font.width(message) - CSLShift) / 2);
         int centeredMessageY = button.equals(btnPrevSounds) || button.equals(btnNextSounds) ? button.y - 1 : button.y + button.getHeight() + 16;
         renderTooltip(stack, message, centeredMessageX, centeredMessageY);
     }
