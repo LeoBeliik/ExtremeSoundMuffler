@@ -1,3 +1,1 @@
-Made logo square and added the issues page for better compat with ModMenu.
-
-Fixed null crashes.
+Make sure sound is not cleared midway (fix possible crash)
