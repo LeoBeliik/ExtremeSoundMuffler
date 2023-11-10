@@ -7,8 +7,8 @@ import java.util.*;
 public interface ISoundLists {
 
     Set<String> forbiddenSounds = new HashSet<>();
-    SortedSet<ResourceLocation> soundsList = new TreeSet<>();
-    SortedSet<ResourceLocation> recentSoundsList = new TreeSet<>();
+    List<ResourceLocation> soundsList = new ArrayList<>();
+    List<ResourceLocation> recentSoundsList = new ArrayList<>();
     Map<ResourceLocation, Double> muffledSounds = new HashMap<>();
     List<Anchor> anchorList = new ArrayList<>();
 }

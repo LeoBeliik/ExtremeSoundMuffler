@@ -128,7 +128,9 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
             if (isMuffling) {
                 if (screen.removeSoundMuffled(sound)) {
                     setFGColor(this, "white");
-                    this.visible = false;
+                    if (screen.getBtnCSLTitle().equals(Component.translatable("main_screen.btn.csl.muffled"))) {
+                        this.visible = false;
+                    }
                 }
             } else {
                 setSliderValue(CommonConfig.get().defaultMuteVolume().get());
