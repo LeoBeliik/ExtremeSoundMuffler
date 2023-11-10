@@ -1,4 +1,3 @@
-Make sure sound is not cleared midway (fix possible crash)
-Fixed non-muffled sounds non being removed from the muffled screen
-Fixed muffled and play sound button tooltips being just bad
-Other small gui fixes
+Makes recent sound list sort in chronological order.
+
+Makes muffled sounds button not disappear in the wrong screen when unmuffled.
