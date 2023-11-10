@@ -7,6 +7,7 @@ import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import com.leobeliik.extremesoundmuffler.utils.Anchor;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.SoundEngine;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -44,20 +45,23 @@ public abstract class SoundMixin implements ISoundLists {
         SoundInstance tempSound = esmSound;
         //don't care about forbidden sounds or from the psb
         if (tempSound != null && !esm_isForbidden(tempSound) && !PlaySoundButton.isFromPSB()) {
+            ResourceLocation soundLocation = tempSound.getLocation();
 
+            //remove sound to prevent repeated sounds and maintains the desired order
+            recentSoundsList.remove(soundLocation);
             //add sound to recent sounds list
-            recentSoundsList.add(tempSound.getLocation());
+            recentSoundsList.add(soundLocation);
 
             if (MufflerScreen.isMuffling()) {
-                if (muffledSounds.containsKey(tempSound.getLocation())) {
-                    return (float) (tempSound.getVolume() * muffledSounds.get(tempSound.getLocation()));
+                if (muffledSounds.containsKey(soundLocation)) {
+                    return (float) (tempSound.getVolume() * muffledSounds.get(soundLocation));
                 }
 
                 //don't continue if the anchors are disabled
                 if (CommonConfig.get() == null || !CommonConfig.get().disableAnchors().get()) {
                     Anchor anchor = Anchor.getAnchor(tempSound);
                     if (anchor != null) {
-                        return (float) (tempSound.getVolume() * anchor.getMuffledSounds().get(tempSound.getLocation()));
+                        return (float) (tempSound.getVolume() * anchor.getMuffledSounds().get(soundLocation));
                     }
                 }
             }

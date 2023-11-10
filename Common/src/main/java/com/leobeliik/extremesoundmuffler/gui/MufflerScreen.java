@@ -23,9 +23,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.function.Predicate;
-
 import static com.leobeliik.extremesoundmuffler.SoundMufflerCommon.getTextureRL;
 import static com.leobeliik.extremesoundmuffler.SoundMufflerCommon.renderGui;
 
@@ -280,8 +281,10 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         Component component = btnCSL.getMessage();
         if (Component.translatable("main_screen.btn.csl.recent").equals(component)) {
             soundsList.addAll(recentSoundsList);
+            Collections.reverse(soundsList); //makes the recent sounds sort in chronological order
         } else if (Component.translatable("main_screen.btn.csl.all").equals(component)) {
             BuiltInRegistries.SOUND_EVENT.forEach(k -> soundsList.add(k.getLocation()));
+            Collections.sort(soundsList); //makes the All sounds list sort in alphabetically order
         } else {
             soundsList.addAll(this.anchor == null ? muffledSounds.keySet() : this.anchor.getMuffledSounds().keySet());
         }
@@ -586,5 +589,9 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
     private int getY() {
         return (this.height - ySize) / 2;
+    }
+
+    public Component getBtnCSLTitle() {
+        return btnCSL.getMessage();
     }
 }
