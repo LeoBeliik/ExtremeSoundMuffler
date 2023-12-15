@@ -22,7 +22,7 @@ import static com.leobeliik.extremesoundmuffler.Constants.*;
 
 class FabricConfig {
 
-    private static final Path path = FabricLoader.getInstance().getConfigDir().resolve(MOD_ID + ".json5");
+    private static final Path path = FabricLoader.getInstance().getConfigDir().resolve(MOD_ID + ".toml");
     private static PropertyMirror<List<String>> forbiddenSounds = PropertyMirror.create(ConfigTypes.makeList(ConfigTypes.STRING));
     private static PropertyMirror<Boolean> lawfulAllList = PropertyMirror.create(ConfigTypes.BOOLEAN);
     private static PropertyMirror<Boolean> disableInventoryButton = PropertyMirror.create(ConfigTypes.BOOLEAN);
@@ -110,12 +110,12 @@ class FabricConfig {
             .withComment("Disable the Muffle button in the creative player inventory?")
             .finishValue(disableCreativeInventoryButton::mirror)
 
-            .beginValue("creativeInvButtonHorizontal", ConfigTypes.INTEGER, 181)
+            .beginValue("creativeInvButtonHorizontal", ConfigTypes.INTEGER, 2)
             .withComment("Coordinates for the Muffler button in the creative player inventory. \n" +
                     "You can change this in game by holding the RMB over the button and draging it around")
             .finishValue(creativeInvButtonHorizontal::mirror)
 
-            .beginValue("creativeInvButtonVertical", ConfigTypes.INTEGER, 3)
+            .beginValue("creativeInvButtonVertical", ConfigTypes.INTEGER, 2)
             .withComment("Coordinates for the Muffler button in the creative player inventory. \n" +
                     "You can change this in game by holding the RMB over the button and draging it around")
             .finishValue(creativeInvButtonVertical::mirror)

@@ -31,13 +31,13 @@ jobs:
             echo $1="$2" >> $GITHUB_ENV
             declare -g $1="$2"
           }
-          set_var JAR_FILE $(eval echo Forge/build/libs/extremesoundmuffler-*-*-*.jar)
+          set_var JAR_FILE $(eval echo fabric/build/libs/extremesoundmuffler-*-*-*.jar)
           set_var MOD_VERSION $(echo ${JAR_FILE%.*} | cut -d- -f2)
           
     - name: Publish Minecraft Mods Forge Edition
       uses: Kir-Antipov/mc-publish@v3.2
       with:
-          files-primary: Forge/build/libs/!(*-@(dev|sources|javadoc)).jar
+          files-primary: forge/build/libs/!(*-@(dev|sources|javadoc)).jar
           
           modrinth-id: 5IIKsxiL
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
@@ -51,11 +51,29 @@ jobs:
           java: Java 17
           modrinth-featured: false
           changelog-file: CHANGELOG.md
+
+    - name: Publish Minecraft Mods NeoForge Edition
+      uses: Kir-Antipov/mc-publish@v3.2
+      with:
+        files-primary: neoforge/build/libs/!(*-@(dev|sources|javadoc)).jar
+
+        modrinth-id: 5IIKsxiL
+        modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+
+        curseforge-id: 363363
+        curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+
+        name: Extreme sound muffler ${{env.MOD_VERSION}} - NeoForge ${{github.ref_name}}
+        loaders: forge
+        version: ${{env.MOD_VERSION}}-${{github.ref_name}}
+        java: Java 17
+        modrinth-featured: false
+        changelog-file: CHANGELOG.md
           
     - name: Publish Minecraft Mods Fabric Edition
       uses: Kir-Antipov/mc-publish@v3.2
       with:
-          files-primary: Fabric/build/libs/!(*-@(dev|sources|javadoc)).jar
+          files-primary: fabric/build/libs/!(*-@(dev|sources|javadoc)).jar
           
           modrinth-id: 5IIKsxiL
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}

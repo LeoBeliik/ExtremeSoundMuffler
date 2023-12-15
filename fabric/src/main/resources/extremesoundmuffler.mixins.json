@@ -11,6 +11,6 @@
   "injectors": {
     "defaultRequire": 1
   },
-  "refmap": "extremesoundmuffler-refmap.json"
+  "refmap": "extremesoundmuffler.refmap.json"
 }
   

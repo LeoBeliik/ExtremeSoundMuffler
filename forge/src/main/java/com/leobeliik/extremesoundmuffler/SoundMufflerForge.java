@@ -33,12 +33,15 @@ public class SoundMufflerForge {
 
         ForgeConfig.init();
         MinecraftForge.EVENT_BUS.register(this);
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> bus.addListener(this::keyRegistry));
         bus.addListener(ForgeConfig::onLoad);
     }
 
-    private void keyRegistry(final RegisterKeyMappingsEvent event) {
-        event.register(soundMufflerKey);
+    @Mod.EventBusSubscriber(modid = Constants.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+    public class ClientModListener {
+        @SubscribeEvent
+        public static void keyRegistry(final RegisterKeyMappingsEvent event) {
+            event.register(soundMufflerKey);
+        }
     }
 
     @OnlyIn(Dist.CLIENT)
