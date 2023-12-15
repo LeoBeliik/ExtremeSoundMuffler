@@ -5,7 +5,7 @@ plugins {
     id 'java-library'
 }
 base {
-    archivesName = "${mod_name}-${modversion}_${minecraft_version}-neoforge"
+    archivesName = "${mod_name}-${modversion}-neoforge-${minecraft_version}"
 }
 // Automatically enable neoforge AccessTransformers if the file exists
 // This location is hardcoded in FML and can not be changed.
