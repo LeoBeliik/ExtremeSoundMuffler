@@ -110,12 +110,12 @@ class FabricConfig {
             .withComment("Disable the Muffle button in the creative player inventory?")
             .finishValue(disableCreativeInventoryButton::mirror)
 
-            .beginValue("creativeInvButtonHorizontal", ConfigTypes.INTEGER, 181)
+            .beginValue("creativeInvButtonHorizontal", ConfigTypes.INTEGER, 2)
             .withComment("Coordinates for the Muffler button in the creative player inventory. \n" +
                     "You can change this in game by holding the RMB over the button and draging it around")
             .finishValue(creativeInvButtonHorizontal::mirror)
 
-            .beginValue("creativeInvButtonVertical", ConfigTypes.INTEGER, 3)
+            .beginValue("creativeInvButtonVertical", ConfigTypes.INTEGER, 2)
             .withComment("Coordinates for the Muffler button in the creative player inventory. \n" +
                     "You can change this in game by holding the RMB over the button and draging it around")
             .finishValue(creativeInvButtonVertical::mirror)
