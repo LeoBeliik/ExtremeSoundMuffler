@@ -1,3 +1,1 @@
-Makes recent sound list sort in chronological order.
-
-Makes muffled sounds button not disappear in the wrong screen when unmuffled.
+Moved creative inv button to the other side of the screen
