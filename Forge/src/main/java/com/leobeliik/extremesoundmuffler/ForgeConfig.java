@@ -82,10 +82,10 @@ class ForgeConfig {
                 .define("disableCreativeInventoryButton", false);
         creativeInvButtonHorizontal = CLIENT_BUILDER.comment("Coordinates for the Muffler button in the creative player inventory.\n " +
                         "You can change this in game by holding the RMB over the button and draging it around")
-                .defineInRange("creativeInvButtonX", 181, Integer.MIN_VALUE, Integer.MAX_VALUE);
+                .defineInRange("creativeInvButtonX", 2, Integer.MIN_VALUE, Integer.MAX_VALUE);
         creativeInvButtonVertical = CLIENT_BUILDER.comment("Coordinates for the Muffler button in the creative player inventory. \n" +
                         "You can change this in game by holding the RMB over the button and draging it around")
-                .defineInRange("creativeInvButtonY", 3, Integer.MIN_VALUE, Integer.MAX_VALUE);
+                .defineInRange("creativeInvButtonY", 2, Integer.MIN_VALUE, Integer.MAX_VALUE);
         CLIENT_BUILDER.pop();
 
         CLIENT_BUILDER.comment("Anchor settings").push(CATEGORY_ANCHORS);
