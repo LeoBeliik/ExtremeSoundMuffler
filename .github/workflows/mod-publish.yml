@@ -37,7 +37,7 @@ jobs:
     - name: Publish Minecraft Mods Forge Edition
       uses: Kir-Antipov/mc-publish@v3.3 
       with:
-          files-primary: Forge/build/libs/!(*-@(dev|sources|javadoc)).jar
+          files: Forge/build/libs/!(*-@(dev|sources|javadoc)).jar
           
           modrinth-id: 5IIKsxiL
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
@@ -55,7 +55,7 @@ jobs:
     - name: Publish Minecraft Mods Fabric Edition
       uses: Kir-Antipov/mc-publish@v3.3
       with:
-          files-primary: Fabric/build/libs/!(*-@(dev|sources|javadoc)).jar
+          files: Fabric/build/libs/!(*-@(dev|sources|javadoc)).jar
           
           modrinth-id: 5IIKsxiL
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
