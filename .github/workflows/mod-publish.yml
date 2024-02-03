@@ -35,7 +35,7 @@ jobs:
           set_var MOD_VERSION $(echo ${JAR_FILE%.*} | cut -d- -f2)
           
     - name: Publish Minecraft Mods Forge Edition
-      uses: Kir-Antipov/mc-publish@v3.2
+      uses: Kir-Antipov/mc-publish@v3.3 
       with:
           files-primary: Forge/build/libs/!(*-@(dev|sources|javadoc)).jar
           
@@ -53,7 +53,7 @@ jobs:
           changelog-file: CHANGELOG.md
           
     - name: Publish Minecraft Mods Fabric Edition
-      uses: Kir-Antipov/mc-publish@v3.2
+      uses: Kir-Antipov/mc-publish@v3.3
       with:
           files-primary: Fabric/build/libs/!(*-@(dev|sources|javadoc)).jar
           
