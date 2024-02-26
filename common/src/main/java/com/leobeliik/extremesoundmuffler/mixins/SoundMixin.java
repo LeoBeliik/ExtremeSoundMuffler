@@ -46,6 +46,7 @@ public abstract class SoundMixin implements ISoundLists {
         //don't care about forbidden sounds or from the psb
         if (tempSound != null && !esm_isForbidden(tempSound) && !PlaySoundButton.isFromPSB()) {
             ResourceLocation soundLocation = tempSound.getLocation();
+            float tempVolume = soundLocation.toString().contains("entity.lightning_bolt.thunder") ? 1F : tempSound.getVolume();
 
             //remove sound to prevent repeated sounds and maintains the desired order
             recentSoundsList.remove(soundLocation);
@@ -54,14 +55,14 @@ public abstract class SoundMixin implements ISoundLists {
 
             if (MufflerScreen.isMuffling()) {
                 if (muffledSounds.containsKey(soundLocation)) {
-                    return (float) (tempSound.getVolume() * muffledSounds.get(soundLocation));
+                    return (float) (tempVolume * muffledSounds.get(soundLocation));
                 }
 
                 //don't continue if the anchors are disabled
                 if (CommonConfig.get() == null || !CommonConfig.get().disableAnchors().get()) {
                     Anchor anchor = Anchor.getAnchor(tempSound);
                     if (anchor != null) {
-                        return (float) (tempSound.getVolume() * anchor.getMuffledSounds().get(soundLocation));
+                        return (float) (tempVolume * anchor.getMuffledSounds().get(soundLocation));
                     }
                 }
             }
