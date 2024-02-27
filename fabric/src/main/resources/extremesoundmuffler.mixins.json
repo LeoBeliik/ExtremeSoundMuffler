@@ -6,7 +6,9 @@
   "client": [
     "InventoryScreenMixin",
     "CreativeInventoryScreenMixin",
-    "SoundMixin"
+    "SoundMixin",
+    "MinecartSoundMixin",
+    "AbstractSoundInstanceMixin"
   ],
   "injectors": {
     "defaultRequire": 1
