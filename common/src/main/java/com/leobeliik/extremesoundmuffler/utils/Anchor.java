@@ -127,8 +127,15 @@ public class Anchor {
 
     public static Anchor getAnchor(SoundInstance sound) {
         BlockPos soundPos = new BlockPos((int) sound.getX(), (int) sound.getY(), (int) sound.getZ());
+        Minecraft minecraft = Minecraft.getInstance();
+        LocalPlayer player = minecraft.player;
+        ClientLevel world = minecraft.level;
+
+        if (player != null && sound.getLocation().getPath().contains("entity.minecart.inside")) {
+            //give player coordinates if it's in the minecart, minecart.inside sound pos is always at 0
+            soundPos = player.getOnPos();
+        }
         for (Anchor anchor : ISoundLists.anchorList) {
-            ClientLevel world = Minecraft.getInstance().level;
             if (anchor.getAnchorPos() != null
                     && world != null
                     && world.dimension().location().equals(anchor.getDimension())

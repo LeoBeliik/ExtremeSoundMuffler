@@ -46,7 +46,7 @@ public abstract class SoundMixin implements ISoundLists {
         //don't care about forbidden sounds or from the psb
         if (tempSound != null && !esm_isForbidden(tempSound) && !PlaySoundButton.isFromPSB()) {
             ResourceLocation soundLocation = tempSound.getLocation();
-            float tempVolume = soundLocation.toString().contains("entity.lightning_bolt.thunder") ? 1F : tempSound.getVolume();
+            float tempVolume = soundLocation.getPath().contains("entity.lightning_bolt.thunder") ? 1F : tempSound.getVolume();
 
             //remove sound to prevent repeated sounds and maintains the desired order
             recentSoundsList.remove(soundLocation);
