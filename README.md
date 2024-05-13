@@ -27,10 +27,8 @@
 
 <p align="center"> <b> Github: </b> </p>
 <p align="center">
-  <a href="https://github.com/LeoBeliik/ExtremeSoundMuffler/issues" alt="Issues">
-        <img src="https://img.shields.io/github/issues/LeoBeliik/ExtremeSoundMuffler.svg?style=for-the-badge" /> </a>
-  <a href="https://github.com/LeoBeliik/ExtremeSoundMuffler/blob/master/LICENSE.txt" alt="License">
-        <img src="https://img.shields.io/github/license/LeoBeliik/ExtremeSoundMuffler.svg?style=for-the-badge" /> </a>  
+  <a href="https://github.com/LeoBeliik/ExtremeSoundMuffler/issues" alt="Issues"><img src="https://img.shields.io/github/issues/LeoBeliik/ExtremeSoundMuffler.svg?style=for-the-badge" /></a>
+  <a href="https://github.com/LeoBeliik/ExtremeSoundMuffler/blob/master/LICENSE.txt" alt="License"><img src="https://img.shields.io/github/license/LeoBeliik/ExtremeSoundMuffler.svg?style=for-the-badge" /></a>  
 </p>
   
   <h5 align="center"><b>This Mod works on <a href= https://files.minecraftforge.net/net/minecraftforge/forge alt="FORGE"> FORGE</a> and <a href= https://fabricmc.net/use/installer/ alt="FABRIC"> FABRIC</a>.</b></h5>
