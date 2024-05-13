@@ -9,14 +9,14 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.IExtensionPoint;
-import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.common.NeoForge;
+
 import static com.leobeliik.extremesoundmuffler.Constants.soundMufflerKey;
 
 @Mod(Constants.MOD_ID)
@@ -25,18 +25,19 @@ public class SoundMufflerNeoForge {
     public SoundMufflerNeoForge(IEventBus modEventBus) {
         NeoForge.EVENT_BUS.register(this);
         //prevent server complain when this mod is clientside only
-        ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class,
-                () -> new IExtensionPoint.DisplayTest(() -> "", (a, b) -> true));
+        /*ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class,
+                () -> new IExtensionPoint.DisplayTest(() -> "", (a, b) -> true));*/
         NeoForgeConfig.init();
     }
 
-    @Mod.EventBusSubscriber(modid = Constants.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+    @EventBusSubscriber(modid = Constants.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public class ClientModListener {
         @SubscribeEvent
         public static void keyRegistry(final RegisterKeyMappingsEvent event) {
             event.register(soundMufflerKey);
         }
     }
+
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent //on mod keybind press
     public void onKeyInput(InputEvent.Key event) {
