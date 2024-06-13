@@ -23,7 +23,7 @@ public class DataManager implements ISoundLists {
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     public static void loadData() {
-        Optional.ofNullable(loadMuffledMap()).ifPresent(mm -> mm.forEach((R, D) -> muffledSounds.put(new ResourceLocation(R), D)));
+        Optional.ofNullable(loadMuffledMap()).ifPresent(mm -> mm.forEach((R, D) -> muffledSounds.put(ResourceLocation.parse(R), D)));
 
         if (!CommonConfig.get().disableAnchors().get()) {
             anchorList.clear();

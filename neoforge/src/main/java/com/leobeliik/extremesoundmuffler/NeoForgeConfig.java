@@ -2,6 +2,7 @@ package com.leobeliik.extremesoundmuffler;
 
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.config.ModConfig;
@@ -30,9 +31,9 @@ class NeoForgeConfig {
     private static ModConfigSpec.IntValue creativeInvButtonHorizontal;
     private static ModConfigSpec.IntValue creativeInvButtonVertical;
 
-    static void init() {
+    static void init(ModContainer container) {
         buildConfig();
-        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, NeoForgeConfig.CLIENT_CONFIG);
+        container.registerConfig(ModConfig.Type.CLIENT, NeoForgeConfig.CLIENT_CONFIG);
         CommonConfig.set(new CommonConfig.ConfigAccess(
                 forbiddenSounds,
                 lawfulAllList,

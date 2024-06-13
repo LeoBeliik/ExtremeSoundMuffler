@@ -9,6 +9,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
@@ -22,12 +23,12 @@ import static com.leobeliik.extremesoundmuffler.Constants.soundMufflerKey;
 @Mod(Constants.MOD_ID)
 public class SoundMufflerNeoForge {
 
-    public SoundMufflerNeoForge(IEventBus modEventBus) {
+    public SoundMufflerNeoForge(IEventBus modEventBus, ModContainer container) {
         NeoForge.EVENT_BUS.register(this);
         //prevent server complain when this mod is clientside only
         /*ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class,
                 () -> new IExtensionPoint.DisplayTest(() -> "", (a, b) -> true));*/
-        NeoForgeConfig.init();
+        NeoForgeConfig.init(container);
     }
 
     @EventBusSubscriber(modid = Constants.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
