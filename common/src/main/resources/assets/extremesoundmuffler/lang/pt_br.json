@@ -35,9 +35,10 @@
     "main_screen.side_screen.x": "X: %s",
     "main_screen.side_screen.y": "Y: %s",
     "main_screen.side_screen.z": "Z: %s",
-    "main_screen.side_screen.radius": "Raio:",
+    "main_screen.side_screen.radius": "Raio: %s",
     "main_screen.side_screen.dimension": "Dimensão: %s",
     "main_screen.side_screen.title": "Título: ",
+    "main_screen.side_screen.radius_edit": "Raio: ",
   
     "tip.disable": "Você pode desativar essas dicas na configuração",
     "tip.change_volume": "Você pode alterar o volume de sons abafados arrastando o controle deslizante",

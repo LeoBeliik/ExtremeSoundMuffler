@@ -489,7 +489,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
             stack.fill(x - 5, btnAccept.getY() + 23, editAnchorTitleBar.getX() + editAnchorTitleBar.getWidth() + 4, btnAccept.getY() + 24, whiteBG);//light bottom background border
             stack.fill(x - 6, y - 4, editAnchorTitleBar.getX() + editAnchorTitleBar.getWidth() + 3, btnAccept.getY() + 23, darkBG);//dark background
             stack.drawString(font, Component.translatable("main_screen.side_screen.title"), x - 2, y + 1, whiteText);
-            stack.drawString(font, Component.translatable("main_screen.side_screen.radius"), x - 2, editRadBar.getY() + 1, whiteText);
+            stack.drawString(font, Component.translatable("main_screen.side_screen.radius_edit"), x - 2, editRadBar.getY() + 1, whiteText);
         }
     }
 

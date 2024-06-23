@@ -35,9 +35,10 @@
   "main_screen.side_screen.x": "X: %s",
   "main_screen.side_screen.y": "Y: %s",
   "main_screen.side_screen.z": "Z: %s",
-  "main_screen.side_screen.radius": "Radius:",
+  "main_screen.side_screen.radius": "Radius: %s",
   "main_screen.side_screen.dimension": "Dimension: %s",
   "main_screen.side_screen.title": "Title: ",
+  "main_screen.side_screen.radius_edit": "Radius: ",
 
   "tip.disable": "You can disable these tips in the config",
   "tip.change_volume": "You can change the volume of muffled sounds by dragging the slider",

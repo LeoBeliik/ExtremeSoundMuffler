@@ -35,9 +35,10 @@
     "main_screen.side_screen.x": "X : %s",
     "main_screen.side_screen.y": "Y : %s",
     "main_screen.side_screen.z": "Z : %s",
-    "main_screen.side_screen.radius": "Rayon :",
+    "main_screen.side_screen.radius": "Rayon : %s",
     "main_screen.side_screen.dimension": "Dimension : %s",
     "main_screen.side_screen.title": "Titre : ",
+    "main_screen.side_screen.radius_edit": "Rayon : ",
 
     "tip.disable": "Vous pouvez désactiver ces astuces dans la configuration",
     "tip.change_volume": "Vous pouvez changer le volume des sons réduits en faisant glisser le curseur",
