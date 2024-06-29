@@ -1,1 +1,1 @@
-Fixed fabric minecraft version requirement
+Dragon growl can now be muffled
