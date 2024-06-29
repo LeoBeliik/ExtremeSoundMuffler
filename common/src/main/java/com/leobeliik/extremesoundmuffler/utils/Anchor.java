@@ -65,7 +65,7 @@ public class Anchor {
 
     public SortedMap<ResourceLocation, Double> getMuffledSounds() {
         SortedMap<ResourceLocation, Double> temp = new TreeMap<>();
-        this.muffledSounds.forEach((R, D) -> temp.put(ResourceLocation.parse(R), D));
+        this.muffledSounds.forEach((R, D) -> temp.put(new ResourceLocation(R), D));
         return temp;
     }
 

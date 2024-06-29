@@ -120,8 +120,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double directionH, double directionV) {
-        double dir = directionH == 0 ? directionV : directionH;
+    public boolean mouseScrolled(double mouseX, double mouseY, double dir) {
         if (firstSoundButton == null) {
             return false;
         }
@@ -134,7 +133,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
             b.setY((int) (b.getY() + (b.getHeight() * 10) * Mth.clamp(dir, -1, 1)));
             b.isVisible(b.getY() >= minYButton && b.getY() <= maxYButton);
         });
-        return super.mouseScrolled(mouseX, mouseY, directionH, directionV);
+        return super.mouseScrolled(mouseX, mouseY, dir);
     }
 
     @Override
@@ -214,9 +213,9 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
             updateButtons();
         }).bounds(getX() + 205, getY() + 180, 17, 17).build());
         //backwards list of sounds
-        addWidget(btnPrevSounds = Button.builder(Component.empty(), b -> mouseScrolled(0D, 0D, 1D, 0D)).bounds(getX() + 10, getY() + 22, 13, 20).build());
+        addWidget(btnPrevSounds = Button.builder(Component.empty(), b -> mouseScrolled(0D, 0D, 1D)).bounds(getX() + 10, getY() + 22, 13, 20).build());
         //forward list of sounds
-        addWidget(btnNextSounds = Button.builder(Component.empty(), b -> mouseScrolled(0D, 0D, -1D, 0D)).bounds(getX() + 233, getY() + 22, 13, 20).build());
+        addWidget(btnNextSounds = Button.builder(Component.empty(), b -> mouseScrolled(0D, 0D, -1D)).bounds(getX() + 233, getY() + 22, 13, 20).build());
 
     }
 

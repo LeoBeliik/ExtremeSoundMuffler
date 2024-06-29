@@ -1,11 +1,11 @@
 modLoader = "javafml" #mandatory
-loaderVersion = "51.0.0" #mandatory This is typically bumped every Minecraft version by Forge. See https://files.minecraftforge.net/ for a list of versions.
+loaderVersion = "47.0.0" #mandatory This is typically bumped every Minecraft version by Forge. See https://files.minecraftforge.net/ for a list of versions.
 license = "GNU LESSER GENERAL PUBLIC LICENSE" # Review your options at https://choosealicense.com/.
 licenseURL= "https://github.com/LeoBeliik/ExtremeSoundMuffler/blob/master/LICENSE.txt"
 issueTrackerURL="https://github.com/LeoBeliik/ExtremeSoundMuffler/issues"
 [[mods]] #mandatory
 modId = "extremesoundmuffler" #mandatory
-version = "3.46" #mandatory
+version = "3.47" #mandatory
 displayName="Extreme Sound Muffler"
 displayURL="https://www.curseforge.com/minecraft/mc-mods/extreme-sound-muffler"
 logoFile= "esm_logo.png" #optional
@@ -18,12 +18,12 @@ This mod also works Clientside only.
 [[dependencies.extremesoundmuffler]] #optional
 modId = "forge" #mandatory
 mandatory = true #mandatory
-versionRange = "[51.0.0,)" #mandatory
+versionRange = "[47.0.0,)" #mandatory
 ordering = "NONE" # The order that this dependency should load in relation to your mod, required to be either 'BEFORE' or 'AFTER' if the dependency is not mandatory
 side = "BOTH" # Side this dependency is applied on - 'BOTH', 'CLIENT' or 'SERVER'
 [[dependencies.extremesoundmuffler]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.21]"
+versionRange = "[1.20.1]"
 ordering = "NONE"
 side = "BOTH"

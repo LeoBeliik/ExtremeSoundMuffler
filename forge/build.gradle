@@ -7,7 +7,7 @@ plugins {
 base {
     archivesName = "${mod_name}-${modversion}-forge-${minecraft_version}"
 }
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 mixin {
     add(sourceSets.main, "${mod_id}.refmap.json")
 

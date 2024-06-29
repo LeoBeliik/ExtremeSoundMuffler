@@ -16,7 +16,7 @@ public class SoundMufflerCommon {
 
     public static ResourceLocation getTextureRL() {
         String texture = CommonConfig.get().useDarkTheme().get() ? "textures/gui/sm_gui_dark.png" : "textures/gui/sm_gui.png";
-        return ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, texture);
+        return new ResourceLocation(Constants.MOD_ID, texture);
     }
 
     public static void openMainScreen() {
