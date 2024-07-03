@@ -1,3 +1,1 @@
-Dragon growl can now be muffled
-
-Anchors now properly shows its radius (thanks rmnvgr)
+Fixed crash with some soundless modded sounds

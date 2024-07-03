@@ -1,1 +1,0 @@
-MixinConnector: com.leobeliik.extremesoundmuffler.MixinConnector
