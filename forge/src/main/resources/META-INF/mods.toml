@@ -5,7 +5,7 @@ licenseURL= "https://github.com/LeoBeliik/ExtremeSoundMuffler/blob/master/LICENS
 issueTrackerURL="https://github.com/LeoBeliik/ExtremeSoundMuffler/issues"
 [[mods]] #mandatory
 modId = "extremesoundmuffler" #mandatory
-version = "3.47" #mandatory
+version = "3.48" #mandatory
 displayName="Extreme Sound Muffler"
 displayURL="https://www.curseforge.com/minecraft/mc-mods/extreme-sound-muffler"
 logoFile= "esm_logo.png" #optional
