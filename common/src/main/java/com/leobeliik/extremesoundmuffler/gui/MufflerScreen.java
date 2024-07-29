@@ -31,7 +31,7 @@ import static com.leobeliik.extremesoundmuffler.SoundMufflerCommon.renderGui;
 public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
     private static final Minecraft minecraft = Minecraft.getInstance();
-    private static boolean isMuffling = true;
+    private static boolean isMuffling = false;
     private static Component toggleSoundsListMessage, screenTitle, tip;
     private final int xSize = 256;
     private final int ySize = 202;
@@ -201,7 +201,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         //Searchbar
         addRenderableWidget(searchBar = new EditBox(font, getX() + 74, getY() + 183, 119, 13, Component.empty())).setBordered(false);
         //toggle muffling sounds on/off
-        addWidget(btnTMS = Button.builder(Component.translatable("main_screen.btn.tms.stop"), b -> isMuffling = !isMuffling).bounds(getX() + 229, getY() + 180, 17, 17).build());
+        addWidget(btnTMS = Button.builder(Component.translatable("main_screen.btn.tms.stop"), b -> setMuffling(!isMuffling)).bounds(getX() + 229, getY() + 180, 17, 17).build());
         //deletes current muffled list or the recent list if shifting
         addWidget(btnDelete = Button.builder(Component.translatable("main_screen.btn.delete.sounds"), b -> {
             if (hasShiftDown()) {
@@ -577,6 +577,10 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
     public static boolean isMuffling() {
         return isMuffling;
+    }
+
+    public static void setMuffling(boolean muffling) {
+        isMuffling = muffling;
     }
 
     private int getX() {

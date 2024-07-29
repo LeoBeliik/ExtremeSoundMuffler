@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.leobeliik.extremesoundmuffler.CommonConfig;
+import com.leobeliik.extremesoundmuffler.gui.MufflerScreen;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import net.minecraft.FileUtil;
 import net.minecraft.client.Minecraft;
@@ -23,6 +24,8 @@ public class DataManager implements ISoundLists {
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     public static void loadData() {
+        MufflerScreen.setMuffling(true);
+
         Optional.ofNullable(loadMuffledMap()).ifPresent(mm -> mm.forEach((R, D) -> muffledSounds.put(ResourceLocation.parse(R), D)));
 
         if (!CommonConfig.get().disableAnchors().get()) {

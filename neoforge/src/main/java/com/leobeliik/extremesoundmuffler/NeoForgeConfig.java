@@ -3,7 +3,6 @@ package com.leobeliik.extremesoundmuffler;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.config.ModConfigEvent;

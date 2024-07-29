@@ -42,35 +42,39 @@ public abstract class SoundMixin implements ISoundLists {
     @ModifyArg(index = 0, at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;clamp(FFF)F"),
             method = "calculateVolume(FLnet/minecraft/sounds/SoundSource;)F")
     private float esm_setVolume(float volume) {
+        //if we are not muffling, sounds return the normal volume
+        if (!MufflerScreen.isMuffling()) return volume;
+
+        //save sound in temporary variable because there's a small chance to the sound to change when it shouldn't
         SoundInstance tempSound = esmSound;
+
         //don't care about forbidden sounds or from the psb
+        //noinspection ConstantValue (tempSound.getSound() CAN be null)
         if (tempSound != null && tempSound.getSound() != null && !esm_isForbidden(tempSound) && !PlaySoundButton.isFromPSB()) {
-            ResourceLocation soundLocation = tempSound.getLocation();
+            ResourceLocation soundResourceLocation = tempSound.getLocation();
 
             //remove sound to prevent repeated sounds and maintains the desired order
-            recentSoundsList.remove(soundLocation);
+            recentSoundsList.remove(soundResourceLocation);
             //add sound to recent sounds list
-            recentSoundsList.add(soundLocation);
+            recentSoundsList.add(soundResourceLocation);
 
-            if (MufflerScreen.isMuffling()) {
-                float tempVolume = tempSound.getVolume();
-                String soundName = soundLocation.getPath();
+            float tempVolume = tempSound.getVolume();
+            String soundName = soundResourceLocation.getPath();
 
-                //global sounds like thunder or dragon growl has too high volume to be properly muffled, so first we temporarily lower the max volume
-                if (soundName.contains("entity.lightning_bolt.thunder") || soundName.contains("entity.ender_dragon.growl")) {
-                    tempVolume = 1F;
-                }
+            //global sounds like thunder or dragon growl has too high volume to be properly muffled, so first we temporarily lower the max volume
+            if (soundName.contains("entity.lightning_bolt.thunder") || soundName.contains("entity.ender_dragon.growl")) {
+                tempVolume = 1F;
+            }
 
-                if (muffledSounds.containsKey(soundLocation)) {
-                    return (float) (tempVolume * muffledSounds.get(soundLocation));
-                }
+            if (muffledSounds.containsKey(soundResourceLocation)) {
+                return (float) (tempVolume * muffledSounds.get(soundResourceLocation));
+            }
 
-                //don't continue if the anchors are disabled
-                if (CommonConfig.get() == null || !CommonConfig.get().disableAnchors().get()) {
-                    Anchor anchor = Anchor.getAnchor(tempSound);
-                    if (anchor != null) {
-                        return (float) (tempVolume * anchor.getMuffledSounds().get(soundLocation));
-                    }
+            //don't continue if the anchors are disabled
+            if (!CommonConfig.get().disableAnchors().get()) {
+                Anchor anchor = Anchor.getAnchor(tempSound);
+                if (anchor != null) {
+                    return (float) (tempVolume * anchor.getMuffledSounds().get(soundResourceLocation));
                 }
             }
         }
