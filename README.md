@@ -1,4 +1,4 @@
-<img align="left" width="140" height="100" src="common/src/main/resources/esm_logo.png">
+<!-- <img align="left" width="140" height="100" src="common/src/main/resources/esm_logo.png"> -->
 <h1 align="center"> Extreme sound muffler Minecraft mod</h1>
 <br/>
 
