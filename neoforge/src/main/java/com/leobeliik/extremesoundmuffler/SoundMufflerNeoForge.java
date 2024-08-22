@@ -17,7 +17,8 @@ import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.common.NeoForge;
-
+import net.neoforged.neoforge.client.gui.ConfigurationScreen;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import static com.leobeliik.extremesoundmuffler.Constants.soundMufflerKey;
 
 @Mod(Constants.MOD_ID)
@@ -25,10 +26,8 @@ public class SoundMufflerNeoForge {
 
     public SoundMufflerNeoForge(IEventBus modEventBus, ModContainer container) {
         NeoForge.EVENT_BUS.register(this);
-        //prevent server complain when this mod is clientside only
-        /*ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class,
-                () -> new IExtensionPoint.DisplayTest(() -> "", (a, b) -> true));*/
         NeoForgeConfig.init(container);
+        container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
     }
 
     @EventBusSubscriber(modid = Constants.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)

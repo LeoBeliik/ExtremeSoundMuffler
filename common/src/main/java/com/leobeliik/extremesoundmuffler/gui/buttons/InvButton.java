@@ -8,8 +8,6 @@ import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
-import javax.annotation.ParametersAreNonnullByDefault;
-
 import static com.leobeliik.extremesoundmuffler.SoundMufflerCommon.getTextureRL;
 
 public class InvButton extends AbstractButton implements IColorsGui {
@@ -26,7 +24,6 @@ public class InvButton extends AbstractButton implements IColorsGui {
         SoundMufflerCommon.openMainScreen();
     }
 
-    @ParametersAreNonnullByDefault
     @Override
     public void renderScrollingString(GuiGraphics render, Font font, int mouseX, int mouseY) {
         if (this.visible) {

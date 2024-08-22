@@ -2,7 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "com.leobeliik.extremesoundmuffler.mixins",
-  "compatibilityLevel": "JAVA_21",
+  "compatibilityLevel": "JAVA_18",
   "client": [
     "InventoryScreenMixin",
     "CreativeInventoryScreenMixin",
@@ -10,7 +10,5 @@
   ],
   "injectors": {
     "defaultRequire": 1
-  },
-  "refmap": "extremesoundmuffler.refmap.json"
+  }
 }
-  

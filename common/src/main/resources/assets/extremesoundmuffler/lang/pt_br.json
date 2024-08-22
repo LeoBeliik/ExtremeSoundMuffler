@@ -62,5 +62,4 @@
     "log.warn.loadMuffledList": "ESM: lista abafada não encontrada;Criando lista de abafado vazio",
     "log.error.loadMuffledList": "ESM: Erro ao carregar a lista de sons abafados:\\n %s",
     "log.error.saveMuffledList": "ESM: Erro ao salvar a lista de sons abafados:\\n %s"
-  }
-  
+}

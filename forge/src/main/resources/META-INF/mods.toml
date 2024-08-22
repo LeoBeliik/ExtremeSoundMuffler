@@ -1,33 +1,26 @@
 modLoader = "javafml" 
-loaderVersion = "${neoforge_loader_version_range}" 
+loaderVersion = "${forge_loader_version_range}" 
 license = "${license}" 
 licenseURL = "https://github.com/LeoBeliik/ExtremeSoundMuffler/blob/master/LICENSE.txt"
 issueTrackerURL = "https://github.com/LeoBeliik/ExtremeSoundMuffler/issues"
+clientSideOnly=true
 [[mods]] 
     modId = "${mod_id}"
     version = "${version}"
     displayName = "${mod_name}"
     logoFile = "esm_logo.png"
-    credits="${credits}"
+    credits = "${credits}"
     authors = "${mod_author}"
     description = '''${description}'''
-[[mixins]]
-    config = "${mod_id}.mixins.json"
 [[dependencies.${mod_id}]] 
-    modId = "neoforge"
-    type="required"
-    versionRange = "[${neoforge_version},)"
+    modId = "forge"
+    mandatory = true
+    versionRange = "[${forge_version},)"
     ordering = "NONE"
     side = "BOTH"
 [[dependencies.${mod_id}]]
     modId = "minecraft"
-    type="required"
+    mandatory = true
     versionRange = "${minecraft_version_range}"
     ordering = "NONE"
     side = "BOTH"
-
-
-
-
-
-

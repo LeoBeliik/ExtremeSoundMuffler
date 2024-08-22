@@ -1,18 +1,18 @@
 {
   "schemaVersion": 1,
-  "id": "extremesoundmuffler",
+  "id": "${mod_id}",
   "version": "${version}",
-  "name": "Extreme sound muffler",
-  "description": "This mod allows you to muffle (almost) any sound selectively, allowing you to choose the volume of the sound you want between mute and 90%. This mod also works Clientside only.",
+  "name": "${mod_name}",
+  "description": "${description}",
   "authors": [
-    "LeoBeliik"
+    "${mod_author}"
   ],
   "contact": {
     "homepage": "https://www.curseforge.com/minecraft/mc-mods/extreme-sound-muffler",
     "sources": "https://github.com/LeoBeliik/ExtremeSoundMuffler",
     "issues": "https://github.com/LeoBeliik/ExtremeSoundMuffler/issues"
   },
-  "license": "LGPL-3.0",
+  "license": "${license}",
   "icon": "esm_logo.png",
   "environment": "*",
   "entrypoints": {
@@ -23,14 +23,13 @@
   "mixins": [
     "extremesoundmuffler.mixins.json"
   ],
+  "depends": {
+    "fabricloader": ">=${fabric_loader_version}",
+    "fabric-api": "*",
+    "minecraft": "${minecraft_version}",
+    "java": ">=${java_version}"
+  },
   "custom": {
     "modmenu:clientsideOnly": true
-  },
-  "depends": {
-    "fabricloader": ">=0.15",
-    "fabric": ">=0.100",
-    "minecraft": "~${minecraft_version}",
-    "java": ">=21"
   }
 }
-  
