@@ -11,7 +11,6 @@ import java.util.Objects;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-@SuppressWarnings("WeakerAccess")
 public class Anchor {
 
     private final int id;
@@ -55,7 +54,7 @@ public class Anchor {
         return Radius;
     }
 
-    public void setRadius(int Radius) {
+    private void setRadius(int Radius) {
         this.Radius = Radius;
     }
 

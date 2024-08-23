@@ -114,3 +114,6 @@ processResources {
     //done it here after the mod's files were created with the corresponding mod version
     project.version=""
 }
+
+//no need to check for javadocs
+tasks.withType(Javadoc).all { enabled = false }

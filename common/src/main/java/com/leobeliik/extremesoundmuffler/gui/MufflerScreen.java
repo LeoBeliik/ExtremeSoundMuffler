@@ -111,8 +111,8 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
             updateButtons();
         }
         if (!editRadBar.getValue().isEmpty()) {
-            int Radius = Integer.parseInt(editRadBar.getValue());
-            editRadBar.setTextColor(Radius > 32 || Radius < 1 ? aquaText : whiteText);
+            int radius = Integer.parseInt(editRadBar.getValue());
+            editRadBar.setTextColor(radius > 32 || radius < 1 ? aquaText : whiteText);
         } else {
             editRadBar.setTextColor(whiteText);
         }
@@ -349,7 +349,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         //--------------- Toggle Muffle sounds button ---------------//
         //draws a "/" over the muffle button texture if muffling
         if (isMuffling) {
-            stack.blit(getTextureRL(), btnTMS.getX() + 1, btnTMS.getY(), 54F, 202F, 15, 15, xSize, xSize);
+            stack.blit(getTextureRL(), btnTMS.getX() + 1, btnTMS.getY(), 54F, 202F, 15, 15, xSize, 256);
         }
 
         message = isMuffling ? Component.translatable("main_screen.btn.tms.stop") : Component.translatable("main_screen.btn.tms.start");
@@ -362,7 +362,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
         //show texture for the deletion of the recent sounds list
         if (hasShiftDown()) {
-            stack.blit(getTextureRL(), btnDelete.getX() + 2, btnDelete.getY() + 1, 54F, 217F, 13, 13, xSize, xSize);
+            stack.blit(getTextureRL(), btnDelete.getX() + 2, btnDelete.getY() + 1, 54F, 217F, 13, 13, xSize, 256);
             message = Component.translatable("main_screen.btn.delete.list");
         }
         //draw tooltip
@@ -426,7 +426,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
                         String color = anchorList.get(Integer.parseInt(btn.getMessage().getString())).getAnchorPos() != null ? "green" : "white";
                         setFGColor(btn, color);
                         if (anchor != null && btn.getMessage().getString().equals(String.valueOf(anchor.getAnchorId()))) {
-                            stack.blit(getTextureRL(), btn.getX() - 5, btn.getY() - 2, 71F, 202F, 27, 22, xSize, xSize); //fancy selected Anchor indicator
+                            stack.blit(getTextureRL(), btn.getX() - 5, btn.getY() - 2, 71F, 202F, 27, 22, xSize, 256); //fancy selected Anchor indicator
                         }
                     }
                 }
@@ -452,14 +452,14 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         if (anchor == null) return; //everything here depends of the Anchor
         //Anchor coordinates and set coord button
         String dimensionName = "";
-        String Radius;
+        String radius;
         int x = btnSetAnchor.getX();
         int y = btnSetAnchor.getY();
         int stringW;
         String message;
 
         stringW = font.width(Component.translatable("main_screen.side_screen.dimension"));
-        Radius = anchor.getRadius() == 0 ? "" : String.valueOf(anchor.getRadius());
+        radius = anchor.getRadius() == 0 ? "" : String.valueOf(anchor.getRadius());
         if (anchor.getDimension() != null) {
             stringW += font.width(anchor.getDimension().getPath());
             dimensionName = anchor.getDimension().getPath();
@@ -469,19 +469,19 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         stack.drawString(font, Component.translatable("main_screen.side_screen.x", anchor.getX()), x + 1, y - 50, whiteText);
         stack.drawString(font, Component.translatable("main_screen.side_screen.y", anchor.getY()), x + 1, y - 40, whiteText);
         stack.drawString(font, Component.translatable("main_screen.side_screen.z", anchor.getZ()), x + 1, y - 30, whiteText);
-        stack.drawString(font, Component.translatable("main_screen.side_screen.radius", Radius), x + 1, y - 20, whiteText);
+        stack.drawString(font, Component.translatable("main_screen.side_screen.radius", radius), x + 1, y - 20, whiteText);
         stack.drawString(font, Component.translatable("main_screen.side_screen.dimension", dimensionName), x + 1, y - 10, whiteText);
         renderGui();
         stack.blit(getTextureRL(), x, y, 0, 69.45F, 11, 11, 88, 88); //set coordinates button
 
         if (anchor.getAnchorPos() != null) {
             btnEditAnchor.active = true;
-            stack.blit(getTextureRL(), btnEditAnchor.getX(), btnEditAnchor.getY(), 32F, 213F, 11, 11, xSize, xSize); //set edit anchor button texture
+            stack.blit(getTextureRL(), btnEditAnchor.getX(), btnEditAnchor.getY(), 32F, 213F, 11, 11, xSize, 256); //set edit anchor button texture
         } else {
             btnEditAnchor.active = false;
         }
 
-        //Show Radius and Title text when editing Anchor and bg
+        //Show radius and Title text when editing Anchor and bg
         x = btnSetAnchor.getX();
         y = editAnchorTitleBar.getY();
         if (editRadBar.visible) {
