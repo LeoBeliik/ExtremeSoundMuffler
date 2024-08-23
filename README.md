@@ -1,8 +1,6 @@
-<!-- <img align="left" width="140" height="100" src="common/src/main/resources/esm_logo.png"> -->
-<h1 align="center"> Extreme sound muffler Minecraft mod</h1>
-<br/>
-
----
+<p align="center"><img width="250" height="250" src="common/src/main/resources/esm_logo.png"></p>
+<h1/>
+<h1 align="center"> Extreme sound muffler - Minecraft mod</h1>
 <h3 align="center"> Extreme sound muffler is a client side mod that allows you to muffle sounds selectively. </h3> 
 <br/>
 <p align="center"> <b> 🔥 Curseforge:   </b> </p>
