@@ -52,7 +52,7 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
         isMuffling = getFGColor(getText(), "aqua");
         SoundMufflerCommon.renderGui();
         //row highlight
-        stack.fill(getX(), getY() - 1, getX() + width + 4, getY() + height - 2, bg);
+        stack.fill(getX(), getY() - 1, getX() + width + 1, getY() + height - 2, bg);
         drawGradient(stack);
         float v = isMuffling ? 202F : 213F;
         //--------------- Render buttons BG ---------------//
@@ -89,10 +89,9 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
         if (showSlider && isFocused() && isHovered) {
             stack.drawCenteredString(font, Component.translatable("slider.btn.volume", (int) (sliderValue * 100)), getX() + (width / 2), getY() + 2, aquaText); //title
         } else {
-            String msgTruncated;
-            if (this.isHovered) {
-                msgTruncated = getMessage().getString();
-                stack.fill(getX() + this.width + 3, getY(), getX() + v + 3, getY() + font.lineHeight + 2, darkBG);
+            String msgTruncated = getMessage().getString();
+            if (this.isHovered && font.width(msgTruncated) > 205) {
+                stack.fill(getX() + this.width + 1, getY() - 1, getX() + v + 3, getY() + font.lineHeight + 3, bg);
             } else {
                 msgTruncated = font.substrByWidth(getMessage(), 205).getString();
             }

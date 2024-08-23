@@ -101,6 +101,16 @@ class NeoForgeConfig {
 
     @SubscribeEvent
     static void onLoad(ModConfigEvent.Loading event) {
+        fillForbiddenList();
+    }
+
+    @SubscribeEvent
+    static void onReload(ModConfigEvent.Reloading event) {
+        fillForbiddenList();
+    }
+
+    private static void fillForbiddenList() {
+        ISoundLists.forbiddenSounds.clear();
         ISoundLists.forbiddenSounds.addAll(forbiddenSounds.get());
     }
 

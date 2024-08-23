@@ -68,7 +68,6 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         stack.blit(getTextureRL(), getX(), getY(), 0, 0, xSize, ySize); //Main screen bounds
         renderSideScreen(stack); //render side screen buttons, need to be rendered before all the other things
         super.render(stack, mouseX, mouseY, partialTicks);
-        //super.renderBackground(stack, mouseX, mouseY, partialTicks);
         //--------------- My Renders ---------------//
         //Screen title
         stack.drawCenteredString(font, screenTitle, getX() + 128, getY() + 8, whiteText);
@@ -272,7 +271,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     private void addSoundListButtons() {
         int by = minYButton;
         //set x depending of config
-        int bx = CommonConfig.get().leftButtons().get() ? getX() + 36 : getX() + 11;
+        int bx = CommonConfig.get().leftButtons().get() ? getX() + 38 : getX() + 11;
         //easiest way to assure this is the first one
         firstSoundButton = null;
         soundsList.clear();
