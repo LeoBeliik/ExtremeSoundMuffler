@@ -3,10 +3,12 @@ package com.leobeliik.extremesoundmuffler.mixins;
 import com.leobeliik.extremesoundmuffler.CommonConfig;
 import com.leobeliik.extremesoundmuffler.gui.buttons.InvButton;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
+import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.gui.screens.recipebook.CraftingRecipeBookComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.InventoryMenu;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -16,17 +18,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(InventoryScreen.class)
-public abstract class InventoryScreenMixin extends EffectRenderingInventoryScreen<InventoryMenu> {
+public abstract class InventoryScreenMixin extends AbstractRecipeBookScreen<InventoryMenu> {
 
     @Unique
     private InvButton esm_invButton = new InvButton(esm_getIBX(), esm_getIBY());
 
-    public InventoryScreenMixin(InventoryMenu inventoryMenu, Inventory inventory, Component component) {
-        super(inventoryMenu, inventory, component);
+    public InventoryScreenMixin(Player player) {
+        super(player.inventoryMenu, new CraftingRecipeBookComponent(player.inventoryMenu), player.getInventory(), Component.translatable("container.crafting"));
     }
 
     //Renders the inventory button if enabled in config
-    @Inject(method = "Lnet/minecraft/client/gui/screens/inventory/InventoryScreen;init()V", at = @At("TAIL"))
+    @Inject(method = "Lnet/minecraft/client/gui/screens/inventory/InventoryScreen;init()V", at = @At("HEAD"))
     private void esm_inventoryScreenInit(CallbackInfo CI) {
         if (!CommonConfig.get().disableInventoryButton().get()) {
             this.addRenderableWidget(esm_invButton);

@@ -3,7 +3,7 @@ package com.leobeliik.extremesoundmuffler.interfaces;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.util.FastColor;
+import net.minecraft.util.ARGB;
 import java.util.Locale;
 
 public interface IColorsGui {
@@ -12,10 +12,10 @@ public interface IColorsGui {
     int aquaText = 0x00ffff;
     int greenText = 0x00ff00;
     int grayText = 0x080808;
-    int darkBG = FastColor.ARGB32.color(255, 0, 0, 0);
-    int brightBG = FastColor.ARGB32.color(200, 50, 50, 50);
-    int goldBG = FastColor.ARGB32.color(100, 255, 215, 0);
-    int whiteBG = FastColor.ARGB32.color(255, 255, 255, 255);
+    int darkBG = ARGB.color(255, 0, 0, 0);
+    int brightBG = ARGB.color(200, 50, 50, 50);
+    int goldBG = ARGB.color(100, 255, 215, 0);
+    int whiteBG = ARGB.color(255, 255, 255, 255);
 
     default void setFGColor(AbstractWidget button, String color) {
         MutableComponent message = button.getMessage().copy();

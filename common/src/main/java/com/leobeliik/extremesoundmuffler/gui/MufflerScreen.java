@@ -16,6 +16,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -65,7 +66,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     @Override
     public void render(@NotNull GuiGraphics stack, int mouseX, int mouseY, float partialTicks) {
         renderGui();
-        stack.blit(getTextureRL(), getX(), getY(), 0, 0, xSize, ySize); //Main screen bounds
+        stack.blit(RenderType::guiTextured, getTextureRL(), getX(), getY(), 0, 0, xSize, ySize, 256, 256); //Main screen bounds
         renderSideScreen(stack); //render side screen buttons, need to be rendered before all the other things
         super.render(stack, mouseX, mouseY, partialTicks);
         //--------------- My Renders ---------------//
@@ -281,7 +282,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
             soundsList.addAll(recentSoundsList);
             Collections.reverse(soundsList); //makes the recent sounds sort in chronological order
         } else if (Component.translatable("main_screen.btn.csl.all").equals(component)) {
-            BuiltInRegistries.SOUND_EVENT.forEach(k -> soundsList.add(k.getLocation()));
+            BuiltInRegistries.SOUND_EVENT.forEach(k -> soundsList.add(k.location()));
             Collections.sort(soundsList); //makes the All sounds list sort in alphabetically order
         } else {
             soundsList.addAll(this.anchor == null ? muffledSounds.keySet() : this.anchor.getMuffledSounds().keySet());
@@ -348,7 +349,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         //--------------- Toggle Muffle sounds button ---------------//
         //draws a "/" over the muffle button texture if muffling
         if (isMuffling) {
-            stack.blit(getTextureRL(), btnTMS.getX() + 1, btnTMS.getY(), 54F, 202F, 15, 15, xSize, 256);
+            stack.blit(RenderType::guiTextured,  getTextureRL(), btnTMS.getX() + 1, btnTMS.getY(), 54F, 202F, 15, 15, xSize, 256);
         }
 
         message = isMuffling ? Component.translatable("main_screen.btn.tms.stop") : Component.translatable("main_screen.btn.tms.start");
@@ -361,7 +362,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
         //show texture for the deletion of the recent sounds list
         if (hasShiftDown()) {
-            stack.blit(getTextureRL(), btnDelete.getX() + 2, btnDelete.getY() + 1, 54F, 217F, 13, 13, xSize, 256);
+            stack.blit(RenderType::guiTextured,  getTextureRL(), btnDelete.getX() + 2, btnDelete.getY() + 1, 54F, 217F, 13, 13, xSize, 256);
             message = Component.translatable("main_screen.btn.delete.list");
         }
         //draw tooltip
@@ -425,7 +426,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
                         String color = anchorList.get(Integer.parseInt(btn.getMessage().getString())).getAnchorPos() != null ? "green" : "white";
                         setFGColor(btn, color);
                         if (anchor != null && btn.getMessage().getString().equals(String.valueOf(anchor.getAnchorId()))) {
-                            stack.blit(getTextureRL(), btn.getX() - 5, btn.getY() - 2, 71F, 202F, 27, 22, xSize, 256); //fancy selected Anchor indicator
+                            stack.blit(RenderType::guiTextured,  getTextureRL(), btn.getX() - 5, btn.getY() - 2, 71F, 202F, 27, 22, xSize, 256); //fancy selected Anchor indicator
                         }
                     }
                 }
@@ -471,11 +472,11 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         stack.drawString(font, Component.translatable("main_screen.side_screen.radius", radius), x + 1, y - 20, whiteText);
         stack.drawString(font, Component.translatable("main_screen.side_screen.dimension", dimensionName), x + 1, y - 10, whiteText);
         renderGui();
-        stack.blit(getTextureRL(), x, y, 0, 69.45F, 11, 11, 88, 88); //set coordinates button
+        stack.blit(RenderType::guiTextured,  getTextureRL(), x, y, 0, 69.45F, 11, 11, 88, 88); //set coordinates button
 
         if (anchor.getAnchorPos() != null) {
             btnEditAnchor.active = true;
-            stack.blit(getTextureRL(), btnEditAnchor.getX(), btnEditAnchor.getY(), 32F, 213F, 11, 11, xSize, 256); //set edit anchor button texture
+            stack.blit(RenderType::guiTextured,  getTextureRL(), btnEditAnchor.getX(), btnEditAnchor.getY(), 32F, 213F, 11, 11, xSize, 256); //set edit anchor button texture
         } else {
             btnEditAnchor.active = false;
         }

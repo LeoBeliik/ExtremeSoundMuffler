@@ -7,6 +7,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import static com.leobeliik.extremesoundmuffler.SoundMufflerCommon.getTextureRL;
 
@@ -28,7 +29,7 @@ public class InvButton extends AbstractButton implements IColorsGui {
     public void renderScrollingString(GuiGraphics render, Font font, int mouseX, int mouseY) {
         if (this.visible) {
             SoundMufflerCommon.renderGui();
-            render.blit(getTextureRL(), getX(), getY(), 43f, 202f, 11, 11, 256, 256); //button texure
+            render.blit(RenderType::guiTextured, getTextureRL(), getX(), getY(), 43f, 202f, 11, 11, 256, 256); //button texure
             if (isMouseOver(mouseX, mouseY) && !hold) {
                 render.drawCenteredString(font, Component.translatable("inventory.btn"), getX() + 5, getY() + this.height + 1, whiteText);
             }
