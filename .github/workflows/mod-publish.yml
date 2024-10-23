@@ -11,70 +11,51 @@ jobs:
       packages: write
 
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up JDK
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'temurin'
-          java-version: '21'
-
-      - name: Make Gradle wrapper executable
-        run: chmod +x ./gradlew
-
-      - name: Build with Gradle
-        run: ./gradlew --max-workers 1 build -x :Common:compileJava
-
-      - name: Collect version information
-        run: |
+    - uses: actions/checkout@v2
+    - name: Set up JDK
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'temurin'
+        java-version: '21'
+                
+    - name: Make Gradle wrapper executable
+      run: chmod +x ./gradlew
+      
+    - name: Build with Gradle
+      run: ./gradlew --max-workers 1 build -x :Common:compileJava
+      
+    - name: Collect version information
+      run: |
           set_var() {
             echo $1="$2"
             echo $1="$2" >> $GITHUB_ENV
             declare -g $1="$2"
           }
           set_var JAR_FILE $(eval echo fabric/build/libs/ExtremeSoundMuffler-*_*-*.jar)
-          set_var MOD_VERSION $(echo ${JAR_FILE%.*} | cut -d- -f2)
+          set_var MOD_VERSION $(echo "$JAR_FILE" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
 
-      - name: Publish Minecraft Mods NeoForge Edition
-        uses: Kir-Antipov/mc-publish@v3.3
-        with:
-          files: neoforge/build/libs/!(*-@(dev|sources|javadoc)).jar
+    - name: Publish Minecraft Mods NeoForge Edition
+      uses: Kir-Antipov/mc-publish@v3.3
+      with:
+        files: neoforge/build/libs/!(*-@(dev|sources|javadoc)).jar
 
-          modrinth-id: 5IIKsxiL
-          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+        modrinth-id: 5IIKsxiL
+        modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
 
-          curseforge-id: 363363
-          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+        curseforge-id: 363363
+        curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
 
-          name: Extreme sound muffler ${{env.MOD_VERSION}} - NeoForge ${{github.ref_name}}
-          loaders: neoforge
-          game-versions: ${{github.ref_name}}
-          version: ${{env.MOD_VERSION}}-${{github.ref_name}}
-          java: Java 21
-          modrinth-featured: false
-          changelog-file: CHANGELOG.md
+        name: Extreme sound muffler ${{env.MOD_VERSION}} - NeoForge ${{github.ref_name}}
+        loaders: neoforge
+        game-versions: ${{github.ref_name}}
+        version: ${{env.MOD_VERSION}}-${{github.ref_name}}
+        java: Java 21
+        modrinth-featured: false
+        changelog-file: CHANGELOG.md
 
-      - name: Publish Minecraft Mods Forge Edition
-        uses: Kir-Antipov/mc-publish@v3.3
-        with:
-          files: forge/build/libs/!(*-@(dev|sources|javadoc)).jar
-
-          modrinth-id: 5IIKsxiL
-          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-
-          curseforge-id: 363363
-          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
-
-          name: Extreme sound muffler ${{env.MOD_VERSION}} - Forge ${{github.ref_name}}
-          loaders: forge
-          game-versions: ${{github.ref_name}}
-          version: ${{env.MOD_VERSION}}-${{github.ref_name}}
-          java: Java 21
-          modrinth-featured: false
-          changelog-file: CHANGELOG.md
-
-      - name: Publish Minecraft Mods Fabric Edition
-        uses: Kir-Antipov/mc-publish@v3.3
-        with:
+    - name: Publish Minecraft Mods Fabric Edition
+      uses: Kir-Antipov/mc-publish@v3.3
+      with:
           files: fabric/build/libs/!(*-@(dev|sources|javadoc)).jar
           
           modrinth-id: 5IIKsxiL
@@ -90,8 +71,8 @@ jobs:
           java: Java 21
           modrinth-featured: false
           changelog-file: CHANGELOG.md
-
-      - name: Cleanup Gradle Cache
-        run: ./gradlew --stop |
+          
+    - name: Cleanup Gradle Cache
+      run: ./gradlew --stop |
           rm -f ~/.gradle/caches/modules-2/modules-2.lock
           rm -f ~/.gradle/caches/modules-2/gc.properties
