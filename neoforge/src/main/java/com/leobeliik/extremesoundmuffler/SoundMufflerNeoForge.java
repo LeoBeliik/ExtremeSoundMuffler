@@ -21,7 +21,7 @@ import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import static com.leobeliik.extremesoundmuffler.Constants.soundMufflerKey;
 
-@Mod(Constants.MOD_ID)
+@Mod(value = Constants.MOD_ID, dist = Dist.CLIENT)
 public class SoundMufflerNeoForge {
 
     public SoundMufflerNeoForge(IEventBus modEventBus, ModContainer container) {
