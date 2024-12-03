@@ -81,6 +81,3 @@
 <a href= https://github.com/LeoBeliik/ExtremeSoundMuffler/blob/master/Default_Config_At_3.20%2BFabric.json5> Fabric Config file</a>
 <br/>
 <br/>
-<p>
-<img align="center" width="24" height="24" src="https://resources.jetbrains.com/storage/products/company/brand/logos/IntelliJ_IDEA_icon.png" alt="IntelliJ IDEA logo."> Thanks to <b>JetBrains</b> and their <a href=(https://www.jetbrains.com/community/opensource/#support/)> Open Source Support </a>
-</p>
