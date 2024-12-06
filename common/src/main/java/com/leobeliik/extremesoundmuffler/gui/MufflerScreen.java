@@ -318,6 +318,8 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
             }
 
             addRenderableWidget(btnSound);
+            addRenderableWidget(btnSound.getBtnToggleSound()).setAlpha(0);
+            addRenderableWidget(btnSound.getBtnPlaySound());
 
             by += btnSound.getHeight();
             btnSound.isVisible(btnSound.getY() < maxYButton);
@@ -331,7 +333,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
     }
 
-    private void updateButtons() {
+    public void updateButtons() {
         for (Iterator<? extends GuiEventListener> iterator = children().iterator(); iterator.hasNext(); ) {
             if (iterator.next() instanceof MuffledSlider button) {
                 button.isVisible(false);

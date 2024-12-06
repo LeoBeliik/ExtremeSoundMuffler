@@ -129,7 +129,7 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
                 if (screen.removeSoundMuffled(sound)) {
                     setFGColor(this, "white");
                     if (screen.getBtnCSLTitle().equals(Component.translatable("main_screen.btn.csl.muffled"))) {
-                        this.visible = false;
+                        screen.updateButtons();
                     }
                 }
             } else {
@@ -149,7 +149,7 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
         btnPlaySound = new PlaySoundButton(btnToggleSound.getX() + 13, getY(), SoundEvent.createVariableRangeEvent(sound));
     }
 
-    private PlaySoundButton getBtnPlaySound() {
+    public PlaySoundButton getBtnPlaySound() {
         return btnPlaySound;
     }
 
