@@ -1,1 +1,1 @@
-Fixed crash with some soundless modded sounds
+Fixed "forbiddenSounds" config option preventing sounds from being muffled instead of just hide them from the "recent sounds list"

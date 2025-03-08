@@ -44,13 +44,15 @@ public abstract class SoundMixin implements ISoundLists {
     private float esm_setVolume(float volume) {
         SoundInstance tempSound = esmSound;
         //don't care about forbidden sounds or from the psb
-        if (tempSound != null && tempSound.getSound() != null && !esm_isForbidden(tempSound) && !PlaySoundButton.isFromPSB()) {
+        if (tempSound != null && tempSound.getSound() != null && !PlaySoundButton.isFromPSB()) {
             ResourceLocation soundLocation = tempSound.getLocation();
 
-            //remove sound to prevent repeated sounds and maintains the desired order
-            recentSoundsList.remove(soundLocation);
-            //add sound to recent sounds list
-            recentSoundsList.add(soundLocation);
+            if (!esm_isForbidden(tempSound)) {
+                //remove sound to prevent repeated sounds and maintains the desired order
+                recentSoundsList.remove(soundLocation);
+                //add sound to recent sounds list
+                recentSoundsList.add(soundLocation);
+            }
 
             if (MufflerScreen.isMuffling()) {
                 float tempVolume = tempSound.getVolume();
