@@ -1,2 +1,1 @@
-update to 1.21.4  
-Made unmuffling sounds in the muffled sounds screen not bad looking
+Fixed "forbiddenSounds" config option preventing sounds from being muffled instead of just hide them from the "recent sounds list"  

@@ -50,14 +50,15 @@ public abstract class SoundMixin implements ISoundLists {
 
         //don't care about forbidden sounds or from the psb
         //noinspection ConstantValue (tempSound.getSound() CAN be null)
-        if (tempSound != null && tempSound.getSound() != null && !esm_isForbidden(tempSound) && !PlaySoundButton.isFromPSB()) {
+        if (tempSound != null && tempSound.getSound() != null && !PlaySoundButton.isFromPSB()) {
             ResourceLocation soundResourceLocation = tempSound.getLocation();
 
-            //remove sound to prevent repeated sounds and maintains the desired order
-            recentSoundsList.remove(soundResourceLocation);
-            //add sound to recent sounds list
-            recentSoundsList.add(soundResourceLocation);
-
+            if (!esm_isForbidden(tempSound)) {
+                //remove sound to prevent repeated sounds and maintains the desired order
+                recentSoundsList.remove(soundResourceLocation);
+                //add sound to recent sounds list
+                recentSoundsList.add(soundResourceLocation);
+            }
             float tempVolume = tempSound.getVolume();
             String soundName = soundResourceLocation.getPath();
 
