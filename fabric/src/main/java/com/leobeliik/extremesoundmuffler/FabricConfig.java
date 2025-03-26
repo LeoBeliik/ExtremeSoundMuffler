@@ -16,14 +16,15 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+
 import static com.leobeliik.extremesoundmuffler.Constants.*;
 
 class FabricConfig {
 
     private static final Path path = FabricLoader.getInstance().getConfigDir().resolve(MOD_ID + ".json5");
     private static PropertyMirror<List<String>> forbiddenSounds = PropertyMirror.create(ConfigTypes.makeList(ConfigTypes.STRING));
+    private static PropertyMirror<List<String>> modsMuffled = PropertyMirror.create(ConfigTypes.makeList(ConfigTypes.STRING));
     private static PropertyMirror<Boolean> lawfulAllList = PropertyMirror.create(ConfigTypes.BOOLEAN);
     private static PropertyMirror<Boolean> disableInventoryButton = PropertyMirror.create(ConfigTypes.BOOLEAN);
     private static PropertyMirror<Boolean> disableCreativeInventoryButton = PropertyMirror.create(ConfigTypes.BOOLEAN);
@@ -40,6 +41,7 @@ class FabricConfig {
     static void init() {
         CommonConfig.set(new CommonConfig.ConfigAccess(
                 forbiddenSounds::getValue,
+                modsMuffled::getValue,
                 lawfulAllList::getValue,
                 disableInventoryButton::getValue,
                 disableCreativeInventoryButton::getValue,
@@ -66,6 +68,11 @@ class FabricConfig {
             .withComment("General settings: ").withComment("") // general "category"
             .withComment("Blacklisted Sounds - add the name of the sounds to blacklist, separated with comma")
             .finishValue(forbiddenSounds::mirror)
+
+            .beginValue("modsMuffled", ConfigTypes.makeList(ConfigTypes.STRING), new ArrayList<>())
+            .withComment("General mod muffling, any sound from these mods will be muffled down to the provided volume. \n " +
+                    "Name of the mod and desired volume, separated by \":\" \n Example: \"minecraft:50\", \"extremesoundmuffler:0\"")
+            .finishValue(modsMuffled::mirror)
 
             .beginValue("lawfulAllList", ConfigTypes.BOOLEAN, false)
             .withComment("Allow the \"ALL\" sounds list to include the blacklisted sounds?")
@@ -155,6 +162,10 @@ class FabricConfig {
 
     static List<String> getForbiddenSounds() {
         return forbiddenSounds.getValue();
+    }
+
+    static List<String> getModsMuffled() {
+        return modsMuffled.getValue();
     }
 
     static void setInvButtonHorizontal(int x) {

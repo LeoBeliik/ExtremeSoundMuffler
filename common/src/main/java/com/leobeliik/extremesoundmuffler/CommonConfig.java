@@ -12,6 +12,7 @@ public class CommonConfig {
 
     public record ConfigAccess(
             Supplier<List<? extends String>> forbiddenSounds,
+            Supplier<List<? extends String>> modsMuffled,
             Supplier<Boolean> lawfulAllList,
             Supplier<Boolean> disableInventoryButton,
             Supplier<Boolean> disableCreativeInventoryButton,

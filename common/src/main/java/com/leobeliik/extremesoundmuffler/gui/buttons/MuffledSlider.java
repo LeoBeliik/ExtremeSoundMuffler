@@ -1,7 +1,6 @@
 package com.leobeliik.extremesoundmuffler.gui.buttons;
 
 import com.leobeliik.extremesoundmuffler.CommonConfig;
-import com.leobeliik.extremesoundmuffler.SoundMufflerCommon;
 import com.leobeliik.extremesoundmuffler.gui.MufflerScreen;
 import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
@@ -51,7 +50,6 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
     @Override
     public void renderWidget(@NotNull GuiGraphics stack, int mouseX, int mouseY, float partialTicks) {
         isMuffling = getFGColor(getText(), "aqua");
-        SoundMufflerCommon.renderGui();
         //row highlight
         stack.fill(getX(), getY() - 1, getX() + width + 1, getY() + height - 2, bg);
         drawGradient(stack);

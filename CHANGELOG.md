@@ -1,1 +1,2 @@
-Fixed "forbiddenSounds" config option preventing sounds from being muffled instead of just hide them from the "recent sounds list"  
+Updated to 1.21.5  
+Added config option to muffle mods. (this will be part of the ingame GUI eventually.)  

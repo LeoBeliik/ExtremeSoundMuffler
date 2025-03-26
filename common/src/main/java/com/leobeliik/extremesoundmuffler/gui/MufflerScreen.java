@@ -27,7 +27,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.function.Predicate;
 import static com.leobeliik.extremesoundmuffler.SoundMufflerCommon.getTextureRL;
-import static com.leobeliik.extremesoundmuffler.SoundMufflerCommon.renderGui;
 
 public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
@@ -65,7 +64,6 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
     @Override
     public void render(@NotNull GuiGraphics stack, int mouseX, int mouseY, float partialTicks) {
-        renderGui();
         stack.blit(RenderType::guiTextured, getTextureRL(), getX(), getY(), 0, 0, xSize, ySize, 256, 256); //Main screen bounds
         renderSideScreen(stack); //render side screen buttons, need to be rendered before all the other things
         super.render(stack, mouseX, mouseY, partialTicks);
@@ -473,7 +471,6 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         stack.drawString(font, Component.translatable("main_screen.side_screen.z", anchor.getZ()), x + 1, y - 30, whiteText);
         stack.drawString(font, Component.translatable("main_screen.side_screen.radius", radius), x + 1, y - 20, whiteText);
         stack.drawString(font, Component.translatable("main_screen.side_screen.dimension", dimensionName), x + 1, y - 10, whiteText);
-        renderGui();
         stack.blit(RenderType::guiTextured,  getTextureRL(), x, y, 0, 69.45F, 11, 11, 88, 88); //set coordinates button
 
         if (anchor.getAnchorPos() != null) {

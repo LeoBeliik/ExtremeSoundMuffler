@@ -7,9 +7,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
-
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @EventBusSubscriber(modid = Constants.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 class NeoForgeConfig {
@@ -17,6 +15,7 @@ class NeoForgeConfig {
     private static ModConfigSpec CLIENT_CONFIG;
     private static ModConfigSpec.Builder CLIENT_BUILDER = new ModConfigSpec.Builder();
     private static ModConfigSpec.ConfigValue<List<? extends String>> forbiddenSounds;
+    private static ModConfigSpec.ConfigValue<List<? extends String>> modsMuffled;
     private static ModConfigSpec.BooleanValue lawfulAllList;
     private static ModConfigSpec.BooleanValue disableInventoryButton;
     private static ModConfigSpec.BooleanValue disableCreativeInventoryButton;
@@ -35,6 +34,7 @@ class NeoForgeConfig {
         container.registerConfig(ModConfig.Type.CLIENT, NeoForgeConfig.CLIENT_CONFIG);
         CommonConfig.set(new CommonConfig.ConfigAccess(
                 forbiddenSounds,
+                modsMuffled,
                 lawfulAllList,
                 disableInventoryButton,
                 disableCreativeInventoryButton,
@@ -58,6 +58,9 @@ class NeoForgeConfig {
         CLIENT_BUILDER.comment("General settings").push(CATEGORY_GENERAL);
         forbiddenSounds = CLIENT_BUILDER.comment("Blacklisted Sounds - add the name of the sounds to blacklist, separated with comma")
                 .defineList("forbiddenSounds", Arrays.asList("ui.", "music.", "ambient."), () -> "", o -> o instanceof String);
+        modsMuffled = CLIENT_BUILDER.comment("General mod muffling, any sound from these mods will be muffled down to the provided volume. \n" +
+                        "Name of the mod and desired volume, separated by \":\" \nExample: \"minecraft:50\", \"extremesoundmuffler:0\"")
+                .defineList("modsMuffled", new ArrayList<>(), () -> "", o -> o instanceof String);
         lawfulAllList = CLIENT_BUILDER.comment("Allow the \"ALL\" sounds list to include the blacklisted sounds?")
                 .define("lawfulAllList", false);
         defaultMuteVolume = CLIENT_BUILDER.comment("Volume set when pressed the mute button by default")
@@ -102,16 +105,23 @@ class NeoForgeConfig {
     @SubscribeEvent
     static void onLoad(ModConfigEvent.Loading event) {
         fillForbiddenList();
+        getModsMuffled();
     }
 
     @SubscribeEvent
     static void onReload(ModConfigEvent.Reloading event) {
         fillForbiddenList();
+        getModsMuffled();
     }
 
     private static void fillForbiddenList() {
         ISoundLists.forbiddenSounds.clear();
         ISoundLists.forbiddenSounds.addAll(forbiddenSounds.get());
+    }
+
+    private static void getModsMuffled() {
+        ISoundLists.modsMuffled.clear();
+        ISoundLists.modsMuffled.addAll(modsMuffled.get());
     }
 
     static void setInvButtonHorizontal(int x) {
