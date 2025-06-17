@@ -7,11 +7,11 @@ import net.minecraft.util.ARGB;
 import java.util.Locale;
 
 public interface IColorsGui {
-
-    int whiteText = 0xffffff;
-    int aquaText = 0x00ffff;
-    int greenText = 0x00ff00;
-    int grayText = 0x080808;
+//0xFF000000
+    int whiteText = 0xffffffff;
+    int aquaText = 0xff00ffff;
+    int greenText = 0xff00ff00;
+    int grayText = 0xff080808;
     int darkBG = ARGB.color(255, 0, 0, 0);
     int brightBG = ARGB.color(200, 50, 50, 50);
     int goldBG = ARGB.color(100, 255, 215, 0);

@@ -37,7 +37,7 @@ public abstract class SoundMixin implements ISoundLists {
 
     //Capture non tickable sounds
     @Inject(at = @At("HEAD"), method = "play")
-    private void esm_captureTickableSoundVolume(SoundInstance sound, CallbackInfo ci) {
+    private void esm_captureTickableSoundVolume(SoundInstance sound, CallbackInfoReturnable cir) {
         esmSound = sound;
     }
 
@@ -51,7 +51,6 @@ public abstract class SoundMixin implements ISoundLists {
         SoundInstance tempSound = esmSound;
 
         //don't care about forbidden sounds or from the psb
-        //noinspection ConstantValue (tempSound.getSound() CAN be null)
         if (tempSound != null && tempSound.getSound() != null && !PlaySoundButton.isFromPSB()) {
             ResourceLocation soundResourceLocation = tempSound.getLocation();
 
@@ -100,7 +99,7 @@ public abstract class SoundMixin implements ISoundLists {
     }
 
     @Inject(at = @At("RETURN"), method = "play")
-    private void esm_clearSound(SoundInstance sound, CallbackInfo ci) {
+    private void esm_clearSound(SoundInstance sound, CallbackInfoReturnable cir) {
         esmSound = null;
     }
 

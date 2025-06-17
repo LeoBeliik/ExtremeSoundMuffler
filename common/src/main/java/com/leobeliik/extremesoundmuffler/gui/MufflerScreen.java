@@ -2,6 +2,7 @@ package com.leobeliik.extremesoundmuffler.gui;
 
 import com.leobeliik.extremesoundmuffler.CommonConfig;
 import com.leobeliik.extremesoundmuffler.Constants;
+import com.leobeliik.extremesoundmuffler.gui.buttons.AnchorButton;
 import com.leobeliik.extremesoundmuffler.gui.buttons.MuffledSlider;
 import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
@@ -16,7 +17,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -26,6 +27,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
+
 import static com.leobeliik.extremesoundmuffler.SoundMufflerCommon.getTextureRL;
 
 public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
@@ -64,7 +67,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
     @Override
     public void render(@NotNull GuiGraphics stack, int mouseX, int mouseY, float partialTicks) {
-        stack.blit(RenderType::guiTextured, getTextureRL(), getX(), getY(), 0, 0, xSize, ySize, 256, 256); //Main screen bounds
+        stack.blit(RenderPipelines.GUI_TEXTURED, getTextureRL(), getX(), getY(), 0, 0, xSize, ySize, 256, 256); //Main screen bounds
         renderSideScreen(stack); //render side screen buttons, need to be rendered before all the other things
         super.render(stack, mouseX, mouseY, partialTicks);
         //--------------- My Renders ---------------//
@@ -244,12 +247,12 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         for (int i = 0; i <= 9; i++) {
             if (isAnchorsDisabled) {
                 String[] disabledMsg = {"-", "D", "i", "s", "a", "b", "l", "e", "d", "-"};
-                btnAnchor = Button.builder(Component.nullToEmpty(disabledMsg[i]), b -> {
-                }).bounds(buttonW, getY() + 24, 16, 16).build();
+                btnAnchor = new AnchorButton(buttonW, getY() + 24, Component.nullToEmpty(disabledMsg[i]), b -> {
+                }, Supplier::get);
                 btnAnchor.active = false;
             } else {
                 int finalI = i;
-                btnAnchor = Button.builder(Component.nullToEmpty(String.valueOf(i)), b -> {
+                btnAnchor = new AnchorButton(buttonW, getY() + 24, Component.nullToEmpty(String.valueOf(i)), b -> {
                     anchor = anchorList.get(finalI);
                     hideSideButtons();
                     if (screenTitle.getString().equals(anchor.getName())) {
@@ -260,7 +263,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
                         btnSetAnchor.active = true;
                     }
                     updateButtons();
-                }).bounds(buttonW, getY() + 24, 16, 16).build();
+                }, Supplier::get);
             }
             addRenderableWidget(btnAnchor).setAlpha(0);
             buttonW += 20;
@@ -349,7 +352,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         //--------------- Toggle Muffle sounds button ---------------//
         //draws a "/" over the muffle button texture if muffling
         if (isMuffling) {
-            stack.blit(RenderType::guiTextured,  getTextureRL(), btnTMS.getX() + 1, btnTMS.getY(), 54F, 202F, 15, 15, xSize, 256);
+            stack.blit(RenderPipelines.GUI_TEXTURED,  getTextureRL(), btnTMS.getX() + 1, btnTMS.getY(), 54F, 202F, 15, 15, xSize, 256);
         }
 
         message = isMuffling ? Component.translatable("main_screen.btn.tms.stop") : Component.translatable("main_screen.btn.tms.start");
@@ -362,7 +365,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
         //show texture for the deletion of the recent sounds list
         if (hasShiftDown()) {
-            stack.blit(RenderType::guiTextured,  getTextureRL(), btnDelete.getX() + 2, btnDelete.getY() + 1, 54F, 217F, 13, 13, xSize, 256);
+            stack.blit(RenderPipelines.GUI_TEXTURED,  getTextureRL(), btnDelete.getX() + 2, btnDelete.getY() + 1, 54F, 217F, 13, 13, xSize, 256);
             message = Component.translatable("main_screen.btn.delete.list");
         }
         //draw tooltip
@@ -384,9 +387,10 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
             MutableComponent text = Component.translatable("main_screen.empty").copy().withStyle(ChatFormatting.ITALIC).withStyle(ChatFormatting.GRAY);
             stack.drawCenteredString(font, text, getX() + 128, getY() + 101, whiteText);
         }
+
         //render btnCSL text because I don't like how the default text looks like
         float centerX = btnCSL.getX() + btnCSL.getWidth() / 2F - font.width(btnCSL.getMessage().getString()) / 2F;
-        stack.drawString(font, btnCSL.getMessage().getString(), (int) centerX, btnCSL.getY() + 3, 0, false);
+        stack.drawString(font, btnCSL.getMessage().getString(), (int) centerX, btnCSL.getY() + 3, 0xFF000000, false);
         message = Component.translatable("main_screen.btn.csl.tooltip", btnCSL.getMessage().getString());
         if (btnCSL.isMouseOver(mouseX, mouseY)) {
             renderButtonTooltip(stack, message, btnCSL);
@@ -410,7 +414,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
                 && mouseY > btnAnchor.getY() && mouseY < btnAnchor.getY() + btnAnchor.getHeight()
                 && CommonConfig.get().disableAnchors().get()) {
             //render tooltip for disabled anchors
-            stack.renderTooltip(font, Component.translatable("main_screen.btn.anchors.disabled"), getX() + 60, getY() + 40);
+            stack.setTooltipForNextFrame(font, Component.translatable("main_screen.btn.anchors.disabled"), getX() + 60, getY() + 40);
         }
 
         //render message for when Anchor pos is not setted
@@ -426,7 +430,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
                         String color = anchorList.get(Integer.parseInt(btn.getMessage().getString())).getAnchorPos() != null ? "green" : "white";
                         setFGColor(btn, color);
                         if (anchor != null && btn.getMessage().getString().equals(String.valueOf(anchor.getAnchorId()))) {
-                            stack.blit(RenderType::guiTextured,  getTextureRL(), btn.getX() - 5, btn.getY() - 2, 71F, 202F, 27, 22, xSize, 256); //fancy selected Anchor indicator
+                            stack.blit(RenderPipelines.GUI_TEXTURED,  getTextureRL(), btn.getX() - 5, btn.getY() - 2, 71F, 202F, 27, 22, xSize, 256); //fancy selected Anchor indicator
                         }
                     }
                 }
@@ -471,11 +475,11 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         stack.drawString(font, Component.translatable("main_screen.side_screen.z", anchor.getZ()), x + 1, y - 30, whiteText);
         stack.drawString(font, Component.translatable("main_screen.side_screen.radius", radius), x + 1, y - 20, whiteText);
         stack.drawString(font, Component.translatable("main_screen.side_screen.dimension", dimensionName), x + 1, y - 10, whiteText);
-        stack.blit(RenderType::guiTextured,  getTextureRL(), x, y, 0, 69.45F, 11, 11, 88, 88); //set coordinates button
+        stack.blit(RenderPipelines.GUI_TEXTURED,  getTextureRL(), x, y, 0, 69.45F, 11, 11, 88, 88); //set coordinates button
 
         if (anchor.getAnchorPos() != null) {
             btnEditAnchor.active = true;
-            stack.blit(RenderType::guiTextured,  getTextureRL(), btnEditAnchor.getX(), btnEditAnchor.getY(), 32F, 213F, 11, 11, xSize, 256); //set edit anchor button texture
+            stack.blit(RenderPipelines.GUI_TEXTURED,  getTextureRL(), btnEditAnchor.getX(), btnEditAnchor.getY(), 32F, 213F, 11, 11, xSize, 256); //set edit anchor button texture
         } else {
             btnEditAnchor.active = false;
         }
@@ -497,7 +501,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         int CSLShift = button.equals(btnCSL) ? 25 : 0;
         int centeredMessageX = button.getX() - ((font.width(message) - CSLShift) / 2);
         int centeredMessageY = button.equals(btnPrevSounds) || button.equals(btnNextSounds) ? button.getY() - 1 : button.getY() + button.getHeight() + 16;
-        stack.renderTooltip(font, message, centeredMessageX, centeredMessageY);
+        stack.setTooltipForNextFrame(font, message, centeredMessageX, centeredMessageY);
     }
 
     private void renderTips(GuiGraphics stack) {

@@ -12,14 +12,13 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
-
 import static com.leobeliik.extremesoundmuffler.SoundMufflerCommon.getTextureRL;
 
 @SuppressWarnings("EmptyMethod")
@@ -55,8 +54,8 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
         drawGradient(stack);
         float v = isMuffling ? 202F : 213F;
         //--------------- Render buttons BG ---------------//
-        stack.blit(RenderType::guiTextured,  getTextureRL(), btnToggleSound.getX(), btnToggleSound.getY(), 43F, v, 11, 11, 256, 256); //muffle button bg
-        stack.blit(RenderType::guiTextured,  getTextureRL(), btnPlaySound.getX(), btnPlaySound.getY(), 32F, 202F, 11, 11, 256, 256); //play button bg
+        stack.blit(RenderPipelines.GUI_TEXTURED,  getTextureRL(), btnToggleSound.getX(), btnToggleSound.getY(), 43F, v, 11, 11, 256, 256); //muffle button bg
+        stack.blit(RenderPipelines.GUI_TEXTURED,  getTextureRL(), btnPlaySound.getX(), btnPlaySound.getY(), 32F, 202F, 11, 11, 256, 256); //play button bg
 
         //--------------- Render Tooltips ---------------//
         if (btnToggleSound.isMouseOver(mouseX, mouseY)) {
@@ -75,9 +74,9 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
         int centeredMessageX = button.getX() - (font.width(message) / 2);
         int centeredMessageY = button.getY() - 1;
 
-        stack.pose().pushPose();
-        stack.renderTooltip(font, message, centeredMessageX, centeredMessageY);
-        stack.pose().popPose();
+        stack.pose().pushMatrix();
+        stack.setTooltipForNextFrame(font, message, centeredMessageX, centeredMessageY);
+        stack.pose().popMatrix();
 
         //stack.fill(x1 - 3, y1 - 5, x2, y2 + 1, darkBG);
         //stack.drawString(font, text, x1, y1 - 2, whiteText);
@@ -101,9 +100,9 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
     //draws the "rainbow" gradient in the background
     private void drawGradient(GuiGraphics stack) {
         if (isMuffling) {
-            stack.blit(RenderType::guiTextured,  getTextureRL(), getX(), getY() - 1, 0, 234, (int) (sliderValue * (width - 6)) + 5, height + 1, 256, 256); //draw bg
+            stack.blit(RenderPipelines.GUI_TEXTURED,  getTextureRL(), getX(), getY() - 1, 0, 234, (int) (sliderValue * (width - 6)) + 5, height + 1, 256, 256); //draw bg
             if (this.isHovered) {
-                stack.blit(RenderType::guiTextured,  getTextureRL(), getX() + (int) (sliderValue * (width - 6)) + 1, getY() + 1, 32F, 224F, 5, 9, 256, 256); //Slider
+                stack.blit(RenderPipelines.GUI_TEXTURED,  getTextureRL(), getX() + (int) (sliderValue * (width - 6)) + 1, getY() + 1, 32F, 224F, 5, 9, 256, 256); //Slider
             }
         }
     }

@@ -7,7 +7,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,11 +16,11 @@ import static com.leobeliik.extremesoundmuffler.SoundMufflerCommon.getTextureRL;
 public class InvButton extends AbstractButton implements IColorsGui {
 
     public boolean hold = false;
-    private boolean drag = false;
-
     public InvButton(int x, int y) {
         super(x, y, 11, 11, Component.empty());
     }
+
+    private boolean drag = false;
 
     @Override
     public void onPress() {
@@ -30,12 +30,17 @@ public class InvButton extends AbstractButton implements IColorsGui {
     @Override
     public void renderScrollingString(@NotNull GuiGraphics render, @NotNull Font font, int mouseX, int mouseY) {
         if (this.visible) {
-            render.blit(RenderType::guiTextured, getTextureRL(), getX(), getY(), 43f, 202f, 11, 11, 256, 256); //button texure
-            if (isMouseOver(mouseX, mouseY) && !hold) {
-                render.drawCenteredString(font, Component.translatable("inventory.btn"), getX() + 5, getY() + this.height + 1, whiteText);
+            render.blit(RenderPipelines.GUI_TEXTURED, getTextureRL(), getX(), getY(), 43f, 202f, 11, 11, 256, 256); //button texure
+            if (isHovered && !hold) {
+                render.drawStringWithBackdrop(font, Component.translatable("inventory.btn"), getX() - 8, getY() + this.height + 1, darkBG, whiteText);
             }
             drag = isMouseOver(mouseX, mouseY);
         }
+    }
+
+    @Override
+    public boolean isMouseOver(double mouseX, double mouseY) {
+        return super.isMouseOver(mouseX, mouseY);
     }
 
     @Override

@@ -57,10 +57,10 @@ class NeoForgeConfig {
 
         CLIENT_BUILDER.comment("General settings").push(CATEGORY_GENERAL);
         forbiddenSounds = CLIENT_BUILDER.comment("Blacklisted Sounds - add the name of the sounds to blacklist, separated with comma")
-                .defineList("forbiddenSounds", Arrays.asList("ui.", "music.", "ambient."), () -> "", o -> o instanceof String);
+                .defineList("forbiddenSounds", Arrays.asList("ui.", "music.", "ambient."), o -> o instanceof String);
         modsMuffled = CLIENT_BUILDER.comment("General mod muffling, any sound from these mods will be muffled down to the provided volume. \n" +
                         "Name of the mod and desired volume, separated by \":\" \nExample: \"minecraft:50\", \"extremesoundmuffler:0\"")
-                .defineList("modsMuffled", new ArrayList<>(), () -> "", o -> o instanceof String);
+                .defineList("modsMuffled", new ArrayList<>(), o -> o instanceof String);
         lawfulAllList = CLIENT_BUILDER.comment("Allow the \"ALL\" sounds list to include the blacklisted sounds?")
                 .define("lawfulAllList", false);
         defaultMuteVolume = CLIENT_BUILDER.comment("Volume set when pressed the mute button by default")
