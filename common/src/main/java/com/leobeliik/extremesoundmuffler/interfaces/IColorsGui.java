@@ -7,7 +7,7 @@ import net.minecraft.util.ARGB;
 import java.util.Locale;
 
 public interface IColorsGui {
-//0xFF000000
+
     int whiteText = 0xffffffff;
     int aquaText = 0xff00ffff;
     int greenText = 0xff00ff00;
