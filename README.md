@@ -5,7 +5,7 @@
 <br/>
 <p align="center"> <b> 🔥 Curseforge:   </b> </p>
 
-<p align="center"> <b> Forge: </b> </p>
+<p align="center"> <b> (Neo)Forge: </b> </p>
 <p align="center">
   <a href="https://www.curseforge.com/minecraft/mc-mods/extreme-sound-muffler" alt="Downloads">
         <img src="http://cf.way2muchnoise.eu/363363.svg" /> </a>
