@@ -1,1 +1,1 @@
-Added Turkish Localization (RuyaSavascisi)
+Added ja_jp translation, by ookkoouu.
