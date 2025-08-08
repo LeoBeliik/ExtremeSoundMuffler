@@ -1,1 +1,1 @@
-Port to 1.21.6
+Added ja_jp translation, by ookkoouu.  
