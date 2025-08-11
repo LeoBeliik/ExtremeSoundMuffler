@@ -1,1 +1,1 @@
-Added ja_jp translation, by ookkoouu.
+Updated pt_br translation, by PrincessStelllar.  
