@@ -3,11 +3,14 @@ package com.leobeliik.extremesoundmuffler.gui.buttons;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.InputWithModifiers;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.sounds.SoundEvent;
+import org.jetbrains.annotations.NotNull;
 
 public class PlaySoundButton extends AbstractButton {
 
@@ -21,12 +24,12 @@ public class PlaySoundButton extends AbstractButton {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        return this.isMouseOver(mouseX, mouseY) && super.mouseClicked(mouseX, mouseY, button);
+    public boolean mouseClicked(@NotNull MouseButtonEvent mouseButtonEvent, boolean success) {
+        return this.isMouseOver(mouseButtonEvent.x(), mouseButtonEvent.y()) && super.mouseClicked(mouseButtonEvent, success);
     }
 
     @Override
-    public void onPress() {
+    public void onPress(@NotNull InputWithModifiers inputWithModifiers) {
         isFromPSB = false;
     }
 

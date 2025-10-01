@@ -6,6 +6,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.gui.screens.recipebook.CraftingRecipeBookComponent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.InventoryMenu;
@@ -47,8 +48,8 @@ public abstract class InventoryScreenMixin extends AbstractRecipeBookScreen<Inve
     }
 
     @Inject(method = "mouseReleased", at = @At("HEAD"))
-    private void esm_onMouseReleased(double mouseX, double mouseY, int button, CallbackInfoReturnable cir) {
-        if (esm_invButton.hold && button == 1) {
+    private void esm_onMouseReleased(MouseButtonEvent mouseButtonEvent, CallbackInfoReturnable cir) {
+        if (esm_invButton.hold && mouseButtonEvent.button() == 1) {
             esm_invButton.setX(esm_invButton.getX() - leftPos);
             esm_invButton.setY(esm_invButton.getY() - topPos);
             esm_invButton.hold = false;

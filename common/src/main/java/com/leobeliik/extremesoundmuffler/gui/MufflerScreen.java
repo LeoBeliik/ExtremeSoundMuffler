@@ -17,6 +17,8 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -86,12 +88,12 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(@NotNull KeyEvent keyEvent) {
         //Radius only accepts numbers
         editRadBar.setFilter(s -> s.matches("[0-9]*(?:[0-9]*)?"));
 
         //Search bar, Edit title bar & Edit Anchor Radius bar looses focus when pressed "Enter" or "Intro"
-        if (keyCode == 257 || keyCode == 335) {
+        if (keyEvent.key() == 257 || keyEvent.key() == 335) {
             searchBar.setFocused(false);
             editAnchorTitleBar.setFocused(false);
             editRadBar.setFocused(false);
@@ -99,15 +101,15 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         }
         //Close screen when press "E" or the mod hotkey outside the search bar or edit title bar
         if (!searchBar.isFocused() && !editAnchorTitleBar.isFocused() && !editRadBar.isFocused() &&
-                (minecraft.options.keyInventory.matches(keyCode, scanCode) || Constants.soundMufflerKey.matches(keyCode, scanCode))) {
+                (minecraft.options.keyInventory.matches(keyEvent) || Constants.soundMufflerKey.matches(keyEvent))) {
             this.onClose();
             return true;
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(keyEvent);
     }
 
     @Override
-    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+    public boolean keyReleased(@NotNull KeyEvent keyEvent) {
         if (searchBar.isFocused()) {
             updateButtons();
         }
@@ -117,7 +119,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         } else {
             editRadBar.setTextColor(whiteText);
         }
-        return super.keyReleased(keyCode, scanCode, modifiers);
+        return super.keyReleased(keyEvent);
     }
 
     @Override
@@ -139,9 +141,9 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(@NotNull MouseButtonEvent mouseButtonEvent, boolean success) {
         //right click
-        if (button == 1) {
+        if (mouseButtonEvent.button() == 1) {
             if (searchBar.isFocused()) {
                 searchBar.setValue("");
                 updateButtons();
@@ -156,12 +158,12 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
                 return true;
             }
         } else {
-            searchBar.setFocused(searchBar.isMouseOver(mouseX, mouseY));
-            editAnchorTitleBar.setFocused(editAnchorTitleBar.isMouseOver(mouseX, mouseY));
-            editRadBar.setFocused(editRadBar.isMouseOver(mouseX, mouseY));
+            searchBar.setFocused(searchBar.isMouseOver(mouseButtonEvent.x(), mouseButtonEvent.y()));
+            editAnchorTitleBar.setFocused(editAnchorTitleBar.isMouseOver(mouseButtonEvent.x(), mouseButtonEvent.y()));
+            editRadBar.setFocused(editRadBar.isMouseOver(mouseButtonEvent.x(), mouseButtonEvent.y()));
         }
 
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(mouseButtonEvent, success);
     }
 
     @Override
@@ -205,7 +207,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         addWidget(btnTMS = Button.builder(Component.translatable("main_screen.btn.tms.stop"), b -> setMuffling(!isMuffling)).bounds(getX() + 229, getY() + 180, 17, 17).build());
         //deletes current muffled list or the recent list if shifting
         addWidget(btnDelete = Button.builder(Component.translatable("main_screen.btn.delete.sounds"), b -> {
-            if (hasShiftDown()) {
+            if (minecraft.hasShiftDown()) {
                 recentSoundsList.clear();
             } else if (anchor == null) {
                 muffledSounds.clear();
@@ -364,7 +366,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         message = anchor == null ? Component.translatable("main_screen.btn.delete.sounds") : Component.translatable("main_screen.btn.delete.anchor");
 
         //show texture for the deletion of the recent sounds list
-        if (hasShiftDown()) {
+        if (minecraft.hasShiftDown()) {
             stack.blit(RenderPipelines.GUI_TEXTURED,  getTextureRL(), btnDelete.getX() + 2, btnDelete.getY() + 1, 54F, 217F, 13, 13, xSize, 256);
             message = Component.translatable("main_screen.btn.delete.list");
         }

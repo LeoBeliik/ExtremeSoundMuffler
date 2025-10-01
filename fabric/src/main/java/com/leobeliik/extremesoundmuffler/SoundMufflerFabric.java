@@ -13,6 +13,8 @@ import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
+import net.minecraft.client.input.MouseButtonEvent;
+
 import static com.leobeliik.extremesoundmuffler.Constants.soundMufflerKey;
 
 public class SoundMufflerFabric implements ClientModInitializer {
@@ -38,8 +40,8 @@ public class SoundMufflerFabric implements ClientModInitializer {
     }
 
     //save the new coordinates for the inv button
-    private static void onMouseReleasePre(Screen screen, double pMouseX, double pMouseY, int pButton) {
-        if (pButton == 1) {
+    private static boolean onMouseReleasePre(Screen screen, MouseButtonEvent mouseButtonEvent, boolean b) {
+        if (mouseButtonEvent.button() == 1) {
             for (GuiEventListener widget : screen.children()) {
                 if (widget instanceof InvButton btn && btn.isHovered()) {
                     if (screen instanceof CreativeModeInventoryScreen) {
@@ -51,11 +53,11 @@ public class SoundMufflerFabric implements ClientModInitializer {
                         FabricConfig.setInvButtonVertical(btn.getY());
                         FabricConfig.updateConfig(new JanksonValueSerializer(false));
                     }
-                    break;
+                   return true;
                 }
             }
         }
+        return false;
     }
-
 
 }

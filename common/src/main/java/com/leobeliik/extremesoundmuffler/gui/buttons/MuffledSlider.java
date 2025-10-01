@@ -12,6 +12,7 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -166,30 +167,30 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
     }
 
     @Override
-    protected void onDrag(double mouseX, double mouseY, double dragX, double dragY) {
-        changeSliderValue((float) mouseX);
-        super.onDrag(mouseX, mouseY, dragX, dragY);
+    protected void onDrag(MouseButtonEvent mouseButtonEvent, double d1, double d2) {
+        changeSliderValue((float) mouseButtonEvent.x());
+        super.onDrag(mouseButtonEvent, d1, d2);
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(@NotNull MouseButtonEvent mouseButtonEvent, boolean success) {
         if (this.visible) {
-            this.btnToggleSound.mouseClicked(mouseX, mouseY, button);
-            this.btnPlaySound.mouseClicked(mouseX, mouseY, button);
+            this.btnToggleSound.mouseClicked(mouseButtonEvent, success);
+            this.btnPlaySound.mouseClicked(mouseButtonEvent, success);
 
             if (isHovered && isMuffling) {
-                changeSliderValue((float) mouseX);
+                changeSliderValue((float) mouseButtonEvent.x());
                 showSlider = true;
                 setFocused(true);
             }
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(mouseButtonEvent, success);
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+    public boolean mouseReleased(@NotNull MouseButtonEvent mouseButtonEvent) {
         setFocused(false);
-        return super.mouseReleased(mouseX, mouseY, button);
+        return super.mouseReleased(mouseButtonEvent);
     }
 
     private void func_230979_b_() {

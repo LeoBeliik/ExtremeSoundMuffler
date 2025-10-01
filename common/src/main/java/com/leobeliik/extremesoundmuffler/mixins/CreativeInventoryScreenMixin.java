@@ -5,6 +5,7 @@ import com.leobeliik.extremesoundmuffler.gui.buttons.InvButton;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.flag.FeatureFlagSet;
@@ -55,8 +56,8 @@ public abstract class CreativeInventoryScreenMixin extends AbstractContainerScre
 
     //Fabric can't do shit by itself
     @Inject(method = "mouseReleased", at = @At("HEAD"))
-    private void esm_onMouseReleased(double mouseX, double mouseY, int button, CallbackInfoReturnable cir) {
-        if (esm_creativeInvButton.visible && esm_creativeInvButton.hold && button == 1) {
+    private void esm_onMouseReleased(MouseButtonEvent mouseButtonEvent, CallbackInfoReturnable cir) {
+        if (esm_creativeInvButton.visible && esm_creativeInvButton.hold && mouseButtonEvent.button() == 1) {
             esm_creativeInvButton.setX(esm_creativeInvButton.getX() - leftPos);
             esm_creativeInvButton.setY(esm_creativeInvButton.getY() - topPos);
             esm_creativeInvButton.hold = false;

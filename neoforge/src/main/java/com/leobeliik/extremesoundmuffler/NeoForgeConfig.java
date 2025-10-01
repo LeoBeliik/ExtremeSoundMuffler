@@ -9,7 +9,7 @@ import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import java.util.*;
 
-@EventBusSubscriber(modid = Constants.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Constants.MOD_ID)
 class NeoForgeConfig {
 
     private static ModConfigSpec CLIENT_CONFIG;
@@ -57,10 +57,10 @@ class NeoForgeConfig {
 
         CLIENT_BUILDER.comment("General settings").push(CATEGORY_GENERAL);
         forbiddenSounds = CLIENT_BUILDER.comment("Blacklisted Sounds - add the name of the sounds to blacklist, separated with comma")
-                .defineList("forbiddenSounds", Arrays.asList("ui.", "music.", "ambient."), o -> o instanceof String);
+                .defineList("forbiddenSounds", Arrays.asList("ui.", "music.", "ambient."), () -> "",  o -> o instanceof String);
         modsMuffled = CLIENT_BUILDER.comment("General mod muffling, any sound from these mods will be muffled down to the provided volume. \n" +
                         "Name of the mod and desired volume, separated by \":\" \nExample: \"minecraft:50\", \"extremesoundmuffler:0\"")
-                .defineList("modsMuffled", new ArrayList<>(), o -> o instanceof String);
+                .defineList("modsMuffled", new ArrayList<>(), () -> "", o -> o instanceof String);
         lawfulAllList = CLIENT_BUILDER.comment("Allow the \"ALL\" sounds list to include the blacklisted sounds?")
                 .define("lawfulAllList", false);
         defaultMuteVolume = CLIENT_BUILDER.comment("Volume set when pressed the mute button by default")
@@ -124,19 +124,15 @@ class NeoForgeConfig {
         ISoundLists.modsMuffled.addAll(modsMuffled.get());
     }
 
-    static void setInvButtonHorizontal(int x) {
+    static void setInvButtonHorizontal(int x, int y) {
         invButtonHorizontal.set(x);
-    }
-
-    static void setInvButtonVertical(int y) {
         invButtonVertical.set(y);
+        CLIENT_CONFIG.save();
     }
 
-    static void setCreativeInvButtonHorizontal(int x) {
+    static void setCreativeInvButtonHorizontal(int x, int y) {
         creativeInvButtonHorizontal.set(x);
-    }
-
-    static void setCreativeInvButtonVertical(int y) {
         creativeInvButtonVertical.set(y);
+        CLIENT_CONFIG.save();
     }
 }

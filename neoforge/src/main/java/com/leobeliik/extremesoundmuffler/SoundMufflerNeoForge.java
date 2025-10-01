@@ -6,7 +6,6 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -30,7 +29,7 @@ public class SoundMufflerNeoForge {
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
     }
 
-    @EventBusSubscriber(modid = Constants.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+    @EventBusSubscriber(modid = Constants.MOD_ID, value = Dist.CLIENT)
     public class ClientModListener {
         @SubscribeEvent
         public static void keyRegistry(final RegisterKeyMappingsEvent event) {
@@ -38,7 +37,6 @@ public class SoundMufflerNeoForge {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     @SubscribeEvent //on mod keybind press
     public void onKeyInput(InputEvent.Key event) {
         if (soundMufflerKey.consumeClick()) {
@@ -46,13 +44,11 @@ public class SoundMufflerNeoForge {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     @SubscribeEvent //load data when player joins the world
     public void onPlayerJoin(ClientPlayerNetworkEvent.LoggingIn event) {
         DataManager.loadData();
     }
 
-    @OnlyIn(Dist.CLIENT)
     @SubscribeEvent //save the new coordinates for the inv button
     public void onMouseRelease(ScreenEvent.MouseButtonReleased.Post event) {
         if (event.getButton() == 1) {
@@ -60,11 +56,9 @@ public class SoundMufflerNeoForge {
             for (GuiEventListener widget : screen.children()) {
                 if (widget instanceof InvButton btn && btn.isHovered()) {
                     if (screen instanceof CreativeModeInventoryScreen) {
-                        NeoForgeConfig.setCreativeInvButtonHorizontal(btn.getX());
-                        NeoForgeConfig.setCreativeInvButtonVertical(btn.getY());
+                        NeoForgeConfig.setCreativeInvButtonHorizontal(btn.getX(), btn.getY());
                     } else {
-                        NeoForgeConfig.setInvButtonHorizontal(btn.getX());
-                        NeoForgeConfig.setInvButtonVertical(btn.getY());
+                        NeoForgeConfig.setInvButtonHorizontal(btn.getX(), btn.getY());
                     }
                     break;
                 }

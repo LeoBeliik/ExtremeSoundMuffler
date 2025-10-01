@@ -7,6 +7,8 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.InputWithModifiers;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +25,7 @@ public class InvButton extends AbstractButton implements IColorsGui {
     private boolean drag = false;
 
     @Override
-    public void onPress() {
+    public void onPress(@NotNull InputWithModifiers inputWithModifiers) {
         SoundMufflerCommon.openMainScreen();
     }
 
@@ -44,11 +46,11 @@ public class InvButton extends AbstractButton implements IColorsGui {
     }
 
     @Override
-    public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
-        if (pButton == 1 && isMouseOver(pMouseX, pMouseY)) {
+    public boolean mouseClicked(@NotNull MouseButtonEvent mouseButtonEvent, boolean success) {
+        if (mouseButtonEvent.button() == 1 && isMouseOver(mouseButtonEvent.x(), mouseButtonEvent.y())) {
             hold = true;
         }
-        return super.mouseClicked(pMouseX, pMouseY, pButton);
+        return super.mouseClicked(mouseButtonEvent, success);
     }
 
     @Override

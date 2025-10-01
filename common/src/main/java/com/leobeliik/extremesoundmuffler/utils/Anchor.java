@@ -107,7 +107,7 @@ public class Anchor {
     public void setAnchor() {
         LocalPlayer player = Objects.requireNonNull(Minecraft.getInstance().player);
         setAnchorPos(player.blockPosition());
-        setDimension(player.clientLevel.dimension().location());
+        setDimension(player.level().dimension().location());
         setRadius(this.getRadius() == 0 ? 32 : this.getRadius());
     }
 
