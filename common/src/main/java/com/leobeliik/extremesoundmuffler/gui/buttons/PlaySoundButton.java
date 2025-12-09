@@ -1,5 +1,6 @@
 package com.leobeliik.extremesoundmuffler.gui.buttons;
 
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -31,6 +32,11 @@ public class PlaySoundButton extends AbstractButton {
     @Override
     public void onPress(@NotNull InputWithModifiers inputWithModifiers) {
         isFromPSB = false;
+    }
+
+    @Override
+    protected void renderContents(GuiGraphics guiGraphics, int i, int i1, float v) {
+
     }
 
     @Override

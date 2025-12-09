@@ -23,7 +23,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 import java.util.Collections;
@@ -293,14 +293,14 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
         //removes blacklisted sounds when necessary
         if ((CommonConfig.get().lawfulAllList().get() && btnCSL.getMessage().equals(Component.translatable("main_screen.btn.csl.all"))) || btnCSL.getMessage().equals(Component.translatable("main_screen.btn.csl.recent"))) {
-            forbiddenSounds.stream().<Predicate<? super ResourceLocation>>map(fs -> sl -> sl.toString().contains(fs)).forEach(soundsList::removeIf);
+            forbiddenSounds.stream().<Predicate<? super Identifier>>map(fs -> sl -> sl.toString().contains(fs)).forEach(soundsList::removeIf);
         }
 
         if (soundsList.isEmpty()) {
             return;
         }
 
-        for (ResourceLocation sound : soundsList) {
+        for (Identifier sound : soundsList) {
             //Remove sound that are not being search, show all if searchbar is empty
             if (!sound.toString().contains(searchBar.getValue())) {
                 continue;
@@ -546,7 +546,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         editRadBar.setTextColor(whiteText);
     }
 
-    public boolean removeSoundMuffled(ResourceLocation sound) {
+    public boolean removeSoundMuffled(Identifier sound) {
         if (this.anchor != null) {
             if (anchor.getAnchorPos() != null) {
                 this.anchor.removeSound(sound);
@@ -559,7 +559,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         return false;
     }
 
-    public boolean addSoundMuffled(ResourceLocation sound, double volume) {
+    public boolean addSoundMuffled(Identifier sound, double volume) {
         if (this.anchor != null) {
             if (anchor.getAnchorPos() != null) {
                 this.anchor.addSound(sound, volume);
@@ -572,7 +572,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         return false;
     }
 
-    public void replaceVolume(ResourceLocation sound, double volume) {
+    public void replaceVolume(Identifier sound, double volume) {
         if (this.anchor != null) {
             this.anchor.replaceSound(sound, volume);
         } else {

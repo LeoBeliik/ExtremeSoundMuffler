@@ -17,7 +17,7 @@ public class AnchorButton extends Button implements IColorsGui {
     }
 
     @Override
-    protected void renderWidget(@NotNull GuiGraphics guiGraphics, int i, int i1, float v) {
+    protected void renderContents(@NotNull GuiGraphics guiGraphics, int i, int i1, float v) {
         guiGraphics.drawCenteredString(font, this.getMessage(), this.getX() + 8, this.getY() + 4, whiteText);
     }
 }

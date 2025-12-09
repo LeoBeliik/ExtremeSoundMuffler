@@ -7,11 +7,12 @@ import com.google.gson.stream.JsonReader;
 import com.leobeliik.extremesoundmuffler.CommonConfig;
 import com.leobeliik.extremesoundmuffler.gui.MufflerScreen;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
-import net.minecraft.FileUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.FileUtil;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -26,7 +27,7 @@ public class DataManager implements ISoundLists {
     public static void loadData() {
         MufflerScreen.setMuffling(true);
 
-        Optional.ofNullable(loadMuffledMap()).ifPresent(mm -> mm.forEach((R, D) -> muffledSounds.put(ResourceLocation.parse(R), D)));
+        Optional.ofNullable(loadMuffledMap()).ifPresent(mm -> mm.forEach((R, D) -> muffledSounds.put(Identifier.parse(R), D)));
 
         if (!CommonConfig.get().disableAnchors().get()) {
             anchorList.clear();

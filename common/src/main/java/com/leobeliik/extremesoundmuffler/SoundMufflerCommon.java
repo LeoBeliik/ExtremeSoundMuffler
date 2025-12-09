@@ -4,15 +4,15 @@ import com.leobeliik.extremesoundmuffler.gui.MufflerScreen;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.network.chat.contents.TranslatableContents;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import static com.leobeliik.extremesoundmuffler.Constants.MOD_ID;
 
 public class SoundMufflerCommon {
 
     //whether should use the dark or light textures
-    public static ResourceLocation getTextureRL() {
+    public static Identifier getTextureRL() {
         String texture = CommonConfig.get().useDarkTheme().get() ? "textures/gui/sm_gui_dark.png" : "textures/gui/sm_gui.png";
-        return ResourceLocation.fromNamespaceAndPath(MOD_ID, texture);
+        return Identifier.fromNamespaceAndPath(MOD_ID, texture);
     }
 
     public static void openMainScreen() {

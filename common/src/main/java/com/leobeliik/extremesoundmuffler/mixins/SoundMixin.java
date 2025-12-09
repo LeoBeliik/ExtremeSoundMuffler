@@ -7,7 +7,7 @@ import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import com.leobeliik.extremesoundmuffler.utils.Anchor;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.SoundEngine;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -51,32 +51,32 @@ public abstract class SoundMixin implements ISoundLists {
 
         //don't care about forbidden sounds or from the psb
         if (tempSound != null && tempSound.getSound() != null && !PlaySoundButton.isFromPSB()) {
-            ResourceLocation soundResourceLocation = tempSound.getLocation();
+            Identifier soundIdentifier = tempSound.getIdentifier();
 
             if (!esm_isForbidden(tempSound)) {
                 //remove sound to prevent repeated sounds and maintains the desired order
-                recentSoundsList.remove(soundResourceLocation);
+                recentSoundsList.remove(soundIdentifier);
                 //add sound to recent sounds list
-                recentSoundsList.add(soundResourceLocation);
+                recentSoundsList.add(soundIdentifier);
             }
             float tempVolume = tempSound.getVolume();
-            String soundName = soundResourceLocation.getPath();
-            String modName = soundResourceLocation.getNamespace();
+            String soundName = soundIdentifier.getPath();
+            String modName = soundIdentifier.getNamespace();
 
             //global sounds like thunder or dragon growl has too high volume to be properly muffled, so first we temporarily lower the max volume
             if (soundName.contains("entity.lightning_bolt.thunder") || soundName.contains("entity.ender_dragon.growl")) {
                 tempVolume = 1F;
             }
 
-            if (muffledSounds.containsKey(soundResourceLocation)) {
-                return (float) (tempVolume * muffledSounds.get(soundResourceLocation));
+            if (muffledSounds.containsKey(soundIdentifier)) {
+                return (float) (tempVolume * muffledSounds.get(soundIdentifier));
             }
 
             //don't continue if the anchors are disabled
             if (!CommonConfig.get().disableAnchors().get()) {
                 Anchor anchor = Anchor.getAnchor(tempSound);
                 if (anchor != null) {
-                    return (float) (tempVolume * anchor.getMuffledSounds().get(soundResourceLocation));
+                    return (float) (tempVolume * anchor.getMuffledSounds().get(soundIdentifier));
                 }
             }
 
@@ -104,6 +104,6 @@ public abstract class SoundMixin implements ISoundLists {
 
     @Unique
     private static boolean esm_isForbidden(SoundInstance sound) {
-        return forbiddenSounds.stream().anyMatch(fs -> sound.getLocation().toString().contains(fs));
+        return forbiddenSounds.stream().anyMatch(fs -> sound.getIdentifier().toString().contains(fs));
     }
 }

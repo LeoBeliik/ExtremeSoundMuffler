@@ -16,7 +16,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
@@ -28,7 +28,7 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
     private static final Minecraft minecraft = Minecraft.getInstance();
     private static boolean showSlider = false;
     private final Font font = minecraft.font;
-    private final ResourceLocation sound;
+    private final Identifier sound;
     private final MufflerScreen screen;
     private final int bg;
     private double sliderValue;
@@ -36,7 +36,7 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
     private Button btnToggleSound;
     private PlaySoundButton btnPlaySound;
 
-    public MuffledSlider(int x, int y, int bg, ResourceLocation sound, double sliderValue, MufflerScreen screen) {
+    public MuffledSlider(int x, int y, int bg, Identifier sound, double sliderValue, MufflerScreen screen) {
         super(x, y, 205, 14, Component.nullToEmpty(sound.getPath() + ":" + sound.getNamespace()));
         this.bg = bg;
         this.sound = sound;
@@ -120,7 +120,7 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
         this.getBtnPlaySound().setY(y);
     }
 
-    private void setBtnToggleSound(ResourceLocation sound) {
+    private void setBtnToggleSound(Identifier sound) {
         int x = CommonConfig.get().leftButtons().get() ? getX() - 26 : getX() + width + 4;
         btnToggleSound = Button.builder(Component.empty(), b -> {
             if (isMuffling) {
@@ -143,7 +143,7 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
         return btnToggleSound;
     }
 
-    private void setBtnPlaySound(ResourceLocation sound) {
+    private void setBtnPlaySound(Identifier sound) {
         btnPlaySound = new PlaySoundButton(btnToggleSound.getX() + 13, getY(), SoundEvent.createVariableRangeEvent(sound));
     }
 
