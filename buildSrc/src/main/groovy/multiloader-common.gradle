@@ -4,7 +4,9 @@ plugins {
 }
 
 base {
-    archivesName = "${mod_id}-${project.name}-${minecraft_version}"
+    //makes project names uppercase for better look (neoforge -> NeoForge)
+    def projectName = project.name.replaceAll(/[nf]/) { it.toUpperCase() }
+    archivesName = "ExtremeSoundMuffler-${version}_${projectName}-${minecraft_version}"
 }
 
 java {
@@ -114,6 +116,10 @@ processResources {
     }
 
     inputs.properties(expandProps)
+
+    //set project version to empty string to prevent gradle to put it at the end of the jar's name
+    //done it here after the mod's files were created with the corresponding mod version
+    project.version=""
 }
 
 publishing {
