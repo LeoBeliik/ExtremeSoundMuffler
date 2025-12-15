@@ -1,1 +1,1 @@
-Port to 1.21.6
+Fixed random crash when opening the muffler's screen
