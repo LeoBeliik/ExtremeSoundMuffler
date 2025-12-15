@@ -293,7 +293,8 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
         //removes blacklisted sounds when necessary
         if ((CommonConfig.get().lawfulAllList().get() && btnCSL.getMessage().equals(Component.translatable("main_screen.btn.csl.all"))) || btnCSL.getMessage().equals(Component.translatable("main_screen.btn.csl.recent"))) {
-            forbiddenSounds.stream().<Predicate<? super Identifier>>map(fs -> sl -> sl.toString().contains(fs)).forEach(soundsList::removeIf);
+            forbiddenSounds.stream().<Predicate<? super Identifier>>map(fs ->
+                    sl -> sl != null && sl.toString().contains(fs)).forEach(soundsList::removeIf);
         }
 
         if (soundsList.isEmpty()) {
