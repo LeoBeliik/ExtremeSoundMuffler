@@ -1,1 +1,1 @@
-Added Turkish Localization (RuyaSavascisi)
+Fixed random crash when opening the mod's screen  
