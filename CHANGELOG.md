@@ -1,1 +1,1 @@
-Updated pt_br translation, by PrincessStelllar.  
+Fixed random crash when opening the muffler screen.
