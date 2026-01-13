@@ -1,1 +1,1 @@
-Fixed random crash when opening the muffler's screen
+Fixed the 10th sound not showing when it should

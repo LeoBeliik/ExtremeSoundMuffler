@@ -134,7 +134,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         }
         children().stream().filter(b -> b instanceof MuffledSlider).map(b -> (MuffledSlider) b).forEach(b -> {
             //only increase / decrease from 10 to 10 to prevent the sliders going further than they should
-            b.setY((int) (b.getY() + (b.getHeight() * 10) * Mth.clamp(dir, -1, 1)));
+            b.setY((int) (b.getY() + (b.getHeight() * 9) * Mth.clamp(dir, -1, 1)));
             b.isVisible(b.getY() >= minYButton && b.getY() <= maxYButton);
         });
         return super.mouseScrolled(mouseX, mouseY, directionH, directionV);
