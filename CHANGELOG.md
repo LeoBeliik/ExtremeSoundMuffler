@@ -1,1 +1,1 @@
-Fixed random crash when opening the mod's screen  
+Fixed the 10th sound not showing when it should  
