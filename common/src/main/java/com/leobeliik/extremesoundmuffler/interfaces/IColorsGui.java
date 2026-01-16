@@ -12,6 +12,7 @@ public interface IColorsGui {
     int aquaText = 0x00ffff;
     int greenText = 0x00ff00;
     int grayText = 0x080808;
+    int redText = 0xffdd0303;
     int darkBG = FastColor.ARGB32.color(255, 0, 0, 0);
     int brightBG = FastColor.ARGB32.color(200, 50, 50, 50);
     int goldBG = FastColor.ARGB32.color(100, 255, 215, 0);

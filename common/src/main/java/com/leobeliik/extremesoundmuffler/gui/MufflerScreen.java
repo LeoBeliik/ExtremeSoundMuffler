@@ -35,6 +35,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     private static Component toggleSoundsListMessage, screenTitle, tip;
     private final int xSize = 256;
     private final int ySize = 202;
+    private final int maxAnchorRange = CommonConfig.get().maxAnchorRange().get();
     private final boolean isAnchorsDisabled = CommonConfig.get().disableAnchors().get();
     private int minYButton, maxYButton, index;
     private Button btnTMS, btnDelete, btnCSL, btnSetAnchor, btnEditAnchor, btnNextSounds, btnPrevSounds, btnAccept, btnCancel, btnAnchor;
@@ -111,7 +112,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         }
         if (!editRadBar.getValue().isEmpty()) {
             int radius = Integer.parseInt(editRadBar.getValue());
-            editRadBar.setTextColor(radius > 32 || radius < 1 ? aquaText : whiteText);
+            editRadBar.setTextColor(radius > maxAnchorRange || radius < 1 ? redText : whiteText);
         } else {
             editRadBar.setTextColor(whiteText);
         }
@@ -221,7 +222,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
     private void addSideButtons() {
         //set anchor's position button
-        addWidget(btnSetAnchor = Button.builder(Component.empty(), b -> anchor.setAnchor()).bounds(getX() + 261, getY() + 62, 11, 11).build()).active = false;
+        addWidget(btnSetAnchor = Button.builder(Component.empty(), b -> anchor.setAnchor(maxAnchorRange)).bounds(getX() + 261, getY() + 62, 11, 11).build()).active = false;
         //edit Anchor parameters button
         addWidget(btnEditAnchor = Button.builder(Component.empty(), b -> editTitle()).bounds(getX() + 275, getY() + 62, 11, 11).build()).active = false;
         //edit anchor name bar
@@ -231,7 +232,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         //accept button
         addRenderableWidget(btnAccept = Button.builder(Component.translatable("main_screen.btn.accept"), b -> {
             if (!editAnchorTitleBar.getValue().isEmpty() && !editRadBar.getValue().isEmpty() && anchor != null) {
-                anchor.editAnchor(editAnchorTitleBar.getValue(), Mth.clamp(Integer.parseInt(editRadBar.getValue()), 1, 32));
+                anchor.editAnchor(editAnchorTitleBar.getValue(), Mth.clamp(Integer.parseInt(editRadBar.getValue()), 1, maxAnchorRange));
                 screenTitle = Component.nullToEmpty(editAnchorTitleBar.getValue());
                 editTitle();
             }
@@ -245,20 +246,21 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         for (int i = 0; i <= 9; i++) {
             if (isAnchorsDisabled) {
                 String[] disabledMsg = {"-", "D", "i", "s", "a", "b", "l", "e", "d", "-"};
-                btnAnchor = Button.builder(Component.nullToEmpty(disabledMsg[i]), b -> {
-                }).bounds(buttonW, getY() + 24, 16, 16).build();
+                btnAnchor = Button.builder(Component.nullToEmpty(disabledMsg[i]), b -> {})
+                        .bounds(buttonW, getY() + 24, 16, 16).build();
                 btnAnchor.active = false;
             } else {
                 int finalI = i;
                 btnAnchor = Button.builder(Component.nullToEmpty(String.valueOf(i)), b -> {
                     anchor = anchorList.get(finalI);
                     hideSideButtons();
-                    if (screenTitle.getString().equals(anchor.getName())) {
+                    if (screenTitle.getString().equals(anchor.getName()) || anchor == null) {
                         anchor = null;
                         screenTitle = Component.translatable("main_screen.main_title");
                     } else {
                         screenTitle = Component.nullToEmpty(anchor.getName());
                         btnSetAnchor.active = true;
+                        this.updateAnchor(anchor);
                     }
                     updateButtons();
                 }).bounds(buttonW, getY() + 24, 16, 16).build();
@@ -266,6 +268,12 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
             addRenderableWidget(btnAnchor).setAlpha(0);
             buttonW += 20;
         }
+    }
+
+    private void updateAnchor(Anchor anchor) {
+        double radius = anchor.getRadius();
+        if (radius > maxAnchorRange) anchor.setRadius((int) Math.min(radius, maxAnchorRange));
+        this.anchor = anchor;
     }
 
     private void addSoundListButtons() {
@@ -434,7 +442,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         //--------------- Side screen buttons ---------------//
 
         if (editRadBar.isHoveredOrFocused()) {
-            renderButtonTooltip(stack, Component.translatable("main_screen.btn.anchors.set_range"), editRadBar);
+            renderButtonTooltip(stack, Component.translatable("main_screen.btn.anchors.set_range", maxAnchorRange), editRadBar);
         }
         if (editAnchorTitleBar.isHoveredOrFocused()) {
             renderButtonTooltip(stack, Component.translatable("main_screen.btn.anchors.set_title"), editAnchorTitleBar);

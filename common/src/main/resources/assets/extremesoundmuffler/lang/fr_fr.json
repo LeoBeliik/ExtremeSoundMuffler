@@ -24,7 +24,7 @@
     "main_screen.btn.anchors.disabled": "Les ancres sont désactivées !",
     "main_screen.btn.anchors.set_message": "Définissez d'abord l'ancre",
     "main_screen.btn.anchors.set": "Définir l'ancre",
-    "main_screen.btn.anchors.set_range": "Plage : 1 - 32",
+    "main_screen.btn.anchors.set_range": "Plage : 1 - %s",
     "main_screen.btn.anchors.set_title": "Modifier le titre de l'ancre",
     "main_screen.btn.anchors.edit": "Modifier l'ancre",
 
