@@ -24,7 +24,7 @@
     "main_screen.btn.anchors.disabled": "As âncoras estão desativadas!",
     "main_screen.btn.anchors.set_message": "Defina a âncora primeiro",
     "main_screen.btn.anchors.set": "Defina a âncora",
-    "main_screen.btn.anchors.set_range": "Variar: 1 - 32",
+    "main_screen.btn.anchors.set_range": "Variar: 1 - %s",
     "main_screen.btn.anchors.set_title": "Alterar o título âncora",
     "main_screen.btn.anchors.edit": "Editar âncora",
   

@@ -12,6 +12,7 @@ public class CommonConfig {
 
     public record ConfigAccess(
             Supplier<List<? extends String>> forbiddenSounds,
+            Supplier<List<? extends String>> modsMuffled,
             Supplier<Boolean> lawfulAllList,
             Supplier<Boolean> disableInventoryButton,
             Supplier<Boolean> disableCreativeInventoryButton,
@@ -23,7 +24,8 @@ public class CommonConfig {
             Supplier<Integer> invButtonHorizontal,
             Supplier<Integer> invButtonVertical,
             Supplier<Integer> creativeInvButtonHorizontal,
-            Supplier<Integer> creativeInvButtonVertical
+            Supplier<Integer> creativeInvButtonVertical,
+            Supplier<Integer> maxAnchorRange
             ) {
     }
 

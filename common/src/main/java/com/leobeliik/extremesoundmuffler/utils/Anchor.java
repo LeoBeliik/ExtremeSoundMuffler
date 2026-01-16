@@ -18,7 +18,7 @@ public class Anchor {
     private BlockPos anchorPos;
     private String name;
     private ResourceLocation dimension;
-    private int Radius;
+    private int radius;
     private SortedMap<String, Double> muffledSounds = new TreeMap<>();
 
     public Anchor(int id, String name) {
@@ -26,12 +26,12 @@ public class Anchor {
         this.name = name;
     }
 
-    public Anchor(int id, String name, BlockPos anchorPos, ResourceLocation dimension, int Radius, SortedMap<String, Double> muffledSounds) {
+    public Anchor(int id, String name, BlockPos anchorPos, ResourceLocation dimension, int radius, SortedMap<String, Double> muffledSounds) {
         this.id = id;
         this.name = name;
         this.anchorPos = anchorPos;
         this.dimension = dimension;
-        this.Radius = Radius;
+        this.radius = radius;
         this.muffledSounds = muffledSounds;
     }
 
@@ -52,11 +52,11 @@ public class Anchor {
     }
 
     public int getRadius() {
-        return Radius;
+        return radius;
     }
 
-    public void setRadius(int Radius) {
-        this.Radius = Radius;
+    public void setRadius(int radius) {
+        this.radius = radius;
     }
 
     private void setName(String name) {
@@ -105,11 +105,11 @@ public class Anchor {
         muffledSounds.remove(sound.toString());
     }
 
-    public void setAnchor() {
+    public void setAnchor(int radius) {
         LocalPlayer player = Objects.requireNonNull(Minecraft.getInstance().player);
         setAnchorPos(player.blockPosition());
         setDimension(player.clientLevel.dimension().location());
-        setRadius(this.getRadius() == 0 ? 32 : this.getRadius());
+        setRadius(this.getRadius() == 0 ? radius : this.getRadius());
     }
 
     public void deleteAnchor() {
@@ -120,9 +120,9 @@ public class Anchor {
         muffledSounds.clear();
     }
 
-    public void editAnchor(String title, int Radius) {
+    public void editAnchor(String title, int radius) {
         setName(title);
-        setRadius(Radius);
+        setRadius(radius);
     }
 
     public static Anchor getAnchor(SoundInstance sound) {

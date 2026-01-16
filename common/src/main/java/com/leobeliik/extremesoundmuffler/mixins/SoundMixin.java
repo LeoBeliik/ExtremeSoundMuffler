@@ -17,6 +17,8 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.Locale;
+
 @Mixin(SoundEngine.class)
 public abstract class SoundMixin implements ISoundLists {
 
@@ -57,6 +59,7 @@ public abstract class SoundMixin implements ISoundLists {
             if (MufflerScreen.isMuffling()) {
                 float tempVolume = tempSound.getVolume();
                 String soundName = soundLocation.getPath();
+                String modName = soundLocation.getNamespace();
 
                 //global sounds like thunder or dragon growl has too high volume to be properly muffled, so first we temporarily lower the max volume
                 if (soundName.contains("entity.lightning_bolt.thunder") || soundName.contains("entity.ender_dragon.growl")) {
@@ -71,7 +74,19 @@ public abstract class SoundMixin implements ISoundLists {
                 if (CommonConfig.get() == null || !CommonConfig.get().disableAnchors().get()) {
                     Anchor anchor = Anchor.getAnchor(tempSound);
                     if (anchor != null) {
+                        int maxAnchorRange = CommonConfig.get().maxAnchorRange().get();
+                        double radius = anchor.getRadius();
+                        if (radius > maxAnchorRange) {
+                            anchor.setRadius((int) Math.min(radius, maxAnchorRange));
+                        }
                         return (float) (tempVolume * anchor.getMuffledSounds().get(soundLocation));
+                    }
+                }
+
+                //Mod wide muffling from config
+                for (String mod : modsMuffled) {
+                    if (mod.contains(modName.toLowerCase(Locale.ROOT))) {
+                        return tempVolume * Float.parseFloat(mod.split(":")[1]);
                     }
                 }
             }

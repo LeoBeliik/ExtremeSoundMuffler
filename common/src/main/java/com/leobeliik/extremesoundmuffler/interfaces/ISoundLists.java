@@ -7,6 +7,7 @@ import java.util.*;
 public interface ISoundLists {
 
     Set<String> forbiddenSounds = new HashSet<>();
+    Set<String> modsMuffled = new HashSet<>();
     List<ResourceLocation> soundsList = new ArrayList<>();
     List<ResourceLocation> recentSoundsList = new ArrayList<>();
     Map<ResourceLocation, Double> muffledSounds = new HashMap<>();

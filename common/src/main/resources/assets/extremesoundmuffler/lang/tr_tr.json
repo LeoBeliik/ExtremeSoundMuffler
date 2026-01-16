@@ -24,7 +24,7 @@
   "main_screen.btn.anchors.disabled": "Çapalar devre dışı!",
   "main_screen.btn.anchors.set_message": "Önce çapayı ayarla",
   "main_screen.btn.anchors.set": "Çapa Ayarla",
-  "main_screen.btn.anchors.set_range": "Menzil: 1 - 32",
+  "main_screen.btn.anchors.set_range": "Menzil: 1 - %s",
   "main_screen.btn.anchors.set_title": "Çapa başlığını değiştir",
   "main_screen.btn.anchors.edit": "Çapayı Düzenle",
 
@@ -61,29 +61,5 @@
   "log.error.saveAnchorList": "ESM: Çapa listesi kaydedilirken hata\\n %s",
   "log.warn.loadMuffledList": "ESM: Susturulmuş liste bulunamadı; Boş Susturulmuş liste oluşturuluyor",
   "log.error.loadMuffledList": "ESM: Susturulmuş sesler listesi yüklenirken hata:\\n %s",
-  "log.error.saveMuffledList": "ESM: Susturulmuş sesler listesi kaydedilirken hata:\\n %s",
-
-  "forbiddenSounds.button": "Yasaklı Sesleri Ayarla",
-  "general.button": "Genel",
-  "Anchors.button": "Çapalar",
-  "inventory_button.button": "Envanter Düğmesi",
-  "extremesoundmuffler.configuration.inventory_button": "Envanter düğmesi",
-  "extremesoundmuffler.configuration.Anchors": "Çapalar",
-  "extremesoundmuffler.configuration.general": "Genel",
-
-  "extremesoundmuffler.configuration.forbiddenSounds": "Yasaklı Sesler",
-  "extremesoundmuffler.configuration.useDarkTheme": "Karanlık temayı kullan",
-  "extremesoundmuffler.configuration.leftButtons": "Sol düğmeler",
-  "extremesoundmuffler.configuration.lawfulAllList": "Yasal Tüm sesler Listesi",
-  "extremesoundmuffler.configuration.defaultMuteVolume": "Varsayılan Sessiz Ses Seviyesi",
-  "extremesoundmuffler.configuration.showTip": "İpuçlarını göster",
-
-  "extremesoundmuffler.configuration.disableInventoryButton": "Envanter düğmesini devre dışı bırak",
-  "extremesoundmuffler.configuration.invButtonX": "Envanter düğmesi X koordinatı",
-  "extremesoundmuffler.configuration.invButtonY": "Envanter düğmesi Y koordinatı",
-  "extremesoundmuffler.configuration.disableCreativeInventoryButton": "Yaratıcı Mod envanter düğmesini devre dışı bırak",
-  "extremesoundmuffler.configuration.creativeInvButtonX": "Yaratıcı Mod düğmesi X koordinatı",
-  "extremesoundmuffler.configuration.creativeInvButtonY": "Yaratıcı Mod düğmesi Y koordinatı",
-
-  "extremesoundmuffler.configuration.disableAnchors": "Çapaları devre dışı bırak"
+  "log.error.saveMuffledList": "ESM: Susturulmuş sesler listesi kaydedilirken hata:\\n %s"
 }

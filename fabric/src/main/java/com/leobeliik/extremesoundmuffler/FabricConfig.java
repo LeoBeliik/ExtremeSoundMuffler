@@ -16,6 +16,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import static com.leobeliik.extremesoundmuffler.Constants.*;
@@ -24,6 +25,7 @@ class FabricConfig {
 
     private static final Path path = FabricLoader.getInstance().getConfigDir().resolve(MOD_ID + ".json5");
     private static PropertyMirror<List<String>> forbiddenSounds = PropertyMirror.create(ConfigTypes.makeList(ConfigTypes.STRING));
+    private static PropertyMirror<List<String>> modsMuffled = PropertyMirror.create(ConfigTypes.makeList(ConfigTypes.STRING));
     private static PropertyMirror<Boolean> lawfulAllList = PropertyMirror.create(ConfigTypes.BOOLEAN);
     private static PropertyMirror<Boolean> disableInventoryButton = PropertyMirror.create(ConfigTypes.BOOLEAN);
     private static PropertyMirror<Boolean> disableCreativeInventoryButton = PropertyMirror.create(ConfigTypes.BOOLEAN);
@@ -36,10 +38,12 @@ class FabricConfig {
     private static PropertyMirror<Integer> invButtonVertical = PropertyMirror.create(ConfigTypes.INTEGER);
     private static PropertyMirror<Integer> creativeInvButtonHorizontal = PropertyMirror.create(ConfigTypes.INTEGER);
     private static PropertyMirror<Integer> creativeInvButtonVertical = PropertyMirror.create(ConfigTypes.INTEGER);
+    private static PropertyMirror<Integer> maxAnchorRange = PropertyMirror.create(ConfigTypes.INTEGER);
 
     static void init() {
         CommonConfig.set(new CommonConfig.ConfigAccess(
                 forbiddenSounds::getValue,
+                modsMuffled::getValue,
                 lawfulAllList::getValue,
                 disableInventoryButton::getValue,
                 disableCreativeInventoryButton::getValue,
@@ -51,11 +55,13 @@ class FabricConfig {
                 invButtonHorizontal::getValue,
                 invButtonVertical::getValue,
                 creativeInvButtonHorizontal::getValue,
-                creativeInvButtonVertical::getValue
+                creativeInvButtonVertical::getValue,
+                maxAnchorRange::getValue
         ));
         JanksonValueSerializer serializer = new JanksonValueSerializer(false);
         writeDefaultConfig(serializer);
         readConfig(serializer);
+        updateConfig(serializer);
     }
 
     private static final ConfigTree CONFIG = ConfigTree.builder()
@@ -64,28 +70,40 @@ class FabricConfig {
 
             .beginValue("forbiddenSounds", ConfigTypes.makeList(ConfigTypes.STRING), Arrays.asList("ui.", "music.", "ambient."))
             .withComment("General settings: ").withComment("") // general "category"
-            .withComment("Blacklisted Sounds - add the name of the sounds to blacklist, separated with comma")
+            .withComment("Blacklisted Sounds - add the name of the sounds to blacklist, separated with comma. \n" +
+                    "Default: \"ui.\", \"music.\", \"ambient.\"")
             .finishValue(forbiddenSounds::mirror)
 
+            .beginValue("modsMuffled", ConfigTypes.makeList(ConfigTypes.STRING), new ArrayList<>())
+            .withComment("General mod muffling, any sound from these mods will be muffled down to the provided volume. \n " +
+                    "Name of the mod and desired volume, separated by \":\" \n Example: \"minecraft:50\", \"extremesoundmuffler:0\".\n" +
+                    "Default: Empty")
+            .finishValue(modsMuffled::mirror)
+
             .beginValue("lawfulAllList", ConfigTypes.BOOLEAN, false)
-            .withComment("Allow the \"ALL\" sounds list to include the blacklisted sounds?")
+            .withComment("Allow the \"ALL\" sounds list to include the blacklisted sounds?\n" +
+                    "Default: false")
             .finishValue(lawfulAllList::mirror)
 
             .beginValue("defaultMuteVolume", ConfigTypes.DOUBLE, 0.0D)
-            .withComment("Range: 0.0 ~ 0.9")
-            .withComment("Volume set when pressed the mute button by default")
+            .withComment("Range: 0.0 ~ 0.9\n" +
+                    "Volume set when pressed the mute button by default\n" +
+                    "Default: 0.0")
             .finishValue(defaultMuteVolume::mirror)
 
             .beginValue("leftButtons", ConfigTypes.BOOLEAN, false)
-            .withComment("Set to true to move the muffle and play buttons to the left side of the GUI")
+            .withComment("Set to true to move the muffle and play buttons to the left side of the GUI\n" +
+                    "Default: false")
             .finishValue(leftButtons::mirror)
 
             .beginValue("showTip", ConfigTypes.BOOLEAN, true)
-            .withComment("Show tips in the Muffler screen?")
+            .withComment("Show tips in the Muffler screen?\n" +
+                    "Default: true")
             .finishValue(showTip::mirror)
 
             .beginValue("useDarkTheme", ConfigTypes.BOOLEAN, false)
-            .withComment("Whether or not use the dark theme")
+            .withComment("Whether or not use the dark theme\n" +
+                    "Default: false")
             .finishValue(useDarkTheme::mirror)
 
             .finishBranch()
@@ -93,39 +111,51 @@ class FabricConfig {
 
             .beginValue("disableInventoryButton", ConfigTypes.BOOLEAN, false)
             .withComment("").withComment("Inventory button settings").withComment("") //inv button "category"
-            .withComment("Disable the Muffle button in the player inventory?")
+            .withComment("Disable the Muffle button in the player inventory?\n" +
+                    "Default: false")
             .finishValue(disableInventoryButton::mirror)
 
             .beginValue("invButtonHorizontal", ConfigTypes.INTEGER, 75)
             .withComment("Coordinates for the Muffler button in the player inventory. \n" +
-                    "You can change this in game by holding the RMB over the button and draging it around")
+                    "You can change this in game by holding the RMB over the button and draging it around\n" +
+                    "Default: 75")
             .finishValue(invButtonHorizontal::mirror)
 
             .beginValue("invButtonVertical", ConfigTypes.INTEGER, 7)
             .withComment("Coordinates for the Muffler button in the player inventory. \n" +
-                    "You can change this in game by holding the RMB over the button and draging it around")
+                    "You can change this in game by holding the RMB over the button and draging it around\n" +
+                    "Default: 7")
             .finishValue(invButtonVertical::mirror)
 
             .beginValue("disableCreativeInventoryButton", ConfigTypes.BOOLEAN, false)
-            .withComment("Disable the Muffle button in the creative player inventory?")
+            .withComment("Disable the Muffle button in the creative player inventory?\n" +
+                    "Default: false")
             .finishValue(disableCreativeInventoryButton::mirror)
 
             .beginValue("creativeInvButtonHorizontal", ConfigTypes.INTEGER, 2)
             .withComment("Coordinates for the Muffler button in the creative player inventory. \n" +
-                    "You can change this in game by holding the RMB over the button and draging it around")
+                    "You can change this in game by holding the RMB over the button and draging it around\n" +
+                    "Default: 2")
             .finishValue(creativeInvButtonHorizontal::mirror)
 
             .beginValue("creativeInvButtonVertical", ConfigTypes.INTEGER, 2)
             .withComment("Coordinates for the Muffler button in the creative player inventory. \n" +
-                    "You can change this in game by holding the RMB over the button and draging it around")
+                    "You can change this in game by holding the RMB over the button and draging it around\n" +
+                    "Default: 2")
             .finishValue(creativeInvButtonVertical::mirror)
 
             .finishBranch()
             .fork("Anchor settings")
 
             .beginValue("disableAnchors", ConfigTypes.BOOLEAN, false)
-            .withComment("Disable the Anchors?")
+            .withComment("Disable the Anchors?\n" +
+                    "Default: false")
             .finishValue(disableAnchors::mirror)
+
+            .beginValue("maxAnchorRange", ConfigTypes.INTEGER, 32)
+            .withComment("Set max size for anchors (Warning: high values may cause LAG!).\n" +
+                    "Default: 32")
+            .finishValue(maxAnchorRange::mirror)
 
             .finishBranch()
 
@@ -155,6 +185,10 @@ class FabricConfig {
 
     static List<String> getForbiddenSounds() {
         return forbiddenSounds.getValue();
+    }
+
+    static List<String> getModsMuffled() {
+        return modsMuffled.getValue();
     }
 
     static void setInvButtonHorizontal(int x) {
