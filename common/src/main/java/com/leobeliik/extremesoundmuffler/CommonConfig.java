@@ -24,7 +24,8 @@ public class CommonConfig {
             Supplier<Integer> invButtonHorizontal,
             Supplier<Integer> invButtonVertical,
             Supplier<Integer> creativeInvButtonHorizontal,
-            Supplier<Integer> creativeInvButtonVertical
+            Supplier<Integer> creativeInvButtonVertical,
+            Supplier<Integer> maxAnchorRange
             ) {
     }
 

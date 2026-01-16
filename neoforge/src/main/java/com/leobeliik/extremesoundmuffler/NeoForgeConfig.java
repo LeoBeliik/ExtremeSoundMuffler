@@ -28,6 +28,7 @@ class NeoForgeConfig {
     private static ModConfigSpec.IntValue invButtonVertical;
     private static ModConfigSpec.IntValue creativeInvButtonHorizontal;
     private static ModConfigSpec.IntValue creativeInvButtonVertical;
+    private static ModConfigSpec.IntValue maxAnchorRange;
 
     static void init(ModContainer container) {
         buildConfig();
@@ -46,7 +47,8 @@ class NeoForgeConfig {
                 invButtonHorizontal,
                 invButtonVertical,
                 creativeInvButtonHorizontal,
-                creativeInvButtonVertical
+                creativeInvButtonVertical,
+                maxAnchorRange
         ));
     }
 
@@ -97,6 +99,8 @@ class NeoForgeConfig {
 
         disableAnchors = CLIENT_BUILDER.comment("Disable the Anchors?")
                 .define("disableAnchors", false);
+        maxAnchorRange = CLIENT_BUILDER.comment("Set max size for anchors (Warning: high values may cause LAG!).")
+                .defineInRange("anchorRange", 32, 1, Integer.MAX_VALUE);
 
         CLIENT_BUILDER.pop();
         CLIENT_CONFIG = CLIENT_BUILDER.build();

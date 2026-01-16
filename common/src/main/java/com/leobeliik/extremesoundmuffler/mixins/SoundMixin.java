@@ -76,6 +76,11 @@ public abstract class SoundMixin implements ISoundLists {
             if (!CommonConfig.get().disableAnchors().get()) {
                 Anchor anchor = Anchor.getAnchor(tempSound);
                 if (anchor != null) {
+                    int maxAnchorRange = CommonConfig.get().maxAnchorRange().get();
+                    double radius = anchor.getRadius();
+                    if (radius > maxAnchorRange) {
+                        anchor.setRadius((int) Math.min(radius, maxAnchorRange));
+                    }
                     return (float) (tempVolume * anchor.getMuffledSounds().get(soundIdentifier));
                 }
             }

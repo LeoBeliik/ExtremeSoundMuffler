@@ -12,6 +12,7 @@ public interface IColorsGui {
     int aquaText = 0xff00ffff;
     int greenText = 0xff00ff00;
     int grayText = 0xff080808;
+    int redText = 0xffdd0303;
     int darkBG = ARGB.color(255, 0, 0, 0);
     int brightBG = ARGB.color(200, 50, 50, 50);
     int goldBG = ARGB.color(100, 255, 215, 0);

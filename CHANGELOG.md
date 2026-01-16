@@ -1,1 +1,2 @@
-Fixed the 10th sound not showing when it should
+Made logo square again for Mod Menu.  
+Added config option for max Anchor range.  
