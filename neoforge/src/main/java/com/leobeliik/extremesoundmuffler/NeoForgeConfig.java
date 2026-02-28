@@ -167,6 +167,7 @@ class NeoForgeConfig {
     private static void fillForbiddenList() {
         ISoundLists.forbiddenSounds.clear();
         ISoundLists.forbiddenSounds.addAll(forbiddenSounds.get());
+        ISoundLists.forbiddenCache.clear();
     }
 
     private static void getModsMuffled() {

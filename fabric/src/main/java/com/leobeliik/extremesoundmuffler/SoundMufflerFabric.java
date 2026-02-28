@@ -22,6 +22,7 @@ public class SoundMufflerFabric implements ClientModInitializer {
         FabricConfig.init();
         ISoundLists.forbiddenSounds.addAll(FabricConfig.getForbiddenSounds());
         ISoundLists.modsMuffled.addAll(FabricConfig.getModsMuffled());
+        ISoundLists.forbiddenCache.clear();
         ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) ->
                 ScreenMouseEvents.afterMouseRelease(screen).register(SoundMufflerFabric::onMouseReleasePre));
         KeyBindingHelper.registerKeyBinding(soundMufflerKey);
