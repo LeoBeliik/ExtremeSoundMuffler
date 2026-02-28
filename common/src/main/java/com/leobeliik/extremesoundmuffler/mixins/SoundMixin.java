@@ -44,7 +44,7 @@ public abstract class SoundMixin implements ISoundLists {
             method = "calculateVolume(FLnet/minecraft/sounds/SoundSource;)F")
     private float esm_setVolume(float volume) {
         //if we are not muffling, sounds return the normal volume
-        if (!MufflerScreen.isMuffling()) return volume;
+        if (volume == 0 || !MufflerScreen.isMuffling()) return volume;
 
         //save sound in temporary variable because there's a small chance to the sound to change when it shouldn't
         SoundInstance tempSound = esmSound;
@@ -109,6 +109,14 @@ public abstract class SoundMixin implements ISoundLists {
 
     @Unique
     private static boolean esm_isForbidden(SoundInstance sound) {
-        return forbiddenSounds.stream().anyMatch(fs -> sound.getIdentifier().toString().contains(fs));
+        if (forbiddenSounds.isEmpty()) return false;
+
+        return forbiddenCache.computeIfAbsent(sound.getIdentifier(), loc -> {
+            String locStr = loc.toString();
+            for (String fs : forbiddenSounds) {
+                if (locStr.contains(fs)) return true;
+            }
+            return false;
+        });
     }
 }

@@ -1,6 +1,7 @@
 package com.leobeliik.extremesoundmuffler;
 
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
+import com.leobeliik.extremesoundmuffler.utils.DataManager;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -159,11 +160,15 @@ class NeoForgeConfig {
     static void onReload(ModConfigEvent.Reloading event) {
         fillForbiddenList();
         getModsMuffled();
+        if (ISoundLists.anchorList.isEmpty()) {
+            DataManager.loadData();
+        }
     }
 
     private static void fillForbiddenList() {
         ISoundLists.forbiddenSounds.clear();
         ISoundLists.forbiddenSounds.addAll(forbiddenSounds.get());
+        ISoundLists.forbiddenCache.clear();
     }
 
     private static void getModsMuffled() {
