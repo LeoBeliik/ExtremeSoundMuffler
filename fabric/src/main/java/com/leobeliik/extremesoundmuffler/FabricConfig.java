@@ -23,7 +23,8 @@ class FabricConfig {
 
     private static final Path path = FabricLoader.getInstance().getConfigDir().resolve(MOD_ID + ".json5");
     private static PropertyMirror<List<String>> forbiddenSounds = PropertyMirror.create(ConfigTypes.makeList(ConfigTypes.STRING));
-    private static PropertyMirror<List<String>> modsMuffled = PropertyMirror.create(ConfigTypes.makeList(ConfigTypes.STRING));
+    private static PropertyMirror<List<String>> modsBlacklisted = PropertyMirror.create(ConfigTypes.makeList(ConfigTypes.STRING));
+    private static PropertyMirror<Boolean> useGlobalMuffledSounds = PropertyMirror.create(ConfigTypes.BOOLEAN);
     private static PropertyMirror<Boolean> lawfulAllList = PropertyMirror.create(ConfigTypes.BOOLEAN);
     private static PropertyMirror<Boolean> disableInventoryButton = PropertyMirror.create(ConfigTypes.BOOLEAN);
     private static PropertyMirror<Boolean> disableCreativeInventoryButton = PropertyMirror.create(ConfigTypes.BOOLEAN);
@@ -41,7 +42,8 @@ class FabricConfig {
     static void init() {
         CommonConfig.set(new CommonConfig.ConfigAccess(
                 forbiddenSounds::getValue,
-                modsMuffled::getValue,
+                modsBlacklisted::getValue,
+                useGlobalMuffledSounds::getValue,
                 lawfulAllList::getValue,
                 disableInventoryButton::getValue,
                 disableCreativeInventoryButton::getValue,
@@ -72,11 +74,17 @@ class FabricConfig {
                     "Default: \"ui.\", \"music.\", \"ambient.\"")
             .finishValue(forbiddenSounds::mirror)
 
-            .beginValue("modsMuffled", ConfigTypes.makeList(ConfigTypes.STRING), new ArrayList<>())
-            .withComment("General mod muffling, any sound from these mods will be muffled down to the provided volume. \n " +
-                    "Name of the mod and desired volume, separated by \":\" \n Example: \"minecraft:50\", \"extremesoundmuffler:0\".\n" +
-                    "Default: Empty")
-            .finishValue(modsMuffled::mirror)
+            .beginValue("modsBlacklisted", ConfigTypes.makeList(ConfigTypes.STRING),
+                    List.of("fabricloader", "neoforge", "java", "mixinextras", "fiber", "extremesoundmuffler"))
+            .withComment("Mods that shouldn't appear in the Mods section, sepparated by comma.\n" +
+                    "Default: fabricloader, neoforge, java, mixinextras, fiber, extremesoundmuffler")
+            .finishValue(modsBlacklisted::mirror)
+
+            .beginValue("useGlobalMuffledSounds", ConfigTypes.BOOLEAN, false)
+            .withComment("Use global muffled sounds?\n" +
+                         "Global muffled sounds are stored in the .minecraft folder while local muffled sounds are stored in the modpack folder\n" +
+                         "Default: false")
+            .finishValue(useGlobalMuffledSounds::mirror)
 
             .beginValue("lawfulAllList", ConfigTypes.BOOLEAN, false)
             .withComment("Allow the \"ALL\" sounds list to include the blacklisted sounds?\n" +
@@ -185,8 +193,14 @@ class FabricConfig {
         return forbiddenSounds.getValue();
     }
 
-    static List<String> getModsMuffled() {
-        return modsMuffled.getValue();
+    static List<String> getModsBlacklisted() {
+        return modsBlacklisted.getValue();
+    }
+
+    static void setGlobalConfig(boolean global) { useGlobalMuffledSounds.setValue(global); }
+
+    static boolean getGlobalConfig() {
+        return useGlobalMuffledSounds.getValue();
     }
 
     static void setInvButtonHorizontal(int x) {
@@ -204,4 +218,5 @@ class FabricConfig {
     static void setCreativeInvButtonVertical(int y) {
         creativeInvButtonVertical.setValue(y);
     }
+
 }

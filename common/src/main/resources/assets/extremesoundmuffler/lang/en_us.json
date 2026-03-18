@@ -8,25 +8,41 @@
   "slider.btn.play.play_sound": "Play/Stop sound",
   "slider.btn.volume": "Volume: %s",
 
-  "main_screen.btn.csl.recent": "Recent",
-  "main_screen.btn.csl.all": "All",
-  "main_screen.btn.csl.muffled": "Muffled",
-  "main_screen.btn.csl.tooltip": "Showing %s sounds",
-  "main_screen.btn.tms.stop": "Stop muffling",
-  "main_screen.btn.tms.start": "Start muffling",
-  "main_screen.btn.delete.sounds": "Delete muffled sounds",
+  "main_screen.tab.general": "GENERAL",
+  "main_screen.tab.anchors": "ANCHORS",
+  "main_screen.btn.recent": "Recent",
+  "main_screen.btn.recent.tooltip": "Show Recent sounds list",
+  "main_screen.btn.all": "All",
+  "main_screen.btn.all.tooltip": "Show All sounds list",
+  "main_screen.btn.muffled": "Muffled",
+  "main_screen.btn.muffled.tooltip": "Show Muffled sounds list.",
+  "main_screen.btn.mods": "Mods",
+  "main_screen.btn.mods.tooltip": "Show Mods list",
+  "main_screen.btn.blocks": "Blocks",
+  "main_screen.btn.blocks.tooltip": "Show Blocks list",
+
+  "main_screen.btn.tooltip": "Showing %s sounds",
+  "main_screen.btn.tms.tooltip.stop": "Stop muffling",
+  "main_screen.btn.tms.tooltip.start": "Start muffling",
+  "main_screen.btn.delete.recent.tooltip": "Delete recent sounds",
+  "main_screen.btn.delete.muffled.tooltip": "Delete muffled sounds",
   "main_screen.btn.delete.list": "Delete Muffled List",
   "main_screen.btn.delete.anchor": "Delete Anchor",
+  "main_screen.btn.next_sounds.tooltip": "Next Sounds",
+  "main_screen.btn.previous_sounds.tooltip": "Previous Sounds",
+  "main_screen.btn.global.tooltip" : "Change to global muffled sounds",
+  "main_screen.btn.local.tooltip" : "Change to local muffled sounds",
+
+
   "main_screen.btn.accept": "Accept",
   "main_screen.btn.cancel": "Cancel",
-  "main_screen.btn.next_sounds": "Next Sounds",
-  "main_screen.btn.previous_sounds": "Previous Sounds",
   "main_screen.btn.anchors.disabled": "Anchors are disabled!",
   "main_screen.btn.anchors.set_message": "Set the anchor first",
   "main_screen.btn.anchors.set": "Set Anchor",
   "main_screen.btn.anchors.set_range": "Range: 1 - %s",
   "main_screen.btn.anchors.set_title": "Change Anchor title",
   "main_screen.btn.anchors.edit": "Edit Anchor",
+  "main_screen.searchbar.hint": "Search",
 
   "main_screen.main_title": "ESM - Main Screen",
   "main_screen.empty": "Nothing to show here yet..",
@@ -72,7 +88,8 @@
   "extremesoundmuffler.configuration.general": "General",
 
   "extremesoundmuffler.configuration.forbiddenSounds": "Forbidden Sounds",
-  "extremesoundmuffler.configuration.modsMuffled": "Mods Muffled",
+  "extremesoundmuffler.configuration.modsBlacklisted": "Blacklisted Mods",
+  "extremesoundmuffler.configuration.useGlobalMuffledSounds": "Global Muffled list",
   "extremesoundmuffler.configuration.useDarkTheme": "Use Dark theme",
   "extremesoundmuffler.configuration.leftButtons": "Left buttons",
   "extremesoundmuffler.configuration.lawfulAllList": "Lawful All sounds List",
@@ -86,5 +103,6 @@
   "extremesoundmuffler.configuration.creativeInvButtonX": "Creative button X coord",
   "extremesoundmuffler.configuration.creativeInvButtonY": "Creative button Y coord",
 
-  "extremesoundmuffler.configuration.disableAnchors": "Disable Anchors"
+  "extremesoundmuffler.configuration.disableAnchors": "Disable Anchors",
+  "extremesoundmuffler.configuration.maxAnchorRange": "Max range for Anchors"
 }

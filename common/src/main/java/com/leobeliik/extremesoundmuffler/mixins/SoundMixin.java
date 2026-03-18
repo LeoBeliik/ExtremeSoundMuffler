@@ -1,13 +1,10 @@
 package com.leobeliik.extremesoundmuffler.mixins;
 
-import com.leobeliik.extremesoundmuffler.CommonConfig;
 import com.leobeliik.extremesoundmuffler.gui.MufflerScreen;
-import com.leobeliik.extremesoundmuffler.gui.buttons.PlaySoundButton;
+import com.leobeliik.extremesoundmuffler.gui.buttons.slider.ESMPlay;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
-import com.leobeliik.extremesoundmuffler.utils.Anchor;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.SoundEngine;
-import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -15,8 +12,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.util.Locale;
 
 @Mixin(SoundEngine.class)
 public abstract class SoundMixin implements ISoundLists {
@@ -50,8 +45,8 @@ public abstract class SoundMixin implements ISoundLists {
         SoundInstance tempSound = esmSound;
 
         //don't care about forbidden sounds or from the psb
-        if (tempSound != null && tempSound.getSound() != null && !PlaySoundButton.isFromPSB()) {
-            Identifier soundIdentifier = tempSound.getIdentifier();
+        if (tempSound != null && tempSound.getSound() != null && !ESMPlay.isFromPSB()) {
+            String soundIdentifier = tempSound.getIdentifier().toString();
 
             if (!esm_isForbidden(tempSound)) {
                 //remove sound to prevent repeated sounds and maintains the desired order
@@ -59,21 +54,24 @@ public abstract class SoundMixin implements ISoundLists {
                 //add sound to recent sounds list
                 recentSoundsList.add(soundIdentifier);
             }
+
             float tempVolume = tempSound.getVolume();
-            String soundName = soundIdentifier.getPath();
-            String modName = soundIdentifier.getNamespace();
+            String soundName = tempSound.getIdentifier().getPath();
+            String modName = tempSound.getIdentifier().getNamespace();
 
             //global sounds like thunder or dragon growl has too high volume to be properly muffled, so first we temporarily lower the max volume
             if (soundName.contains("entity.lightning_bolt.thunder") || soundName.contains("entity.ender_dragon.growl")) {
                 tempVolume = 1F;
             }
 
-            if (muffledSounds.containsKey(soundIdentifier)) {
+            if (muffledSounds.containsKey(soundIdentifier)) { //normal sounds, full identifier (minecraft:break)
                 return (float) (tempVolume * muffledSounds.get(soundIdentifier));
+            } else if (muffledSounds.containsKey(modName)) { //for mods, non working identifiers (minecraft)
+                return (float) (tempVolume * muffledSounds.get(modName));
             }
 
             //don't continue if the anchors are disabled
-            if (!CommonConfig.get().disableAnchors().get()) {
+            /*if (!CommonConfig.get().disableAnchors().get()) {
                 Anchor anchor = Anchor.getAnchor(tempSound);
                 if (anchor != null) {
                     int maxAnchorRange = CommonConfig.get().maxAnchorRange().get();
@@ -83,14 +81,7 @@ public abstract class SoundMixin implements ISoundLists {
                     }
                     return (float) (tempVolume * anchor.getMuffledSounds().get(soundIdentifier));
                 }
-            }
-
-            //Mod wide muffling from config
-            for (String mod : modsMuffled) {
-                if (mod.contains(modName.toLowerCase(Locale.ROOT))) {
-                    return tempVolume * Float.parseFloat(mod.split(":")[1]);
-                }
-            }
+            }*/
 
         }
 
@@ -111,10 +102,9 @@ public abstract class SoundMixin implements ISoundLists {
     private static boolean esm_isForbidden(SoundInstance sound) {
         if (forbiddenSounds.isEmpty()) return false;
 
-        return forbiddenCache.computeIfAbsent(sound.getIdentifier(), loc -> {
-            String locStr = loc.toString();
+        return forbiddenCache.computeIfAbsent(sound.getIdentifier().toString(), loc -> {
             for (String fs : forbiddenSounds) {
-                if (locStr.contains(fs)) return true;
+                if (loc.contains(fs)) return true;
             }
             return false;
         });

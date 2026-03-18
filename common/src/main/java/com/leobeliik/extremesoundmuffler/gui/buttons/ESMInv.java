@@ -14,13 +14,12 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
+import static com.leobeliik.extremesoundmuffler.SoundMufflerCommon.getIconsTextureID;
 
-import static com.leobeliik.extremesoundmuffler.SoundMufflerCommon.getTextureRL;
-
-public class InvButton extends AbstractButton implements IColorsGui {
+public class ESMInv extends AbstractButton implements IColorsGui {
 
     public boolean hold = false;
-    public InvButton(int x, int y) {
+    public ESMInv(int x, int y) {
         super(x, y, 11, 11, Component.empty());
     }
 
@@ -36,10 +35,9 @@ public class InvButton extends AbstractButton implements IColorsGui {
         renderScrollingString(render, Minecraft.getInstance().font, i, i1);
     }
 
-
     public void renderScrollingString(@NotNull GuiGraphics render, @NotNull Font font, int mouseX, int mouseY) {
         if (this.visible) {
-            render.blit(RenderPipelines.GUI_TEXTURED, getTextureRL(), getX(), getY(), 43f, 202f, 11, 11, 256, 256); //button texure
+            render.blit(RenderPipelines.GUI_TEXTURED, getIconsTextureID(), getX(), getY(), 132f, 47f, 11, 11, 256, 256); //button texure
             if (isHovered && !hold) {
                 render.drawStringWithBackdrop(font, Component.translatable("inventory.btn"), getX() - 8, getY() + this.height + 1, darkBG, whiteText);
             }

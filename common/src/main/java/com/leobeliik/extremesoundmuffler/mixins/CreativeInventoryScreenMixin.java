@@ -1,7 +1,7 @@
 package com.leobeliik.extremesoundmuffler.mixins;
 
 import com.leobeliik.extremesoundmuffler.CommonConfig;
-import com.leobeliik.extremesoundmuffler.gui.buttons.InvButton;
+import com.leobeliik.extremesoundmuffler.gui.buttons.ESMInv;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
@@ -24,7 +24,7 @@ public abstract class CreativeInventoryScreenMixin extends AbstractContainerScre
     @Shadow
     private static CreativeModeTab selectedTab;
     @Unique
-    private InvButton esm_creativeInvButton = new InvButton(esm_getCIBX(), esm_getCIBY());
+    private ESMInv esm_creativeInvButton = new ESMInv(esm_getCIBX(), esm_getCIBY());
 
     public CreativeInventoryScreenMixin(Player player, FeatureFlagSet flagSet, boolean b) {
         super(new CreativeModeInventoryScreen.ItemPickerMenu(player), player.getInventory(), CommonComponents.EMPTY);
