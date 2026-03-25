@@ -11,7 +11,7 @@ import com.leobeliik.extremesoundmuffler.utils.DataManager;
 import com.leobeliik.extremesoundmuffler.utils.Tips;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -69,19 +69,19 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     }
 
     @Override
-    public void render(@NotNull GuiGraphics stack, int mouseX, int mouseY, float partialTicks) {
+    public void extractRenderState(@NotNull GuiGraphicsExtractor stack, int mouseX, int mouseY, float partialTicks) {
         stack.blit(RenderPipelines.GUI_TEXTURED, getTextureRL(), getX(), getY(), 0, 0, xSize, ySize, 256, 256); //Main screen bounds
         renderSideScreen(stack); //render side screen buttons, need to be rendered before all the other things
-        super.render(stack, mouseX, mouseY, partialTicks);
+        super.extractRenderState(stack, mouseX, mouseY, partialTicks);
         //--------------- My Renders ---------------//
         //Screen title
-        stack.drawCenteredString(font, screenTitle, getX() + 128, getY() + 8, whiteText);
+        stack.centeredText(font, screenTitle, getX() + 128, getY() + 8, whiteText);
         //render the tips on the bottom of the screen
         renderTips(stack);
         //render buttons tips and other textures
         renderButtons(stack, mouseX, mouseY);
     }
-    public void renderBackground(@NotNull GuiGraphics stack, int mouseX, int mouseY, float partialTicks) {}
+    public void renderBackground(@NotNull GuiGraphicsExtractor stack, int mouseX, int mouseY, float partialTicks) {}
 
     @Override
     public boolean isPauseScreen() {
@@ -91,7 +91,12 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     @Override
     public boolean keyPressed(@NotNull KeyEvent keyEvent) {
         //Radius only accepts numbers
-        editRadBar.setFilter(s -> s.matches("[0-9]*(?:[0-9]*)?"));
+        editRadBar.setResponder(s -> {
+            String filtered = s.replaceAll("[^0-9]", "");
+            if (!s.equals(filtered)) {
+                editRadBar.setValue(filtered);
+            }
+        });
 
         //Search bar, Edit title bar & Edit Anchor Radius bar looses focus when pressed "Enter" or "Intro"
         if (keyEvent.key() == 257 || keyEvent.key() == 335) {
@@ -356,7 +361,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
     //----------------------------------- Rendering -----------------------------------//
 
-    private void renderButtons(GuiGraphics stack, int mouseX, int mouseY) {
+    private void renderButtons(GuiGraphicsExtractor stack, int mouseX, int mouseY) {
         Component message; //Tooltip message
 
         //--------------- Toggle Muffle sounds button ---------------//
@@ -387,7 +392,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         //render searchbar hint
         Component searchHint = Component.translatable("gui.recipebook.search_hint").withStyle(ChatFormatting.ITALIC).withStyle(ChatFormatting.GRAY);
         if (!this.searchBar.isFocused() && this.searchBar.getValue().isEmpty()) {
-            stack.drawString(font, searchHint, searchBar.getX() + 1, searchBar.getY() + 1, -1);
+            stack.text(font, searchHint, searchBar.getX() + 1, searchBar.getY() + 1, -1);
         }
 
         //--------------- Change sounds list button ---------------//
@@ -395,12 +400,12 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         boolean notMuffling = this.anchor == null ? muffledSounds.isEmpty() : this.anchor.getMuffledSounds().isEmpty();
         if (notMuffling && btnCSL.getMessage().equals(Component.translatable("main_screen.btn.csl.muffled"))) {
             MutableComponent text = Component.translatable("main_screen.empty").copy().withStyle(ChatFormatting.ITALIC).withStyle(ChatFormatting.GRAY);
-            stack.drawCenteredString(font, text, getX() + 128, getY() + 101, whiteText);
+            stack.centeredText(font, text, getX() + 128, getY() + 101, whiteText);
         }
 
         //render btnCSL text because I don't like how the default text looks like
         float centerX = btnCSL.getX() + btnCSL.getWidth() / 2F - font.width(btnCSL.getMessage().getString()) / 2F;
-        stack.drawString(font, btnCSL.getMessage().getString(), (int) centerX, btnCSL.getY() + 3, 0xFF000000, false);
+        stack.text(font, btnCSL.getMessage().getString(), (int) centerX, btnCSL.getY() + 3, 0xFF000000, false);
         message = Component.translatable("main_screen.btn.csl.tooltip", btnCSL.getMessage().getString());
         if (btnCSL.isMouseOver(mouseX, mouseY)) {
             renderButtonTooltip(stack, message, btnCSL);
@@ -462,7 +467,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         }
     }
 
-    private void renderSideScreen(GuiGraphics stack) {
+    private void renderSideScreen(GuiGraphicsExtractor stack) {
         if (anchor == null) return; //everything here depends of the Anchor
         //Anchor coordinates and set coord button
         String dimensionName = "";
@@ -480,11 +485,11 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         }
         stack.fill(x - 5, y - 57, x + stringW + 7, y + 17, whiteBG); //light background border
         stack.fill(x - 5, y - 56, x + stringW + 6, y + 16, darkBG); //dark background
-        stack.drawString(font, Component.translatable("main_screen.side_screen.x", anchor.getX()), x + 1, y - 50, whiteText);
-        stack.drawString(font, Component.translatable("main_screen.side_screen.y", anchor.getY()), x + 1, y - 40, whiteText);
-        stack.drawString(font, Component.translatable("main_screen.side_screen.z", anchor.getZ()), x + 1, y - 30, whiteText);
-        stack.drawString(font, Component.translatable("main_screen.side_screen.radius", radius), x + 1, y - 20, whiteText);
-        stack.drawString(font, Component.translatable("main_screen.side_screen.dimension", dimensionName), x + 1, y - 10, whiteText);
+        stack.text(font, Component.translatable("main_screen.side_screen.x", anchor.getX()), x + 1, y - 50, whiteText);
+        stack.text(font, Component.translatable("main_screen.side_screen.y", anchor.getY()), x + 1, y - 40, whiteText);
+        stack.text(font, Component.translatable("main_screen.side_screen.z", anchor.getZ()), x + 1, y - 30, whiteText);
+        stack.text(font, Component.translatable("main_screen.side_screen.radius", radius), x + 1, y - 20, whiteText);
+        stack.text(font, Component.translatable("main_screen.side_screen.dimension", dimensionName), x + 1, y - 10, whiteText);
         stack.blit(RenderPipelines.GUI_TEXTURED,  getTextureRL(), x, y, 0, 69.45F, 11, 11, 88, 88); //set coordinates button
 
         if (anchor.getAnchorPos() != null) {
@@ -501,12 +506,12 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
             stack.fill(x + stringW + 7, y - 5, editAnchorTitleBar.getX() + editAnchorTitleBar.getWidth() + 4, btnAccept.getY() + 23, whiteBG);//light top background border
             stack.fill(x - 5, btnAccept.getY() + 23, editAnchorTitleBar.getX() + editAnchorTitleBar.getWidth() + 4, btnAccept.getY() + 24, whiteBG);//light bottom background border
             stack.fill(x - 6, y - 4, editAnchorTitleBar.getX() + editAnchorTitleBar.getWidth() + 3, btnAccept.getY() + 23, darkBG);//dark background
-            stack.drawString(font, Component.translatable("main_screen.side_screen.title"), x - 2, y + 1, whiteText);
-            stack.drawString(font, Component.translatable("main_screen.side_screen.radius_edit"), x - 2, editRadBar.getY() + 1, whiteText);
+            stack.text(font, Component.translatable("main_screen.side_screen.title"), x - 2, y + 1, whiteText);
+            stack.text(font, Component.translatable("main_screen.side_screen.radius_edit"), x - 2, editRadBar.getY() + 1, whiteText);
         }
     }
 
-    private void renderButtonTooltip(GuiGraphics stack, Component message, AbstractWidget button) {
+    private void renderButtonTooltip(GuiGraphicsExtractor stack, Component message, AbstractWidget button) {
         //to render CSL button tooltip more centered
         int CSLShift = button.equals(btnCSL) ? 25 : 0;
         int centeredMessageX = button.getX() - ((font.width(message) - CSLShift) / 2);
@@ -514,7 +519,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
         stack.setTooltipForNextFrame(font, message, centeredMessageX, centeredMessageY);
     }
 
-    private void renderTips(GuiGraphics stack) {
+    private void renderTips(GuiGraphicsExtractor stack) {
         if (CommonConfig.get().showTip().get()) {
             if (index % 500 == 0) {
                 tip = Component.translatable(Tips.randomTip());
@@ -524,7 +529,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
             stack.fill(getX() - 2, getY() + 208, getX() + 257, getY() + h + 2, darkBG); //outer dark bg
             stack.fill(getX() - 1, getY() + 209, getX() + 256, getY() + h + 1, goldBG); //middle gold bg
             stack.fill(getX(), getY() + 210, getX() + 255, getY() + h, darkBG); //inner dark bg
-            stack.drawWordWrap(font, Component.translatable("main_screen.tip", tip), getX() + 5, getY() + 213, 245, whiteText);
+            stack.textWithWordWrap(font, Component.translatable("main_screen.tip", tip), getX() + 5, getY() + 213, 245, whiteText);
             index++;
         }
     }

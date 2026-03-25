@@ -6,7 +6,7 @@ import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
@@ -46,9 +46,8 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
         setBtnPlaySound(sound);
     }
 
-
     @Override
-    public void renderWidget(@NotNull GuiGraphics stack, int mouseX, int mouseY, float partialTicks) {
+    public void extractWidgetRenderState(GuiGraphicsExtractor stack, int mouseX, int mouseY, float partialTicks) {
         isMuffling = getFGColor(getText(), "aqua");
         //row highlight
         stack.fill(getX(), getY() - 1, getX() + width + 1, getY() + height - 2, bg);
@@ -71,7 +70,7 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
         this.drawMessage(stack);
     }
 
-    private void renderButtonTooltip(GuiGraphics stack, AbstractButton button, Component message) {
+    private void renderButtonTooltip(GuiGraphicsExtractor stack, AbstractButton button, Component message) {
         int centeredMessageX = button.getX() - (font.width(message) / 2);
         int centeredMessageY = button.getY() - 1;
 
@@ -83,10 +82,10 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
         //stack.drawString(font, text, x1, y1 - 2, whiteText);
     }
 
-    private void drawMessage(GuiGraphics stack) {
+    private void drawMessage(GuiGraphicsExtractor stack) {
         int v = Math.max(width, font.width(getMessage().getString()));
         if (showSlider && isFocused() && isHovered) {
-            stack.drawCenteredString(font, Component.translatable("slider.btn.volume", (int) (sliderValue * 100)), getX() + (width / 2), getY() + 2, aquaText); //title
+            stack.centeredText(font, Component.translatable("slider.btn.volume", (int) (sliderValue * 100)), getX() + (width / 2), getY() + 2, aquaText); //title
         } else {
             String msgTruncated = getMessage().getString();
             if (this.isHovered && font.width(msgTruncated) > 205) {
@@ -94,12 +93,12 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
             } else {
                 msgTruncated = font.substrByWidth(getMessage(), 205).getString();
             }
-            stack.drawString(font, msgTruncated, getX() + 2, getY() + 2, isMuffling ? aquaText : whiteText, true); //title
+            stack.text(font, msgTruncated, getX() + 2, getY() + 2, isMuffling ? aquaText : whiteText, true); //title
         }
     }
 
     //draws the "rainbow" gradient in the background
-    private void drawGradient(GuiGraphics stack) {
+    private void drawGradient(GuiGraphicsExtractor stack) {
         if (isMuffling) {
             stack.blit(RenderPipelines.GUI_TEXTURED,  getTextureRL(), getX(), getY() - 1, 0, 234, (int) (sliderValue * (width - 6)) + 5, height + 1, 256, 256); //draw bg
             if (this.isHovered) {

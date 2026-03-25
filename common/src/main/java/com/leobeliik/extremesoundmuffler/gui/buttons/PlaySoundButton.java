@@ -1,6 +1,6 @@
 package com.leobeliik.extremesoundmuffler.gui.buttons;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -12,6 +12,7 @@ import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.sounds.SoundEvent;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public class PlaySoundButton extends AbstractButton {
 
@@ -35,7 +36,7 @@ public class PlaySoundButton extends AbstractButton {
     }
 
     @Override
-    protected void renderContents(GuiGraphics guiGraphics, int i, int i1, float v) {
+    protected void extractContents(@NonNull GuiGraphicsExtractor guiGraphicsExtractor, int i, int i1, float v) {
 
     }
 

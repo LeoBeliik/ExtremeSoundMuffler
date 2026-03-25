@@ -2,7 +2,7 @@ package com.leobeliik.extremesoundmuffler.mixins;
 
 import com.leobeliik.extremesoundmuffler.CommonConfig;
 import com.leobeliik.extremesoundmuffler.gui.buttons.InvButton;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.gui.screens.recipebook.CraftingRecipeBookComponent;
@@ -36,8 +36,8 @@ public abstract class InventoryScreenMixin extends AbstractRecipeBookScreen<Inve
     }
 
     //Move the button when the recipe book gui opens
-    @Inject(method = "render", at = @At("HEAD"))
-    private void esm_inventoryScreenRender(GuiGraphics render, int mouseX, int mouseY, float tick, CallbackInfo ci) {
+    @Inject(method = "extractRenderState", at = @At("HEAD"))
+    private void esm_inventoryScreenRender(GuiGraphicsExtractor render, int mouseX, int mouseY, float tick, CallbackInfo ci) {
         if (esm_invButton.hold) {
             esm_invButton.setX(mouseX - 6);
             esm_invButton.setY(mouseY - 6);

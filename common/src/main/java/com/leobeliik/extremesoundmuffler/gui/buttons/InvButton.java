@@ -4,7 +4,7 @@ import com.leobeliik.extremesoundmuffler.SoundMufflerCommon;
 import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -32,16 +32,15 @@ public class InvButton extends AbstractButton implements IColorsGui {
     }
 
     @Override
-    protected void renderContents(@NonNull GuiGraphics render, int i, int i1, float v) {
+    protected void extractContents(@NonNull GuiGraphicsExtractor render, int i, int i1, float v) {
         renderScrollingString(render, Minecraft.getInstance().font, i, i1);
     }
 
-
-    public void renderScrollingString(@NotNull GuiGraphics render, @NotNull Font font, int mouseX, int mouseY) {
+    private void renderScrollingString(@NotNull GuiGraphicsExtractor render, @NotNull Font font, int mouseX, int mouseY) {
         if (this.visible) {
             render.blit(RenderPipelines.GUI_TEXTURED, getTextureRL(), getX(), getY(), 43f, 202f, 11, 11, 256, 256); //button texure
             if (isHovered && !hold) {
-                render.drawStringWithBackdrop(font, Component.translatable("inventory.btn"), getX() - 8, getY() + this.height + 1, darkBG, whiteText);
+                render.textWithBackdrop(font, Component.translatable("inventory.btn"), getX() - 8, getY() + this.height + 1, darkBG, whiteText);
             }
             drag = isMouseOver(mouseX, mouseY);
         }
