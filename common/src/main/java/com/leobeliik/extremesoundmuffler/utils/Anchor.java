@@ -19,22 +19,11 @@ public class Anchor {
     private Identifier dimension;
     private int radius;
     private SortedMap<String, Double> muffledSounds = new TreeMap<>();
-    private transient SortedMap<Identifier, Double> cachedMuffledSounds;
 
     public Anchor(int id, String name) {
         this.id = id;
         this.name = name;
     }
-
-/*    public Anchor(int id, String name, BlockPos anchorPos, Identifier dimension, int radius, SortedMap<String, Double> muffledSounds) {
-        this.id = id;
-        this.name = name;
-        this.anchorPos = anchorPos;
-        this.dimension = dimension;
-        this.radius = radius;
-        this.muffledSounds = muffledSounds;
-        System.out.println(CommonConfig.get().maxAnchorRange().get() + " BBBBBBBBBBBBBB");
-    }*/
 
     public BlockPos getAnchorPos() {
         return anchorPos;
@@ -65,26 +54,21 @@ public class Anchor {
     }
 
     public SortedMap<Identifier, Double> getMuffledSounds() {
-        if (cachedMuffledSounds == null) {
-            cachedMuffledSounds = new TreeMap<>();
-            this.muffledSounds.forEach((R, D) -> cachedMuffledSounds.put(Identifier.parse(R), D));
-        }
-        return cachedMuffledSounds;
+        SortedMap<Identifier, Double> temp = new TreeMap<>();
+        this.muffledSounds.forEach((R, D) -> temp.put(Identifier.parse(R), D));
+        return temp;
     }
 
     public void setMuffledSounds(SortedMap<Identifier, Double> muffledSounds) {
         muffledSounds.forEach((R, D) -> this.muffledSounds.put(R.toString(), D));
-        this.cachedMuffledSounds = null;
     }
 
     public void addSound(Identifier sound, double volume) {
         muffledSounds.put(sound.toString(), volume);
-        this.cachedMuffledSounds = null;
     }
 
     public void replaceSound(Identifier sound, double volume) {
         muffledSounds.replace(sound.toString(), volume);
-        this.cachedMuffledSounds = null;
     }
 
     public String getX() {
@@ -109,7 +93,6 @@ public class Anchor {
 
     public void removeSound(Identifier sound) {
         muffledSounds.remove(sound.toString());
-        this.cachedMuffledSounds = null;
     }
 
     public void setAnchor(int radius) {
@@ -117,7 +100,6 @@ public class Anchor {
         setAnchorPos(player.blockPosition());
         setDimension(player.level().dimension().identifier());
         setRadius(this.getRadius() == 0 ? radius : this.getRadius());
-        this.cachedMuffledSounds = null;
     }
 
     public void deleteAnchor() {
@@ -126,7 +108,6 @@ public class Anchor {
         setDimension(null);
         setRadius(0);
         muffledSounds.clear();
-        this.cachedMuffledSounds = null;
     }
 
     public void editAnchor(String title, int radius) {
@@ -135,30 +116,21 @@ public class Anchor {
     }
 
     public static Anchor getAnchor(SoundInstance sound) {
+        BlockPos soundPos = new BlockPos((int) sound.getX(), (int) sound.getY(), (int) sound.getZ());
         Minecraft minecraft = Minecraft.getInstance();
-        ClientLevel level = minecraft.level;
-        if (level == null) return null;
-
-        Identifier currentDim = level.dimension().identifier();
         LocalPlayer player = minecraft.player;
-        Identifier soundLoc = sound.getIdentifier();
+        ClientLevel world = minecraft.level;
 
-        BlockPos soundPos;
-        if (player != null && soundLoc.getPath().contains("entity.minecart.inside")) {
+        if (player != null && sound.getIdentifier().getPath().contains("entity.minecart.inside")) {
             //give player coordinates if it's in the minecart, minecart.inside sound pos is always at 0
             soundPos = player.getOnPos();
-        } else {
-            soundPos = new BlockPos((int) sound.getX(), (int) sound.getY(), (int) sound.getZ());
         }
-
         for (Anchor anchor : ISoundLists.anchorList) {
-            if (anchor.getMuffledSounds().size() == 0) return null;
-            BlockPos anchorPos = anchor.getAnchorPos();
-
-            if (anchorPos != null
-                    && currentDim.equals(anchor.getDimension())
-                    && soundPos.closerThan(anchorPos, anchor.getRadius())
-                    && anchor.getMuffledSounds().containsKey(soundLoc)) {
+            if (anchor.getAnchorPos() != null
+                    && world != null
+                    && world.dimension().identifier().equals(anchor.getDimension())
+                    && soundPos.closerThan(anchor.getAnchorPos(), anchor.getRadius())
+                    && anchor.getMuffledSounds().containsKey(sound.getIdentifier())) {
                 return anchor;
             }
         }
