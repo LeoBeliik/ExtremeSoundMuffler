@@ -9,6 +9,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
@@ -27,6 +28,7 @@ public class SoundMufflerNeoForge {
         NeoForge.EVENT_BUS.register(this);
         NeoForgeConfig.init(container);
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+        Constants.isCustomSkinLoader = ModList.get().isLoaded("customskinloader");
     }
 
     @EventBusSubscriber(modid = Constants.MOD_ID, value = Dist.CLIENT)

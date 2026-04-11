@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.leobeliik.extremesoundmuffler.CommonConfig;
+import com.leobeliik.extremesoundmuffler.Constants;
 import com.leobeliik.extremesoundmuffler.gui.MufflerScreen;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import net.minecraft.client.Minecraft;
@@ -12,7 +13,6 @@ import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.FileUtil;
-
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -23,13 +23,14 @@ import static com.leobeliik.extremesoundmuffler.Constants.*;
 public class DataManager implements ISoundLists {
 
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private static boolean enabledAnchors = !CommonConfig.get().disableAnchors().get() && !Constants.isCustomSkinLoader;
 
     public static void loadData() {
         MufflerScreen.setMuffling(true);
 
         Optional.ofNullable(loadMuffledMap()).ifPresent(mm -> mm.forEach((R, D) -> muffledSounds.put(Identifier.parse(R), D)));
 
-        if (!CommonConfig.get().disableAnchors().get()) {
+        if (enabledAnchors) {
             anchorList.clear();
             anchorList.addAll(Optional.ofNullable(loadAnchors()).orElse(emptyAnchorList));
         }
@@ -40,7 +41,7 @@ public class DataManager implements ISoundLists {
     public static void saveData() {
         saveMuffledMap();
 
-        if (!CommonConfig.get().disableAnchors().get()) {
+        if (enabledAnchors) {
             saveAnchors();
         }
     }
@@ -62,6 +63,7 @@ public class DataManager implements ISoundLists {
         new File("ESM/").mkdir();
         try (Writer writer = new OutputStreamWriter(new FileOutputStream("ESM/soundsMuffled.dat"), StandardCharsets.UTF_8)) {
             writer.write(gson.toJson(muffledSounds));
+            writer.flush();
         } catch (IOException e) {
             LOG.error(Component.translatable("log.error.saveMuffledList", e).getString());
         }
@@ -81,9 +83,11 @@ public class DataManager implements ISoundLists {
     }
 
     private static void saveAnchors() {
-        new File("ESM/", getWorldName()).mkdirs();
-        try (Writer writer = new OutputStreamWriter(new FileOutputStream("ESM/" + getWorldName() + "/anchors.dat"), StandardCharsets.UTF_8)) {
+        String worldName = getWorldName();
+        new File("ESM/", worldName).mkdirs();
+        try (Writer writer = new OutputStreamWriter(new FileOutputStream("ESM/" + worldName + "/anchors.dat"), StandardCharsets.UTF_8)) {
             writer.write(gson.toJson(anchorList));
+            writer.flush();
         } catch (IOException e) {
             LOG.error(Component.translatable("log.error.saveAnchorList", e).getString());
         }
