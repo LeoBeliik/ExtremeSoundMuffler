@@ -22,6 +22,7 @@
   "main_screen.btn.next_sounds": "Next Sounds",
   "main_screen.btn.previous_sounds": "Previous Sounds",
   "main_screen.btn.anchors.disabled": "Anchors are disabled!",
+  "main_screen.btn.anchors.customskinloader": "Custom Skin Loader mod breaks R/W anchors, can't use them with that mod.",
   "main_screen.btn.anchors.set_message": "Set the anchor first",
   "main_screen.btn.anchors.set": "Set Anchor",
   "main_screen.btn.anchors.set_range": "Range: 1 - %s",

@@ -41,7 +41,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
     private final int xSize = 256;
     private final int ySize = 202;
     private final int maxAnchorRange = CommonConfig.get().maxAnchorRange().get();
-    private final boolean isAnchorsDisabled = CommonConfig.get().disableAnchors().get();
+    private final boolean isAnchorsDisabled = CommonConfig.get().disableAnchors().get() || Constants.isCustomSkinLoader;
     private int minYButton, maxYButton, index;
     private Button btnTMS, btnDelete, btnCSL, btnSetAnchor, btnEditAnchor, btnNextSounds, btnPrevSounds, btnAccept, btnCancel, btnAnchor;
     private EditBox searchBar, editAnchorTitleBar, editRadBar;
@@ -422,9 +422,11 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
         if (mouseX > getX() + 30 && mouseX < btnAnchor.getX() + btnAnchor.getWidth()
                 && mouseY > btnAnchor.getY() && mouseY < btnAnchor.getY() + btnAnchor.getHeight()
-                && CommonConfig.get().disableAnchors().get()) {
+                && isAnchorsDisabled) {
             //render tooltip for disabled anchors
-            stack.setTooltipForNextFrame(font, Component.translatable("main_screen.btn.anchors.disabled"), getX() + 60, getY() + 40);
+            MutableComponent disabled = Constants.isCustomSkinLoader ?
+                    Component.translatable("main_screen.btn.anchors.customskinloader") : Component.translatable("main_screen.btn.anchors.disabled");
+            stack.setTooltipForNextFrame(font, disabled, getX() + font.width(disabled) - 50, getY() + 40);
         }
 
         //render message for when Anchor pos is not setted
