@@ -27,7 +27,7 @@
 <p align="center">
   <a href="https://github.com/LeoBeliik/ExtremeSoundMuffler/issues" alt="Issues">
         <img src="https://img.shields.io/github/issues/LeoBeliik/ExtremeSoundMuffler.svg?style=for-the-badge" /> </a>
-  <a href="https://github.com/LeoBeliik/ExtremeSoundMuffler/blob/master/LICENSE.txt" alt="License">
+  <a href="https://github.com/LeoBeliik/ExtremeSoundMuffler/blob/26.2/LICENSE.txt" alt="License">
         <img src="https://img.shields.io/github/license/LeoBeliik/ExtremeSoundMuffler.svg?style=for-the-badge" /> </a>  
 </p>
   

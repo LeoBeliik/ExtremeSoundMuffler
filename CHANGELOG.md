@@ -1,1 +1,2 @@
-Auto-disable Anchors when CustomSkinLoader is present, that mod breaks Read/Write their data.  
+Forgot to re-add this:
+Added zh-cn (NumberSir)
