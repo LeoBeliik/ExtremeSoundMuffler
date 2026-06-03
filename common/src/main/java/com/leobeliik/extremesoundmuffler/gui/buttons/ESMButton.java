@@ -41,8 +41,6 @@ public class ESMButton extends Button implements IColorsGui {
         int toggled = this.toggle ? this.width : 0; //if the button is toggled (disabled/enabled)
         guiGraphics.blit(RenderPipelines.GUI_TEXTURED, getIconsTextureID(), getX(), getY(), textureX + toggled, textureY + hovered , this.width, this.height, 256, 256); //button texure
 
-
-
         //render text like this because I don't like how the default text looks like
         Font font = Minecraft.getInstance().font;
         if (!this.message.equals(Component.empty())) {
@@ -66,6 +64,10 @@ public class ESMButton extends Button implements IColorsGui {
 
     public void show() {
         this.visible = true;
+    }
+
+    public void setVisible(boolean visibility) {
+        this.visible = visibility;
     }
 
     public void toggle() {

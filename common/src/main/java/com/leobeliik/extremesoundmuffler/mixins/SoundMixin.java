@@ -1,7 +1,7 @@
 package com.leobeliik.extremesoundmuffler.mixins;
 
 import com.leobeliik.extremesoundmuffler.gui.MufflerScreen;
-import com.leobeliik.extremesoundmuffler.gui.buttons.slider.ESMPlay;
+import com.leobeliik.extremesoundmuffler.gui.buttons.soundSlider.ESMPlay;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.SoundEngine;

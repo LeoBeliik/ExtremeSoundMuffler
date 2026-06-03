@@ -1,4 +1,4 @@
-package com.leobeliik.extremesoundmuffler.gui.buttons.slider;
+package com.leobeliik.extremesoundmuffler.gui.buttons.soundSlider;
 
 import com.leobeliik.extremesoundmuffler.Constants;
 import com.leobeliik.extremesoundmuffler.gui.buttons.ESMButton;

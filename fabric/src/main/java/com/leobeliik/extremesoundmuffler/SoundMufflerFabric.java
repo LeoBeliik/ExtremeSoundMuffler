@@ -29,7 +29,7 @@ public class SoundMufflerFabric implements ClientModInitializer {
     public void onInitializeClient() {
         FabricConfig.init();
         ISoundLists.forbiddenSounds.addAll(FabricConfig.getForbiddenSounds());
-        ISoundLists.modsMuffled.addAll(FabricConfig.getModsBlacklisted());
+        ISoundLists.forbiddenMods.addAll(FabricConfig.getForbiddenMods());
         ISoundLists.forbiddenCache.clear();
 
         ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) ->

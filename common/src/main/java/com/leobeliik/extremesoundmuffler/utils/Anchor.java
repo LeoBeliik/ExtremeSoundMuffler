@@ -7,9 +7,8 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
-import java.util.Objects;
-import java.util.SortedMap;
-import java.util.TreeMap;
+
+import java.util.*;
 
 public class Anchor {
 
@@ -17,7 +16,7 @@ public class Anchor {
     private String name;
     private Identifier dimension;
     private int radius;
-    private SortedMap<String, Double> muffledSounds = new TreeMap<>();
+    private Map<String, Double> muffledSounds = new HashMap<>();
 
     public Anchor(String name) {
         this.name = name;
@@ -42,7 +41,7 @@ public class Anchor {
         return name;
     }
 
-    public int getRadius() {
+    public int getRange() {
         return radius;
     }
 
@@ -54,22 +53,20 @@ public class Anchor {
         this.name = name;
     }
 
-    private SortedMap<Identifier, Double> getMuffledSounds() {
-        SortedMap<Identifier, Double> temp = new TreeMap<>();
-        this.muffledSounds.forEach((R, D) -> temp.put(Identifier.parse(R), D));
-        return temp;
+    public Map<String, Double> getMuffledSounds() {
+        return this.muffledSounds;
     }
 
-    public void setMuffledSounds(SortedMap<Identifier, Double> muffledSounds) {
-        muffledSounds.forEach((R, D) -> this.muffledSounds.put(R.toString(), D));
+    public void setMuffledSounds(Map<String, Double> muffledSounds) {
+	    this.muffledSounds.putAll(muffledSounds);
     }
 
-    public void addSound(Identifier sound, double volume) {
-        muffledSounds.put(sound.toString(), volume);
+    public void addSound(String sound, double volume) {
+        muffledSounds.put(sound, volume);
     }
 
-    public void replaceSound(Identifier sound, double volume) {
-        muffledSounds.replace(sound.toString(), volume);
+    public void replaceSound(String sound, double volume) {
+        muffledSounds.replace(sound, volume);
     }
 
     public String getX() {
@@ -100,7 +97,7 @@ public class Anchor {
         LocalPlayer player = Objects.requireNonNull(Minecraft.getInstance().player);
         setAnchorPos(player.blockPosition());
         setDimension(player.level().dimension().identifier());
-        setRadius(this.getRadius() == 0 ? radius : this.getRadius());
+        setRadius(this.getRange() == 0 ? radius : this.getRange());
     }
 
     public void deleteAnchor() {
@@ -111,8 +108,10 @@ public class Anchor {
         muffledSounds.clear();
     }
 
-    public void editAnchor(String title, int radius) {
-        setName(title);
+    public void editAnchor(String name, BlockPos anchorPos, Identifier dimension, int radius) {
+        setName(name);
+        setAnchorPos(anchorPos);
+        setDimension(dimension);
         setRadius(radius);
     }
 
@@ -130,8 +129,8 @@ public class Anchor {
             if (anchor.getAnchorPos() != null
                     && world != null
                     && world.dimension().identifier().equals(anchor.getDimension())
-                    && soundPos.closerThan(anchor.getAnchorPos(), anchor.getRadius())
-                    && anchor.getMuffledSounds().containsKey(sound.getIdentifier())) {
+                    && soundPos.closerThan(anchor.getAnchorPos(), anchor.getRange())
+                    && anchor.getMuffledSounds().containsKey(sound.getIdentifier().toString())) {
                 return anchor;
             }
         }

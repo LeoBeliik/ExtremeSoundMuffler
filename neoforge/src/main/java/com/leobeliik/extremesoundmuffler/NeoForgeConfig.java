@@ -16,7 +16,7 @@ class NeoForgeConfig {
     private static ModConfigSpec CLIENT_CONFIG;
     private static ModConfigSpec.Builder CLIENT_BUILDER = new ModConfigSpec.Builder();
     private static ModConfigSpec.ConfigValue<List<? extends String>> forbiddenSounds;
-    private static ModConfigSpec.ConfigValue<List<? extends String>> modsBlacklisted;
+    private static ModConfigSpec.ConfigValue<List<? extends String>> forbiddenMods;
     private static ModConfigSpec.BooleanValue useGlobalMuffledSounds;
     private static ModConfigSpec.BooleanValue lawfulAllList;
     private static ModConfigSpec.BooleanValue disableInventoryButton;
@@ -37,7 +37,7 @@ class NeoForgeConfig {
         container.registerConfig(ModConfig.Type.CLIENT, NeoForgeConfig.CLIENT_CONFIG);
         CommonConfig.set(new CommonConfig.ConfigAccess(
                 forbiddenSounds,
-                modsBlacklisted,
+                forbiddenMods,
                 lawfulAllList,
                 useGlobalMuffledSounds,
                 disableInventoryButton,
@@ -67,10 +67,10 @@ class NeoForgeConfig {
                 .comment(" Default: \"ui.\", \"music.\", \"ambient.\"")
                 .defineList("forbiddenSounds", Arrays.asList("ui.", "music.", "ambient."), () -> "",  o -> o instanceof String);
         
-        modsBlacklisted = CLIENT_BUILDER
+        forbiddenMods = CLIENT_BUILDER
                 .comment("Mods that shouldn't appear in the Mods section, sepparated by comma. \n")
                 .comment(" Default: fabricloader, neoforge, java, mixinextras, fiber, extremesoundmuffler")
-                .defineList("modsBlacklisted", List.of("fabricloader", "neoforge", "java", "mixinextras", "fiber", "extremesoundmuffler"), () -> "", o -> o instanceof String);
+                .defineList("forbiddenMods", List.of("fabricloader", "neoforge", "java", "mixinextras", "fiber", "extremesoundmuffler"), () -> "", o -> o instanceof String);
 
         useGlobalMuffledSounds = CLIENT_BUILDER
                 .comment("Use global muffled sounds?")
@@ -154,13 +154,13 @@ class NeoForgeConfig {
     @SubscribeEvent
     static void onLoad(ModConfigEvent.Loading event) {
         fillForbiddenList();
-        getModsMuffled();
+        getForbiddenMods();
     }
 
     @SubscribeEvent
     static void onReload(ModConfigEvent.Reloading event) {
         fillForbiddenList();
-        getModsMuffled();
+        getForbiddenMods();
         Constants.useGlobalConfig = getGlobalConfig();
         if (ISoundLists.anchorList.isEmpty()) {
             DataManager.loadData();
@@ -173,9 +173,9 @@ class NeoForgeConfig {
         ISoundLists.forbiddenCache.clear();
     }
 
-    private static void getModsMuffled() {
-        ISoundLists.modsMuffled.clear();
-        ISoundLists.modsMuffled.addAll(modsBlacklisted.get());
+    private static void getForbiddenMods() {
+        ISoundLists.forbiddenMods.clear();
+        ISoundLists.forbiddenMods.addAll(forbiddenMods.get());
     }
 
     static void setGlobalConfig(boolean global) {

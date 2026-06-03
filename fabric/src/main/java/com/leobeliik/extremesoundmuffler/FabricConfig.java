@@ -23,7 +23,7 @@ class FabricConfig {
 
     private static final Path path = FabricLoader.getInstance().getConfigDir().resolve(MOD_ID + ".json5");
     private static PropertyMirror<List<String>> forbiddenSounds = PropertyMirror.create(ConfigTypes.makeList(ConfigTypes.STRING));
-    private static PropertyMirror<List<String>> modsBlacklisted = PropertyMirror.create(ConfigTypes.makeList(ConfigTypes.STRING));
+    private static PropertyMirror<List<String>> forbiddenMods = PropertyMirror.create(ConfigTypes.makeList(ConfigTypes.STRING));
     private static PropertyMirror<Boolean> useGlobalMuffledSounds = PropertyMirror.create(ConfigTypes.BOOLEAN);
     private static PropertyMirror<Boolean> lawfulAllList = PropertyMirror.create(ConfigTypes.BOOLEAN);
     private static PropertyMirror<Boolean> disableInventoryButton = PropertyMirror.create(ConfigTypes.BOOLEAN);
@@ -42,7 +42,7 @@ class FabricConfig {
     static void init() {
         CommonConfig.set(new CommonConfig.ConfigAccess(
                 forbiddenSounds::getValue,
-                modsBlacklisted::getValue,
+                forbiddenMods::getValue,
                 useGlobalMuffledSounds::getValue,
                 lawfulAllList::getValue,
                 disableInventoryButton::getValue,
@@ -74,11 +74,11 @@ class FabricConfig {
                     "Default: \"ui.\", \"music.\", \"ambient.\"")
             .finishValue(forbiddenSounds::mirror)
 
-            .beginValue("modsBlacklisted", ConfigTypes.makeList(ConfigTypes.STRING),
+            .beginValue("forbiddenMods", ConfigTypes.makeList(ConfigTypes.STRING),
                     List.of("fabricloader", "neoforge", "java", "mixinextras", "fiber", "extremesoundmuffler"))
             .withComment("Mods that shouldn't appear in the Mods section, sepparated by comma.\n" +
                     "Default: fabricloader, neoforge, java, mixinextras, fiber, extremesoundmuffler")
-            .finishValue(modsBlacklisted::mirror)
+            .finishValue(forbiddenMods::mirror)
 
             .beginValue("useGlobalMuffledSounds", ConfigTypes.BOOLEAN, false)
             .withComment("Use global muffled sounds?\n" +
@@ -193,8 +193,8 @@ class FabricConfig {
         return forbiddenSounds.getValue();
     }
 
-    static List<String> getModsBlacklisted() {
-        return modsBlacklisted.getValue();
+    static List<String> getForbiddenMods() {
+        return forbiddenMods.getValue();
     }
 
     static void setGlobalConfig(boolean global) { useGlobalMuffledSounds.setValue(global); }
