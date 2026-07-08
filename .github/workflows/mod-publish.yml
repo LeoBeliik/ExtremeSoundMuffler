@@ -50,7 +50,7 @@ jobs:
         game-versions: ${{github.ref_name}}
         version: ${{env.MOD_VERSION}}-${{github.ref_name}}
         java: Java 25
-        modrinth-featured: false
+        modrinth-featured: true
         changelog-file: CHANGELOG.md
 
     - name: Publish Minecraft Mods Fabric Edition
@@ -69,7 +69,7 @@ jobs:
           game-versions: ${{github.ref_name}}
           version: ${{env.MOD_VERSION}}-${{github.ref_name}}
           java: Java 25
-          modrinth-featured: false
+          modrinth-featured: true
           changelog-file: CHANGELOG.md
           
     - name: Cleanup Gradle Cache
