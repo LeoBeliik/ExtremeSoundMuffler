@@ -11,6 +11,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.function.Supplier;
 
+import static com.leobeliik.extremesoundmuffler.Constants.darkMode;
 import static com.leobeliik.extremesoundmuffler.SoundMufflerCommon.getIconsTextureID;
 
 public class ESMButton extends Button implements IColorsGui {
@@ -45,7 +46,7 @@ public class ESMButton extends Button implements IColorsGui {
         Font font = Minecraft.getInstance().font;
         if (!this.message.equals(Component.empty())) {
             float centerX = this.getX() + this.getWidth() / 2F - font.width(this.getMessage()) / 2F;
-            int textColor = this.isHovered ? aquaText : grayText;
+            int textColor = this.isHovered ? aquaText : darkMode ? grayText : blackText;
             if (this.selected) textColor = greenText;
             guiGraphics.drawString(font, this.getMessage(), (int) centerX, this.getY() + 3, textColor, this.selected);
         }

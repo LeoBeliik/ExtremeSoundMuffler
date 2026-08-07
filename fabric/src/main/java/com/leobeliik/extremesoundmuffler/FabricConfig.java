@@ -178,7 +178,7 @@ class FabricConfig {
         try (InputStream s = new BufferedInputStream(Files.newInputStream(path, StandardOpenOption.READ, StandardOpenOption.CREATE))) {
             FiberSerialization.deserialize(CONFIG, s, serializer);
         } catch (IOException | ValueDeserializationException e) {
-            LOG.error("Error loading ESM config", e);
+            ESM_LOG.error("Error loading ESM config", e);
         }
     }
 
@@ -201,6 +201,10 @@ class FabricConfig {
 
     static boolean getGlobalConfig() {
         return useGlobalMuffledSounds.getValue();
+    }
+
+    static boolean getDarkMode() {
+        return useDarkTheme.getValue();
     }
 
     static void setInvButtonHorizontal(int x) {

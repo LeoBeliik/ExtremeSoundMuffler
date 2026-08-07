@@ -10,6 +10,8 @@ import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import com.leobeliik.extremesoundmuffler.utils.Anchor;
 import com.leobeliik.extremesoundmuffler.utils.DataManager;
+import com.mojang.blaze3d.platform.cursor.CursorType;
+import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -19,6 +21,8 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.player.LocalPlayer;
@@ -26,32 +30,34 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.Mth;
+import net.minecraft.util.Util;
 import org.jetbrains.annotations.NotNull;
-
+import org.jspecify.annotations.NonNull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Predicate;
 
+import static com.leobeliik.extremesoundmuffler.Constants.darkMode;
 import static com.leobeliik.extremesoundmuffler.SoundMufflerCommon.*;
 
-//TODO make it remember where it was when screen resized/reopen
 public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
 	private static final Minecraft minecraft = Minecraft.getInstance();
-	private boolean isAnchorScreen, isAnchorList, isResize;
-	private final CommonConfig.ConfigAccess cfg = CommonConfig.get();
 	private static boolean isMuffling;
 	private static Component toggleSoundsListMessage, screenTitle, tip;
+	private final CommonConfig.ConfigAccess cfg = CommonConfig.get();
 	private final int maxAnchorRange = cfg.maxAnchorRange().get(), ySize = 211, xSize = 256;
 	private final boolean isAnchorsDisabled = cfg.disableAnchors().get() || Constants.isCustomSkinLoader, isLawful = cfg.lawfulAllList().get(), leftButtons = cfg.leftButtons().get(), showShamelessPlug = cfg.showTip().get();
-	private int minYButton, maxYButton, index, minYAnchorButton, maxYAnchorButton;
+	public ESMButton btnMuffled, btnMods, btnBlocks, btnGlobal;
+	private boolean isAnchorScreen, isAnchorList, isDragging, isNameInUse;
+	private int minYButton, maxYButton, minYAnchorButton, maxYAnchorButton, scrollDelta, scrollerY;
 	private List<AbstractWidget> newAnchorScreenButtons = new ArrayList<>(9), anchorButtonsList = new ArrayList<>();
 	private String tabCurrent = "general", btnCurrent = "recent";
-	private Anchor anchor, tempAnchor;
+	private Anchor anchor;
 	private EditBox barSearch, barAnchorName, barAnchorX, barAnchorY, barAnchorZ, barAnchorDim, barAnchorRange;
 	private ESMTab tabGeneral, tabAnchors;
 	private ESMSlider firstSoundButton, lastSoundButton;
@@ -59,7 +65,6 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 	private ESMButton btnTMS, btnDelete, btnNextSounds, btnPrevSounds, btnRecent, btnAll;
 	private ESMButton btnAnchorNew, btnAnchorEdit, btnAnchorList, btnAnchorPickCoords, btnAnchorDelete;
 	private Button btnAccept, btnCancel;
-	public ESMButton btnMuffled, btnMods, btnBlocks, btnGlobal;
 
 	//TODO check if customskinloader still breaks the anchor loading and add tooltip
 	private MufflerScreen(Component title, Anchor anchor) {
@@ -68,6 +73,19 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 		this.isAnchorScreen = false;
 		minecraft.setScreen(this);
 		setNewAnchorButtons();
+		scrollerY = minYAnchorButton;
+	}
+
+	public static void open() {
+		new MufflerScreen(Component.translatable("main_screen.main_title"), null);
+	}
+
+	public static boolean isMuffling() {
+		return isMuffling;
+	}
+
+	public static void setMuffling(boolean muffling) {
+		isMuffling = muffling;
 	}
 
 	@Override
@@ -83,13 +101,14 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 			addTabs();
 		}
 		addButtons();
+		//add anchor buttons AFTER addButtons() cuz rendering stuff
 		if (!cfg.disableAnchors().get()) {
 			addAnchorButtons();
 		}
 
 		addSoundListButtons();
-		//setNewAnchorButtons();
-		postInit(false);
+		postInit();
+		updateButtons();
 	}
 
 	@Override
@@ -116,7 +135,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 		btnCurrent = currentButton;
 		barSearch.setValue(searchBar);
 
-		postInit(true);
+		postInit();
 
 		btnAnchorEdit.selected(isEdit);
 		toggleAnchorScreen(anchorScreenOn);
@@ -127,6 +146,8 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 		barAnchorZ.setValue(anchorBarZ);
 		barAnchorDim.setValue(anchorBarDim);
 		barAnchorRange.setValue(anchorBarRange);
+
+		setAnchorListButtons();
 	}
 
 	@Override
@@ -145,7 +166,14 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 			screenTitle = Component.translatable("main_screen.main_title");
 			stack.drawCenteredString(font, screenTitle, getX() + 128, getY() + 22, whiteText);
 		} else if (tabAnchors.isSelected()) {
-			screenTitle = anchorList.isEmpty() ? Component.translatable("main_screen.main_title.no_anchors") : Component.nullToEmpty(anchorList.get(0).getName());
+			if (anchorList.isEmpty()) {
+				screenTitle = Component.translatable("main_screen.main_title.no_anchors");
+				//make fancy arrow for new anchor indicator.
+				int pos = (Util.getMillis() / 1000) % 3 == 0 ? 15 : 13;
+				stack.drawString(font, Component.literal("◀").withStyle(ChatFormatting.BOLD),
+						btnAnchorNew.getX() + pos, btnAnchorNew.getY() + 2, redText);
+
+			} else screenTitle = Component.nullToEmpty(anchorList.get(0).getName());
 
 			stack.drawCenteredString(font, screenTitle, getX() + 128, getY() + 22, whiteText);
 		}
@@ -158,7 +186,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
 		//render anchor fake "screen"
 		if (isAnchorScreen) {
-			renderAnchorScreen(stack, mouseX, mouseY);
+			renderNewAnchorScreen(stack, mouseX, mouseY);
 		}
 
 		//render a separator for the selected anchor and the anchor list dropdown and a bottom for the list
@@ -169,10 +197,10 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 			stack.blit(RenderPipelines.GUI_TEXTURED, getIconsTextureID(), getX() + 17, Math.min(getY() + 183, anchorButtonsList.getLast().getY() + 15), 0, 100, 222, 1, 256, 256);
 		}
 
-		//render the tips on the bottom of the screen
-		//renderTips(stack);
-		//render buttons tips and other textures
-		//renderButtons(stack, mouseX, mouseY);
+		//render the scroller when necesary
+		if (btnAnchorList.isToggled() && anchorList.size() > 11) {
+			renderScroller(stack, mouseX, mouseY);
+		}
 	}
 
 	@Override
@@ -185,7 +213,6 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 		//Search bar, Edit title bar & Edit Anchor Radius bar looses focus when pressed "Enter" or "Intro"
 		if (keyEvent.key() == 257 || keyEvent.key() == 335) {
 			barSearch.setFocused(false);
-			barAnchorName.setFocused(false);
 			return true;
 		}
 		//Close screen when press "E" or the mod hotkey outside the search bar and when this screen is focused
@@ -200,17 +227,12 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 			}
 			return true;
 		}
-		return super.keyPressed(keyEvent);
-	}
 
-	private boolean noBarsFocused() {
-		return !barSearch.isFocused() &&
-				!barAnchorName.isFocused() &&
-				!barAnchorX.isFocused() &&
-				!barAnchorY.isFocused() &&
-				!barAnchorZ.isFocused() &&
-				!barAnchorDim.isFocused() &&
-				!barAnchorRange.isFocused();
+		//Reset barAnchorName color to white
+		if (isNameInUse && barAnchorName.isFocused()) {
+			restartNameBar();
+		}
+		return super.keyPressed(keyEvent);
 	}
 
 	@Override
@@ -218,12 +240,6 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 		if (barSearch.isFocused()) {
 			updateButtons();
 		}
-        /*if (!editRadBar.getValue().isEmpty()) {
-            int radius = Integer.parseInt(editRadBar.getValue());
-            editRadBar.setTextColor(radius > maxAnchorRange || radius < 1 ? redText : whiteText);
-        } else {
-            editRadBar.setTextColor(whiteText);
-        }*/
 		return super.keyReleased(keyEvent);
 	}
 
@@ -237,11 +253,13 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 			}
 			if ((dir > 0 && firstAnchorButton.getY() == minYAnchorButton) || (dir < 0 && lastAnchorButton.getY() <= maxYAnchorButton)) {
 				return false;
-			} //TODO add a slider and make it dragable
-			children().stream().filter(b -> b instanceof ESMAnchor).map(b -> (ESMAnchor) b).forEach(b -> {
-				b.setY((int) (b.getY() + b.getHeight() * Mth.clamp(dir, -1, 1)));
-				b.setVisible(b.getY() >= minYAnchorButton && b.getY() <= maxYAnchorButton);
-			});
+			}
+			for (AbstractWidget b : anchorButtonsList) {
+				b.setY((int) (b.getY() + b.getHeight() * Math.signum(dir)));
+				((ESMAnchor) b).setVisible(b.getY() >= minYAnchorButton && b.getY() <= maxYAnchorButton);
+			};
+			if (!isDragging)
+				scrollerY = (int) Math.clamp((scrollerY - Math.clamp(directionV, -1, 1) * ((double) (maxYAnchorButton - minYAnchorButton) / (anchorList.size() - 11))), minYAnchorButton, maxYAnchorButton - 8);
 		} else {
 			if (firstSoundButton == null) {
 				return false;
@@ -252,37 +270,57 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 			}
 			children().stream().filter(b -> b instanceof ESMSlider).map(b -> (ESMSlider) b).forEach(b -> {
 				//only increase / decrease from 10 to 10 to prevent the sliders going further than they should
-				b.setY((int) (b.getY() + (b.getHeight() * 10) * Mth.clamp(dir, -1, 1)));
-				b.isVisible(b.getY() >= minYButton && b.getY() <= maxYButton);
+				b.setY((int) (b.getY() + (b.getHeight() * 10) * Math.signum(dir)));
+				b.setVisible(b.getY() >= minYButton && b.getY() <= maxYButton);
 			});
 		}
 		return super.mouseScrolled(mouseX, mouseY, directionH, directionV);
 	}
 
 	@Override
-	public boolean mouseClicked(@NotNull MouseButtonEvent mouseButtonEvent, boolean success) {
+	public boolean mouseClicked(@NotNull MouseButtonEvent event, boolean success) {
 		//right click
-		if (mouseButtonEvent.button() == 1) {
+		if (event.button() == 1) {
 			if (barSearch.isFocused()) {
 				barSearch.setValue("");
 				updateButtons();
 				return true;
 			}
-            /*if (editAnchorTitleBar.isFocused()) {
-                //editAnchorTitleBar.setValue("");
-                return true;
-            }*/
-            /*if (editRadBar.isHoveredOrFocused()) {
-                editRadBar.setValue("");
-                return true;
-            }*/
 		} else {
-			barSearch.setFocused(barSearch.isMouseOver(mouseButtonEvent.x(), mouseButtonEvent.y()));
-			//editAnchorTitleBar.setFocused(editAnchorTitleBar.isMouseOver(mouseButtonEvent.x(), mouseButtonEvent.y()));
-			//editRadBar.setFocused(editRadBar.isMouseOver(mouseButtonEvent.x(), mouseButtonEvent.y()));
+			barSearch.setFocused(barSearch.isMouseOver(event.x(), event.y()));
+			if (btnAnchorList.isToggled() && event.x() >= getX() + 19 && event.x() <= getX() + 32) {
+				isDragging = true;
+			}
 		}
 
-		return super.mouseClicked(mouseButtonEvent, success);
+		return super.mouseClicked(event, success);
+	}
+
+	//-----------------------------------My functions-----------------------------------//
+
+    @Override
+    public boolean mouseDragged(@NonNull MouseButtonEvent event, double deltaX, double deltaY) {
+        double x = event.x();
+        double y = event.y();
+        if (isDragging) {
+            scrollerY = (int) Math.clamp(y, minYAnchorButton, maxYAnchorButton - 8);
+			//I don't like this but it works.. ugh
+	        for (int i = 0; i < anchorButtonsList.size(); i++) {
+		        AbstractWidget b = anchorButtonsList.get(i);
+		        b.setY(minYAnchorButton + 15 * (i - Math.round((scrollerY - minYAnchorButton) / (float) ((maxYAnchorButton - minYAnchorButton) / (anchorList.size() - 11)))));
+		        ((ESMAnchor) b).setVisible(b.getY() >= minYAnchorButton && b.getY() <= maxYAnchorButton);
+	        }
+            return true;
+        }
+        return super.mouseDragged(event, deltaX, deltaY);
+    }
+
+	@Override
+	public boolean mouseReleased(@NonNull MouseButtonEvent event) {
+		if (btnAnchorList.isToggled() && isDragging) {
+			isDragging = false;
+		}
+		return super.mouseReleased(event);
 	}
 
 	@Override
@@ -291,17 +329,13 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 		super.onClose();
 	}
 
-	//-----------------------------------My functions-----------------------------------//
-
 	private void open(Component title, Anchor anchor) {
 		new MufflerScreen(title, anchor);
 	}
 
-	public static void open() {
-		new MufflerScreen(Component.translatable("main_screen.main_title"), null);
-	}
+	//----------------------------------- Buttons init -----------------------------------//
 
-	private void postInit(boolean resize) {
+	private void postInit() {
 		swapTabs(tabCurrent.equals("anchor") ? tabAnchors : tabGeneral);
 		switch (btnCurrent) {
 			case "recent":
@@ -322,7 +356,15 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 		}
 	}
 
-	//----------------------------------- Buttons init -----------------------------------//
+	private boolean noBarsFocused() {
+		return !barSearch.isFocused() &&
+				!barAnchorName.isFocused() &&
+				!barAnchorX.isFocused() &&
+				!barAnchorY.isFocused() &&
+				!barAnchorZ.isFocused() &&
+				!barAnchorDim.isFocused() &&
+				!barAnchorRange.isFocused();
+	}
 
 	private void addTabs() {
 		addRenderableWidget(tabGeneral = new ESMTab(getX() + 34, getY(), Component.translatable("main_screen.tab.general"), b -> {
@@ -334,7 +376,6 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 			swapTabs((ESMTab) b);
 		}));
 	}
-
 
 	private void swapTabs(ESMTab tab) {
 		tabGeneral.hide();
@@ -349,6 +390,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 			btnAnchorEdit.hide();
 			btnAnchorDelete.hide();
 			this.anchor = null;
+			toggleButtons(true);
 			tabCurrent = "general";
 		}
 		if (tabAnchors.isSelected()) {
@@ -371,7 +413,6 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 		btnGlobal.setToggle(Constants.useGlobalConfig);
 		btnGlobal.visible = tabGeneral.isSelected();
 
-		//Searchbar TODO look what's going on with the cursor
 		addRenderableWidget(barSearch = new EditBox(font, getX() + 44, getY() + 193, 128, 13, Component.empty())).setBordered(false);
 		barSearch.setMaxLength(20);
 		barSearch.setHint(Component.translatable("main_screen.searchbar.hint"));
@@ -467,10 +508,14 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 		addRenderableWidget(btnAnchorList = new ESMButton(getX() + 20, getY() + 20, 66, 47, 11, b -> {
 			((ESMButton) b).toggle();
 			setAnchorListButtons();
+			btnAnchorNew.setVisible(!((ESMButton) b).isToggled());
+			btnAnchorEdit.setVisible(!((ESMButton) b).isToggled());
+			btnAnchorDelete.setVisible(!((ESMButton) b).isToggled());
 
 			if (((ESMButton) b).isToggled()) {
 				firstAnchorButton = (ESMAnchor) anchorButtonsList.getFirst();
 				lastAnchorButton = (ESMAnchor) anchorButtonsList.getLast();
+				scrollerY = minYAnchorButton;
 			}
 
 		}, Component.translatable("main_screen.btn.anchor_list.tooltip"))).hide();
@@ -486,21 +531,31 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
 		addRenderableWidget(btnAnchorDelete = new ESMButton(getX() + 226, getY() + 20, 162, 47, 11, b -> {
 			anchorList.remove(this.anchor);
+			this.anchor = null;
 			setAnchorListButtons();
 			updateAnchorButtons();
+			updateButtons();
 		}, Component.translatable("main_screen.btn.anchor_delete.tooltip"))).hide();
 
 	}
 
-	public void updateAnchorButtons() {
+	private void updateAnchorButtons() {
 		boolean empty = anchorList.isEmpty();
 		this.anchor = empty ? null : anchorList.getFirst();
 		btnAnchorList.setVisible(anchorList.size() > 1);
 		btnAnchorEdit.visible = !empty;
 		btnAnchorDelete.visible = !empty;
+		//disable all buttons when you can only create new anchor
+		if (tabAnchors.isSelected() && this.anchor == null) {
+			for (GuiEventListener child : this.children()) {
+				if (child instanceof AbstractWidget btn) {
+					btn.active = btn.equals(btnAnchorNew) || btn.equals(tabGeneral);
+				}
+			}
+		}
 	}
 
-	public void setAnchorListButtons() {
+	private void setAnchorListButtons() {
 		if (btnAnchorList.isToggled()) {
 			isAnchorList = true;
 			toggleButtons(false);
@@ -508,7 +563,6 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 			for (int i = 1, anchorListSize = anchorList.size(); i < anchorListSize; i++) {
 				Anchor firstAnchor = anchorList.get(i);
 				anchorButtonsList.add(new ESMAnchor(getX() + 17, getY() + y, anchorButton -> {
-					//DataManager.saveData();
 					Anchor selectedAnchor = ((ESMAnchor) anchorButton).getAnchor();
 					if (anchorList.remove(selectedAnchor)) {
 						anchorList.addFirst(selectedAnchor);
@@ -574,11 +628,11 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 		barAnchorDim.setHint(Component.translatable("new_anchor.dimensionbar.hint"));
 
 		//anchor range bar
-		addRenderableWidget(barAnchorRange = new EditBox(font, (int) (getXd() + 106.5), (int) (getYd() + 139.5), 39, 13, Component.empty())).visible = isAnchorScreen;
+		addRenderableWidget(barAnchorRange = new EditBox(font, (int) (getXd() + 96.5), (int) (getYd() + 139.5), 49, 13, Component.empty())).visible = isAnchorScreen;
 		//only accepts numbers
 		barAnchorRange.setFilter(s -> s.matches("[0-9-]*(?:[0-9]*)?"));
-		barAnchorRange.setMaxLength(4);
-		barAnchorRange.setHint(Component.translatable("new_anchor.rangebar.hint"));
+		barAnchorRange.setMaxLength(6);
+		barAnchorRange.setHint(Component.translatable("new_anchor.rangebar.hint", this.cfg.maxAnchorRange().get()));
 
 		//anchor coords selector
 		addRenderableWidget(btnAnchorPickCoords = new ESMButton((int) (getXd() + 160.5), (int) (getYd() + 83.5), 204, 0, 22, b -> {
@@ -591,49 +645,50 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 				barAnchorDim.setValue(player.level().dimension().identifier().toString());
 				barAnchorRange.setValue(String.valueOf(maxAnchorRange));
 			} else {
-				System.out.println("ERROR!");
+				Constants.ESM_LOG.error(Component.translatable("log.error.no_player").getString());
 			}
 		}, Component.translatable("new_anchor.btn.anchors.set"))).visible = isAnchorScreen;
 
 		//accept and save anchor
 		addRenderableWidget(btnAccept = Button.builder(Component.literal("✔").withStyle(ChatFormatting.GREEN), b -> {
-			boolean newAnchor = newAnchorScreenButtons.stream().noneMatch(widget -> widget instanceof EditBox box && box.getValue().isEmpty());
+			boolean barsFilled = newAnchorScreenButtons.stream().noneMatch(widget -> widget instanceof EditBox box && box.getValue().isEmpty());
 
-			if (newAnchor) {
+			if (barsFilled) {
 				if (btnAnchorEdit.isSelected()) {
 					this.anchor.editAnchor(barAnchorName.getValue(),
 							new BlockPos(Integer.parseInt(barAnchorX.getValue()), Integer.parseInt(barAnchorY.getValue()), Integer.parseInt(barAnchorZ.getValue())),
 							Identifier.tryParse(barAnchorDim.getValue()),
-							Mth.clamp(Integer.parseInt(barAnchorRange.getValue()), 1, maxAnchorRange));
+							Math.clamp(Integer.parseInt(barAnchorRange.getValue()), 1, maxAnchorRange));
 					btnAnchorEdit.selected(false);
-					toggleAnchorScreen(false);
-					updateAnchorButtons();
 				} else {
 					Anchor anchor = new Anchor(barAnchorName.getValue(),
 							new BlockPos(Integer.parseInt(barAnchorX.getValue()), Integer.parseInt(barAnchorY.getValue()), Integer.parseInt(barAnchorZ.getValue())),
 							Identifier.tryParse(barAnchorDim.getValue()),
-							Mth.clamp(Integer.parseInt(barAnchorRange.getValue()), 1, maxAnchorRange));
-					System.out.println(anchor.getDimension());
+							Math.clamp(Integer.parseInt(barAnchorRange.getValue()), 1, maxAnchorRange));
 
 					if (anchorList.stream().noneMatch(a -> a.getName().equals(anchor.getName()))) {
-						anchorList.add(anchor);
-						toggleAnchorScreen(false);
-						updateAnchorButtons();
+						anchorList.add(0, anchor);
+						this.anchor = anchor;
 					} else {
-						System.out.println("NAME IN USE");
+						isNameInUse = true;
+						barAnchorName.setTextColor(redText);
+						return;
 					}
 				}
-			} else {
-				System.out.println("FILL THE THING OR CANCEL!"); //TODO replace all the souts with actual warnings/errors
+
+				toggleAnchorScreen(false);
+				updateAnchorButtons();
+				updateButtons();
 			}
 		}).bounds((int) (getXd() + 153.5), (int) (getYd() + 137.5), 17, 17).build()).visible = isAnchorScreen;
+		btnAccept.active = false;
 		btnAccept.setTooltip(Tooltip.create(Component.translatable("new_anchor.btn.accept")));
 
 		//cancel and forget anchor
 		addRenderableWidget(btnCancel = Button.builder(Component.literal("✘").withStyle(ChatFormatting.RED), b -> {
 			toggleAnchorScreen(false);
 		}).bounds((int) (getXd() + 173.5), (int) (getYd() + 137.5), 17, 17).build()).visible = isAnchorScreen;
-		btnCancel.setTooltip(Tooltip.create(Component.translatable("new_anchor.btn.cancel")));
+		btnCancel.setTooltip(Tooltip.create(Component.translatable("new_anchor.btn.cancel.tooltip")));
 
 		newAnchorScreenButtons.clear();
 		newAnchorScreenButtons.addAll(List.of(btnAnchorPickCoords, btnAccept, btnCancel, barAnchorName, barAnchorX, barAnchorY, barAnchorZ, barAnchorDim, barAnchorRange));
@@ -641,6 +696,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
 	private void toggleAnchorScreen(boolean toggle) {
 		this.isAnchorScreen = toggle;
+		restartNameBar();
 		newAnchorScreenButtons.forEach(widget -> {
 			if (widget instanceof EditBox box) box.setValue("");
 			widget.visible = isAnchorScreen;
@@ -648,7 +704,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 		this.toggleButtons(!toggle);
 	}
 
-	public void updateAnchor() {
+	private void updateAnchor() {
 		toggleAnchorScreen(true);
 		barAnchorName.setValue(anchor.getName());
 		barAnchorX.setValue(anchor.getX());
@@ -666,6 +722,11 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 		}
 	}
 
+	private void restartNameBar() {
+		isNameInUse = false;
+		barAnchorName.setTextColor(-2039584); //default color
+	}
+
 	private void addSoundListButtons() {
 		int by = minYButton;
 		//set x depending of config
@@ -676,12 +737,14 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 		soundsList.clear();
 
 		//remove muffled blocks if all the sounds from said block are not muffled.
-		if (!muffledBlocks.isEmpty()) {
-			muffledBlocks.removeIf(muffledBlock -> !muffledSounds.keySet().containsAll(Constants.loadBlockSounds(muffledBlock)));
-		}
+		if (!muffledBlocks.isEmpty())
+			muffledBlocks.removeIf(muffledBlocks -> !muffledSounds.keySet().containsAll(Constants.loadBlockSounds(muffledBlocks)));
+		if (this.anchor != null && !this.anchor.getMuffledBlocks().isEmpty())
+			this.anchor.getMuffledBlocks().removeIf(muffledBlocks -> this.anchor.getMuffledSounds().keySet().containsAll(Constants.loadBlockSounds(muffledBlocks)));
 
 		if (btnRecent.isSelected()) {
 			soundsList.addAll(recentSoundsList);
+			if (tabAnchors.isSelected()) soundsList.add(Component.translatable("anchors.everything.sound.name").getString());
 		} else if (btnAll.isSelected()) {
 			BuiltInRegistries.SOUND_EVENT.forEach(k -> soundsList.add(k.location().toString()));
 		} else if (btnMuffled.isSelected()) {
@@ -712,19 +775,23 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 				continue;
 			}
 
-			double volume = 1D;
+			double volume;
 
-			if (tabAnchors.isSelected()) { //TODO LOOK AT **ALL** the places where the blocks sounds should be consider!!!
-				if (this.anchor != null && this.anchor.getMuffledSounds().containsKey(sound.toLowerCase(Locale.ROOT)))
+			if (tabAnchors.isSelected() && this.anchor != null) {
+				if (btnBlocks.isSelected() && this.anchor.getMuffledBlocks().contains(sound.toLowerCase(Locale.ROOT))) {
+					volume = blocksList.stream().filter(block ->
+									block.getName().getString().equals(sound)).findFirst().map(block ->
+									this.anchor.getMuffledSounds().getOrDefault(block.defaultBlockState().getSoundType().getBreakSound().location().toString(), 1D))
+							.orElse(1D);
+				} else {
 					volume = this.anchor.getMuffledSounds().getOrDefault(sound.toLowerCase(Locale.ROOT), 1.0);
-			} else if (btnBlocks.isSelected() && muffledBlocks.contains(sound)) {
+				}
+			} else if (btnBlocks.isSelected() && muffledBlocks.contains(sound.toLowerCase(Locale.ROOT))) {
 				//get one of the sounds of the block just to have the slider in the correct position
 				volume = blocksList.stream().filter(block ->
 								block.getName().getString().equals(sound)).findFirst().map(block ->
 								muffledSounds.getOrDefault(block.defaultBlockState().getSoundType().getBreakSound().location().toString(), 1D))
 						.orElse(1D);
-			} else if (btnMods.isSelected() && muffledSounds.containsKey(sound)) {
-				volume = muffledSounds.getOrDefault(sound.toLowerCase(Locale.ROOT), 1.0);
 			} else {
 				volume = muffledSounds.getOrDefault(sound.toLowerCase(Locale.ROOT), 1.0);
 			}
@@ -735,11 +802,13 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 			ESMSlider btnSound = new ESMSlider(bx, by, bg, sound, volume, this);
 			setFGColor(btnSound, "white");
 
-			if (tabAnchors.isSelected()) {
-				if (this.anchor != null && this.anchor.getMuffledSounds().containsKey(sound.toLowerCase(Locale.ROOT)))
+			if (tabAnchors.isSelected() && this.anchor != null) {
+				if (btnBlocks.isSelected() && this.anchor.getMuffledBlocks().contains(sound.toLowerCase(Locale.ROOT)) ||
+						this.anchor.getMuffledSounds().containsKey(sound.toLowerCase(Locale.ROOT))
+						|| btnMods.isSelected() && this.anchor.getMuffledSounds().containsKey(sound.toLowerCase(Locale.ROOT)))
 					setFGColor(btnSound, "green");
 			} else if (!muffledSounds.isEmpty()) {
-				if (btnBlocks.isSelected() && muffledBlocks.contains(sound) ||
+				if (btnBlocks.isSelected() && muffledBlocks.contains(sound.toLowerCase(Locale.ROOT)) ||
 						muffledSounds.containsKey(sound.toLowerCase(Locale.ROOT)) ||
 						btnMods.isSelected() && muffledSounds.containsKey(sound.toLowerCase(Locale.ROOT)))
 					setFGColor(btnSound, "green");
@@ -751,7 +820,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 			addRenderableWidget(btnSound.getBtnToggleSound());
 			addRenderableWidget(btnSound.getBtnPlaySound());
 			by += btnSound.getHeight();
-			btnSound.isVisible(btnSound.getY() < maxYButton);
+			btnSound.setVisible(btnSound.getY() < maxYButton && !(tabAnchors.isSelected() && this.anchor == null));
 			if (firstSoundButton == null) {
 				firstSoundButton = btnSound;
 			}
@@ -764,7 +833,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 		children().removeIf(child -> {
 			if (child instanceof AbstractWidget widget) {
 				if (widget instanceof ESMSlider button) {
-					button.isVisible(false);
+					button.setVisible(false);
 					return true;
 				}
 				return newAnchorScreenButtons.contains(widget);
@@ -779,117 +848,132 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 	//render previous and next buttons textures depending on if they can be used
 	private void renderNavButtons(ESMButton btn, boolean b) {
 		if (btn == null) return;
+		if (btnAnchorList.isToggled()) b = true;
 		btn.setToggle(b);
 		btn.canHover(!b);
 		btn.active = !b;
 	}
 
-	private void renderAnchorScreen(GuiGraphics stack, int mouseX, int mouseY) {
+	private void renderNewAnchorScreen(GuiGraphics stack, int mouseX, int mouseY) {
 		int xras = (width - 153) / 2;
 		stack.blit(RenderPipelines.GUI_TEXTURED, getAnchorScreenTextureID(), xras, (height - 118) / 2, 0, 0, 153, 118, 256, 256);
-		stack.drawString(font, Component.translatable("new_anchor.namebar"), xras + 10, barAnchorName.getY() + 2, blackText, false);
-		stack.drawString(font, Component.translatable("new_anchor.xbar"), xras + 10, barAnchorX.getY() + 2, blackText, false);
-		stack.drawString(font, Component.translatable("new_anchor.ybar"), xras + 10, barAnchorY.getY() + 2, blackText, false);
-		stack.drawString(font, Component.translatable("new_anchor.zbar"), xras + 10, barAnchorZ.getY() + 2, blackText, false);
-		stack.drawString(font, Component.translatable("new_anchor.dimensionbar"), xras + 10, barAnchorDim.getY() + 2, blackText, false);
-		stack.drawString(font, Component.translatable("new_anchor.rangebar"), xras + 10, barAnchorRange.getY() + 2, blackText, false);
+		stack.drawString(font, Component.translatable("new_anchor.namebar"), xras + 10, barAnchorName.getY() + 2, darkMode ? grayText : blackText, false);
+		stack.drawString(font, Component.translatable("new_anchor.xbar"), xras + 10, barAnchorX.getY() + 2, darkMode ? grayText : blackText, false);
+		stack.drawString(font, Component.translatable("new_anchor.ybar"), xras + 10, barAnchorY.getY() + 2, darkMode ? grayText : blackText, false);
+		stack.drawString(font, Component.translatable("new_anchor.zbar"), xras + 10, barAnchorZ.getY() + 2, darkMode ? grayText : blackText, false);
+		stack.drawString(font, Component.translatable("new_anchor.dimensionbar"), xras + 10, barAnchorDim.getY() + 2, darkMode ? grayText : blackText, false);
+		stack.drawString(font, Component.translatable("new_anchor.rangebar"), xras + 10, barAnchorRange.getY() + 2, darkMode ? grayText : blackText, false);
+
+		//Keep accept anchor disabled and show why till all bars are filled.
+		MutableComponent errors = Component.translatable("new_anchor.btn.accept.tooltip.error");
+		if (barAnchorName.getValue().isEmpty())
+			errors.append(Component.translatable("new_anchor.btn.accept.tooltip.error.name"));
+		if (barAnchorX.getValue().isEmpty())
+			errors.append(Component.translatable("new_anchor.btn.accept.tooltip.error.x"));
+		if (barAnchorY.getValue().isEmpty())
+			errors.append(Component.translatable("new_anchor.btn.accept.tooltip.error.y"));
+		if (barAnchorZ.getValue().isEmpty())
+			errors.append(Component.translatable("new_anchor.btn.accept.tooltip.error.z"));
+		if (barAnchorDim.getValue().isEmpty())
+			errors.append(Component.translatable("new_anchor.btn.accept.tooltip.error.dim"));
+		if (barAnchorRange.getValue().isEmpty())
+			errors.append(Component.translatable("new_anchor.btn.accept.tooltip.error.range"));
+		if (errors.equals(Component.translatable("new_anchor.btn.accept.tooltip.error")))
+			errors = Component.translatable("new_anchor.btn.accept.tooltip");
+		btnAccept.setTooltip(Tooltip.create(errors));
+		btnAccept.active = errors.equals(Component.translatable("new_anchor.btn.accept.tooltip"));
+
+		if (isNameInUse) {
+			stack.renderTooltip(font, List.of(ClientTooltipComponent.create(Component.translatable("new_anchor.namebar.nameuse").getVisualOrderText())),
+					barAnchorName.getX() - 12,
+					barAnchorName.getY() - 1, DefaultTooltipPositioner.INSTANCE, null);
+		}
 	}
 
 
 	//----------------------------------- Other functions -----------------------------------//
 
+	private void renderTip(GuiGraphics stack, int x, int y, Component message) {
+		stack.fill(x - 4, y - 4, x + font.width(message) + 3, y + font.lineHeight + 2, darkBG); //outer dark bg
+		stack.fill(x - 3, y - 3, x + font.width(message) + 2, y + font.lineHeight + 1, goldBG); //middle gold bg
+		stack.fill(x - 2, y - 2, x + font.width(message) + 1, y + font.lineHeight, darkBG); //inner dark bg
+		stack.drawWordWrap(font, message, x, y, 245, whiteText);
+	}
+
+	private void renderScroller(GuiGraphics stack, int mouseX, int mouseY) {
+		if (mouseX >= firstAnchorButton.getX() && mouseX <= firstAnchorButton.getX() + 20)
+			stack.requestCursor(isDragging ? CursorTypes.RESIZE_NS : CursorType.DEFAULT);
+		stack.blit(RenderPipelines.GUI_TEXTURED, getIconsTextureID(), this.getX() + 20, this.scrollerY, 154, 47, 8, 11, 256, 256);
+	}
+
 	private void editTitle() {
-		//editAnchorTitleBar.setValue(anchor.getName());
 		barAnchorName.visible = !barAnchorName.visible;
-
-		//editRadBar.setValue(String.valueOf(anchor.getRadius()));
 		barAnchorX.visible = !barAnchorX.visible;
-
-        /*btnAccept.visible = !btnAccept.visible;
-        btnCancel.visible = !btnCancel.visible;*/
 
 		barAnchorX.setTextColor(whiteText);
 	}
 
-	public boolean removeSoundMuffled(String sound) {
-        /*if (this.anchor != null) {
-            if (anchor.getAnchorPos() != null) {
-                this.anchor.removeSound(sound);
-                return true;
-            }
-        } else */
-		{
+	public void removeSoundMuffled(String sound) {
+		if (this.anchor != null) {
+			this.anchor.removeSound(sound);
+		} else {
 			muffledSounds.remove(sound);
-			return true;
 		}
-		//return false;
 	}
 
-	public boolean addSoundMuffled(String sound, double volume) {
-        /*if (this.anchor != null) {
-            if (anchor.getAnchorPos() != null) {
-                this.anchor.addSound(sound, volume);
-                return true;
-            }
-        } else*/
-		{
+	public void addSoundMuffled(String sound, double volume) {
+		if (this.anchor != null) {
+			this.anchor.addSound(sound, volume);
+		} else {
 			muffledSounds.put(sound, volume);
-			return true;
 		}
-		//return false;
 	}
 
-	public boolean removeModsMuffled(String sound) {
-        /*if (this.anchor != null) {
-            if (anchor.getAnchorPos() != null) {
-                this.anchor.removeSound(sound);
-                return true;
-            }
-        } else */
-		{
+	public void removeModsMuffled(String sound) {
+		if (this.anchor != null) {
+			this.anchor.removeSound(sound);
+		} else {
 			muffledSounds.remove(sound);
-			//muffledMods.remove(sound);
-			return true;
 		}
-		//return false;
 	}
 
-	public boolean addModsMuffled(String sound, double volume) {
-        /*if (this.anchor != null) {
-            if (anchor.getAnchorPos() != null) {
-                this.anchor.addSound(sound, volume);
-                return true;
-            }
-        } else*/
-		{
+	public void addModsMuffled(String sound, double volume) {
+		if (this.anchor != null) {
+			this.anchor.addSound(sound, volume);
+		} else {
 			muffledSounds.put(sound, volume);
-			//muffledMods.put(sound, volume);
-			return true;
 		}
-		//return false;
+	}
+
+	public void removeBlocksMuffled(String sound) {
+		if (this.anchor != null) {
+			this.anchor.removeBlock(sound);
+		} else {
+			muffledBlocks.remove(sound);
+		}
+	}
+
+	public void addBlocksMuffled(String block) {
+		if (this.anchor != null) {
+			this.anchor.addBlock(block);
+		} else {
+			muffledBlocks.add(block);
+		}
 	}
 
 	public void replaceVolume(String sound, double volume) {
 		if (this.anchor != null) {
-			this.anchor.replaceSound(sound, volume);
-		} else if (btnBlocks.isSelected()) { //TODO this should consider anchors TOO!
-			Constants.loadBlockSounds(sound).forEach(s -> muffledSounds.replace(s, volume));
+			if (btnBlocks.isSelected())
+				Constants.loadBlockSounds(sound).forEach(s -> anchor.replaceSound(s, volume));
+			else
+				this.anchor.replaceSound(sound, volume);
 		} else {
-			/*if (btnMods.isSelected()) {
-				//muffledMods.replace(sound, volume);
+			if (btnBlocks.isSelected())
+				Constants.loadBlockSounds(sound).forEach(s -> muffledSounds.replace(s, volume));
+			else
 				muffledSounds.replace(sound, volume);
-			}*/
-			muffledSounds.replace(sound, volume);
 		}
 
-	}
-
-	public static boolean isMuffling() {
-		return isMuffling;
-	}
-
-	public static void setMuffling(boolean muffling) {
-		isMuffling = muffling;
 	}
 
 	private double getXd() {
@@ -907,8 +991,4 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 	private int getY() {
 		return (this.height - ySize) / 2;
 	}
-
-    /*public Component getBtnCSLTitle() {
-        return btnCSL.getMessage();
-    }*/
 }

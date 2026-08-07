@@ -1,8 +1,10 @@
 package com.leobeliik.extremesoundmuffler.mixins;
 
+import com.leobeliik.extremesoundmuffler.CommonConfig;
 import com.leobeliik.extremesoundmuffler.gui.MufflerScreen;
 import com.leobeliik.extremesoundmuffler.gui.buttons.soundSlider.ESMPlay;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
+import com.leobeliik.extremesoundmuffler.utils.Anchor;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.SoundEngine;
 import org.jetbrains.annotations.Nullable;
@@ -71,17 +73,9 @@ public abstract class SoundMixin implements ISoundLists {
             }
 
             //don't continue if the anchors are disabled
-            /*if (!CommonConfig.get().disableAnchors().get()) {
-                Anchor anchor = Anchor.getAnchor(tempSound);
-                if (anchor != null) {
-                    int maxAnchorRange = CommonConfig.get().maxAnchorRange().get();
-                    double radius = anchor.getRadius();
-                    if (radius > maxAnchorRange) {
-                        anchor.setRadius((int) Math.min(radius, maxAnchorRange));
-                    }
-                    return (float) (tempVolume * anchor.getMuffledSounds().get(soundIdentifier));
-                }
-            }*/
+            if (!CommonConfig.get().disableAnchors().get()) {
+                return (float) (tempVolume * Anchor.getMuffling(tempSound));
+            }
 
         }
 

@@ -18,7 +18,7 @@
     "main_screen.btn.delete.list": "Exclua lista abafada",
     "main_screen.btn.delete.anchor": "Exclua a âncora",
     "new_anchor..btn.accept": "Aceitar",
-    "new_anchor.btn.cancel": "Cancelar",
+    "new_anchor.btn.cancel.tooltip": "Cancelar",
     "main_screen.btn.next_sounds": "Próximo sons",
     "main_screen.btn.previous_sounds": "Sons anteriores",
     "main_screen.btn.anchors.disabled": "As âncoras estão desativadas!",

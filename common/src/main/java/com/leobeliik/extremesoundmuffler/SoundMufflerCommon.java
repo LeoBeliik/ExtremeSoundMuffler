@@ -6,22 +6,23 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.Identifier;
 import static com.leobeliik.extremesoundmuffler.Constants.MOD_ID;
+import static com.leobeliik.extremesoundmuffler.Constants.darkMode;
 
 public class SoundMufflerCommon {
 
     //whether should use the dark or light textures
     public static Identifier getMainScreenTextureID() {
-        String mainScreenTexture = CommonConfig.get().useDarkTheme().get() ? "textures/gui/dark/sm_gui.png" : "textures/gui/sm_gui.png";
+        String mainScreenTexture = darkMode ? "textures/gui/dark/esm_gui.png" : "textures/gui/light/esm_gui.png";
         return Identifier.fromNamespaceAndPath(MOD_ID, mainScreenTexture);
     }
 
     public static Identifier getIconsTextureID() {
-        String iconsTexture = CommonConfig.get().useDarkTheme().get() ? "textures/gui/dark/icons.png" : "textures/gui/icons.png";
+        String iconsTexture = darkMode ? "textures/gui/dark/icons.png" : "textures/gui/light/icons.png";
         return Identifier.fromNamespaceAndPath(MOD_ID, iconsTexture);
     }
 
     public static Identifier getAnchorScreenTextureID() {
-        String anchorScreenTexture = CommonConfig.get().useDarkTheme().get() ? "textures/gui/dark/anchor_gui.png" : "textures/gui/anchor_gui.png";
+        String anchorScreenTexture = darkMode ? "textures/gui/dark/new_anchor_gui.png" : "textures/gui/light/new_anchor_gui.png";
         return Identifier.fromNamespaceAndPath(MOD_ID, anchorScreenTexture);
     }
 

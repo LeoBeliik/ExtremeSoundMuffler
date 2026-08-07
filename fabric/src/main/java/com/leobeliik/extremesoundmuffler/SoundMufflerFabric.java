@@ -49,6 +49,7 @@ public class SoundMufflerFabric implements ClientModInitializer {
         //load data when player joins the world
         ClientPlayConnectionEvents.JOIN.register((h, s, c) -> {
             Constants.useGlobalConfig = FabricConfig.getGlobalConfig();
+            Constants.darkMode = FabricConfig.getDarkMode();
             DataManager.loadData();
             if (ISoundLists.modsList.isEmpty()) {
                 var mods = FabricLoader.getInstance().getAllMods();

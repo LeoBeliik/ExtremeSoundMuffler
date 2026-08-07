@@ -18,7 +18,7 @@
   "main_screen.btn.delete.list": "Susturulmuş Listesini Sil",
   "main_screen.btn.delete.anchor": "Çapayı Sil",
   "new_anchor..btn.accept": "Kabul Et",
-  "new_anchor.btn.cancel": "İptal",
+  "new_anchor.btn.cancel.tooltip": "İptal",
   "main_screen.btn.next_sounds": "Sonraki Sesler",
   "main_screen.btn.previous_sounds": "Önceki Sesler",
   "main_screen.btn.anchors.disabled": "Çapalar devre dışı!",

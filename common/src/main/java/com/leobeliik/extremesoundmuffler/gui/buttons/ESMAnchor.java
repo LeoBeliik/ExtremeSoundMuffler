@@ -5,6 +5,7 @@ import com.leobeliik.extremesoundmuffler.utils.Anchor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import org.jspecify.annotations.NonNull;
@@ -14,10 +15,12 @@ import static com.leobeliik.extremesoundmuffler.SoundMufflerCommon.getIconsTextu
 public class ESMAnchor extends ESMButton implements IColorsGui {
 
     private final Anchor anchor;
+    private final boolean scroll;
 
     public ESMAnchor(int x, int y, OnPress onPress, Anchor anchor, boolean scroll) {
         super(x, y, 0, scroll ? 102 : 85, 222, 15, Component.nullToEmpty(anchor.getName()), onPress, null);
         this.anchor = anchor;
+        this.scroll = scroll;
     }
 
     @Override
@@ -31,6 +34,13 @@ public class ESMAnchor extends ESMButton implements IColorsGui {
             int textColor = this.isHovered() ? aquaText : whiteText;
             guiGraphics.drawString(font, this.getMessage(), (int) centerX, this.getY() + 3, textColor, this.isSelected());
         }
+    }
+
+    @Override
+    public boolean mouseClicked(@NonNull MouseButtonEvent event, boolean click) {
+        if (scroll && event.x() < this.getX() + 15)
+            return false;
+        return super.mouseClicked(event, click);
     }
 
     public Anchor getAnchor() {

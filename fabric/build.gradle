@@ -29,7 +29,7 @@ loom {
             setConfigName('Fabric Client')
             ideConfigGenerated(true)
             runDir('runs/client')
-            vmArg "-javaagent:D:/Programs/Intellij/Tools/Gradle/sponge-mixin-0.16.5+mixin.0.8.7.jar"
+            vmArg "-javaagent:E:/Programs/Intellij/Tools/Gradle/sponge-mixin-0.16.5+mixin.0.8.7.jar"
         }
         server {
             server()

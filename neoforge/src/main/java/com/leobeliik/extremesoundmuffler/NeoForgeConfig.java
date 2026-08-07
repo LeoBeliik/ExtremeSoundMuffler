@@ -145,7 +145,7 @@ class NeoForgeConfig {
         
         maxAnchorRange = CLIENT_BUILDER
                 .comment("Set max size for anchors (Warning: high values may cause LAG!). \n")
-                .defineInRange("anchorRange", 32, 1, Integer.MAX_VALUE);
+                .defineInRange("maxAnchorRange", 32, 1, Integer.MAX_VALUE);
 
         CLIENT_BUILDER.pop();
         CLIENT_CONFIG = CLIENT_BUILDER.build();
@@ -153,27 +153,28 @@ class NeoForgeConfig {
 
     @SubscribeEvent
     static void onLoad(ModConfigEvent.Loading event) {
-        fillForbiddenList();
-        getForbiddenMods();
+        fillForbiddenSoundsList();
+        fillForbiddenModsList();
     }
 
     @SubscribeEvent
     static void onReload(ModConfigEvent.Reloading event) {
-        fillForbiddenList();
-        getForbiddenMods();
+        fillForbiddenSoundsList();
+        fillForbiddenModsList();
         Constants.useGlobalConfig = getGlobalConfig();
+        Constants.darkMode = getDarkMode();
         if (ISoundLists.anchorList.isEmpty()) {
             DataManager.loadData();
         }
     }
 
-    private static void fillForbiddenList() {
+    private static void fillForbiddenSoundsList() {
         ISoundLists.forbiddenSounds.clear();
         ISoundLists.forbiddenSounds.addAll(forbiddenSounds.get());
         ISoundLists.forbiddenCache.clear();
     }
 
-    private static void getForbiddenMods() {
+    private static void fillForbiddenModsList() {
         ISoundLists.forbiddenMods.clear();
         ISoundLists.forbiddenMods.addAll(forbiddenMods.get());
     }
@@ -185,6 +186,10 @@ class NeoForgeConfig {
 
     static boolean getGlobalConfig() {
         return useGlobalMuffledSounds.get();
+    }
+
+    static boolean getDarkMode() {
+        return useDarkTheme.getAsBoolean();
     }
 
     static void setInvButtonHorizontal(int x, int y) {

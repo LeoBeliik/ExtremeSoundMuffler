@@ -8,11 +8,11 @@ import java.util.Locale;
 
 public interface IColorsGui {
 
-    int whiteText = 0xffffffff;
+    int whiteText =  0xffffffff;
     int aquaText = 0xff00dfdf;
     int greenText = 0xff00ff00;
-    int grayText = 0xff000000;
-    int redText = 0xffdd0303;
+    int grayText = 0xffBBBBBB;
+    int redText = 0xffbb0000;
     int blackText = 0xff000000;
     int darkBG = ARGB.color(255, 0, 0, 0);
     int brightBG = ARGB.color(200, 50, 50, 50);

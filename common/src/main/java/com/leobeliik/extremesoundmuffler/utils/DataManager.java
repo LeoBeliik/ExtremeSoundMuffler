@@ -21,7 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.*;
 
-import static com.leobeliik.extremesoundmuffler.Constants.LOG;
+import static com.leobeliik.extremesoundmuffler.Constants.ESM_LOG;
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
 public class DataManager implements ISoundLists {
@@ -63,9 +63,11 @@ public class DataManager implements ISoundLists {
 
 		if (enabledAnchors) {
 			anchorList.clear();
-			anchorList.addAll(loadAnchors());
+			//TODO get rid of this eventually, only used for removing ol' pre 4.0 anchor.dat anchors.
+			loadAnchors().stream().filter(anchor -> anchor.getDimension() != null).forEach(anchorList::add);
+			//anchorList.addAll(loadAnchors());
 		}
-		blocksList.addAll(loadBlocks());
+		loadBlocks().stream().filter(block -> !blocksList.contains(block)).forEach(blocksList::add);
 		saveData();
 	}
 
@@ -74,10 +76,6 @@ public class DataManager implements ISoundLists {
 		muffledBlocks.clear();
 
 		Optional.ofNullable(loadMuffledMap()).ifPresent(muffledSounds::putAll);
-		/*Optional.ofNullable(loadMuffledMods()).ifPresent(sounds -> {
-			muffledMods.putAll(sounds);
-			muffledSounds.putAll(sounds);
-		});*/
 		Optional.ofNullable(loadMuffledBlocks()).ifPresent(muffledBlocks::addAll);
 	}
 
@@ -98,7 +96,7 @@ public class DataManager implements ISoundLists {
 		try {
 			return FileUtil.findAvailableName(Path.of(""), name, "");
 		} catch (IOException e) {
-			LOG.error("ESM: error trying to create a folder with the name of the world " + name, e);
+			ESM_LOG.error("ESM: error trying to create a folder with the name of the world " + name, e);
 			return "ServerWorld";
 		}
 	}
@@ -109,7 +107,7 @@ public class DataManager implements ISoundLists {
 			writer.write(gson.toJson(muffledSounds));
 			writer.flush();
 		} catch (IOException e) {
-			LOG.error(Component.translatable("log.error.saveMuffledList", e).getString());
+			ESM_LOG.error(Component.translatable("log.error.saveMuffledList", e).getString());
 		}
 	}
 
@@ -119,9 +117,9 @@ public class DataManager implements ISoundLists {
 			}.getType());
 		} catch (Exception e) {
 			if (e instanceof FileNotFoundException) {
-				LOG.warn(Component.translatable("log.warn.loadMuffledList").getString());
+				ESM_LOG.warn(Component.translatable("log.warn.loadMuffledList").getString());
 			} else {
-				LOG.error(Component.translatable("log.error.loadMuffledList", e).getString());
+				ESM_LOG.error(Component.translatable("log.error.loadMuffledList", e).getString());
 			}
 			return new HashMap<>();
 		}
@@ -166,7 +164,7 @@ public class DataManager implements ISoundLists {
 			writer.write(gson.toJson(muffledBlocks));
 			writer.flush();
 		} catch (IOException e) {
-			LOG.error(Component.translatable("log.error.saveMuffledBlocksList", e).getString());
+			ESM_LOG.error(Component.translatable("log.error.saveMuffledBlocksList", e).getString());
 		}
 	}
 
@@ -176,9 +174,9 @@ public class DataManager implements ISoundLists {
 			}.getType());
 		} catch (Exception e) {
 			if (e instanceof FileNotFoundException) {
-				LOG.warn(Component.translatable("log.warn.loadMuffledBlocksList").getString());
+				ESM_LOG.warn(Component.translatable("log.warn.loadMuffledBlocksList").getString());
 			} else {
-				LOG.error(Component.translatable("log.error.loadMuffledBlocksList", e).getString());
+				ESM_LOG.error(Component.translatable("log.error.loadMuffledBlocksList", e).getString());
 			}
 			return new ArrayList<>();
 		}
@@ -195,7 +193,7 @@ public class DataManager implements ISoundLists {
 			writer.write(gson.toJson(anchorList));
 			writer.flush();
 		} catch (IOException e) {
-			LOG.error(Component.translatable("log.error.saveAnchorList", e).getString());
+			ESM_LOG.error(Component.translatable("log.error.saveAnchorList", e).getString());
 		}
 	}
 
@@ -205,9 +203,9 @@ public class DataManager implements ISoundLists {
 			}.getType());
 		} catch (Exception e) {
 			if (e instanceof FileNotFoundException) {
-				LOG.warn(Component.translatable("log.warn.loadAnchorList").getString());
+				ESM_LOG.warn(Component.translatable("log.warn.loadAnchorList").getString());
 			} else {
-				LOG.error(Component.translatable("log.error.loadAnchorList", e).getString());
+				ESM_LOG.error(Component.translatable("log.error.loadAnchorList", e).getString());
 			}
 			return new ArrayList<>();
 		}

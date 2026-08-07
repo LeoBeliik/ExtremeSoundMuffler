@@ -57,6 +57,7 @@ public class SoundMufflerNeoForge {
     @SubscribeEvent //load data when player joins the world
     public void onPlayerJoin(ClientPlayerNetworkEvent.LoggingIn event) {
         Constants.useGlobalConfig = NeoForgeConfig.getGlobalConfig();
+        Constants.darkMode = NeoForgeConfig.getDarkMode();
         DataManager.loadData();
 
         if (ISoundLists.modsList.isEmpty()) {

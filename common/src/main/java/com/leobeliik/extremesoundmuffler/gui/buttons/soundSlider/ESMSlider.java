@@ -60,10 +60,6 @@ public class ESMSlider extends AbstractWidget implements ISoundLists, IColorsGui
 		drawGradient(stack);
 		float v = isMuffling ? 202F : 213F;
 
-		//check if the cursor is over one of the "buttons"
-		//this.hoverMuffler = mouseX >= btnMufflerX && mouseX <= btnMufflerX + sideBTNSize && mouseY >= this.getY() - 1 && mouseY <= this.getY() + sideBTNSize;
-		//this.hoverPlay = mouseX >= btnPlayX && mouseX <= btnPlayX + sideBTNSize && mouseY >= this.getY() - 1 && mouseY <= this.getY() + sideBTNSize;
-
 		//--------------- Render buttons BG ---------------//
 		btnToggleSound.setToggle(isMuffling);
 		//--------------- Render Slider Text ---------------//
@@ -78,15 +74,21 @@ public class ESMSlider extends AbstractWidget implements ISoundLists, IColorsGui
 	private void drawMessage(GuiGraphics stack) {
 		int v = Math.max(width, font.width(getMessage().getString()));
 		if (showSlider && isFocused() && isHovered()) {
-			stack.drawCenteredString(font, Component.translatable("slider.btn.volume", (int) (sliderValue * 100)), getX() + (width / 2), getY() + 2, aquaText); //title
+			stack.drawCenteredString(font, Component.translatable("slider.btn.volume", (int) (sliderValue * 100)), getX() + (width / 2), getY() + 2, aquaText);
 		} else {
-			String msgTruncated = Component.translatableWithFallback(getMessage().getString(), getMessage().getString()).getString();
+			String msgTruncated = getMessage().getString();
+
+			if (msgTruncated.contains(":")) {
+				String[] s = msgTruncated.split(":");
+				if (s.length == 2)
+					msgTruncated = s[1] + ":" + s[0];
+			}
 
 			//make the text scroll horizontally if is too long and the button is being hovered
 			if (this.isHovered() && !(btnToggleSound.isHovered() || btnPlaySound.isHovered()) && font.width(msgTruncated) > 205) {
-				renderScrollingStringOverContents(stack.textRendererForWidget(this, GuiGraphics.HoveredTextEffects.TOOLTIP_AND_CURSOR), getMessage().copy().withColor(aquaText), 2);
+				renderScrollingStringOverContents(stack.textRendererForWidget(this, GuiGraphics.HoveredTextEffects.TOOLTIP_AND_CURSOR), Component.literal(msgTruncated).withColor(aquaText), 2);
 			} else {
-				msgTruncated = font.substrByWidth(getMessage(), 205).getString();
+				msgTruncated = font.plainSubstrByWidth(msgTruncated, 205);
 				//if is mufflind use green text, if hovering use aqua, otherwise use white!
 				stack.drawString(font, msgTruncated, getX() + 2, getY() + 2, this.isHovered() ? aquaText : isMuffling ? greenText : whiteText, true); //title
 			}
@@ -109,7 +111,7 @@ public class ESMSlider extends AbstractWidget implements ISoundLists, IColorsGui
 		}
 	}
 
-	public void isVisible(boolean b) {
+	public void setVisible(boolean b) {
 		this.visible = b;
 		this.getBtnToggleSound().visible = b;
 		this.getBtnPlaySound().visible = b;
@@ -118,21 +120,15 @@ public class ESMSlider extends AbstractWidget implements ISoundLists, IColorsGui
 	@Override
 	public void setY(int y) {
 		super.setY(y);
-		this.getBtnToggleSound().setY(y);
-		this.getBtnPlaySound().setY(y);
+		this.getBtnToggleSound().setY(y + 1);
+		this.getBtnPlaySound().setY(y + 1);
 	}
 
 	private void setBtnToggleSound(String sound) {
 		int x = CommonConfig.get().leftButtons().get() ? getX() : getX() + getWidth();
 		btnToggleSound = new ESMButton(x, getY() + 1, 132, 47, 11, b -> {
 			if (screen.btnBlocks.isSelected()) {
-				Constants.loadBlockSounds(sound).forEach(this::setMufflingSounds);
-
-				if (isMuffling) {
-					muffledBlocks.remove(sound);
-				} else {
-					muffledBlocks.add(sound);
-				}
+				setMufflingBlocks(sound);
 			} else if (screen.btnMods.isSelected()) {
 				setMufflingMods(sound);
 			} else {
@@ -147,30 +143,38 @@ public class ESMSlider extends AbstractWidget implements ISoundLists, IColorsGui
 
 	private void setMufflingSounds(String sound) {
 		if (isMuffling) {
-			if (screen.removeSoundMuffled(sound.toLowerCase(Locale.ROOT))) {
-				setFGColor(this, "white");
-				if (screen.btnMuffled.isSelected()) {
-					screen.updateButtons();
-				}
+			screen.removeSoundMuffled(sound.toLowerCase(Locale.ROOT));
+			setFGColor(this, "white");
+			if (screen.btnMuffled.isSelected()) {
+				screen.updateButtons();
 			}
 		} else {
 			setSliderValue(CommonConfig.get().defaultMuteVolume().get());
-			if (screen.addSoundMuffled(sound.toLowerCase(Locale.ROOT), sliderValue)) {
-				setFGColor(this, "green");
-			}
+			screen.addSoundMuffled(sound.toLowerCase(Locale.ROOT), sliderValue);
+			setFGColor(this, "green");
 		}
 	}
 
 	private void setMufflingMods(String sound) {
 		if (isMuffling) {
-			if (screen.removeModsMuffled(sound.toLowerCase(Locale.ROOT))) {
-				setFGColor(this, "white");
-			}
+			screen.removeModsMuffled(sound.toLowerCase(Locale.ROOT));
+			setFGColor(this, "white");
 		} else {
 			setSliderValue(CommonConfig.get().defaultMuteVolume().get());
-			if (screen.addModsMuffled(sound.toLowerCase(Locale.ROOT), sliderValue)) {
-				setFGColor(this, "green");
-			}
+			screen.addModsMuffled(sound.toLowerCase(Locale.ROOT), sliderValue);
+			setFGColor(this, "green");
+		}
+	}
+
+	private void setMufflingBlocks(String block) {
+		Constants.loadBlockSounds(block).forEach(this::setMufflingSounds);
+
+		if (isMuffling) {
+			screen.removeBlocksMuffled(block.toLowerCase(Locale.ROOT));
+			setFGColor(this, "white");
+		} else {
+			screen.addBlocksMuffled(block.toLowerCase(Locale.ROOT));
+			setFGColor(this, "green");
 		}
 	}
 
@@ -215,7 +219,7 @@ public class ESMSlider extends AbstractWidget implements ISoundLists, IColorsGui
 
 	@Override
 	public boolean mouseClicked(@NotNull MouseButtonEvent mouseButtonEvent, boolean success) {
-		if (this.visible && mouseButtonEvent.button() == 0) {
+		if (this.visible && isMuffling && mouseButtonEvent.button() == 0) {
 			this.btnToggleSound.mouseClicked(mouseButtonEvent, success);
 			this.btnPlaySound.mouseClicked(mouseButtonEvent, success);
 

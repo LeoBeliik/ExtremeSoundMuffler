@@ -18,7 +18,7 @@
   "main_screen.btn.delete.list": "サウンド履歴を削除",
   "main_screen.btn.delete.anchor": "アンカーを削除",
   "new_anchor..btn.accept": "決定",
-  "new_anchor.btn.cancel": "ｷｬﾝｾﾙ",
+  "new_anchor.btn.cancel.tooltip": "ｷｬﾝｾﾙ",
   "main_screen.btn.next_sounds": "次のサウンドへ",
   "main_screen.btn.previous_sounds": "前のサウンドへ",
   "main_screen.btn.anchors.disabled": "アンカーは無効化されています",
