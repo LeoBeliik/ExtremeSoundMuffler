@@ -47,6 +47,7 @@ jobs:
 
         name: Extreme sound muffler ${{env.MOD_VERSION}} - NeoForge ${{github.ref_name}}
         loaders: neoforge
+        environment: client
         game-versions: ${{github.ref_name}}
         version: ${{env.MOD_VERSION}}-${{github.ref_name}}
         java: Java 25
@@ -66,6 +67,7 @@ jobs:
 
           name: Extreme sound muffler ${{env.MOD_VERSION}} - Fabric ${{github.ref_name}}
           loaders: fabric
+          environment: client
           game-versions: ${{github.ref_name}}
           version: ${{env.MOD_VERSION}}-${{github.ref_name}}
           java: Java 25
