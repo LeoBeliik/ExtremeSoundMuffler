@@ -76,9 +76,9 @@
  - You can choose the default muffle volume.
  - You can disable the Inventory button
 
-<a href= https://github.com/LeoBeliik/ExtremeSoundMuffler/blob/master/Default_Config_At_3.15%2BForge.toml> Forge Config file</a>
+<a href=Default_Config_At_3.35+Forge.toml> Forge Config file</a>
 <br/>
-<a href= https://github.com/LeoBeliik/ExtremeSoundMuffler/blob/master/Default_Config_At_3.20%2BFabric.json5> Fabric Config file</a>
+<a href=Default_Config_At_3.35+Fabric.json5> Fabric Config file</a>
 <br/>
 <br/>
 <p>
