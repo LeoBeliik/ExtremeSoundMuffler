@@ -40,7 +40,7 @@ public class ESMPlay extends ESMButton {
         if (slider.screen.btnBlocks.isSelected()) {
             Random rand = new Random();
             //get a random sound from the block
-            sound = SoundEvent.createVariableRangeEvent(Identifier.parse(Constants.loadBlockSounds(buttonSound).get(rand.nextInt(5))));
+            sound = SoundEvent.createVariableRangeEvent(Identifier.parse(Constants.CACHE_BLOCK_SOUNDS.get(buttonSound).get(rand.nextInt(5))));
         } else {
             sound = SoundEvent.createVariableRangeEvent(Identifier.parse(buttonSound));
         }

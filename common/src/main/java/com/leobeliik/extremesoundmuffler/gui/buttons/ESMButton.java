@@ -19,7 +19,7 @@ public class ESMButton extends Button implements IColorsGui {
 
     private int textureX, textureY, width, height;
     private boolean toggle = false;
-    public boolean canHover = true;
+    private boolean canHover = true;
     private boolean selected = false;
     private Component tooltip;
 
@@ -97,7 +97,7 @@ public class ESMButton extends Button implements IColorsGui {
         return textureX;
     }
 
-    public int getTextureY() {
+    int getTextureY() {
         return textureY;
     }
 }

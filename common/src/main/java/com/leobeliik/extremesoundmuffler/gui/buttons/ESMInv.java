@@ -35,7 +35,7 @@ public class ESMInv extends AbstractButton implements IColorsGui {
         renderScrollingString(render, Minecraft.getInstance().font, i, i1);
     }
 
-    public void renderScrollingString(@NotNull GuiGraphics render, @NotNull Font font, int mouseX, int mouseY) {
+    private void renderScrollingString(@NotNull GuiGraphics render, @NotNull Font font, int mouseX, int mouseY) {
         if (this.visible) {
             render.blit(RenderPipelines.GUI_TEXTURED, getIconsTextureID(), getX(), getY(), 132f, 47f, 11, 11, 256, 256); //button texure
             if (isHovered && !hold) {

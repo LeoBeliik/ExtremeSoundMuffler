@@ -1,36 +1,36 @@
 package com.leobeliik.extremesoundmuffler;
 
 import net.minecraft.client.KeyMapping;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Block;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static com.leobeliik.extremesoundmuffler.interfaces.ISoundLists.blocksList;
 
 public class Constants {
     public static final String MOD_ID = "extremesoundmuffler";
     public static final Logger ESM_LOG = LoggerFactory.getLogger("Extreme Sound Muffler");
     public static final KeyMapping soundMufflerKey = SoundMufflerCommon.mufflerKey();
+	public static final Map<String, List<String>> CACHE_BLOCK_SOUNDS = new HashMap<>();
+	public static final Set<String> ALL_SOUNDS_CACHE = new HashSet<>();
+	public static final String NUMBERS = "^-?[0-9]+$";
+	public static String EVERYTHING;
     public static boolean useGlobalConfig;
 	public static boolean darkMode;
-    public static boolean validSound(String sound) {
-        return sound.matches("[a-z0-9/._\\-:]*");
-    }
     public static boolean isCustomSkinLoader;
 
-    public static List<String> loadBlockSounds(String sound) {
-        List<String> sounds = new ArrayList<>(5);
-	    for (Block block : blocksList) {
-		    if (block.getName().getString().equalsIgnoreCase(sound)) {
-			    sounds.add(block.defaultBlockState().getSoundType().getBreakSound().location().toString());
-			    sounds.add(block.defaultBlockState().getSoundType().getFallSound().location().toString());
-			    sounds.add(block.defaultBlockState().getSoundType().getHitSound().location().toString());
-			    sounds.add(block.defaultBlockState().getSoundType().getPlaceSound().location().toString());
-			    sounds.add(block.defaultBlockState().getSoundType().getStepSound().location().toString());
-				break;
-		    }
-	    }
-	    return sounds;
+    public static void loadBlockSounds(List<Block> blocks) {
+	    blocks.forEach(block -> CACHE_BLOCK_SOUNDS.put(block.getName().getString(), List.of(
+			    block.defaultBlockState().getSoundType().getBreakSound().location().toString(),
+			    block.defaultBlockState().getSoundType().getFallSound().location().toString(),
+			    block.defaultBlockState().getSoundType().getHitSound().location().toString(),
+			    block.defaultBlockState().getSoundType().getPlaceSound().location().toString(),
+			    block.defaultBlockState().getSoundType().getStepSound().location().toString()
+	    )));
     }
+
+	public static void cacheAllSounds() {
+		if (ALL_SOUNDS_CACHE.isEmpty())
+			BuiltInRegistries.SOUND_EVENT.forEach(k -> ALL_SOUNDS_CACHE.add(k.location().toString()));
+	}
 }

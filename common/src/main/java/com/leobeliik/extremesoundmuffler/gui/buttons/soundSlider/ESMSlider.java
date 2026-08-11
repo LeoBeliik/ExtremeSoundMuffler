@@ -1,7 +1,6 @@
 package com.leobeliik.extremesoundmuffler.gui.buttons.soundSlider;
 
 import com.leobeliik.extremesoundmuffler.CommonConfig;
-import com.leobeliik.extremesoundmuffler.Constants;
 import com.leobeliik.extremesoundmuffler.gui.MufflerScreen;
 import com.leobeliik.extremesoundmuffler.gui.buttons.ESMButton;
 import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
@@ -21,9 +20,9 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
-
 import java.util.Locale;
-
+import static com.leobeliik.extremesoundmuffler.Constants.CACHE_BLOCK_SOUNDS;
+import static com.leobeliik.extremesoundmuffler.Constants.EVERYTHING;
 import static com.leobeliik.extremesoundmuffler.SoundMufflerCommon.getIconsTextureID;
 
 @SuppressWarnings("EmptyMethod")
@@ -143,14 +142,14 @@ public class ESMSlider extends AbstractWidget implements ISoundLists, IColorsGui
 
 	private void setMufflingSounds(String sound) {
 		if (isMuffling) {
-			screen.removeSoundMuffled(sound.toLowerCase(Locale.ROOT));
+			screen.removeSoundMuffled(sound);
 			setFGColor(this, "white");
 			if (screen.btnMuffled.isSelected()) {
 				screen.updateButtons();
 			}
 		} else {
 			setSliderValue(CommonConfig.get().defaultMuteVolume().get());
-			screen.addSoundMuffled(sound.toLowerCase(Locale.ROOT), sliderValue);
+			screen.addSoundMuffled(sound, sliderValue);
 			setFGColor(this, "green");
 		}
 	}
@@ -167,13 +166,13 @@ public class ESMSlider extends AbstractWidget implements ISoundLists, IColorsGui
 	}
 
 	private void setMufflingBlocks(String block) {
-		Constants.loadBlockSounds(block).forEach(this::setMufflingSounds);
+		CACHE_BLOCK_SOUNDS.get(block).forEach(this::setMufflingSounds);
 
 		if (isMuffling) {
-			screen.removeBlocksMuffled(block.toLowerCase(Locale.ROOT));
+			screen.removeBlocksMuffled(block);
 			setFGColor(this, "white");
 		} else {
-			screen.addBlocksMuffled(block.toLowerCase(Locale.ROOT));
+			screen.addBlocksMuffled(block);
 			setFGColor(this, "green");
 		}
 	}
@@ -183,8 +182,8 @@ public class ESMSlider extends AbstractWidget implements ISoundLists, IColorsGui
 	}
 
 	private void setBtnPlaySound(String sound) {
-		//prevent it to work when the Mods tabs is selected
-		boolean shouldExist = !this.screen.btnMods.isSelected();
+		//prevent it to work when the Mods tabs is selected or on "EVERYTHING"
+		boolean shouldExist = !this.screen.btnMods.isSelected() && !sound.equals(EVERYTHING);
 
 		btnPlaySound = new ESMPlay(btnToggleSound.getX() + 12, getY() + 1, sound, this, Component.translatable("slider.btn.play.play_sound"));
 		btnPlaySound.setToggle(!shouldExist);
@@ -208,7 +207,7 @@ public class ESMSlider extends AbstractWidget implements ISoundLists, IColorsGui
 			func_230972_a_();
 		}
 		func_230979_b_();
-		screen.replaceVolume(sound.toLowerCase(Locale.ROOT), sliderValue);
+		screen.replaceVolume(sound, sliderValue);
 	}
 
 	@Override

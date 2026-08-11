@@ -15,19 +15,16 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.FileUtil;
 import net.minecraft.util.Util;
 import net.minecraft.world.level.block.Block;
-
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.*;
-
-import static com.leobeliik.extremesoundmuffler.Constants.ESM_LOG;
+import static com.leobeliik.extremesoundmuffler.Constants.*;
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
 public class DataManager implements ISoundLists {
 
 	private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-	private static boolean enabledAnchors = !CommonConfig.get().disableAnchors().get() && !Constants.isCustomSkinLoader;
 	//Ignore fabric APIs
 	private static List<String> hiddenMods = Arrays.asList("fabric-api", "fabric-api-base", "fabric-api-lookup-api-v1", "fabric-biome-api-v1", "fabric-block-api-v1", "fabric-block-view-api-v2",
 			"fabric-client-gametest-api-v1", "fabric-command-api-v2", "fabric-content-registries-v0", "fabric-convention-tags-v1",
@@ -61,13 +58,16 @@ public class DataManager implements ISoundLists {
 
 		reload();
 
-		if (enabledAnchors) {
+		if (!CommonConfig.get().disableAnchors().get() && !Constants.isCustomSkinLoader) {
 			anchorList.clear();
 			//TODO get rid of this eventually, only used for removing ol' pre 4.0 anchor.dat anchors.
 			loadAnchors().stream().filter(anchor -> anchor.getDimension() != null).forEach(anchorList::add);
 			//anchorList.addAll(loadAnchors());
 		}
-		loadBlocks().stream().filter(block -> !blocksList.contains(block)).forEach(blocksList::add);
+
+		if (CACHE_BLOCK_SOUNDS.isEmpty())
+			Constants.loadBlockSounds(loadBlocks());
+
 		saveData();
 	}
 
@@ -83,7 +83,7 @@ public class DataManager implements ISoundLists {
 		saveMuffledMap(getFolder());
 		saveMuffledBlocks(getFolder());
 
-		if (enabledAnchors) {
+		if (!anchorList.isEmpty()) {
 			saveAnchors();
 		}
 	}
@@ -124,30 +124,6 @@ public class DataManager implements ISoundLists {
 			return new HashMap<>();
 		}
 	}
-
-	/*private static void saveMuffledMods(String folder) {
-		new File(folder).mkdir();
-		try (Writer writer = new OutputStreamWriter(new FileOutputStream(folder + "modsMuffled.dat"), StandardCharsets.UTF_8)) {
-			writer.write(gson.toJson(muffledMods));
-			writer.flush();
-		} catch (IOException e) {
-			LOG.error(Component.translatable("log.error.saveMuffledModsList", e).getString());
-		}
-	}
-
-	private static Map<String, Double> loadMuffledMods() {
-		try (InputStreamReader reader = new InputStreamReader(new FileInputStream(getFolder() + "modsMuffled.dat"), StandardCharsets.UTF_8)) {
-			return gson.fromJson(new JsonReader(reader), new TypeToken<Map<String, Double>>() {
-			}.getType());
-		} catch (Exception e) {
-			if (e instanceof FileNotFoundException) {
-				LOG.warn(Component.translatable("log.warn.loadMuffledModsList").getString());
-			} else {
-				LOG.error(Component.translatable("log.error.loadMuffledModsList", e).getString());
-			}
-			return new HashMap<>();
-		}
-	}*/
 
 	public static void loadMods(Map<String, String> mods) {
 		//list of mods, ignoring OpenJDK, neoforge and fabric

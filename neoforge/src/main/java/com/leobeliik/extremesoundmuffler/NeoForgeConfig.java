@@ -38,15 +38,15 @@ class NeoForgeConfig {
         CommonConfig.set(new CommonConfig.ConfigAccess(
                 forbiddenSounds,
                 forbiddenMods,
-                lawfulAllList,
                 useGlobalMuffledSounds,
+                lawfulAllList,
                 disableInventoryButton,
                 disableCreativeInventoryButton,
                 disableAnchors,
                 leftButtons,
                 showTip,
                 useDarkTheme,
-                 DefaultMuteVolume,
+                DefaultMuteVolume,
                 invButtonHorizontal,
                 invButtonVertical,
                 creativeInvButtonHorizontal,
@@ -83,7 +83,7 @@ class NeoForgeConfig {
                 .comment(" Default: false")
                 .define("lawfulAllList", false);
         
-         DefaultMuteVolume = CLIENT_BUILDER
+        DefaultMuteVolume = CLIENT_BUILDER
                 .comment("Volume set when pressed the mute button by  Default \n")
                 .defineInRange(" DefaultMuteVolume", 0, 0, 0.9);
         

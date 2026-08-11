@@ -16,12 +16,11 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.input.MouseButtonEvent;
-
+import net.minecraft.network.chat.Component;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import static com.leobeliik.extremesoundmuffler.Constants.soundMufflerKey;
+import static com.leobeliik.extremesoundmuffler.Constants.*;
 
 public class SoundMufflerFabric implements ClientModInitializer {
 
@@ -37,7 +36,7 @@ public class SoundMufflerFabric implements ClientModInitializer {
         ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) ->
                 ScreenMouseEvents.beforeMouseClick(screen).register(SoundMufflerFabric::onMouseClickPre));
         KeyBindingHelper.registerKeyBinding(soundMufflerKey);
-        Constants.isCustomSkinLoader = FabricLoader.getInstance().isModLoaded("customskinloader");
+        isCustomSkinLoader = FabricLoader.getInstance().isModLoaded("customskinloader");
 
         //on mod keybind press
         ClientTickEvents.END_WORLD_TICK.register(level -> {
@@ -48,8 +47,9 @@ public class SoundMufflerFabric implements ClientModInitializer {
 
         //load data when player joins the world
         ClientPlayConnectionEvents.JOIN.register((h, s, c) -> {
-            Constants.useGlobalConfig = FabricConfig.getGlobalConfig();
-            Constants.darkMode = FabricConfig.getDarkMode();
+            useGlobalConfig = FabricConfig.getGlobalConfig();
+            darkMode = FabricConfig.getDarkMode();
+            EVERYTHING = Component.translatable("anchors.everything.sound.name").getString();
             DataManager.loadData();
             if (ISoundLists.modsList.isEmpty()) {
                 var mods = FabricLoader.getInstance().getAllMods();
@@ -60,6 +60,7 @@ public class SoundMufflerFabric implements ClientModInitializer {
                 DataManager.loadMods(modNames);
             }
         });
+        cacheAllSounds();
     }
 
     //save the new coordinates for the inv button
@@ -87,7 +88,7 @@ public class SoundMufflerFabric implements ClientModInitializer {
     private static void onMouseClickPre(Screen screen, MouseButtonEvent mouse) {
         if (mouse.button() == 0 && screen instanceof MufflerScreen MS && MS.btnGlobal.isHovered()) {
             FabricConfig.setGlobalConfig(!MS.btnGlobal.isToggled());
-            Constants.useGlobalConfig = FabricConfig.getGlobalConfig();
+            useGlobalConfig = FabricConfig.getGlobalConfig();
             FabricConfig.updateConfig(new JanksonValueSerializer(false));
             DataManager.reload();
         }

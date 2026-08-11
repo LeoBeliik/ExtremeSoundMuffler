@@ -50,7 +50,7 @@ public abstract class SoundMixin implements ISoundLists {
         if (tempSound != null && tempSound.getSound() != null && !ESMPlay.isFromPSB()) {
             String soundIdentifier = tempSound.getIdentifier().toString();
 
-            if (!esm_isForbidden(tempSound)) {
+            if (!esm_isForbidden(tempSound)) { //TODO find a better way to do this
                 //remove sound to prevent repeated sounds and maintains the desired order
                 recentSoundsList.remove(soundIdentifier);
                 //add sound to recent sounds list
@@ -66,10 +66,14 @@ public abstract class SoundMixin implements ISoundLists {
                 tempVolume = 1F;
             }
 
-            if (muffledSounds.containsKey(soundIdentifier)) { //normal sounds, full identifier (minecraft:break)
-                return (float) (tempVolume * muffledSounds.get(soundIdentifier));
-            } else if (muffledSounds.containsKey(modName)) { //for mods, non working identifiers (minecraft)
-                return (float) (tempVolume * muffledSounds.get(modName));
+            Double muffledValue = muffledSounds.get(soundIdentifier);
+            if (muffledValue != null) { // normal sounds, full identifier (minecraft:break)
+                return (float) (tempVolume * muffledValue);
+            }
+
+            muffledValue = muffledSounds.get(modName);
+            if (muffledValue != null) { // for mods, non-working identifiers
+                return (float) (tempVolume * muffledValue);
             }
 
             //don't continue if the anchors are disabled

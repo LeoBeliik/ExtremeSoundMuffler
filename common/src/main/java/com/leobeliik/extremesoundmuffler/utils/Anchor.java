@@ -7,12 +7,10 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-
-import java.awt.*;
 import java.util.*;
 import java.util.List;
+import static com.leobeliik.extremesoundmuffler.Constants.EVERYTHING;
 
 public class Anchor {
 
@@ -50,7 +48,7 @@ public class Anchor {
 		return radius;
 	}
 
-	public void setRange(int radius) {
+	private void setRange(int radius) {
 		this.radius = radius;
 	}
 
@@ -141,18 +139,24 @@ public class Anchor {
 		setRange(radius);
 	}
 
-	private double containsSound(SoundInstance sound) {
-		for (String name : this.muffledSounds.keySet()) {
-			var id = sound.getIdentifier();
-			if (name.equalsIgnoreCase(id.toString()) ||
-					name.equalsIgnoreCase(id.getNamespace()) ||
-					name.equalsIgnoreCase(Component.translatable("anchors.everything.sound.name").getString())) {
-				return this.muffledSounds.getOrDefault(name, 1D);
-			}
-		}
-		return 1D;
-	}
+    private double containsSound(SoundInstance sound) {
+		//Check if mute everything first
+	    if (muffledSounds.containsKey(EVERYTHING)) {
+		    return muffledSounds.get(EVERYTHING);
+	    }
 
+	    //then find the sound if exists
+	    Identifier id = sound.getIdentifier();
+	    String snd = id.toString();
+	    if (muffledSounds.containsKey(snd)) {
+		    return muffledSounds.get(snd);
+	    }
+
+		//Lastly check for mod or return full volume
+		return muffledSounds.getOrDefault(id.getNamespace().toLowerCase(Locale.ROOT), 1D);
+    }
+
+	//TODO I really need to optimize this
 	public static double getMuffling(SoundInstance sound) {
 		BlockPos soundPos = new BlockPos((int) sound.getX(), (int) sound.getY(), (int) sound.getZ());
 		Minecraft minecraft = Minecraft.getInstance();
@@ -167,7 +171,7 @@ public class Anchor {
 		for (Anchor anchor : ISoundLists.anchorList) {
 			if (anchor.getRange() > maxAnchorRange) anchor.setRange(maxAnchorRange);
 			if (anchor.getAnchorPos() != null
-					&& world != null
+					&& world != null && anchor.getDimension() != null
 					&& world.dimension().identifier().equals(anchor.getDimension())
 					&& soundPos.closerThan(anchor.getAnchorPos(), anchor.getRange())) {
 
