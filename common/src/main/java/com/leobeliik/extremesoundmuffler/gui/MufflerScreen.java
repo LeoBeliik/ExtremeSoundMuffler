@@ -66,7 +66,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 		super(title);
 		screenTitle = title;
 		this.isAnchorScreen = false;
-		minecraft.setScreen(this);
+		minecraft.gui.setScreen(this);
 		setNewAnchorButtons();
 		scrollerY = minYAnchorButton;
 	}
