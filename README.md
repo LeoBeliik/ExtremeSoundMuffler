@@ -42,7 +42,7 @@
 
     2. Click on the button next to the sound you want to muffle.
 
-    3.  Optional: set the volume of the sound dragging the slider around.
+    3. Optional: set the volume of the sound dragging the slider around.
 
     4. Optional: press the play button to be sure that's the sound you want to muffle.
 
@@ -53,13 +53,15 @@
 
     1. Open your ESM Screen
 
-    2. Select one of the 10 numbered buttons
+    2. Select the Anchors tab
 
-    3. Press the marker like button on the right panel to set the Anchor position
+    3. Create a new anchor
 
-    4. Optional: press the edit Anchor button (next to marker) and set the name and range of the Anchor
+    4. Muffle the sounds and enjoy ranged peace
 
-    5. Muffle the sounds and enjoy ranged peace
+    5. Optional: edit anchor using the button on the right of it's name
+    
+    6. Optional: press the *EVERYTHING* button to muffle everything
 
 #### You can change the Anchor position whenever you want by pressing the marker button.
 
@@ -75,6 +77,8 @@
  - You can blacklist sounds to prevent them from appearing in the ESM screen.
  - You can choose the default muffle volume.
  - You can disable the Inventory button
+ - You can blacklist mods from showing in the muffle mods section
+ - You can select a global list to muffle mods between instances
 
 <a href= https://github.com/LeoBeliik/ExtremeSoundMuffler/blob/master/Default_Config_At_3.15%2BForge.toml> Forge Config file</a>
 <br/>

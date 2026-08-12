@@ -124,7 +124,7 @@ public class ESMSlider extends AbstractWidget implements ISoundLists, IColorsGui
 	}
 
 	private void setBtnToggleSound(String sound) {
-		int x = CommonConfig.get().leftButtons().get() ? getX() : getX() + getWidth();
+		int x = CommonConfig.get().leftButtons().get() ? getX() - 23 : getX() + getWidth();
 		btnToggleSound = new ESMButton(x, getY() + 1, 132, 47, 11, b -> {
 			if (screen.btnBlocks.isSelected()) {
 				setMufflingBlocks(sound);

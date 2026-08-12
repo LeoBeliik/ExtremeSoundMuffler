@@ -25,7 +25,7 @@ class NeoForgeConfig {
     private static ModConfigSpec.BooleanValue leftButtons;
     private static ModConfigSpec.BooleanValue showTip;
     private static ModConfigSpec.BooleanValue useDarkTheme;
-    private static ModConfigSpec.DoubleValue  DefaultMuteVolume;
+    private static ModConfigSpec.DoubleValue DefaultMuteVolume;
     private static ModConfigSpec.IntValue invButtonHorizontal;
     private static ModConfigSpec.IntValue invButtonVertical;
     private static ModConfigSpec.IntValue creativeInvButtonHorizontal;
@@ -85,7 +85,7 @@ class NeoForgeConfig {
         
         DefaultMuteVolume = CLIENT_BUILDER
                 .comment("Volume set when pressed the mute button by  Default \n")
-                .defineInRange(" DefaultMuteVolume", 0, 0, 0.9);
+                .defineInRange("defaultMuteVolume", 0, 0, 0.9);
         
         leftButtons = CLIENT_BUILDER
                 .comment("Set to true to move the muffle and play buttons to the left side of the GUI \n")

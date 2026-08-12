@@ -91,15 +91,10 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 		maxYButton = getY() + 174;
 		minYAnchorButton = getY() + 33;
 		maxYAnchorButton = getY() + 180;
-
-		if (!cfg.disableAnchors().get()) {
-			addTabs();
-		}
+		addTabs(!isAnchorsDisabled);
 		addButtons();
 		//add anchor buttons AFTER addButtons() cuz rendering stuff
-		if (!cfg.disableAnchors().get()) {
-			addAnchorButtons();
-		}
+		addAnchorButtons();
 
 		addSoundListButtons();
 		postInit();
@@ -147,7 +142,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 	@Override
 	public void render(@NotNull GuiGraphics stack, int mouseX, int mouseY, float partialTicks) {
 		stack.blit(RenderPipelines.GUI_TEXTURED, getMainScreenTextureID(), getX(), getY(), 0, 0, xSize, ySize, 256, 256); //Main screen bounds
-		if (cfg.disableAnchors().get() || tabGeneral.isSelected()) {
+		if (isAnchorsDisabled || tabGeneral.isSelected()) {
 			//render backgroung behind the local/global muffling config
 			stack.blit(RenderPipelines.GUI_TEXTURED, getIconsTextureID(), btnGlobal.getX() - 2, btnGlobal.getY() - 2, 95, 13, 15, 15, 256, 256);
 		}
@@ -156,7 +151,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
 		//--------------- My Renders ---------------//
 		//Screen title
-		if (cfg.disableAnchors().get() || tabGeneral.isSelected()) {
+		if (isAnchorsDisabled || tabGeneral.isSelected()) {
 			screenTitle = Component.translatable("main_screen.main_title");
 			stack.drawCenteredString(font, screenTitle, getX() + 128, getY() + 22, whiteText);
 		} else if (tabAnchors.isSelected()) {
@@ -178,22 +173,25 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 		//if we are at the end don't try going forward and disable the button
 		renderNavButtons(btnNextSounds, lastSoundButton == null || lastSoundButton.getY() <= maxYButton);
 
-		//render anchor fake "screen"
-		if (isAnchorScreen) {
-			renderNewAnchorScreen(stack, mouseX, mouseY);
-		}
 
-		//render a separator for the selected anchor and the anchor list dropdown and a bottom for the list
-		if (btnAnchorList.isToggled()) {
-			//top
-			stack.blit(RenderPipelines.GUI_TEXTURED, getIconsTextureID(), getX() + 17, getY() + 32, 0, 101, 222, 1, 256, 256);
-			//bottom
-			stack.blit(RenderPipelines.GUI_TEXTURED, getIconsTextureID(), getX() + 17, Math.min(getY() + 183, anchorButtonsList.getLast().getY() + 15), 0, 100, 222, 1, 256, 256);
-		}
+		if (!isAnchorsDisabled) {
+			//render anchor fake "screen"
+			if (isAnchorScreen) {
+				renderNewAnchorScreen(stack, mouseX, mouseY);
+			}
 
-		//render the scroller when necesary
-		if (btnAnchorList.isToggled() && anchorList.size() > 11) {
-			renderScroller(stack, mouseX, mouseY);
+			//render a separator for the selected anchor and the anchor list dropdown and a bottom for the list
+			if (btnAnchorList.isToggled()) {
+				//top
+				stack.blit(RenderPipelines.GUI_TEXTURED, getIconsTextureID(), getX() + 17, getY() + 32, 0, 101, 222, 1, 256, 256);
+				//bottom
+				stack.blit(RenderPipelines.GUI_TEXTURED, getIconsTextureID(), getX() + 17, Math.min(getY() + 183, anchorButtonsList.getLast().getY() + 15), 0, 100, 222, 1, 256, 256);
+			}
+
+			//render the scroller when necesary
+			if (btnAnchorList.isToggled() && anchorList.size() > 11) {
+				renderScroller(stack, mouseX, mouseY);
+			}
 		}
 	}
 
@@ -282,7 +280,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 			}
 		} else {
 			barSearch.setFocused(barSearch.isMouseOver(event.x(), event.y()));
-			if (btnAnchorList.isToggled() && event.x() >= getX() + 19 && event.x() <= getX() + 32) {
+			if (!btnAnchorList.isToggled() && event.x() >= getX() + 19 && event.x() <= getX() + 32) {
 				isDragging = true;
 			}
 		}
@@ -360,15 +358,15 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 				!barAnchorRange.isFocused();
 	}
 
-	private void addTabs() {
+	private void addTabs(boolean enabled) {
 		addRenderableWidget(tabGeneral = new ESMTab(getX() + 34, getY(), Component.translatable("main_screen.tab.general"), b -> {
 			DataManager.saveData();
 			swapTabs((ESMTab) b);
-		})).show();
+		})).visible = enabled;
 		addRenderableWidget(tabAnchors = new ESMTab(getX() + 136, getY(), Component.translatable("main_screen.tab.anchors"), b -> {
 			DataManager.saveData();
 			swapTabs((ESMTab) b);
-		}));
+		})).visible = enabled;
 	}
 
 	private void swapTabs(ESMTab tab) {
@@ -727,7 +725,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 		sliderButtonList.clear();
 		int by = minYButton;
 		//set x depending of config
-		int bx = leftButtons ? getX() + 38 : getX() + 11;
+		int bx = leftButtons ? getX() + 35 : getX() + 11;
 		//easiest way to assure this is the first one
 		firstSoundButton = null;
 		lastSoundButton = null;
