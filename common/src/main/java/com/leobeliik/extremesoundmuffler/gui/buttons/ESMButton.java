@@ -3,7 +3,7 @@ package com.leobeliik.extremesoundmuffler.gui.buttons;
 import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
@@ -37,10 +37,10 @@ public class ESMButton extends Button implements IColorsGui {
     }
 
     @Override
-    protected void renderContents(@NonNull GuiGraphics guiGraphics, int mouseX, int mouseY, float v) {
+    protected void extractContents(@NonNull GuiGraphicsExtractor GuiGraphicsExtractor, int mouseX, int mouseY, float v) {
         int hovered = this.isHovered() && this.canHover && this.active ? this.height : 0; //if hovered use the hover texture
         int toggled = this.toggle ? this.width : 0; //if the button is toggled (disabled/enabled)
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, getIconsTextureID(), getX(), getY(), textureX + toggled, textureY + hovered , this.width, this.height, 256, 256); //button texure
+        GuiGraphicsExtractor.blit(RenderPipelines.GUI_TEXTURED, getIconsTextureID(), getX(), getY(), textureX + toggled, textureY + hovered , this.width, this.height, 256, 256); //button texure
 
         //render text like this because I don't like how the default text looks like
         Font font = Minecraft.getInstance().font;
@@ -48,12 +48,12 @@ public class ESMButton extends Button implements IColorsGui {
             float centerX = this.getX() + this.getWidth() / 2F - font.width(this.getMessage()) / 2F;
             int textColor = this.isHovered ? aquaText : darkMode ? grayText : blackText;
             if (this.selected) textColor = greenText;
-            guiGraphics.drawString(font, this.getMessage(), (int) centerX, this.getY() + 3, textColor, this.selected);
+            GuiGraphicsExtractor.text(font, this.getMessage(), (int) centerX, this.getY() + 3, textColor, this.selected);
         }
 
         //render tooltip
         if (this.isHovered() && this.isActive()) {
-            guiGraphics.setTooltipForNextFrame(font, tooltip, getX() - (font.width(tooltip)) / 2, getY() > 200 ? getY() + (height + font.lineHeight * 2) : getY() - 1);
+            GuiGraphicsExtractor.setTooltipForNextFrame(font, tooltip, getX() - (font.width(tooltip)) / 2, getY() > 200 ? getY() + (height + font.lineHeight * 2) : getY() - 1);
         }
     }
 

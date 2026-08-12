@@ -13,7 +13,7 @@ public class Constants {
     public static final KeyMapping soundMufflerKey = SoundMufflerCommon.mufflerKey();
 	public static final Map<String, List<String>> CACHE_BLOCK_SOUNDS = new HashMap<>();
 	public static final Set<String> ALL_SOUNDS_CACHE = new HashSet<>();
-	public static final String NUMBERS = "^-?[0-9]+$";
+	public static final String NUMBERS = "[^\\d-]+|-(?!\\d)";
 	public static String EVERYTHING;
     public static boolean useGlobalConfig;
 	public static boolean darkMode;

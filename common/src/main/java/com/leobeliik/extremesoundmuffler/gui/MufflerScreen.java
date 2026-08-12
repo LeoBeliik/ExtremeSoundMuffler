@@ -14,7 +14,7 @@ import com.mojang.blaze3d.platform.cursor.CursorType;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -140,31 +140,31 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 	}
 
 	@Override
-	public void render(@NotNull GuiGraphics stack, int mouseX, int mouseY, float partialTicks) {
+	public void extractRenderState(@NotNull GuiGraphicsExtractor stack, int mouseX, int mouseY, float partialTicks) {
 		stack.blit(RenderPipelines.GUI_TEXTURED, getMainScreenTextureID(), getX(), getY(), 0, 0, xSize, ySize, 256, 256); //Main screen bounds
 		if (isAnchorsDisabled || tabGeneral.isSelected()) {
 			//render backgroung behind the local/global muffling config
 			stack.blit(RenderPipelines.GUI_TEXTURED, getIconsTextureID(), btnGlobal.getX() - 2, btnGlobal.getY() - 2, 95, 13, 15, 15, 256, 256);
 		}
 
-		super.render(stack, mouseX, mouseY, partialTicks);
+		super.extractRenderState(stack, mouseX, mouseY, partialTicks);
 
 		//--------------- My Renders ---------------//
 		//Screen title
 		if (isAnchorsDisabled || tabGeneral.isSelected()) {
 			screenTitle = Component.translatable("main_screen.main_title");
-			stack.drawCenteredString(font, screenTitle, getX() + 128, getY() + 22, whiteText);
+			stack.centeredText(font, screenTitle, getX() + 128, getY() + 22, whiteText);
 		} else if (tabAnchors.isSelected()) {
 			if (anchorList.isEmpty()) {
 				screenTitle = Component.translatable("main_screen.main_title.no_anchors");
 				//make fancy arrow for new anchor indicator.
 				int pos = (Util.getMillis() / 1000) % 3 == 0 ? 15 : 13;
-				stack.drawString(font, Component.literal("◀").withStyle(ChatFormatting.BOLD),
+				stack.text(font, Component.literal("◀").withStyle(ChatFormatting.BOLD),
 						btnAnchorNew.getX() + pos, btnAnchorNew.getY() + 2, redText);
 
 			} else screenTitle = Component.nullToEmpty(anchorList.get(0).getName());
 
-			stack.drawCenteredString(font, screenTitle, getX() + 128, getY() + 22, whiteText);
+			stack.centeredText(font, screenTitle, getX() + 128, getY() + 22, whiteText);
 		}
 
 		//if we are at the start don't try going back and disable the button
@@ -601,21 +601,36 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 		//anchor X bar
 		addRenderableWidget(barAnchorX = new EditBox(font, (int) (getXd() + 76.5), (int) (getYd() + 73.5), 66, 13, Component.empty())).visible = isAnchorScreen;
 		//only accepts numbers
-		barAnchorX.setFilter(s -> s.matches(NUMBERS));
+		barAnchorX.setResponder(s -> {
+			String filtered = s.replaceAll(NUMBERS, "");
+			if (!s.equals(filtered)) {
+				barAnchorX.setValue(filtered);
+			}
+		});
 		barAnchorX.setMaxLength(8);
 		barAnchorX.setHint(Component.translatable("new_anchor.xbar.hint"));
 
 		//anchor Y bar
 		addRenderableWidget(barAnchorY = new EditBox(font, (int) (getXd() + 76.5), (int) (getYd() + 89.5), 66, 13, Component.empty())).visible = isAnchorScreen;
 		//only accepts numbers
-		barAnchorY.setFilter(s -> s.matches(NUMBERS));
+		barAnchorY.setResponder(s -> {
+			String filtered = s.replaceAll(NUMBERS, "");
+			if (!s.equals(filtered)) {
+				barAnchorY.setValue(filtered);
+			}
+		});
 		barAnchorY.setMaxLength(4);
 		barAnchorY.setHint(Component.translatable("new_anchor.ybar.hint"));
 
 		//anchor Z bar
 		addRenderableWidget(barAnchorZ = new EditBox(font, (int) (getXd() + 76.5), (int) (getYd() + 105.5), 66, 13, Component.empty())).visible = isAnchorScreen;
 		//only accepts numbers
-		barAnchorZ.setFilter(s -> s.matches(NUMBERS));
+		barAnchorZ.setResponder(s -> {
+			String filtered = s.replaceAll(NUMBERS, "");
+			if (!s.equals(filtered)) {
+				barAnchorZ.setValue(filtered);
+			}
+		});
 		barAnchorZ.setMaxLength(8);
 		barAnchorZ.setHint(Component.translatable("new_anchor.zbar.hint"));
 
@@ -626,7 +641,12 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 		//anchor range bar
 		addRenderableWidget(barAnchorRange = new EditBox(font, (int) (getXd() + 96.5), (int) (getYd() + 139.5), 49, 13, Component.empty())).visible = isAnchorScreen;
 		//only accepts numbers
-		barAnchorRange.setFilter(s -> s.matches(NUMBERS));
+		barAnchorRange.setResponder(s -> {
+			String filtered = s.replaceAll(NUMBERS, "");
+			if (!s.equals(filtered)) {
+				barAnchorRange.setValue(filtered);
+			}
+		});
 		barAnchorRange.setMaxLength(6);
 		barAnchorRange.setHint(Component.translatable("new_anchor.rangebar.hint", this.cfg.maxAnchorRange().get()));
 
@@ -846,15 +866,15 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 		btn.active = !b;
 	}
 
-	private void renderNewAnchorScreen(GuiGraphics stack, int mouseX, int mouseY) {
+	private void renderNewAnchorScreen(GuiGraphicsExtractor stack, int mouseX, int mouseY) {
 		int xras = (width - 153) / 2;
 		stack.blit(RenderPipelines.GUI_TEXTURED, getAnchorScreenTextureID(), xras, (height - 119) / 2, 0, 0, 153, 118, 256, 256);
-		stack.drawString(font, Component.translatable("new_anchor.namebar"), xras + 10, barAnchorName.getY() + 2, darkMode ? grayText : blackText, false);
-		stack.drawString(font, Component.translatable("new_anchor.xbar"), xras + 10, barAnchorX.getY() + 2, darkMode ? grayText : blackText, false);
-		stack.drawString(font, Component.translatable("new_anchor.ybar"), xras + 10, barAnchorY.getY() + 2, darkMode ? grayText : blackText, false);
-		stack.drawString(font, Component.translatable("new_anchor.zbar"), xras + 10, barAnchorZ.getY() + 2, darkMode ? grayText : blackText, false);
-		stack.drawString(font, Component.translatable("new_anchor.dimensionbar"), xras + 10, barAnchorDim.getY() + 2, darkMode ? grayText : blackText, false);
-		stack.drawString(font, Component.translatable("new_anchor.rangebar"), xras + 10, barAnchorRange.getY() + 2, darkMode ? grayText : blackText, false);
+		stack.text(font, Component.translatable("new_anchor.namebar"), xras + 10, barAnchorName.getY() + 2, darkMode ? grayText : blackText, false);
+		stack.text(font, Component.translatable("new_anchor.xbar"), xras + 10, barAnchorX.getY() + 2, darkMode ? grayText : blackText, false);
+		stack.text(font, Component.translatable("new_anchor.ybar"), xras + 10, barAnchorY.getY() + 2, darkMode ? grayText : blackText, false);
+		stack.text(font, Component.translatable("new_anchor.zbar"), xras + 10, barAnchorZ.getY() + 2, darkMode ? grayText : blackText, false);
+		stack.text(font, Component.translatable("new_anchor.dimensionbar"), xras + 10, barAnchorDim.getY() + 2, darkMode ? grayText : blackText, false);
+		stack.text(font, Component.translatable("new_anchor.rangebar"), xras + 10, barAnchorRange.getY() + 2, darkMode ? grayText : blackText, false);
 
 		//Keep accept anchor disabled and show why till all bars are filled.
 		MutableComponent errors = Component.translatable("new_anchor.btn.accept.tooltip.error");
@@ -876,7 +896,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 		btnAccept.active = errors.equals(Component.translatable("new_anchor.btn.accept.tooltip"));
 
 		if (isNameInUse) {
-			stack.renderTooltip(font, List.of(ClientTooltipComponent.create(Component.translatable("new_anchor.namebar.nameuse").getVisualOrderText())),
+			stack.tooltip(font, List.of(ClientTooltipComponent.create(Component.translatable("new_anchor.namebar.nameuse").getVisualOrderText())),
 					barAnchorName.getX() - 12,
 					barAnchorName.getY() - 1, DefaultTooltipPositioner.INSTANCE, null);
 		}
@@ -885,14 +905,14 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
 	//----------------------------------- Other functions -----------------------------------//
 
-	private void renderTip(GuiGraphics stack, int x, int y, Component message) {
+	private void renderTip(GuiGraphicsExtractor stack, int x, int y, Component message) {
 		stack.fill(x - 4, y - 4, x + font.width(message) + 3, y + font.lineHeight + 2, darkBG); //outer dark bg
 		stack.fill(x - 3, y - 3, x + font.width(message) + 2, y + font.lineHeight + 1, goldBG); //middle gold bg
 		stack.fill(x - 2, y - 2, x + font.width(message) + 1, y + font.lineHeight, darkBG); //inner dark bg
-		stack.drawWordWrap(font, message, x, y, 245, whiteText);
+		stack.textWithWordWrap(font, message, x, y, 245, whiteText);
 	}
 
-	private void renderScroller(GuiGraphics stack, int mouseX, int mouseY) {
+	private void renderScroller(GuiGraphicsExtractor stack, int mouseX, int mouseY) {
 		if (mouseX >= firstAnchorButton.getX() && mouseX <= firstAnchorButton.getX() + 20)
 			stack.requestCursor(isDragging ? CursorTypes.RESIZE_NS : CursorType.DEFAULT);
 		stack.blit(RenderPipelines.GUI_TEXTURED, getIconsTextureID(), this.getX() + 20, this.scrollerY, 154, 47, 8, 11, 256, 256);

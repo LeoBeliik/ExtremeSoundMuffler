@@ -7,7 +7,7 @@ import com.leobeliik.extremesoundmuffler.utils.DataManager;
 import io.github.fablabsmc.fablabs.api.fiber.v1.serialization.JanksonValueSerializer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
@@ -35,11 +35,11 @@ public class SoundMufflerFabric implements ClientModInitializer {
                 ScreenMouseEvents.afterMouseRelease(screen).register(SoundMufflerFabric::onMouseReleasePre));
         ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) ->
                 ScreenMouseEvents.beforeMouseClick(screen).register(SoundMufflerFabric::onMouseClickPre));
-        KeyBindingHelper.registerKeyBinding(soundMufflerKey);
+        KeyMappingHelper.registerKeyMapping(soundMufflerKey);
         isCustomSkinLoader = FabricLoader.getInstance().isModLoaded("customskinloader");
 
         //on mod keybind press
-        ClientTickEvents.END_WORLD_TICK.register(level -> {
+        ClientTickEvents.END_CLIENT_TICK.register(level -> {
             while (soundMufflerKey.consumeClick()) {
                 SoundMufflerCommon.openMainScreen();
             }

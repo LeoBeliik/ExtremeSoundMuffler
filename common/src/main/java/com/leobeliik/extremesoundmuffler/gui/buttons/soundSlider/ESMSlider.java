@@ -9,7 +9,7 @@ import com.leobeliik.extremesoundmuffler.utils.DataManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ActiveTextCollector;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -51,7 +51,7 @@ public class ESMSlider extends AbstractWidget implements ISoundLists, IColorsGui
 
 
 	@Override
-	public void renderWidget(@NotNull GuiGraphics stack, int mouseX, int mouseY, float partialTicks) {
+	public void extractWidgetRenderState(@NotNull GuiGraphicsExtractor stack, int mouseX, int mouseY, float partialTicks) {
 		//--------------- Render Button when not hovering ---------------//
 		isMuffling = getFGColor(getText(), "green");
 		//row highlight
@@ -70,10 +70,10 @@ public class ESMSlider extends AbstractWidget implements ISoundLists, IColorsGui
 		}
 	}
 
-	private void drawMessage(GuiGraphics stack) {
+	private void drawMessage(GuiGraphicsExtractor stack) {
 		int v = Math.max(width, font.width(getMessage().getString()));
 		if (showSlider && isFocused() && isHovered()) {
-			stack.drawCenteredString(font, Component.translatable("slider.btn.volume", (int) (sliderValue * 100)), getX() + (width / 2), getY() + 2, aquaText);
+			stack.centeredText(font, Component.translatable("slider.btn.volume", (int) (sliderValue * 100)), getX() + (width / 2), getY() + 2, aquaText);
 		} else {
 			String msgTruncated = getMessage().getString();
 
@@ -85,17 +85,17 @@ public class ESMSlider extends AbstractWidget implements ISoundLists, IColorsGui
 
 			//make the text scroll horizontally if is too long and the button is being hovered
 			if (this.isHovered() && !(btnToggleSound.isHovered() || btnPlaySound.isHovered()) && font.width(msgTruncated) > 205) {
-				renderScrollingStringOverContents(stack.textRendererForWidget(this, GuiGraphics.HoveredTextEffects.TOOLTIP_AND_CURSOR), Component.literal(msgTruncated).withColor(aquaText), 2);
+				extractScrollingStringOverContents(stack.textRendererForWidget(this, GuiGraphicsExtractor.HoveredTextEffects.TOOLTIP_AND_CURSOR), Component.literal(msgTruncated).withColor(aquaText), 2);
 			} else {
 				msgTruncated = font.plainSubstrByWidth(msgTruncated, 205);
 				//if is mufflind use green text, if hovering use aqua, otherwise use white!
-				stack.drawString(font, msgTruncated, getX() + 2, getY() + 2, this.isHovered() ? aquaText : isMuffling ? greenText : whiteText, true); //title
+				stack.text(font, msgTruncated, getX() + 2, getY() + 2, this.isHovered() ? aquaText : isMuffling ? greenText : whiteText, true); //title
 			}
 		}
 	}
 
 	@Override
-	public void renderScrollingStringOverContents(@NonNull ActiveTextCollector textCollector, @NonNull Component component, int offset) {
+	public void extractScrollingStringOverContents(@NonNull ActiveTextCollector textCollector, @NonNull Component component, int offset) {
 		int x1 = this.getX() + offset;
 		int x2 = this.getX() + this.getWidth() - offset;
 		int y1 = this.getY() - offset;
@@ -104,7 +104,7 @@ public class ESMSlider extends AbstractWidget implements ISoundLists, IColorsGui
 	}
 
 	//draws the "rainbow" gradient in the background
-	private void drawGradient(GuiGraphics stack) {
+	private void drawGradient(GuiGraphicsExtractor stack) {
 		if (isMuffling) {
 			stack.blit(RenderPipelines.GUI_TEXTURED, getIconsTextureID(), getX(), getY(), 0, 0, (int) (sliderValue * (width - 6)) + 5, height, 256, 256); //draw bg
 		}
