@@ -59,8 +59,9 @@ public class SoundMufflerFabric implements ClientModInitializer {
                         b, () -> new HashMap<>(mods.size())));
                 DataManager.loadMods(modNames);
             }
+            cacheAllSounds();
+            setMinecraft();
         });
-        cacheAllSounds();
     }
 
     //save the new coordinates for the inv button
