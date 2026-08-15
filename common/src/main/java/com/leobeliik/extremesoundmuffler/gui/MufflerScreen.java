@@ -13,7 +13,6 @@ import com.leobeliik.extremesoundmuffler.utils.DataManager;
 import com.mojang.blaze3d.platform.cursor.CursorType;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
@@ -41,7 +40,6 @@ import static com.leobeliik.extremesoundmuffler.SoundMufflerCommon.*;
 
 public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
-	private static final Minecraft minecraft = Minecraft.getInstance();
 	private static boolean isMuffling;
 	private static Component toggleSoundsListMessage, screenTitle, tip;
 	private final CommonConfig.ConfigAccess cfg = CommonConfig.get();
@@ -49,7 +47,8 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 	private final boolean isAnchorsDisabled = cfg.disableAnchors().get() || Constants.isCustomSkinLoader, isLawful = cfg.lawfulAllList().get(), leftButtons = cfg.leftButtons().get(), showShamelessPlug = cfg.showTip().get();
 	public ESMButton btnMuffled, btnMods, btnBlocks, btnGlobal;
 	private boolean isAnchorScreen, isAnchorList, isDragging, isNameInUse;
-	private int minYButton, maxYButton, minYAnchorButton, maxYAnchorButton, scrollDelta, scrollerY;
+	private int minYButton, maxYButton, minYAnchorButton, maxYAnchorButton, scrollDelta;
+	private double scrollerY, step;
 	private List<AbstractWidget> newAnchorScreenButtons = new ArrayList<>(9), anchorButtonsList = new ArrayList<>(), sliderButtonList = new ArrayList<>();
 	private String tabCurrent = "general", btnCurrent = "recent";
 	private Anchor anchor;
@@ -240,24 +239,18 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 		double dir = directionH == 0 ? directionV : directionH;
 
 		if (anchor != null && btnAnchorList.isToggled()) {
-			if (firstAnchorButton == null) {
-				return false;
-			}
-			if ((dir > 0 && firstAnchorButton.getY() == minYAnchorButton) || (dir < 0 && lastAnchorButton.getY() <= maxYAnchorButton)) {
+			if (firstAnchorButton == null || (dir > 0 && firstAnchorButton.getY() == minYAnchorButton) || (dir < 0 && lastAnchorButton.getY() <= maxYAnchorButton)) {
 				return false;
 			}
 			for (AbstractWidget b : anchorButtonsList) {
 				b.setY((int) (b.getY() + b.getHeight() * Math.signum(dir)));
 				((ESMAnchor) b).setVisible(b.getY() >= minYAnchorButton && b.getY() <= maxYAnchorButton);
 			}
-			if (!isDragging)
-				scrollerY = (int) Math.clamp((scrollerY - Math.clamp(directionV, -1, 1) * ((double) (maxYAnchorButton - minYAnchorButton) / (anchorList.size() - 11))), minYAnchorButton, maxYAnchorButton - 8);
-		} else {
-			if (firstSoundButton == null) {
-				return false;
+			if (!isDragging) {
+				scrollerY = Math.clamp(scrollerY - Math.clamp(directionV, -1, 1) * step, minYAnchorButton, maxYAnchorButton - 8);
 			}
-
-			if ((dir > 0 && firstSoundButton.getY() == minYButton) || (dir < 0 && lastSoundButton.getY() <= maxYButton)) {
+		} else {
+			if (firstSoundButton == null || (dir > 0 && firstSoundButton.getY() == minYButton) || (dir < 0 && lastSoundButton.getY() <= maxYButton)) {
 				return false;
 			}
 
@@ -280,7 +273,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 			}
 		} else {
 			barSearch.setFocused(barSearch.isMouseOver(event.x(), event.y()));
-			if (!btnAnchorList.isToggled() && event.x() >= getX() + 19 && event.x() <= getX() + 32) {
+			if (btnAnchorList.isToggled() && event.x() >= getX() + 19 && event.x() <= getX() + 32) {
 				isDragging = true;
 			}
 		}
@@ -299,7 +292,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 			//I don't like this but it works.. ugh
 	        for (int i = 0; i < anchorButtonsList.size(); i++) {
 		        AbstractWidget b = anchorButtonsList.get(i);
-		        b.setY(minYAnchorButton + 15 * (i - Math.round((scrollerY - minYAnchorButton) / (float) ((maxYAnchorButton - minYAnchorButton) / (anchorList.size() - 11)))));
+				b.setY((int) (minYAnchorButton + 15 * (i - Math.round((scrollerY - minYAnchorButton) / step))));
 		        ((ESMAnchor) b).setVisible(b.getY() >= minYAnchorButton && b.getY() <= maxYAnchorButton);
 	        }
             return true;
@@ -498,6 +491,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 	private void addAnchorButtons() {
 		addRenderableWidget(btnAnchorList = new ESMButton(getX() + 20, getY() + 20, 66, 47, 11, b -> {
 			((ESMButton) b).toggle();
+			step = (double) ((maxYAnchorButton - minYAnchorButton) - 8) / (anchorList.size() - 11);
 			setAnchorListButtons();
 			btnAnchorNew.setVisible(!((ESMButton) b).isToggled());
 			btnAnchorEdit.setVisible(!((ESMButton) b).isToggled());
@@ -895,7 +889,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 	private void renderScroller(GuiGraphics stack, int mouseX, int mouseY) {
 		if (mouseX >= firstAnchorButton.getX() && mouseX <= firstAnchorButton.getX() + 20)
 			stack.requestCursor(isDragging ? CursorTypes.RESIZE_NS : CursorType.DEFAULT);
-		stack.blit(RenderPipelines.GUI_TEXTURED, getIconsTextureID(), this.getX() + 20, this.scrollerY, 154, 47, 8, 11, 256, 256);
+		stack.blit(RenderPipelines.GUI_TEXTURED, getIconsTextureID(), this.getX() + 20, (int) this.scrollerY, 154, 47, 8, 11, 256, 256);
 	}
 
 	private void editTitle() {

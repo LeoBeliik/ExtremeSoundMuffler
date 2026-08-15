@@ -25,6 +25,8 @@ import static com.leobeliik.extremesoundmuffler.Constants.*;
 public class DataManager implements ISoundLists {
 
 	private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+	private static final CommonConfig.ConfigAccess conf = CommonConfig.get();
+
 	//Ignore fabric APIs
 	private static List<String> hiddenMods = Arrays.asList("fabric-api", "fabric-api-base", "fabric-api-lookup-api-v1", "fabric-biome-api-v1", "fabric-block-api-v1", "fabric-block-view-api-v2",
 			"fabric-client-gametest-api-v1", "fabric-command-api-v2", "fabric-content-registries-v0", "fabric-convention-tags-v1",
@@ -58,10 +60,14 @@ public class DataManager implements ISoundLists {
 
 		reload();
 
-		if (!CommonConfig.get().disableAnchors().get() && !Constants.isCustomSkinLoader) {
+		if (!conf.disableAnchors().get() && !Constants.isCustomSkinLoader) {
 			anchorList.clear();
+			int maxAnchorRange = conf.maxAnchorRange().get();
 			//TODO get rid of this eventually, only used for removing ol' pre 4.0 anchor.dat anchors.
-			loadAnchors().stream().filter(anchor -> anchor.getDimension() != null).forEach(anchorList::add);
+			loadAnchors().stream().filter(anchor -> anchor.getDimension() != null).forEach(anchor -> {
+				if (anchor.getRange() > maxAnchorRange) anchor.setRange(maxAnchorRange);
+				anchorList.add(anchor);
+			});
 			//anchorList.addAll(loadAnchors());
 		}
 
@@ -128,7 +134,7 @@ public class DataManager implements ISoundLists {
 	public static void loadMods(Map<String, String> mods) {
 		//list of mods, ignoring OpenJDK, neoforge and fabric
 		mods.forEach((key, value) -> {
-			if (!hiddenMods.contains(value) && !CommonConfig.get().modsBlacklisted().get().contains(value)) {
+			if (!hiddenMods.contains(value) && !conf.modsBlacklisted().get().contains(value)) {
 				modsList.put(key, value);
 			}
 		});

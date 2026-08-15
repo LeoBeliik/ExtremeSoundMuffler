@@ -67,6 +67,7 @@ public class SoundMufflerNeoForge {
             DataManager.loadMods(modNames);
         }
         cacheAllSounds();
+        setMinecraft();
     }
 
     @SubscribeEvent //save the new coordinates for the inv button

@@ -2,14 +2,12 @@ package com.leobeliik.extremesoundmuffler.gui.buttons;
 
 import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
 import com.leobeliik.extremesoundmuffler.utils.Anchor;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import org.jspecify.annotations.NonNull;
-
+import static com.leobeliik.extremesoundmuffler.Constants.font;
 import static com.leobeliik.extremesoundmuffler.SoundMufflerCommon.getIconsTextureID;
 
 public class ESMAnchor extends ESMButton implements IColorsGui {
@@ -28,7 +26,6 @@ public class ESMAnchor extends ESMButton implements IColorsGui {
         guiGraphics.blit(RenderPipelines.GUI_TEXTURED, getIconsTextureID(), getX(), getY(), 0, this.getTextureY(), this.getWidth(), this.getHeight(), 256, 256); //button texure
 
         //render text like this because I don't like how the default text looks like
-        Font font = Minecraft.getInstance().font;
         if (!this.message.equals(Component.empty())) {
             float centerX = this.getX() + this.getWidth() / 2F - font.width(this.getMessage()) / 2F;
             int textColor = this.isHovered() ? aquaText : whiteText;

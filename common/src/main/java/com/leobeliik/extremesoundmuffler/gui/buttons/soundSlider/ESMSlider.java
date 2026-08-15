@@ -6,9 +6,7 @@ import com.leobeliik.extremesoundmuffler.gui.buttons.ESMButton;
 import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import com.leobeliik.extremesoundmuffler.utils.DataManager;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ActiveTextCollector;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarratedElementType;
@@ -21,16 +19,13 @@ import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 import java.util.Locale;
-import static com.leobeliik.extremesoundmuffler.Constants.CACHE_BLOCK_SOUNDS;
-import static com.leobeliik.extremesoundmuffler.Constants.EVERYTHING;
+import static com.leobeliik.extremesoundmuffler.Constants.*;
 import static com.leobeliik.extremesoundmuffler.SoundMufflerCommon.getIconsTextureID;
 
 @SuppressWarnings("EmptyMethod")
 public class ESMSlider extends AbstractWidget implements ISoundLists, IColorsGui {
 
-	private static final Minecraft minecraft = Minecraft.getInstance();
 	private static boolean showSlider = false;
-	private final Font font = minecraft.font;
 	private final String sound;
 	final MufflerScreen screen;
 	private final int bg;

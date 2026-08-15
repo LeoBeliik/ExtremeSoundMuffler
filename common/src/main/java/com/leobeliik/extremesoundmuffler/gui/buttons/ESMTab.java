@@ -1,15 +1,13 @@
 package com.leobeliik.extremesoundmuffler.gui.buttons;
 
 import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import org.jspecify.annotations.NonNull;
-
 import java.util.function.Supplier;
-
+import static com.leobeliik.extremesoundmuffler.Constants.font;
 import static com.leobeliik.extremesoundmuffler.SoundMufflerCommon.getIconsTextureID;
 
 public class ESMTab extends Button implements IColorsGui {
@@ -33,7 +31,7 @@ public class ESMTab extends Button implements IColorsGui {
             guiGraphics.blit(RenderPipelines.GUI_TEXTURED, getIconsTextureID(), x, y, 88f, 69f, 86, 16, 256, 256); //tab deselected texture
         }
         //Indicate if the button is being tagged
-        guiGraphics.drawCenteredString(Minecraft.getInstance().font, this.getMessage(), this.x + (this.width / 2), this.y + (this.height / 4), color);
+        guiGraphics.drawCenteredString(font, this.getMessage(), this.x + (this.width / 2), this.y + (this.height / 4), color);
     }
 
     public void hide() {

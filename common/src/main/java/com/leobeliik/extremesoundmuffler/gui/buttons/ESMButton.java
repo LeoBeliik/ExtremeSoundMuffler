@@ -1,17 +1,13 @@
 package com.leobeliik.extremesoundmuffler.gui.buttons;
 
 import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import org.jspecify.annotations.NonNull;
-
 import java.util.function.Supplier;
-
-import static com.leobeliik.extremesoundmuffler.Constants.darkMode;
+import static com.leobeliik.extremesoundmuffler.Constants.*;
 import static com.leobeliik.extremesoundmuffler.SoundMufflerCommon.getIconsTextureID;
 
 public class ESMButton extends Button implements IColorsGui {
@@ -43,7 +39,6 @@ public class ESMButton extends Button implements IColorsGui {
         guiGraphics.blit(RenderPipelines.GUI_TEXTURED, getIconsTextureID(), getX(), getY(), textureX + toggled, textureY + hovered , this.width, this.height, 256, 256); //button texure
 
         //render text like this because I don't like how the default text looks like
-        Font font = Minecraft.getInstance().font;
         if (!this.message.equals(Component.empty())) {
             float centerX = this.getX() + this.getWidth() / 2F - font.width(this.getMessage()) / 2F;
             int textColor = this.isHovered ? aquaText : darkMode ? grayText : blackText;

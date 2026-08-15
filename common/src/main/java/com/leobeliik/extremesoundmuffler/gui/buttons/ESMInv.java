@@ -2,7 +2,6 @@ package com.leobeliik.extremesoundmuffler.gui.buttons;
 
 import com.leobeliik.extremesoundmuffler.SoundMufflerCommon;
 import com.leobeliik.extremesoundmuffler.interfaces.IColorsGui;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
@@ -14,6 +13,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
+import static com.leobeliik.extremesoundmuffler.Constants.font;
 import static com.leobeliik.extremesoundmuffler.SoundMufflerCommon.getIconsTextureID;
 
 public class ESMInv extends AbstractButton implements IColorsGui {
@@ -32,7 +32,7 @@ public class ESMInv extends AbstractButton implements IColorsGui {
 
     @Override
     protected void renderContents(@NonNull GuiGraphics render, int i, int i1, float v) {
-        renderScrollingString(render, Minecraft.getInstance().font, i, i1);
+        renderScrollingString(render, font, i, i1);
     }
 
     private void renderScrollingString(@NotNull GuiGraphics render, @NotNull Font font, int mouseX, int mouseY) {

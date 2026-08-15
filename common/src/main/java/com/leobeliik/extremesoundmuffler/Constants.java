@@ -1,6 +1,8 @@
 package com.leobeliik.extremesoundmuffler;
 
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Block;
 import java.util.*;
@@ -15,7 +17,9 @@ public class Constants {
 	public static final Set<String> ALL_SOUNDS_CACHE = new HashSet<>();
 	public static final String NUMBERS = "^-?[0-9]+$";
 	public static String EVERYTHING;
-    public static boolean useGlobalConfig;
+	public static Minecraft minecraft;
+	public static Font font;
+	public static boolean useGlobalConfig;
 	public static boolean darkMode;
     public static boolean isCustomSkinLoader;
 
@@ -32,5 +36,10 @@ public class Constants {
 	public static void cacheAllSounds() {
 		if (ALL_SOUNDS_CACHE.isEmpty())
 			BuiltInRegistries.SOUND_EVENT.forEach(k -> ALL_SOUNDS_CACHE.add(k.location().toString()));
+	}
+
+	public static void setMinecraft() {
+		minecraft = Minecraft.getInstance();
+		font = minecraft.font;
 	}
 }
