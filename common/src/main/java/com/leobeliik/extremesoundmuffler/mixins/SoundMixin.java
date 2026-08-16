@@ -78,7 +78,9 @@ public abstract class SoundMixin implements ISoundLists {
 
             //don't continue if the anchors are disabled
             if (!CommonConfig.get().disableAnchors().get()) {
-                return (float) (tempVolume * Anchor.getMuffling(tempSound));
+                muffledValue = Anchor.getMuffling(tempSound);
+                if (muffledValue != 1D)
+                    return (float) (tempVolume * muffledValue);
             }
 
         }
