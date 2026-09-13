@@ -34,7 +34,6 @@ import net.minecraft.util.Util;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 import java.util.*;
-import java.util.function.Predicate;
 import static com.leobeliik.extremesoundmuffler.Constants.*;
 import static com.leobeliik.extremesoundmuffler.SoundMufflerCommon.*;
 
@@ -765,19 +764,23 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 			soundsList.addAll(CACHE_BLOCK_SOUNDS.keySet());
 		}
 
-		//removes blacklisted sounds when necessary
-		if ((isLawful && btnAll.isSelected())) {
-			forbiddenSounds.stream().<Predicate<? super String>>map(fs -> s -> s.contains(fs)).forEach(soundsList::removeIf);
-		}
+		soundsList.removeIf(s -> {
+			//get rid of any null that somehow arived here
+			if (s == null) {
+				ESM_LOG.warn("NULL SOUND DETECTED IN CURRENT LIST! (button: {}, anchor: {})", btnCurrent, this.anchor != null);
+				return true;
+			}
+			//removes blacklisted sounds when necessary
+			if (isLawful && btnAll.isSelected()) {
+				for (String fs : forbiddenSounds) if (s.contains(fs)) return true;
+			}
+			return false;
+		});
 
-		if (soundsList.isEmpty()) {
-			return;
-		}
+		if (soundsList.isEmpty()) return;
 
-		if (btnRecent.isSelected())
-			Collections.reverse(soundsList); //makes the recent sounds sort in chronological order
-		else
-			Collections.sort(soundsList); //makes the list sort in alphabetically order
+		if (btnRecent.isSelected()) Collections.reverse(soundsList); //makes the recent sounds sort in chronological order
+		else Collections.sort(soundsList); //makes the list sort in alphabetically order
 
 		for (var sound : soundsList) {
 
