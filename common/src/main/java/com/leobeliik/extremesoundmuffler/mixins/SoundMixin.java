@@ -7,6 +7,7 @@ import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import com.leobeliik.extremesoundmuffler.utils.Anchor;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.SoundEngine;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -48,7 +49,12 @@ public abstract class SoundMixin implements ISoundLists {
 
         //don't care about forbidden sounds or from the psb
         if (tempSound != null && tempSound.getSound() != null && !ESMPlay.isFromPSB()) {
-            String soundIdentifier = tempSound.getIdentifier().toString();
+	        Identifier id = tempSound.getIdentifier();
+            //make sure some mods don't decide to make null stuff
+	        //noinspection ConstantValue
+	        if (id == null) return volume;
+
+            String soundIdentifier = id.toString();
 
             if (!esm_isForbidden(tempSound)) { //TODO find a better way to do this
                 //remove sound to prevent repeated sounds and maintains the desired order
@@ -58,8 +64,8 @@ public abstract class SoundMixin implements ISoundLists {
             }
 
             float tempVolume = tempSound.getVolume();
-            String soundName = tempSound.getIdentifier().getPath();
-            String modName = tempSound.getIdentifier().getNamespace();
+            String soundName = id.getPath();
+            String modName = id.getNamespace();
 
             //global sounds like thunder or dragon growl has too high volume to be properly muffled, so first we temporarily lower the max volume
             if (soundName.contains("entity.lightning_bolt.thunder") || soundName.contains("entity.ender_dragon.growl")) {
