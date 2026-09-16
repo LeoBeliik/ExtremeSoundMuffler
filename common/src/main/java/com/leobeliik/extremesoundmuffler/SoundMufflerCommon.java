@@ -34,7 +34,7 @@ public class SoundMufflerCommon {
     static KeyMapping mufflerKey() {
         return new KeyMapping(
                 new TranslatableContents("key.open_muffler_gui", "Open Muffler GUI", TranslatableContents.NO_ARGS).getKey(),
-                InputConstants.Type.KEYSYM,
+                InputConstants.Type.KEYBOARD,
                 InputConstants.UNKNOWN.getValue(),
                 KeyMapping.Category.MISC);
     }

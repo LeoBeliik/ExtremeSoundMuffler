@@ -895,7 +895,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 		if (isNameInUse) {
 			stack.tooltip(font, List.of(ClientTooltipComponent.create(Component.translatable("new_anchor.namebar.nameuse").getVisualOrderText())),
 					barAnchorName.getX() - 12,
-					barAnchorName.getY() - 1, DefaultTooltipPositioner.INSTANCE, null);
+					barAnchorName.getY() - 1, DefaultTooltipPositioner.INSTANCE, null, false);
 		}
 	}
 

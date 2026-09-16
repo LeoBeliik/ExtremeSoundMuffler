@@ -11,12 +11,12 @@ jobs:
       packages: write
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v5
     - name: Set up JDK
-      uses: actions/setup-java@v2
+      uses: actions/setup-java@v5
       with:
         distribution: 'temurin'
-        java-version: '21'
+        java-version: '25'
 
     - name: Make Gradle wrapper executable
       run: chmod +x ./gradlew
