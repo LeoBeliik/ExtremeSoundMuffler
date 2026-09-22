@@ -103,7 +103,7 @@ class FabricConfig {
             .finishValue(leftButtons::mirror)
 
             .beginValue("showTip", ConfigTypes.BOOLEAN, true)
-            .withComment("Show tips in the Muffler screen?\n" +
+            .withComment("Allow Ko-Fi tip in the Muffler screen?\n" +
                     "Default: true")
             .finishValue(showTip::mirror)
 
@@ -221,6 +221,10 @@ class FabricConfig {
 
     static void setCreativeInvButtonVertical(int y) {
         creativeInvButtonVertical.setValue(y);
+    }
+
+    static void disableShamelessPlug() {
+        showTip.setValue(false);
     }
 
 }
