@@ -44,7 +44,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 	private static Component toggleSoundsListMessage, screenTitle, tip;
 	private final CommonConfig.ConfigAccess cfg = CommonConfig.get();
 	private final int maxAnchorRange = cfg.maxAnchorRange().get(), ySize = 212, xSize = 256;
-	private final boolean isAnchorsDisabled = cfg.disableAnchors().get() || isCustomSkinLoader, isLawful = cfg.lawfulAllList().get(), leftButtons = cfg.leftButtons().get(), showShamelessPlug = cfg.showTip().get();
+	private final boolean isAnchorsDisabled = cfg.disableAnchors().get() || isCustomSkinLoader, isLawful = cfg.lawfulAllList().get(), leftButtons = cfg.leftButtons().get();
 	public ESMButton btnMuffled, btnMods, btnBlocks, btnGlobal, btnNever;
 	private boolean isAnchorScreen, isAnchorList, isDragging, isNameInUse;
 	private int minYButton, maxYButton, minYAnchorButton, maxYAnchorButton, scrollDelta;
@@ -147,7 +147,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 		}
 
 		//Render plug tip when allowed
-		if (muffledSounds.size() >= 10 && !tempDisabledPlug && showShamelessPlug) renderPlugTooltip(stack);
+		if (muffledSounds.size() >= 10 && !tempDisabledPlug && cfg.showTip().get()) renderPlugTooltip(stack);
 		else if (btnKofi.visible) showTipButtons(false);
 
 		super.render(stack, mouseX, mouseY, partialTicks);

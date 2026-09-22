@@ -127,6 +127,8 @@ public class Anchor {
 
 	//TODO I really need to optimize this
 	public static double getMuffling(SoundInstance sound) {
+		if (minecraft == null) return DEFAULT_VOLUME;
+
 		ClientLevel world = minecraft.level;
 		LocalPlayer player = minecraft.player;
 		if (world == null || player == null) return DEFAULT_VOLUME;
