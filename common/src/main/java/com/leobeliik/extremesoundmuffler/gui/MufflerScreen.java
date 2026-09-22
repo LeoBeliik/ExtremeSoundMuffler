@@ -1,7 +1,6 @@
 package com.leobeliik.extremesoundmuffler.gui;
 
 import com.leobeliik.extremesoundmuffler.CommonConfig;
-import com.leobeliik.extremesoundmuffler.Constants;
 import com.leobeliik.extremesoundmuffler.gui.buttons.ESMAnchor;
 import com.leobeliik.extremesoundmuffler.gui.buttons.ESMButton;
 import com.leobeliik.extremesoundmuffler.gui.buttons.ESMTab;
@@ -19,6 +18,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
@@ -33,6 +33,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.Util;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
+import java.net.URI;
 import java.util.*;
 import static com.leobeliik.extremesoundmuffler.Constants.*;
 import static com.leobeliik.extremesoundmuffler.SoundMufflerCommon.*;
@@ -43,8 +44,8 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 	private static Component toggleSoundsListMessage, screenTitle, tip;
 	private final CommonConfig.ConfigAccess cfg = CommonConfig.get();
 	private final int maxAnchorRange = cfg.maxAnchorRange().get(), ySize = 212, xSize = 256;
-	private final boolean isAnchorsDisabled = cfg.disableAnchors().get() || Constants.isCustomSkinLoader, isLawful = cfg.lawfulAllList().get(), leftButtons = cfg.leftButtons().get(), showShamelessPlug = cfg.showTip().get();
-	public ESMButton btnMuffled, btnMods, btnBlocks, btnGlobal;
+	private final boolean isAnchorsDisabled = cfg.disableAnchors().get() || isCustomSkinLoader, isLawful = cfg.lawfulAllList().get(), leftButtons = cfg.leftButtons().get(), showShamelessPlug = cfg.showTip().get();
+	public ESMButton btnMuffled, btnMods, btnBlocks, btnGlobal, btnNever;
 	private boolean isAnchorScreen, isAnchorList, isDragging, isNameInUse;
 	private int minYButton, maxYButton, minYAnchorButton, maxYAnchorButton, scrollDelta;
 	private double scrollerY, step;
@@ -55,7 +56,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 	private ESMTab tabGeneral, tabAnchors;
 	private ESMSlider firstSoundButton, lastSoundButton;
 	private ESMAnchor firstAnchorButton, lastAnchorButton;
-	private ESMButton btnTMS, btnDelete, btnNextSounds, btnPrevSounds, btnRecent, btnAll;
+	private ESMButton btnTMS, btnDelete, btnNextSounds, btnPrevSounds, btnRecent, btnAll, btnKofi, btnLater;
 	private ESMButton btnAnchorNew, btnAnchorEdit, btnAnchorList, btnAnchorPickCoords, btnAnchorDelete;
 	private Button btnAccept;
 
@@ -145,6 +146,10 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 			stack.blit(RenderPipelines.GUI_TEXTURED, getIconsTextureID(), btnGlobal.getX() - 2, btnGlobal.getY() - 2, 95, 13, 15, 15, 256, 256);
 		}
 
+		//Render plug tip when allowed
+		if (muffledSounds.size() >= 10 && !tempDisabledPlug && showShamelessPlug) renderPlugTooltip(stack);
+		else if (btnKofi.visible) showTipButtons(false);
+
 		super.render(stack, mouseX, mouseY, partialTicks);
 
 		//--------------- My Renders ---------------//
@@ -206,7 +211,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 			return true;
 		}
 		//Close screen when press "E" or the mod hotkey outside the search bar and when this screen is focused
-		if ((minecraft.options.keyInventory.matches(keyEvent) || Constants.soundMufflerKey.matches(keyEvent))) {
+		if ((minecraft.options.keyInventory.matches(keyEvent) || soundMufflerKey.matches(keyEvent))) {
 			if (isAnchorList) {
 				btnAnchorList.toggle();
 				isAnchorList = false;
@@ -255,7 +260,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
 			for (AbstractWidget slider : sliderButtonList) {
 				slider.setY((int) (slider.getY() + (slider.getHeight() * 10) * Math.signum(dir)));
-				((ESMSlider)slider).setVisible(slider.getY() >= minYButton && slider.getY() <= maxYButton);
+				((ESMSlider) slider).setVisible(slider.getY() >= minYButton && slider.getY() <= maxYButton);
 			}
 		}
 		return super.mouseScrolled(mouseX, mouseY, directionH, directionV);
@@ -282,22 +287,22 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 
 	//-----------------------------------My functions-----------------------------------//
 
-    @Override
-    public boolean mouseDragged(@NonNull MouseButtonEvent event, double deltaX, double deltaY) {
-        double x = event.x();
-        double y = event.y();
-        if (isDragging) {
-            scrollerY = (int) Math.clamp(y, minYAnchorButton, maxYAnchorButton - 8);
+	@Override
+	public boolean mouseDragged(@NonNull MouseButtonEvent event, double deltaX, double deltaY) {
+		double x = event.x();
+		double y = event.y();
+		if (isDragging) {
+			scrollerY = (int) Math.clamp(y, minYAnchorButton, maxYAnchorButton - 8);
 			//I don't like this but it works.. ugh
-	        for (int i = 0; i < anchorButtonsList.size(); i++) {
-		        AbstractWidget b = anchorButtonsList.get(i);
+			for (int i = 0; i < anchorButtonsList.size(); i++) {
+				AbstractWidget b = anchorButtonsList.get(i);
 				b.setY((int) (minYAnchorButton + 15 * (i - Math.round((scrollerY - minYAnchorButton) / step))));
-		        ((ESMAnchor) b).setVisible(b.getY() >= minYAnchorButton && b.getY() <= maxYAnchorButton);
-	        }
-            return true;
-        }
-        return super.mouseDragged(event, deltaX, deltaY);
-    }
+				((ESMAnchor) b).setVisible(b.getY() >= minYAnchorButton && b.getY() <= maxYAnchorButton);
+			}
+			return true;
+		}
+		return super.mouseDragged(event, deltaX, deltaY);
+	}
 
 	@Override
 	public boolean mouseReleased(@NonNull MouseButtonEvent event) {
@@ -393,8 +398,8 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 			((ESMButton) b).setTooltip(((ESMButton) b).isToggled() ?
 					Component.translatable("main_screen.btn.local.tooltip") : Component.translatable("main_screen.btn.global.tooltip"));
 			updateButtons();
-		}, Constants.useGlobalConfig ? Component.translatable("main_screen.btn.local.tooltip") : Component.translatable("main_screen.btn.global.tooltip")));
-		btnGlobal.setToggle(Constants.useGlobalConfig);
+		}, useGlobalConfig ? Component.translatable("main_screen.btn.local.tooltip") : Component.translatable("main_screen.btn.global.tooltip")));
+		btnGlobal.setToggle(useGlobalConfig);
 		btnGlobal.visible = tabGeneral.isSelected();
 
 		addRenderableWidget(barSearch = new EditBox(font, getX() + 44, getY() + 193, 128, 13, Component.empty())).setBordered(false);
@@ -457,6 +462,20 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 			setSelected((ESMButton) b);
 			updateButtons();
 		}, Component.translatable("main_screen.btn.blocks.tooltip")));
+
+		//Tip buttons
+		addRenderableWidget(btnKofi = new ESMButton(getX() + 59, getY() + 230, smallTabsXTexture, smallTabsYTexture, 44, 13, Component.literal("   Ko-Fi"), b ->
+				ConfirmLinkScreen.confirmLink(this, URI.create("https://ko-fi.com/LeoBeliik")).onPress(btnKofi),
+				Component.translatable("main_screen.btn.tip.kofi.tooltip"))).hide();
+
+
+		addRenderableWidget(btnLater = new ESMButton(getX() + 106, getY() + 230, smallTabsXTexture, smallTabsYTexture, 44, 13, Component.translatable("main_screen.btn.tip.later"), b -> {
+			tempDisabledPlug = true;
+			showTipButtons(false);
+		}, Component.translatable("main_screen.btn.tip.later.tooltip"))).hide();
+
+		addRenderableWidget(btnNever = new ESMButton(getX() + 153, getY() + 230, smallTabsXTexture, smallTabsYTexture, 44, 13, Component.translatable("main_screen.btn.tip.never"), b ->
+				showTipButtons(false), Component.translatable("main_screen.btn.tip.never.tooltip"))).hide();
 	}
 
 	private Component getTMSTooltip() {
@@ -485,6 +504,12 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 		else if (btnMods.isSelected()) btnCurrent = "mods";
 
 		updateDeleteButtonTooltip();
+	}
+
+	private void showTipButtons(boolean show) {
+		btnKofi.visible = show;
+		btnLater.visible = show;
+		btnNever.visible = show;
 	}
 
 	private void addAnchorButtons() {
@@ -634,7 +659,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 				barAnchorDim.setValue(player.level().dimension().identifier().toString());
 				barAnchorRange.setValue(String.valueOf(maxAnchorRange));
 			} else {
-				Constants.ESM_LOG.error(Component.translatable("log.error.no_player").getString());
+				ESM_LOG.error(Component.translatable("log.error.no_player").getString());
 			}
 		}, Component.translatable("new_anchor.btn.anchors.set"))).visible = isAnchorScreen;
 
@@ -877,6 +902,17 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 					barAnchorName.getX() - 12,
 					barAnchorName.getY() - 1, DefaultTooltipPositioner.INSTANCE, null);
 		}
+	}
+
+	private void renderPlugTooltip(GuiGraphics stack) {
+		showTipButtons(true);
+
+		stack.fill(getX() + 3, getY() + 213, getX() + 253, getY() + 247, darkBG); //outer dark bg
+		stack.fill(getX() + 4, getY() + 214, getX() + 252, getY() + 246, goldBG); //middle gold bg
+		stack.fill(getX() + 5, getY() + 215, getX() + 251, getY() + 245, darkBG); //inner dark bg*
+
+		stack.drawCenteredString(font, Component.translatable("main_screen.tip"), getX() + 128, getY() + 218, whiteText);
+
 	}
 
 

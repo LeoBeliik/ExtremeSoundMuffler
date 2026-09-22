@@ -61,6 +61,7 @@ public class SoundMufflerFabric implements ClientModInitializer {
             }
             cacheAllSounds();
             setMinecraft();
+            tempDisabledPlug = false;
         });
     }
 
@@ -87,11 +88,19 @@ public class SoundMufflerFabric implements ClientModInitializer {
 
     //change global and local config save
     private static void onMouseClickPre(Screen screen, MouseButtonEvent mouse) {
-        if (mouse.button() == 0 && screen instanceof MufflerScreen MS && MS.btnGlobal.isHovered()) {
-            FabricConfig.setGlobalConfig(!MS.btnGlobal.isToggled());
-            useGlobalConfig = FabricConfig.getGlobalConfig();
-            FabricConfig.updateConfig(new JanksonValueSerializer(false));
-            DataManager.reload();
+        if (mouse.button() == 0 && screen instanceof MufflerScreen MS) {
+            if (MS.btnGlobal.isHovered()) {
+                FabricConfig.setGlobalConfig(!MS.btnGlobal.isToggled());
+                useGlobalConfig = FabricConfig.getGlobalConfig();
+                FabricConfig.updateConfig(new JanksonValueSerializer(false));
+                DataManager.reload();
+            }
+
+            if (MS.btnNever.isHovered()) {
+                FabricConfig.disableShamelessPlug();
+                FabricConfig.updateConfig(new JanksonValueSerializer(false));
+            }
+
         }
     }
 

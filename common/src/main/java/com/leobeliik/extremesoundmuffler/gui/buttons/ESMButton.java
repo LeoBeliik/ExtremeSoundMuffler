@@ -50,6 +50,11 @@ public class ESMButton extends Button implements IColorsGui {
         if (this.isHovered() && this.isActive()) {
             guiGraphics.setTooltipForNextFrame(font, tooltip, getX() - (font.width(tooltip)) / 2, getY() > 200 ? getY() + (height + font.lineHeight * 2) : getY() - 1);
         }
+
+        //add kofi icon
+        if (this.message.getString().contains("Ko-Fi")) {
+            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, getIconsTextureID(), this.getX() + 2, this.getY() + 2, 0, 117, 11, 9, 31, 25, 256, 256);
+        }
     }
 
     public void setTooltip(Component tooltip) { this.tooltip = tooltip; }

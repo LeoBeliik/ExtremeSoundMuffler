@@ -7,7 +7,6 @@ import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import java.util.*;
-import java.util.List;
 import static com.leobeliik.extremesoundmuffler.Constants.*;
 
 public class Anchor {

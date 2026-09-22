@@ -22,8 +22,9 @@ public class Constants {
 	public static boolean useGlobalConfig;
 	public static boolean darkMode;
     public static boolean isCustomSkinLoader;
+	public static boolean tempDisabledPlug;
 
-    public static void loadBlockSounds(List<Block> blocks) {
+	public static void loadBlockSounds(List<Block> blocks) {
 	    blocks.forEach(block -> CACHE_BLOCK_SOUNDS.put(block.getName().getString(), List.of(
 			    block.defaultBlockState().getSoundType().getBreakSound().location().toString(),
 			    block.defaultBlockState().getSoundType().getFallSound().location().toString(),

@@ -68,6 +68,7 @@ public class SoundMufflerNeoForge {
         }
         cacheAllSounds();
         setMinecraft();
+        tempDisabledPlug = false;
     }
 
     @SubscribeEvent //save the new coordinates for the inv button
@@ -89,10 +90,15 @@ public class SoundMufflerNeoForge {
 
     @SubscribeEvent //change global and local config save
     public void onMouseClick(ScreenEvent.MouseButtonPressed.Pre event) {
-        if (event.getButton() == 0 && event.getScreen() instanceof MufflerScreen MS && MS.btnGlobal.isHovered()) {
-            NeoForgeConfig.setGlobalConfig(!MS.btnGlobal.isToggled());
-            useGlobalConfig = NeoForgeConfig.getGlobalConfig();
-            DataManager.reload();
+        if (event.getButton() == 0 && event.getScreen() instanceof MufflerScreen MS) {
+            if (MS.btnGlobal.isHovered()) {
+                NeoForgeConfig.setGlobalConfig(!MS.btnGlobal.isToggled());
+                useGlobalConfig = NeoForgeConfig.getGlobalConfig();
+                DataManager.reload();
+            }
+            if (MS.btnNever.isHovered()) {
+                NeoForgeConfig.disableShamelessPlug();
+            }
         }
     }
 }
