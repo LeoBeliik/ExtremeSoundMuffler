@@ -7,7 +7,6 @@ import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import java.util.*;
-import java.util.List;
 import static com.leobeliik.extremesoundmuffler.Constants.*;
 
 public class Anchor {
@@ -128,6 +127,8 @@ public class Anchor {
 
 	//TODO I really need to optimize this
 	public static double getMuffling(SoundInstance sound) {
+		if (minecraft == null) return DEFAULT_VOLUME;
+
 		ClientLevel world = minecraft.level;
 		LocalPlayer player = minecraft.player;
 		if (world == null || player == null) return DEFAULT_VOLUME;

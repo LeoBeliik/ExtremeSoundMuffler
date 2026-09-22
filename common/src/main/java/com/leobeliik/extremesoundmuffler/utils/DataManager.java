@@ -108,7 +108,7 @@ public class DataManager implements ISoundLists {
 	}
 
 	private static void saveMuffledMap(String folder) {
-		new File(folder).mkdir();
+		new File(folder).mkdirs();
 		try (Writer writer = new OutputStreamWriter(new FileOutputStream(folder + "soundsMuffled.dat"), StandardCharsets.UTF_8)) {
 			writer.write(gson.toJson(muffledSounds));
 			writer.flush();
@@ -184,9 +184,7 @@ public class DataManager implements ISoundLists {
 			return gson.fromJson(new JsonReader(reader), new TypeToken<List<Anchor>>() {
 			}.getType());
 		} catch (Exception e) {
-			if (e instanceof FileNotFoundException) {
-				ESM_LOG.warn(Component.translatable("log.warn.loadAnchorList").getString());
-			} else {
+			if (!(e instanceof FileNotFoundException)) {
 				ESM_LOG.error(Component.translatable("log.error.loadAnchorList", e).getString());
 			}
 			return new ArrayList<>();

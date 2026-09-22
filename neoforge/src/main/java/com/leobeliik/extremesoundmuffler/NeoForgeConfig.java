@@ -93,7 +93,7 @@ class NeoForgeConfig {
                 .define("leftButtons", false);
         
         showTip = CLIENT_BUILDER
-                .comment("Show tips in the Muffler screen? \n")
+                .comment("Allow Ko-Fi tip in the Muffler screen? \n")
                 .comment(" Default: true")
                 .define("showTip", true);
         
@@ -201,6 +201,11 @@ class NeoForgeConfig {
     static void setCreativeInvButtonHorizontal(int x, int y) {
         creativeInvButtonHorizontal.set(x);
         creativeInvButtonVertical.set(y);
+        CLIENT_CONFIG.save();
+    }
+
+    static void disableShamelessPlug() {
+        showTip.set(false);
         CLIENT_CONFIG.save();
     }
 }
