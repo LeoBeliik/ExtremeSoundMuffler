@@ -50,7 +50,7 @@ jobs:
         environment: client
         game-versions: ${{github.ref_name}}
         version: ${{env.MOD_VERSION}}-${{github.ref_name}}
-        java: Java 21
+        java: Java 25
         modrinth-featured: false
         changelog-file: CHANGELOG.md
 
@@ -70,7 +70,7 @@ jobs:
           environment: client
           game-versions: ${{github.ref_name}}
           version: ${{env.MOD_VERSION}}-${{github.ref_name}}
-          java: Java 21
+          java: Java 25
           modrinth-featured: false
           changelog-file: CHANGELOG.md
 
