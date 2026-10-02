@@ -90,7 +90,7 @@ public class SoundMufflerNeoForge {
 
     @SubscribeEvent //change global and local config save
     public void onMouseClick(ScreenEvent.MouseButtonPressed.Pre event) {
-        if (event.getButton() == 0 && event.getScreen() instanceof MufflerScreen MS) {
+        if (event.getButton() == 1 && event.getScreen() instanceof MufflerScreen MS) {
             if (MS.btnGlobal.isHovered()) {
                 NeoForgeConfig.setGlobalConfig(!MS.btnGlobal.isToggled());
                 useGlobalConfig = NeoForgeConfig.getGlobalConfig();

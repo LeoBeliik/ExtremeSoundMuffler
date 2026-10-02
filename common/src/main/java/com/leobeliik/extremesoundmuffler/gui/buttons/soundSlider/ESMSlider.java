@@ -213,7 +213,7 @@ public class ESMSlider extends AbstractWidget implements ISoundLists, IColorsGui
 
 	@Override
 	public boolean mouseClicked(@NotNull MouseButtonEvent mouseButtonEvent, boolean success) {
-		if (this.visible && isMuffling && mouseButtonEvent.button() == 0) {
+		if (this.visible && isMuffling && mouseButtonEvent.button() == 1) {
 			this.btnToggleSound.mouseClicked(mouseButtonEvent, success);
 			this.btnPlaySound.mouseClicked(mouseButtonEvent, success);
 

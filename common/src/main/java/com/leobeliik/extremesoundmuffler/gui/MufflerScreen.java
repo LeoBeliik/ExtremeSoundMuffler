@@ -206,7 +206,7 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 	@Override
 	public boolean keyPressed(@NotNull KeyEvent keyEvent) {
 		//Search bar, Edit title bar & Edit Anchor Radius bar looses focus when pressed "Enter" or "Intro"
-		if (keyEvent.key() == 257 || keyEvent.key() == 335) {
+		if (keyEvent.isConfirmation()) {
 			barSearch.setFocused(false);
 			return true;
 		}
@@ -269,9 +269,10 @@ public class MufflerScreen extends Screen implements ISoundLists, IColorsGui {
 	@Override
 	public boolean mouseClicked(@NotNull MouseButtonEvent event, boolean success) {
 		//right click
-		if (event.button() == 1) {
-			if (barSearch.isFocused()) {
+		if (event.button() == 3) {
+			if (barSearch.isMouseOver(event.x(), event.y())) {
 				barSearch.setValue("");
+				barSearch.setFocused(true);
 				updateButtons();
 				return true;
 			}
