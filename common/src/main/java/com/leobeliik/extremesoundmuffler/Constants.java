@@ -2,6 +2,7 @@ package com.leobeliik.extremesoundmuffler;
 
 import com.leobeliik.extremesoundmuffler.utils.Anchor;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -14,4 +15,5 @@ public class Constants {
     public static final Logger LOG = LogManager.getLogger("Extreme Sound Muffler");
     public static final KeyMapping soundMufflerKey = SoundMufflerCommon.mufflerKey();
     public static final List<Anchor> emptyAnchorList = IntStream.range(0, 10).mapToObj(i -> new Anchor(i, "Anchor " + i)).collect(Collectors.toList());
+    public static final ResourceLocation EVERYTHING = ResourceLocation.fromNamespaceAndPath("esm", "everything");
 }

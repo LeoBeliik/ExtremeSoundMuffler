@@ -18,6 +18,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.Locale;
 
+import static com.leobeliik.extremesoundmuffler.Constants.EVERYTHING;
+
 @Mixin(SoundEngine.class)
 public abstract class SoundMixin implements ISoundLists {
 
@@ -76,15 +78,8 @@ public abstract class SoundMixin implements ISoundLists {
 
             //don't continue if the anchors are disabled
             if (!CommonConfig.get().disableAnchors().get()) {
-                Anchor anchor = Anchor.getAnchor(tempSound);
-                if (anchor != null) {
-                    int maxAnchorRange = CommonConfig.get().maxAnchorRange().get();
-                    double radius = anchor.getRadius();
-                    if (radius > maxAnchorRange) {
-                        anchor.setRadius((int) Math.min(radius, maxAnchorRange));
-                    }
-                    return (float) (tempVolume * anchor.getMuffledSounds().get(soundResourceLocation));
-                }
+                double anchor = Anchor.getSound(tempSound);
+                if (anchor != 1D) return (float) anchor * tempVolume;
             }
 
             //Mod wide muffling from config

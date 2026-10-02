@@ -20,6 +20,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
+import static com.leobeliik.extremesoundmuffler.Constants.EVERYTHING;
 import static com.leobeliik.extremesoundmuffler.SoundMufflerCommon.getTextureRL;
 
 @SuppressWarnings("EmptyMethod")
@@ -90,12 +91,16 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
             stack.drawCenteredString(font, Component.translatable("slider.btn.volume", (int) (sliderValue * 100)), getX() + (width / 2), getY() + 2, aquaText); //title
         } else {
             String msgTruncated = getMessage().getString();
-            if (this.isHovered && font.width(msgTruncated) > 205) {
-                stack.fill(getX() + this.width + 1, getY() - 1, getX() + v + 3, getY() + font.lineHeight + 3, bg);
+            if (getMessage().getString().equals("everything:esm")) { //it's backwards..
+                stack.drawString(font, Component.translatable("slider.title.everything"), getX() + 2, getY() + 2, isMuffling ? aquaText : whiteText, true); //title
             } else {
-                msgTruncated = font.substrByWidth(getMessage(), 205).getString();
+                if (this.isHovered && font.width(msgTruncated) > 205) {
+                    stack.fill(getX() + this.width + 1, getY() - 1, getX() + v + 3, getY() + font.lineHeight + 3, bg);
+                } else {
+                    msgTruncated = font.substrByWidth(getMessage(), 205).getString();
+                }
+                stack.drawString(font, msgTruncated, getX() + 2, getY() + 2, isMuffling ? aquaText : whiteText, true); //title
             }
-            stack.drawString(font, msgTruncated, getX() + 2, getY() + 2, isMuffling ? aquaText : whiteText, true); //title
         }
     }
 
@@ -146,6 +151,7 @@ public class MuffledSlider extends AbstractWidget implements ISoundLists, IColor
 
     private void setBtnPlaySound(ResourceLocation sound) {
         btnPlaySound = new PlaySoundButton(btnToggleSound.getX() + 13, getY(), SoundEvent.createVariableRangeEvent(sound));
+        if (sound.equals(EVERYTHING)) btnPlaySound.active = false;
     }
 
     private PlaySoundButton getBtnPlaySound() {

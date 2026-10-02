@@ -1,1 +1,1 @@
-Fixed Anchor breaking when created out of order.  
+Backported option to muffle *every* sound with an anchor.  

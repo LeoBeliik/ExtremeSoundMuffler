@@ -1,5 +1,6 @@
 package com.leobeliik.extremesoundmuffler.utils;
 
+import com.leobeliik.extremesoundmuffler.CommonConfig;
 import com.leobeliik.extremesoundmuffler.interfaces.ISoundLists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -10,6 +11,8 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.Objects;
 import java.util.SortedMap;
 import java.util.TreeMap;
+
+import static com.leobeliik.extremesoundmuffler.Constants.EVERYTHING;
 
 public class Anchor {
 
@@ -124,7 +127,7 @@ public class Anchor {
         setRadius(radius);
     }
 
-    public static Anchor getAnchor(SoundInstance sound) {
+    public static double getSound(SoundInstance sound) {
         BlockPos soundPos = new BlockPos((int) sound.getX(), (int) sound.getY(), (int) sound.getZ());
         Minecraft minecraft = Minecraft.getInstance();
         LocalPlayer player = minecraft.player;
@@ -135,14 +138,19 @@ public class Anchor {
             soundPos = player.getOnPos();
         }
         for (Anchor anchor : ISoundLists.anchorList) {
+            int maxAnchorRange = CommonConfig.get().maxAnchorRange().get();
+            double radius = anchor.getRadius();
+            if (radius > maxAnchorRange) {
+                anchor.setRadius((int) Math.min(radius, maxAnchorRange));
+            }
+
             if (anchor.getAnchorPos() != null
                     && world != null
                     && world.dimension().location().equals(anchor.getDimension())
-                    && soundPos.closerThan(anchor.getAnchorPos(), anchor.getRadius())
-                    && anchor.getMuffledSounds().containsKey(sound.getLocation())) {
-                return anchor;
+                    && soundPos.closerThan(anchor.getAnchorPos(), anchor.getRadius())) {
+                return anchor.getMuffledSounds().getOrDefault(EVERYTHING, anchor.getMuffledSounds().getOrDefault(sound.getLocation(), 1D));
             }
         }
-        return null;
+        return 1D;
     }
 }
